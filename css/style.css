@@ -145,8 +145,8 @@ p { margin: 0; }
   background: var(--glass);
   backdrop-filter: saturate(1.4) blur(14px); -webkit-backdrop-filter: saturate(1.4) blur(14px);
 }
-.nav-in { position: relative; display: flex; align-items: center; gap: 24px; height: 96px; padding: 0 var(--edge); }
-.nav.is-scrolled .nav-in { height: 80px; }
+.nav-in { position: relative; display: flex; align-items: center; gap: 24px; height: 76px; padding: 0 var(--edge); }
+.nav.is-scrolled .nav-in { height: 68px; }
 .nav-in { transition: height .3s var(--ease); }
 .logo { display: block; flex: none; }
 .logo img { height: 28px; width: auto; }
@@ -192,7 +192,7 @@ p { margin: 0; }
 .menu-btn { display: none; }
 
 .mobile-menu {
-  position: fixed; inset: 80px 0 0; z-index: 49; background: var(--bg);
+  position: fixed; inset: 76px 0 0; z-index: 49; background: var(--bg);
   padding: 16px var(--gutter) 40px; display: flex; flex-direction: column; gap: 4px;
   transform: translateY(-8px); opacity: 0; visibility: hidden;
   transition: opacity .25s, transform .25s var(--ease), visibility .25s;
