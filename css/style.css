@@ -23,9 +23,9 @@
   --f-fig: #8a5cf0;
   --f-img: #6b6b6b;
 
-  --font-display: "Inter Tight", "Inter", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
-  --font-mono: "Geist Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --font-display: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --radius: 24px;
   --radius-lg: 32px;
