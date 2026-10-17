@@ -63,57 +63,68 @@
           <p>Every file comes as editable source, so you can change colours, swap text and resize without losing quality.</p>
         </div>
 
-        <div class="bento">
-          <a class="tile t-mockups reveal" href="browse.html?cat=mockups">
-            <div class="bg"><img src="previews/t-shirt-mockup-one.jpg" alt="" loading="lazy"></div>
-            <div>
+        <div class="shelves reveal" data-shelves>
+          <a class="shelf s-mockups is-open" href="browse.html?cat=mockups" data-cat="mockups">
+            <div class="shelf-art"><img src="previews/t-shirt-mockup-one.jpg" alt="" loading="lazy"></div>
+            <div class="shelf-top"><span class="shelf-num">01</span><span class="shelf-count" data-cat-count="mockups"></span></div>
+            <span class="shelf-vtitle" aria-hidden="true">Mockups</span>
+            <div class="shelf-body">
+              <div class="shelf-fmts"><span class="fmt solid" data-f="PSD">PSD</span><span class="fmt solid">Smart objects</span></div>
               <h3>Mockups</h3>
-              <div class="meta"><span class="fmt solid" data-f="PSD">PSD</span><span class="fmt solid">Smart objects</span></div>
+              <p>Photoshop scenes with smart objects. Drop your design in and it wraps around every fold.</p>
+              <span class="btn btn-light">Browse mockups <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
             </div>
-            <div class="foot"><span class="count"><span data-cat-count="mockups"></span></span><span class="count"><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></div>
           </a>
-
-          <a class="tile t-logos reveal" href="browse.html?cat=logos">
-            <img class="art" src="previews/dore-logo-art.png" alt="" loading="lazy">
-            <div>
+          <a class="shelf s-logos" href="browse.html?cat=logos" data-cat="logos">
+            <div class="shelf-art">
+              <div class="logo-stack">
+                <span><img src="previews/dore-logo-art.png" alt="" loading="lazy"></span>
+                <span><img src="previews/mato-logo-art.png" alt="" loading="lazy"></span>
+              </div>
+            </div>
+            <div class="shelf-top"><span class="shelf-num">02</span><span class="shelf-count" data-cat-count="logos"></span></div>
+            <span class="shelf-vtitle" aria-hidden="true">Logos</span>
+            <div class="shelf-body">
+              <div class="shelf-fmts"><span class="fmt" data-f="AI">AI</span><span class="fmt" data-f="SVG">SVG</span><span class="fmt" data-f="PDF">PDF</span></div>
               <h3>Logos</h3>
-              <div class="meta"><span class="fmt" data-f="AI">AI</span><span class="fmt" data-f="SVG">SVG</span><span class="fmt" data-f="PDF">PDF</span></div>
+              <p>Fully editable logo files. Rename them, recolour them, make them yours.</p>
+              <span class="btn btn-dark">Browse logos <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
             </div>
-            <div class="foot"><span class="count"><span data-cat-count="logos"></span></span><span class="count"><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></div>
           </a>
-
-          <a class="tile t-vectors reveal" href="browse.html?cat=vectors">
-            <svg class="pen" viewBox="0 0 200 160" fill="none" aria-hidden="true">
-              <path class="curve" d="M20 130 C 60 20, 140 20, 180 120" stroke="#0c0c0b" stroke-width="3" stroke-linecap="round"/>
-              <path d="M20 130 L60 40 M180 120 L140 30" stroke="#0c0c0b" stroke-width="1.5" stroke-dasharray="4 4" opacity=".6"/>
-              <rect x="14" y="124" width="12" height="12" fill="#86de4e" stroke="#0c0c0b" stroke-width="2.5"/>
-              <rect x="174" y="114" width="12" height="12" fill="#86de4e" stroke="#0c0c0b" stroke-width="2.5"/>
-              <circle cx="60" cy="40" r="5" fill="#0c0c0b"/>
-              <circle cx="140" cy="30" r="5" fill="#0c0c0b"/>
-            </svg>
-            <div>
+          <a class="shelf s-vectors" href="browse.html?cat=vectors" data-cat="vectors">
+            <div class="shelf-art">
+              <svg class="bezier" viewBox="0 0 400 300" fill="none" aria-hidden="true">
+                <path class="guide" d="M60 230 L140 60 M340 220 L270 40"/>
+                <path class="curve" d="M60 230 C140 60, 270 40, 340 220"/>
+                <circle class="handle" cx="140" cy="60" r="7"/><circle class="handle" cx="270" cy="40" r="7"/>
+                <rect class="anchor" x="50" y="220" width="20" height="20" rx="3"/><rect class="anchor" x="330" y="210" width="20" height="20" rx="3"/>
+              </svg>
+            </div>
+            <div class="shelf-top"><span class="shelf-num">03</span><span class="shelf-count" data-cat-count="vectors"></span></div>
+            <span class="shelf-vtitle" aria-hidden="true">Vectors</span>
+            <div class="shelf-body">
+              <div class="shelf-fmts"><span class="fmt" data-f="AI">AI</span><span class="fmt" data-f="SVG">SVG</span><span class="fmt" data-f="EPS">EPS</span></div>
               <h3>Vectors</h3>
-              <div class="meta"><span class="fmt" data-f="AI">AI</span><span class="fmt" data-f="SVG">SVG</span><span class="fmt" data-f="EPS">EPS</span></div>
+              <p>Illustrations, badges, shapes and patterns that stay sharp at any size.</p>
+              <span class="btn btn-light">Browse vectors <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
             </div>
-            <div class="foot"><span class="count"><span data-cat-count="vectors"></span></span><span class="count"><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></div>
           </a>
-
-          <a class="tile t-templates reveal" href="browse.html?cat=templates">
-            <div class="wire" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-            <div>
+          <a class="shelf s-templates" href="browse.html?cat=templates" data-cat="templates">
+            <div class="shelf-art">
+              <div class="tpl-stack" aria-hidden="true">
+                <div class="tpl t1"><b>SUMMER<br>SALE</b><i></i><i></i><em>50%</em></div>
+                <div class="tpl t2"><span class="ph"></span><i></i><i></i><i></i></div>
+                <div class="tpl t3"><b>Grand<br>opening</b><span class="dot"></span><i></i></div>
+              </div>
+            </div>
+            <div class="shelf-top"><span class="shelf-num">04</span><span class="shelf-count" data-cat-count="templates"></span></div>
+            <span class="shelf-vtitle" aria-hidden="true">Templates</span>
+            <div class="shelf-body">
+              <div class="shelf-fmts"><span class="fmt" data-f="PSD">PSD</span><span class="fmt" data-f="AI">AI</span><span class="fmt" data-f="PDF">PDF</span></div>
               <h3>Templates</h3>
-              <div class="meta"><span class="fmt" data-f="PSD">PSD</span><span class="fmt" data-f="AI">AI</span><span class="fmt" data-f="PDF">PDF</span></div>
+              <p>Flyers, posters, social posts and cards with text you can edit in seconds.</p>
+              <span class="btn btn-dark">Browse templates <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
             </div>
-            <div class="foot"><span class="count"><span data-cat-count="templates"></span></span><span class="count"><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></div>
-          </a>
-
-          <a class="tile t-icons reveal" href="icons.html">
-            <div class="igrid" data-tile-icons aria-hidden="true"></div>
-            <div>
-              <h3>Icons</h3>
-              <div class="meta"><span class="fmt" data-f="SVG">SVG</span><span class="fmt">PNG</span><span class="fmt">Recolour</span></div>
-            </div>
-            <div class="foot"><span class="count"><span data-icon-count></span></span><span class="count"><span class="go"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span></span></div>
           </a>
         </div>
       </div>
@@ -149,16 +160,37 @@
     </section>
 
     <!-- ICONS -->
-    <section class="section icons-band">
+    <section class="section" style="padding-top:0">
       <div class="wrap">
-        <div class="sec-head reveal">
-          <div>
+        <div class="ix reveal" data-ix>
+          <div class="ix-copy">
             <span class="eyebrow"><span class="dot"></span>Free icon set</span>
-            <h2>100 line icons.<br>Any colour you like.</h2>
+            <h2>100 line icons.<br><em>Any colour</em> you like.</h2>
+            <p>Hand-drawn on a 24px grid with a 1.75px stroke, so they sit perfectly next to your text. Pick a colour, hover an icon, download it.</p>
+            <dl class="ix-stats">
+              <div><dt data-icon-total></dt><dd>Icons</dd></div>
+              <div><dt>24px</dt><dd>Grid</dd></div>
+              <div><dt>9</dt><dd>Groups</dd></div>
+              <div><dt>SVG</dt><dd>&amp; PNG</dd></div>
+            </dl>
+            <div class="ix-try">
+              <span class="ix-label">Try a colour</span>
+              <div class="ix-swatches" data-ix-swatches></div>
+            </div>
+            <a class="btn btn-dark btn-lg" href="icons.html">Open the icon set <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a>
           </div>
-          <a class="btn btn-dark" href="icons.html">Open the icon set <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a>
+          <div class="ix-stage">
+            <div class="ix-preview">
+              <div class="ix-big" data-ix-big></div>
+              <div class="ix-meta">
+                <span class="ix-label" data-ix-group></span>
+                <b data-ix-name></b>
+                <a class="ix-dl" data-ix-link>Customise &amp; download <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a>
+              </div>
+            </div>
+            <div class="ix-grid" data-ix-grid></div>
+          </div>
         </div>
-        <div class="icon-wall reveal" data-icon-wall></div>
       </div>
     </section>
 
