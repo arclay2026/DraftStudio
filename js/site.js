@@ -322,6 +322,9 @@
       draw("all");
     }
 
+    const fx = $("[data-formats]");
+    if (fx) formatExplorer(fx);
+
     // Icon wall
     const wall = $("[data-icon-wall]");
     if (wall) wall.innerHTML = DS.icons.slice(0, 36).map(i => `<a href="icons.html#${i.id}" title="${esc(i.name)}" aria-label="${esc(i.name)} icon">${icon(i.id)}</a>`).join("");
@@ -329,6 +332,105 @@
     // CTA links
     $$("[data-wa]").forEach(a => { a.href = waLink(a.dataset.wa); a.target = "_blank"; a.rel = "noopener"; });
     $$("[data-mail]").forEach(a => { a.href = mailLink(a.dataset.mail); });
+  }
+
+  /* ---------- Format explorer (home) ---------- */
+  const APPS = {
+    photoshop: { name: "Photoshop", icon: "photoshop" },
+    photopea: { name: "Photopea", icon: "photopea", free: true },
+    affinity: { name: "Affinity", icon: "affinity" },
+    illustrator: { name: "Illustrator", icon: "illustrator" },
+    inkscape: { name: "Inkscape", icon: "inkscape", free: true },
+    figma: { name: "Figma", icon: "figma", free: true },
+    canva: { name: "Canva", icon: "canva", free: true }
+  };
+  const FORMATS = [
+    { ext: "PSD", name: "Photoshop documents", short: "Layered mockups and templates",
+      desc: "Layered files with smart objects. Double-click the smart object, paste your design, save, and the mockup updates with realistic lighting and folds.",
+      best: ["Mockups", "Social templates", "Photo edits"], apps: ["photoshop", "photopea", "affinity"] },
+    { ext: "AI", name: "Illustrator artwork", short: "The original vector source",
+      desc: "The master file. Every shape, colour and letter stays fully editable, so you can rename a logo, recolour it or pull it apart.",
+      best: ["Logos", "Illustrations", "Brand assets"], apps: ["illustrator", "affinity", "inkscape"] },
+    { ext: "SVG", name: "Scalable vectors", short: "Works almost everywhere",
+      desc: "Lightweight vectors that stay razor sharp at any size. Drop them into websites, Figma, Canva or a Cricut and they just work.",
+      best: ["Websites", "Icons", "Cut files"], apps: ["figma", "canva", "inkscape"] },
+    { ext: "EPS", name: "Print-ready vectors", short: "What printers ask for",
+      desc: "The classic vector format for print shops, sign makers and embroidery. Send it as is and it prints crisp at any size.",
+      best: ["Signage", "Merch printing", "Embroidery"], apps: ["illustrator", "affinity", "inkscape"] },
+    { ext: "PDF", name: "Share & print", short: "Send it anywhere",
+      desc: "Opens on any device. Vector PDFs keep their sharp edges, so they're perfect for client previews and sending straight to print.",
+      best: ["Client previews", "Print", "Presentations"], apps: ["illustrator", "affinity", "canva"] },
+    { ext: "PNG", name: "Ready to post", short: "Transparent, high-res images",
+      desc: "High-resolution images with transparent backgrounds. No design app needed: post it, place it, or drop it into a slide.",
+      best: ["Social posts", "Slides", "Quick use"], apps: ["canva", "figma", "photopea"] }
+  ];
+
+  function formatExplorer(root) {
+    const ARROW = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+    root.innerHTML = `
+      <div class="fx-list" role="tablist" aria-label="File formats">
+        ${FORMATS.map((f, i) => `
+          <button class="fx-row" type="button" role="tab" id="fx-tab-${f.ext}" aria-controls="fx-panel" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-i="${i}">
+            <span class="ext">.${f.ext.toLowerCase()}</span>
+            <span class="meta"><b>${f.name}</b><span>${f.short}</span></span>
+            <span class="go">${ARROW}</span>
+            <span class="bar"></span>
+          </button>`).join("")}
+      </div>
+      <div class="fx-panel" id="fx-panel" role="tabpanel"></div>`;
+    const panel = $(".fx-panel", root), rows = $$(".fx-row", root);
+    let cur = 0, timer = null;
+
+    const show = (i, focus) => {
+      cur = i;
+      const f = FORMATS[i];
+      const n = items.filter(it => formatsOf(it).includes(f.ext)).length;
+      root.dataset.f = f.ext;
+      rows.forEach((r, j) => { r.setAttribute("aria-selected", j === i); r.tabIndex = j === i ? 0 : -1; });
+      if (focus) rows[i].focus();
+      panel.setAttribute("aria-labelledby", "fx-tab-" + f.ext);
+      panel.innerHTML = `
+        <span class="watermark" aria-hidden="true">.${f.ext.toLowerCase()}</span>
+        <div class="fx-top fx-anim">
+          <div class="fx-doc" aria-hidden="true"><i></i><i></i><i></i><i></i><span class="tag">${f.ext}</span></div>
+          <div class="fx-head">
+            <span class="eyebrow"><span class="dot"></span>.${f.ext.toLowerCase()} file</span>
+            <h3>${f.name}</h3>
+          </div>
+        </div>
+        <p class="fx-desc fx-anim">${f.desc}</p>
+        <div class="fx-anim">
+          <span class="fx-label">Opens in</span>
+          <div class="fx-apps">${f.apps.map(a => APPS[a]).map(a => `<span class="fx-app"><img src="assets/apps/${a.icon}.svg" alt="">${a.name}${a.free ? " <small>Free</small>" : ""}</span>`).join("")}</div>
+        </div>
+        <div class="fx-anim">
+          <span class="fx-label">Best for</span>
+          <div class="fx-best">${f.best.map(b => `<span>${b}</span>`).join("")}</div>
+        </div>
+        <div class="fx-foot fx-anim">
+          <a class="btn btn-dark btn-lg" href="browse.html?format=${f.ext}">Browse .${f.ext.toLowerCase()} files <span class="arr">${ARR}</span></a>
+          <span class="count">${n ? `${n} file${n === 1 ? "" : "s"} available` : "New files coming soon"}</span>
+        </div>`;
+      panel.classList.remove("is-swapping"); void panel.offsetWidth; panel.classList.add("is-swapping");
+    };
+
+    // Auto-advance like a slideshow until the visitor interacts with it
+    const stopAuto = () => { clearInterval(timer); timer = null; root.classList.remove("is-auto"); };
+    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      root.classList.add("is-auto");
+      timer = setInterval(() => show((cur + 1) % FORMATS.length), 6000);
+    }
+
+    rows.forEach((r, i) => {
+      r.addEventListener("click", () => { stopAuto(); show(i); });
+      r.addEventListener("mouseenter", () => { if (matchMedia("(hover: hover)").matches) { stopAuto(); show(i); } });
+      r.addEventListener("keydown", e => {
+        const d = { ArrowDown: 1, ArrowRight: 1, ArrowUp: -1, ArrowLeft: -1 }[e.key];
+        if (d) { e.preventDefault(); stopAuto(); show((cur + d + FORMATS.length) % FORMATS.length, true); }
+      });
+    });
+    panel.addEventListener("pointerenter", stopAuto);
+    show(0);
   }
 
   function emptyState(cat) {
