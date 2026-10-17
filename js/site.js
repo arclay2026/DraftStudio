@@ -83,47 +83,52 @@
       </article>`;
   }
 
-  /* ---------- Theme ---------- */
-  function setTheme(t) {
-    document.documentElement.setAttribute("data-theme", t);
-    try { localStorage.setItem("ds-theme", t); } catch (e) {}
-  }
-
   /* ---------- Header & footer ---------- */
+  // Diagonal arrow used in the round badge on dark pill buttons
+  const ARR = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>`;
+
   function header(active) {
     const link = (href, label, key) => `<a href="${href}"${active === key ? ' aria-current="page"' : ""}>${label}</a>`;
+    const more = [
+      { href: "browse.html?cat=vectors", label: "Vectors", key: "vectors", note: "AI · SVG · EPS" },
+      { href: "icons.html", label: "Icons", key: "icons", note: "SVG · PNG" },
+      { href: "license.html", label: "License", key: "license", note: "& FAQ" }
+    ];
     const el = $("[data-header]");
     if (!el) return;
     el.outerHTML = `
       <a class="skip" href="#main">Skip to content</a>
       <header class="nav">
-        <div class="wrap nav-in">
+        <div class="nav-in">
           <a class="logo" href="index.html" aria-label="Draft Studio home">
-            <img class="on-dark" src="assets/logo-dark.svg" alt="Draft Studio" width="166" height="26">
-            <img class="on-light" src="assets/logo.svg" alt="Draft Studio" width="166" height="26">
+            <img src="assets/logo.svg" alt="Draft Studio" width="180" height="28">
           </a>
           <nav class="nav-links" aria-label="Main">
-            ${CATS.map(c => link(`browse.html?cat=${c.slug}`, c.name, c.slug)).join("")}
-            ${link("icons.html", "Icons", "icons")}
-            ${link("license.html", "License", "license")}
+            ${link("index.html", "Home", "home")}
+            ${link("browse.html?cat=mockups", "Mockups", "mockups")}
+            ${link("browse.html?cat=logos", "Logos", "logos")}
+            ${link("browse.html?cat=templates", "Templates", "templates")}
+            <div class="nav-more">
+              <button class="nav-more-btn${more.some(m => m.key === active) ? " is-current" : ""}" type="button" aria-expanded="false" aria-haspopup="true">More ${icon("chevron-right")}</button>
+              <div class="nav-drop">
+                ${more.map(m => `<a href="${m.href}"${active === m.key ? ' aria-current="page"' : ""}>${m.label}<small>${m.note}</small></a>`).join("")}
+                <button type="button" data-open-search>Search<small>press /</small></button>
+              </div>
+            </div>
           </nav>
           <div class="nav-tools">
-            <button class="search-trigger" type="button" data-open-search aria-label="Search">
-              ${icon("search")}<span class="label">Search files</span><span class="kbd">/</span>
-            </button>
-            <button class="icon-btn theme-toggle" type="button" aria-label="Switch light or dark mode">
-              ${icon("moon", "moon")}${icon("sun", "sun")}
-            </button>
-            <a class="btn btn-lime btn-sm btn-browse" href="browse.html">Browse all</a>
+            <a class="btn btn-dark btn-nav" href="browse.html">Browse files <span class="arr">${ARR}</span></a>
             <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">${icon("menu")}</button>
           </div>
         </div>
       </header>
       <div class="mobile-menu" id="mobile-menu" aria-label="Menu">
+        <a href="index.html">Home</a>
         ${CATS.map(c => `<a href="browse.html?cat=${c.slug}">${c.name}<span>${c.formats.join(" · ")}</span></a>`).join("")}
         <a href="icons.html">Icons<span>SVG · PNG</span></a>
         <a href="license.html">License<span>FAQ</span></a>
-        <a class="btn btn-lime" href="browse.html">Browse all files</a>
+        <button type="button" data-open-search>Search<span>Find a file</span></button>
+        <a class="btn btn-dark btn-lg" href="browse.html">Browse files <span class="arr">${ARR}</span></a>
       </div>`;
   }
 
@@ -137,8 +142,7 @@
           <div class="footer-top">
             <div>
               <a class="logo" href="index.html" aria-label="Draft Studio home">
-                <img class="on-dark" src="assets/logo-dark.svg" alt="Draft Studio" width="166" height="26">
-                <img class="on-light" src="assets/logo.svg" alt="Draft Studio" width="166" height="26">
+                <img src="assets/logo.svg" alt="Draft Studio" width="180" height="28">
               </a>
               <p class="footer-blurb">${esc(s.tagline)}</p>
             </div>
@@ -210,7 +214,7 @@
       active = -1;
     };
 
-    const open = () => { wrap.classList.add("is-open"); document.body.style.overflow = "hidden"; input.value = ""; render(); input.focus(); };
+    const open = () => { const mm = $("#mobile-menu.is-open"); if (mm) $(".menu-btn").click(); wrap.classList.add("is-open"); document.body.style.overflow = "hidden"; input.value = ""; render(); input.focus(); };
     const close = () => { wrap.classList.remove("is-open"); document.body.style.overflow = ""; };
     input.addEventListener("input", render);
     input.addEventListener("keydown", e => {
@@ -240,8 +244,17 @@
     const onScroll = () => nav && nav.classList.toggle("is-scrolled", scrollY > 8);
     addEventListener("scroll", onScroll, { passive: true }); onScroll();
 
-    const t = $(".theme-toggle");
-    t && t.addEventListener("click", () => setTheme(document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light"));
+    const more = $(".nav-more"), moreBtn = $(".nav-more-btn");
+    if (more) {
+      const setMore = open => { more.classList.toggle("is-open", open); moreBtn.setAttribute("aria-expanded", open); };
+      moreBtn.addEventListener("click", e => { e.stopPropagation(); setMore(!more.classList.contains("is-open")); });
+      if (matchMedia("(hover: hover)").matches) {
+        more.addEventListener("mouseenter", () => setMore(true));
+        more.addEventListener("mouseleave", () => setMore(false));
+      }
+      document.addEventListener("click", e => { if (!more.contains(e.target)) setMore(false); });
+      document.addEventListener("keydown", e => { if (e.key === "Escape") setMore(false); });
+    }
 
     const mb = $(".menu-btn"), mm = $("#mobile-menu");
     mb && mb.addEventListener("click", () => {
@@ -271,46 +284,14 @@
 
   /* ---------- Home ---------- */
   function home() {
-    // Hero light table: featured previews first, then the rest
-    const picks = items.filter(i => i.featured).concat(items.filter(i => !i.featured)).slice(0, 4);
-    const stage = $("[data-stage]");
-    if (stage) {
-      stage.innerHTML = picks.map((it, i) => `
-        <figure class="plate p${i + 1}">
-          <a href="${itemUrl(it)}" aria-label="${esc(it.title)}"><img src="${esc(it.preview)}" alt="" ${i > 1 ? 'loading="lazy"' : ""}></a>
-          <figcaption><span class="tag">${it.num}</span><span class="tag">${formatsOf(it)[0] || ""}</span></figcaption>
-        </figure>`).join("") + `
-        <span class="sticker s-psd" aria-hidden="true">.PSD</span>
-        <span class="sticker s-ai" aria-hidden="true">.AI</span>
-        <span class="sticker s-svg" aria-hidden="true">.SVG</span>
-        <a class="seal" href="browse.html" aria-label="Browse free downloads">
-          <svg viewBox="0 0 120 120" aria-hidden="true">
-            <defs><path id="ring" d="M60,60 m-44,0 a44,44 0 1,1 88,0 a44,44 0 1,1 -88,0"/></defs>
-            <circle class="disc" cx="60" cy="60" r="58"/>
-            <text><textPath href="#ring" textLength="272" lengthAdjust="spacing">FREE DOWNLOAD ✳ FREE DOWNLOAD ✳</textPath></text>
-          </svg>
-          <span class="core">${icon("arrow-down")}</span>
-        </a>`;
-
-      // Gentle tilt toward the pointer
-      if (matchMedia("(hover: hover) and (prefers-reduced-motion: no-preference)").matches) {
-        stage.addEventListener("pointermove", e => {
-          const r = stage.getBoundingClientRect();
-          const x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5;
-          stage.style.transform = `rotateY(${x * 6}deg) rotateX(${-y * 6}deg)`;
-        });
-        stage.addEventListener("pointerleave", () => { stage.style.transform = ""; });
-        stage.style.transition = "transform .6s cubic-bezier(.2,.7,.2,1)";
-      }
+    // Hero dot card (decorative): the first dots light up one after another
+    const dots = $("[data-dots]");
+    if (dots) {
+      const lit = [0, 1, 2, 3, 4, 7, 8, 9];
+      dots.innerHTML = Array.from({ length: 21 }, (_, i) => `<i class="${lit.includes(i) ? "on" : ""}" style="--n:${lit.indexOf(i)}"></i>`).join("");
     }
-
-    // Hero search
-    const hs = $("[data-hero-search]");
-    hs && hs.addEventListener("submit", e => {
-      e.preventDefault();
-      const q = $("input", hs).value.trim();
-      location.href = q ? `browse.html?q=${encodeURIComponent(q)}` : "browse.html";
-    });
+    $$("[data-item-count]").forEach(el => { el.textContent = items.length; });
+    $$("[data-icon-total]").forEach(el => { el.textContent = DS.icons.length; });
 
     // Category tiles: counts
     $$("[data-cat-count]").forEach(el => {
@@ -355,7 +336,7 @@
     return `<div class="empty">
       <h3>Fresh ${esc(name)} are on the way.</h3>
       <p>Nothing here yet. Tell us what you'd like to see and we'll draft it.</p>
-      <a class="btn btn-lime" href="${waLink(`Hi Draft Studio, I'd like to request ${cat ? "some " + name : "a design"}: `)}" target="_blank" rel="noopener">${icon("chat")} Request on WhatsApp</a>
+      <a class="btn btn-dark" href="${waLink(`Hi Draft Studio, I'd like to request ${cat ? "some " + name : "a design"}: `)}" target="_blank" rel="noopener">${icon("chat")} Request on WhatsApp</a>
     </div>`;
   }
 
@@ -420,7 +401,7 @@
     const it = items.find(i => i.id === id);
     const main = $("[data-item]");
     if (!it) {
-      main.innerHTML = `<div class="wrap section"><div class="empty"><h3>That file has moved.</h3><p>We couldn't find “${esc(id || "")}”. Try browsing instead.</p><a class="btn btn-lime" href="browse.html">Browse all files</a></div></div>`;
+      main.innerHTML = `<div class="wrap section"><div class="empty"><h3>That file has moved.</h3><p>We couldn't find “${esc(id || "")}”. Try browsing instead.</p><a class="btn btn-dark" href="browse.html">Browse all files</a></div></div>`;
       return;
     }
     document.title = `${it.title} · Draft Studio`;
@@ -443,10 +424,10 @@
         <div class="amount">${esc(it.price)}</div>
         <p>You get ${esc((it.includes || []).join(", "))}. Once it's sold it comes off the shelf for good.</p>
         ${it.sold ? `<span class="btn" aria-disabled="true">Sold</span>` :
-          `<a class="btn btn-lime" href="${waLink(`Hi Draft Studio, I'd like to buy “${it.title}” (${it.num}) for ${it.price}.`)}" target="_blank" rel="noopener">${icon("chat")} Buy on WhatsApp</a>`}
+          `<a class="btn btn-dark" href="${waLink(`Hi Draft Studio, I'd like to buy “${it.title}” (${it.num}) for ${it.price}.`)}" target="_blank" rel="noopener">${icon("chat")} Buy on WhatsApp</a>`}
       </div>` : `
       ${it.requires ? `<div class="notice">${icon("lightbulb")}<span>This file needs <b>${esc(it.requires)}</b> (or free Photopea in your browser).</span></div>` : ""}
-      ${zip ? `<a class="btn btn-lime dl-all" href="${esc(zip.path)}" download>${icon("download")} Download all${zip.size ? " · " + esc(zip.size) : ""}</a>` : ""}
+      ${zip ? `<a class="btn btn-dark dl-all" href="${esc(zip.path)}" download>${icon("download")} Download all${zip.size ? " · " + esc(zip.size) : ""}</a>` : ""}
       <div class="downloads">${(it.files || []).filter(f => f !== zip).map(dlRow).join("")}</div>`;
 
     const related = items.filter(i => i !== it && i.category === it.category).concat(items.filter(i => i !== it && i.category !== it.category)).slice(0, 4);
@@ -547,7 +528,7 @@
           </label>
         </div>
         <div class="btns">
-          <a class="btn btn-lime" data-dl-svg>${icon("download")} Download SVG</a>
+          <a class="btn btn-dark" data-dl-svg>${icon("download")} Download SVG</a>
           <button class="btn" type="button" data-dl-png>${icon("image")} Download PNG · 512px</button>
           <button class="btn" type="button" data-copy>${icon("copy")} Copy SVG code</button>
         </div>`;
@@ -558,7 +539,7 @@
       $("[data-copy]", insp).addEventListener("click", () => copy(svgText, "SVG code copied"));
       $("[data-dl-png]", insp).addEventListener("click", () => {
         const img = new Image();
-        const src = svgFile(ic, state.color || (document.documentElement.getAttribute("data-theme") === "light" ? "#111110" : "#f4f3ef"), 512);
+        const src = svgFile(ic, state.color || "#0f0f0f", 512);
         img.onload = () => {
           const cv = document.createElement("canvas"); cv.width = cv.height = 512;
           cv.getContext("2d").drawImage(img, 0, 0, 512, 512);
@@ -588,7 +569,7 @@
       $$("[data-g]", groups).forEach(b => b.setAttribute("aria-pressed", b.dataset.g === state.group));
       $("[data-count]").textContent = `${list.length} icon${list.length === 1 ? "" : "s"}`;
       grid.innerHTML = list.length ? list.map(i => `<button class="icon-cell" type="button" data-id="${i.id}" aria-pressed="${state.sel && state.sel.id === i.id}">${icon(i.id)}<span>${esc(i.name)}</span></button>`).join("")
-        : `<div class="empty"><h3>No icon called that yet.</h3><p>Ask for it and we'll draw it.</p><a class="btn btn-lime" href="${waLink("Hi Draft Studio, could you add an icon for: " + state.q)}" target="_blank" rel="noopener">${icon("chat")} Request an icon</a></div>`;
+        : `<div class="empty"><h3>No icon called that yet.</h3><p>Ask for it and we'll draw it.</p><a class="btn btn-dark" href="${waLink("Hi Draft Studio, could you add an icon for: " + state.q)}" target="_blank" rel="noopener">${icon("chat")} Request an icon</a></div>`;
     };
 
     groups.addEventListener("click", e => { const b = e.target.closest("[data-g]"); if (b) { state.group = b.dataset.g; draw(); } });
