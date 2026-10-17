@@ -293,14 +293,24 @@
     $$("[data-item-count]").forEach(el => { el.textContent = items.length; });
     $$("[data-icon-total]").forEach(el => { el.textContent = DS.icons.length; });
 
-    // Category tiles: counts
+    // Shelves: file counts, and open a panel on hover / focus
     $$("[data-cat-count]").forEach(el => {
       const n = items.filter(i => slug(i.category) === el.dataset.catCount).length;
-      el.innerHTML = n ? `${n} file${n === 1 ? "" : "s"}` : `<span class="soon">Coming soon</span>`;
+      el.textContent = n ? `${n} file${n === 1 ? "" : "s"}` : "Coming soon";
     });
-    $$("[data-icon-count]").forEach(el => { el.textContent = DS.icons.length + " icons"; });
-    const ig = $("[data-tile-icons]");
-    if (ig) ig.innerHTML = ["brush", "pen-tool", "layers", "palette", "image", "vector", "crop", "type", "camera", "eyedropper", "magic", "ruler", "folder", "download", "heart", "star", "rocket", "bolt"].map(i => `<span>${icon(i)}</span>`).join("");
+    const shelves = $("[data-shelves]");
+    if (shelves) {
+      const panels = $$(".shelf", shelves);
+      const open = p => panels.forEach(x => x.classList.toggle("is-open", x === p));
+      panels.forEach(p => {
+        p.addEventListener("mouseenter", () => { if (matchMedia("(hover: hover)").matches) open(p); });
+        p.addEventListener("focus", () => open(p));
+      });
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { shelves.classList.add("in-view"); io.disconnect(); } }), { threshold: .3 });
+        io.observe(shelves);
+      }
+    }
 
     // Fresh drops with filter chips
     const grid = $("[data-latest]"), chips = $("[data-latest-filters]");
@@ -325,9 +335,35 @@
     const fx = $("[data-formats]");
     if (fx) formatExplorer(fx);
 
-    // Icon wall
-    const wall = $("[data-icon-wall]");
-    if (wall) wall.innerHTML = DS.icons.slice(0, 36).map(i => `<a href="icons.html#${i.id}" title="${esc(i.name)}" aria-label="${esc(i.name)} icon">${icon(i.id)}</a>`).join("");
+    // Icon showcase: colour swatches, hover preview, icon grid
+    const ix = $("[data-ix]");
+    if (ix) {
+      const grid = $("[data-ix-grid]", ix), sw = $("[data-ix-swatches]", ix);
+      const picks = ["pen-tool", "brush", "palette", "layers", "magic", "camera", "image", "crop",
+        "rocket", "bolt", "heart", "star", "globe", "music", "coffee", "gift",
+        "cloud", "sun", "leaf", "map-pin", "plane", "car", "trophy", "lightbulb",
+        "home", "search", "user", "bell", "mail", "chat", "share", "download",
+        "cart", "bag", "wallet", "tag", "calendar", "clock", "lock", "smile"].map(id => DS.icons.find(i => i.id === id)).filter(Boolean);
+      const colours = [["Lime", "#a3f25d"], ["White", "#ffffff"], ["Pink", "#f7c6f4"], ["Sky", "#7cc4ff"], ["Orange", "#ff9a3c"], ["Coral", "#ff6b5c"]];
+      sw.innerHTML = colours.map(([n, c], i) => `<button type="button" style="--sw:${c}" aria-label="${n}" aria-pressed="${i === 0}" data-c="${c}"></button>`).join("");
+      grid.innerHTML = picks.map(i => `<a href="icons.html#${i.id}" data-id="${i.id}" aria-label="${esc(i.name)} icon">${icon(i.id)}</a>`).join("");
+      const show = ic => {
+        $("[data-ix-big]", ix).innerHTML = icon(ic.id);
+        $("[data-ix-name]", ix).textContent = ic.name;
+        $("[data-ix-group]", ix).textContent = ic.group + " icon";
+        $("[data-ix-link]", ix).href = `icons.html#${ic.id}`;
+        $$("a", grid).forEach(a => a.classList.toggle("is-on", a.dataset.id === ic.id));
+      };
+      grid.addEventListener("mouseover", e => { const a = e.target.closest("[data-id]"); if (a) show(DS.icons.find(i => i.id === a.dataset.id)); });
+      grid.addEventListener("focusin", e => { const a = e.target.closest("[data-id]"); if (a) show(DS.icons.find(i => i.id === a.dataset.id)); });
+      sw.addEventListener("click", e => {
+        const b = e.target.closest("[data-c]"); if (!b) return;
+        ix.style.setProperty("--ic", b.dataset.c);
+        ix.classList.add("is-tinted");
+        $$("button", sw).forEach(x => x.setAttribute("aria-pressed", x === b));
+      });
+      show(picks[0]);
+    }
 
     // CTA links
     $$("[data-wa]").forEach(a => { a.href = waLink(a.dataset.wa); a.target = "_blank"; a.rel = "noopener"; });
