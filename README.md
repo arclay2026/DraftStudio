@@ -52,5 +52,6 @@ python3 -m http.server 8000
 
 ## Publishing
 
-`.github/workflows/pages.yml` publishes the site on every push to `main`. One-time setup on GitHub:
-**Settings → Pages → Build and deployment → Source: GitHub Actions**.
+The site is live at https://arclay2026.github.io/DraftStudio/ and is published by GitHub Pages
+straight from the `main` branch (Settings → Pages → Deploy from a branch → `main` / root).
+Every change to `main` goes live within a minute or two.
