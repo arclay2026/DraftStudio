@@ -218,7 +218,7 @@ p { margin: 0; }
 }
 .hero-copy { text-align: center; padding: 0 var(--gutter); }
 .hero h1 {
-  font-size: clamp(42px, 5.6vw, 98px); font-weight: 600; letter-spacing: -.035em; line-height: 1.06;
+  font-size: clamp(42px, 5.6vw, 98px); font-weight: 600; letter-spacing: -.05em; line-height: 1.06;
   margin: 26px auto 26px; max-width: 15em;
 }
 .hero h1 br { display: none; }
