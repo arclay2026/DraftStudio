@@ -39,7 +39,7 @@ All colours, fonts and sizes are tokens at the top of `css/style.css`:
 
 - **Colours:** white page, grey panels `#f0f0f0`, ink `#0f0f0f`, lime accent `#a3f25d`, pink highlight
   `#f7c6f4`, dark green card `#18201d`, plus one colour per file format (PSD blue, AI orange, SVG green, PDF red, EPS yellow).
-- **Fonts:** Inter Tight (headlines), Inter (text), Geist Mono (file badges), from Google Fonts.
+- **Font:** Plus Jakarta Sans everywhere, from Google Fonts.
 - **Nav links:** the `header` function in `js/site.js`.
 - **Contact details and license text:** the `site` block at the top of `js/data.js`.
 - **Logo:** `assets/logo.svg`, `assets/favicon.svg`.
