@@ -343,7 +343,10 @@ p { margin: 0; }
 
 /* ---------- Section heads ---------- */
 .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; margin-bottom: clamp(32px, 4vw, 52px); flex-wrap: wrap; }
-.sec-head h2 { font-size: clamp(38px, 5.4vw, 76px); font-weight: 600; letter-spacing: var(--tight); margin-top: 14px; }
+/* Section titles: one calm size everywhere, second half in soft grey */
+.sec-head h2, .ix h2, .lx-copy h2, .rq h2 { font-size: clamp(30px, 3vw, 46px); font-weight: 600; letter-spacing: -.035em; line-height: 1.12; }
+.sec-head h2 { margin-top: 14px; max-width: 18em; }
+h2 .soft { color: #a3a3a3; }
 .sec-head p { color: var(--mute); max-width: 30em; }
 .link-arrow { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; border-bottom: 1px solid currentColor; padding-bottom: 2px; }
 .link-arrow svg { width: 16px; height: 16px; transition: transform .25s var(--ease); }
@@ -374,7 +377,7 @@ p { margin: 0; }
   transition: opacity .35s .3s, transform .5s var(--ease);
 }
 .shelf-body { max-width: 30em; opacity: 0; transform: translateY(18px); transition: opacity .35s, transform .5s var(--ease); pointer-events: none; }
-.shelf-body h3 { font-size: clamp(44px, 4.6vw, 80px); margin: 14px 0 12px; }
+.shelf-body h3 { font-size: clamp(32px, 3vw, 48px); letter-spacing: -.035em; margin: 14px 0 10px; }
 .shelf-body p { font-size: clamp(15px, 1.1vw, 17px); opacity: .78; margin-bottom: 24px; max-width: 26em; }
 .shelf-fmts { display: flex; flex-wrap: wrap; gap: 6px; }
 .shelf.is-open .shelf-body { opacity: 1; transform: none; transition: opacity .5s .35s, transform .7s .3s var(--ease); pointer-events: auto; }
@@ -661,7 +664,7 @@ p { margin: 0; }
   font: 700 clamp(14px, 1.2vw, 18px)/1 var(--font-body); letter-spacing: .02em; transition: background .4s;
 }
 .fx-head .eyebrow { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .1); color: #fff; box-shadow: none; }
-.fx-head h3 { font-size: clamp(32px, 3.2vw, 52px); margin-top: 16px; }
+.fx-head h3 { font-size: clamp(26px, 2.4vw, 38px); letter-spacing: -.035em; margin-top: 14px; }
 .fx-desc { color: rgba(255, 255, 255, .68); font-size: clamp(16px, 1.2vw, 18px); max-width: 34em; }
 .fx-label { display: block; font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, .5); margin-bottom: 12px; }
 .fx-apps { display: flex; flex-wrap: wrap; gap: 8px; }
@@ -696,7 +699,7 @@ p { margin: 0; }
   display: none;
 }
 .ix .eyebrow { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .1); color: #fff; box-shadow: none; }
-.ix h2 { font-size: clamp(38px, 4.6vw, 76px); margin: 22px 0 18px; }
+.ix h2 { margin: 18px 0 14px; }
 .ix h2 em { font-style: normal; color: var(--ic); transition: color .4s; }
 .ix-copy > p { color: rgba(255, 255, 255, .66); font-size: clamp(16px, 1.15vw, 18px); max-width: 30em; }
 .ix-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; margin: 34px 0; border-block: 1px solid rgba(255, 255, 255, .1); }
@@ -757,7 +760,7 @@ p { margin: 0; }
 /* ---------- License checker (home) ---------- */
 .lx { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(28px, 4vw, 72px); align-items: stretch; }
 .lx-copy { display: flex; flex-direction: column; align-items: flex-start; }
-.lx-copy h2 { font-size: clamp(44px, 5.6vw, 96px); margin: 22px 0 18px; }
+.lx-copy h2 { margin: 18px 0 14px; }
 .lx-copy > p { color: var(--mute); font-size: clamp(16px, 1.2vw, 18px); max-width: 30em; }
 .lx-sum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 34px 0; border-block: 1px solid var(--line-2); }
 .lx-sum dd { margin: 0; }
@@ -831,7 +834,7 @@ p { margin: 0; }
   display: none;
 }
 .rq .eyebrow { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .1); color: #fff; box-shadow: none; }
-.rq h2 { font-size: clamp(48px, 6vw, 104px); margin: 22px 0 16px; line-height: .95; }
+.rq h2 { margin: 18px 0 14px; }
 .rq h2 em { font-style: normal; color: var(--lime); }
 .rq-copy > p { color: rgba(255, 255, 255, .66); font-size: clamp(16px, 1.2vw, 18px); max-width: 32em; margin-bottom: 30px; }
 .rq-step { display: block; padding: 18px 0; border-top: 1px solid rgba(255, 255, 255, .1); }
