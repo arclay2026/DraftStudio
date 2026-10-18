@@ -273,12 +273,12 @@ p { margin: 0; }
 .h-pill {
   display: inline-flex; align-items: center; gap: .1em; vertical-align: middle;
   height: .74em; padding: 0 .2em 0 .07em; margin: -.12em .02em 0; border-radius: 999px;
-  background: var(--forest); position: relative; top: -.04em;
+  background: var(--fg); position: relative; top: -.04em;
 }
 .h-pill .coin {
   display: grid; place-items: center; width: .6em; height: .6em; border-radius: 50%;
-  background: var(--lime); box-shadow: inset 0 0 0 .045em var(--forest), inset 0 0 0 .07em var(--lime);
-  color: var(--forest);
+  background: var(--lime);
+  color: var(--fg);
 }
 .h-pill .coin svg { width: .34em; height: .34em; stroke-width: 2.6; }
 .h-pill .chev { display: flex; color: var(--lime); }
