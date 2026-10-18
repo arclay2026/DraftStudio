@@ -932,10 +932,19 @@ p { margin: 0; }
 .search-results .none { padding: 28px 12px; text-align: center; color: var(--mute); }
 
 /* ---------- Page heads (inner pages) ---------- */
-.page-head { padding: clamp(32px, 4vw, 56px) 0 clamp(20px, 2.4vw, 32px); }
-.page-head h1 { font-size: clamp(36px, 3.8vw, 60px); font-weight: 600; letter-spacing: -.04em; line-height: 1.1; margin-top: 16px; }
-.page-head h1 .hl { padding: 0 .14em; border-radius: .16em; }
-.page-head p { color: var(--mute); font-size: 16px; max-width: 34em; margin-top: 12px; }
+/* Inner-page header: small label + two-tone title on the left, intro on the right */
+.page-head { padding: clamp(28px, 3.4vw, 48px) 0 clamp(8px, 1vw, 12px); }
+.page-head .wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); grid-template-rows: auto auto; column-gap: 48px; align-items: end; }
+.page-head .eyebrow { grid-column: 1; padding: 0; border: 0; background: none; box-shadow: none; font-size: 13px; color: var(--mute); gap: 8px; }
+.page-head .eyebrow::after { display: none; }
+.page-head .eyebrow .dot { background: var(--fg); width: 5px; height: 5px; }
+.page-head h1 { grid-column: 1; font-size: clamp(30px, 2.8vw, 44px); font-weight: 600; letter-spacing: -.035em; line-height: 1.1; margin-top: 10px; }
+.page-head h1 .hl { background: none; color: #a3a3a3; padding: 0; border-radius: 0; }
+.page-head p { grid-column: 2; grid-row: 1 / span 2; justify-self: end; color: var(--mute); font-size: 15px; line-height: 1.6; max-width: 26em; margin: 0; padding-bottom: 4px; }
+@media (max-width: 900px) {
+  .page-head .wrap { grid-template-columns: 1fr; }
+  .page-head p { grid-column: 1; grid-row: auto; justify-self: start; margin-top: 10px; }
+}
 
 /* One line: category, license, format on the left; count, search, sort on the right. All controls share --ctl height. */
 .toolbar { --ctl: 44px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding: 20px 0 28px; border-bottom: 1px solid var(--line); margin-bottom: 32px; }
