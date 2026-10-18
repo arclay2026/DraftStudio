@@ -49,6 +49,14 @@
             </label>
           </div>
           <div class="toolbar-row">
+            <div class="sel-row">
+            <label class="sel-wrap"><span class="sr-only">License</span>
+              <select class="select" data-license data-label="License">
+                <option value="">All licenses</option>
+                <option value="free">Free</option>
+                <option value="premium">Premium</option>
+              </select>
+            </label>
             <label class="sel-wrap"><span class="sr-only">Format</span>
               <select class="select" data-fmts data-label="Format">
                 <option value="">All formats</option>
@@ -60,6 +68,7 @@
                 <option value="PNG">PNG</option>
               </select>
             </label>
+            </div>
             <div style="display:flex;align-items:center;gap:14px">
               <span class="result-count" data-count></span>
               <label class="sel-wrap"><span class="sr-only">Sort</span>
@@ -67,7 +76,6 @@
                   <option value="new">Newest first</option>
                   <option value="old">Oldest first</option>
                   <option value="az">A to Z</option>
-                  <option value="free">Free only</option>
                 </select>
               </label>
             </div>

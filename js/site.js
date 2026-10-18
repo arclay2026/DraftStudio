@@ -768,7 +768,8 @@
   /* ---------- Browse ---------- */
   function browse() {
     const params = new URLSearchParams(location.search);
-    const state = { cat: params.get("cat") || "all", q: params.get("q") || "", fmt: params.get("format") || "", sort: params.get("sort") || "new" };
+    const state = { cat: params.get("cat") || "all", q: params.get("q") || "", fmt: params.get("format") || "", lic: params.get("license") || "", sort: params.get("sort") || "new" };
+    if (state.sort === "free") { state.sort = "new"; state.lic = "free"; } // old "Free only" sort links
     const grid = $("[data-results]"), count = $("[data-count]");
     const cats = $("[data-cats]"), fmts = $("[data-fmts]"), q = $("[data-q]"), sort = $("[data-sort]");
     const allFmts = ["PSD", "AI", "SVG", "EPS", "PDF", "PNG"];
@@ -792,6 +793,9 @@
     document.addEventListener("keydown", e => { if (e.key === "Escape") setOpen(false); });
     renderMenu();
     fmts.value = allFmts.includes(state.fmt) ? state.fmt : "";
+    const lic = $("[data-license]");
+    if (!["free", "premium"].includes(state.lic)) state.lic = "";
+    lic.value = state.lic;
     q.value = state.q;
     sort.value = state.sort;
 
@@ -800,6 +804,7 @@
       if (state.cat !== "all") p.set("cat", state.cat);
       if (state.q) p.set("q", state.q);
       if (state.fmt) p.set("format", state.fmt);
+      if (state.lic) p.set("license", state.lic);
       if (state.sort !== "new") p.set("sort", state.sort);
       history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : ""));
     };
@@ -820,21 +825,22 @@
       let list = items.filter(it =>
         (state.cat === "all" || (state.cat === "saved" ? isSaved(it.id) : slug(it.category) === state.cat)) &&
         (!state.fmt || formatsOf(it).includes(state.fmt)) &&
+        (!state.lic || (state.lic === "premium") === isPaid(it)) &&
         (!ql || [it.title, it.category, it.description, (it.tags || []).join(" "), formatsOf(it).join(" ")].join(" ").toLowerCase().includes(ql)));
       if (state.sort === "az") list = list.slice().sort((a, b) => a.title.localeCompare(b.title));
       if (state.sort === "old") list = list.slice().reverse();
-      if (state.sort === "free") list = list.filter(i => !isPaid(i));
 
       count.textContent = `${list.length} result${list.length === 1 ? "" : "s"}`;
       grid.innerHTML = list.length ? list.map(card).join("") : state.cat === "saved"
         ? `<div class="empty"><h3>Nothing saved yet.</h3><p>Tap the bookmark on any design to keep it here.</p><a class="btn btn-dark" href="browse.html">Browse files</a></div>`
-        : emptyState(state.q || state.fmt ? null : cat);
+        : emptyState(state.q || state.fmt || state.lic ? null : cat);
       reveal(grid);
       sync();
     };
 
     menu.addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (b) { state.cat = b.dataset.cat; setOpen(false); draw(); } });
     fmts.addEventListener("change", () => { state.fmt = fmts.value; draw(); });
+    lic.addEventListener("change", () => { state.lic = lic.value; draw(); });
     q.addEventListener("input", () => { state.q = q.value.trim(); draw(); });
     sort.addEventListener("change", () => { state.sort = sort.value; draw(); });
     document.addEventListener("ds:saved", () => { $$("[data-saved-n]").forEach(n => { n.textContent = saved.length; }); if (state.cat === "saved") draw(); else renderMenu(); });

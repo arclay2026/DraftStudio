@@ -944,6 +944,7 @@ p { margin: 0; }
 /* Custom select (replaces the native look of <select class="select">) */
 .sel-native { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .sel-wrap { position: relative; display: block; }
+.sel-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .sel { position: relative; z-index: 20; }
 .sel.is-open, .dd.is-open { z-index: 40; }
 .sel-btn {
@@ -1166,6 +1167,8 @@ input[type="range"] { accent-color: var(--lime); width: 100%; }
   .specs div { grid-template-columns: 100px minmax(0, 1fr); }
   .toolbar-row .field { min-width: 100%; }
   .dd, .dd-btn { width: 100%; }
+  .sel-row { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+  .sel-row .sel-btn { min-width: 0; }
   .dd-menu { width: 100%; }
   .icon-grid { grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); }
 }
