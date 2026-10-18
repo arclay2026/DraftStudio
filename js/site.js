@@ -284,12 +284,8 @@
 
   /* ---------- Home ---------- */
   function home() {
-    // Hero dot card (decorative): the first dots light up one after another
-    const dots = $("[data-dots]");
-    if (dots) {
-      const lit = [0, 1, 2, 3, 4, 7, 8, 9];
-      dots.innerHTML = Array.from({ length: 21 }, (_, i) => `<i class="${lit.includes(i) ? "on" : ""}" style="--n:${lit.indexOf(i)}"></i>`).join("");
-    }
+    heroFx();
+
     $$("[data-item-count]").forEach(el => { el.textContent = items.length; });
     $$("[data-icon-total]").forEach(el => { el.textContent = DS.icons.length; });
 
@@ -368,6 +364,120 @@
     // CTA links
     $$("[data-wa]").forEach(a => { a.href = waLink(a.dataset.wa); a.target = "_blank"; a.rel = "noopener"; });
     $$("[data-mail]").forEach(a => { a.href = mailLink(a.dataset.mail); });
+  }
+
+  /* ---------- Hero effects (home) ---------- */
+  function heroFx() {
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const onScreen = (el, fn, threshold = .2) => {
+      if (!("IntersectionObserver" in window)) return fn(true);
+      new IntersectionObserver(es => es.forEach(e => fn(e.isIntersecting)), { threshold }).observe(el);
+    };
+
+    // Rotating word: mockup → logo → vector → template → icon
+    const rot = $("[data-rotator]");
+    if (rot) {
+      const words = $$("span", rot);
+      let i = 0;
+      // On narrow screens the word gets a line of its own so the headline doesn't reflow on every change
+      const fit = () => {
+        rot.classList.toggle("is-fixed", innerWidth < 900);
+        rot.style.width = words[i].getBoundingClientRect().width + "px";
+      };
+      (document.fonts ? document.fonts.ready : Promise.resolve()).then(fit);
+      addEventListener("resize", fit);
+      if (!calm) setInterval(() => {
+        const prev = words[i];
+        i = (i + 1) % words.length;
+        prev.classList.remove("is-on"); prev.classList.add("is-out");
+        words[i].classList.remove("is-out"); words[i].classList.add("is-on");
+        setTimeout(() => prev.classList.remove("is-out"), 750);
+        fit();
+      }, 2400);
+    }
+
+    // Spotlight and floating chips follow the pointer
+    const panel = $("[data-hero]");
+    if (panel && matchMedia("(hover: hover)").matches && !calm) {
+      const chips = $$(".fchip", panel);
+      panel.addEventListener("pointermove", e => {
+        const r = panel.getBoundingClientRect();
+        const x = e.clientX - r.left, y = e.clientY - r.top;
+        panel.style.setProperty("--mx", x + "px");
+        panel.style.setProperty("--my", y + "px");
+        panel.classList.add("is-lit");
+        const dx = x / r.width - .5, dy = y / r.height - .5;
+        chips.forEach((c, n) => {
+          const depth = [18, 26, 12][n] || 16;
+          c.style.setProperty("--px", (-dx * depth) + "px");
+          c.style.setProperty("--py", (-dy * depth) + "px");
+        });
+      });
+      panel.addEventListener("pointerleave", () => panel.classList.remove("is-lit"));
+    }
+
+    // Photo card: crossfading slideshow of the mockups, with story-style bars
+    const box = $("[data-slides]");
+    if (box) {
+      const slides = items.filter(i => slug(i.category) === "mockups").slice(0, 5);
+      if (!slides.length) slides.push(...items.slice(0, 3));
+      const pos = { "t-shirt-mockup-one": "30%", "hoodie-mockup-one": "42%" };
+      box.insertAdjacentHTML("afterbegin", slides.map((it, n) => `<figure class="slide${n === 0 ? " is-on" : ""}" style="--pos:${pos[it.id] || "40%"}"><img src="${esc(it.preview)}" alt="${esc(it.title)}"${n ? ' loading="lazy"' : ""}></figure>`).join(""));
+      const figs = $$(".slide", box), bars = $(".slides-bars", box), link = $(".slides-link", box), title = $("[data-slide-title]", box);
+      bars.innerHTML = slides.length > 1 ? slides.map(() => "<i></i>").join("") : "";
+      let n = 0, t = null;
+      const go = k => {
+        n = k;
+        figs.forEach((f, j) => f.classList.toggle("is-on", j === n));
+        $$("i", bars).forEach((b, j) => { b.className = j < n ? "done" : ""; });
+        const bar = $$("i", bars)[n]; if (bar) { void bar.offsetWidth; bar.className = "is-on"; }
+        link.href = itemUrl(slides[n]);
+        link.setAttribute("aria-label", slides[n].title);
+        title.textContent = `${slides[n].title.split("—")[0].trim()} · ${isPaid(slides[n]) ? slides[n].price : "free " + (formatsOf(slides[n])[0] || "")}`;
+        title.style.animation = "none"; void title.offsetWidth; title.style.animation = "";
+      };
+      go(0);
+      if (slides.length > 1 && !calm) {
+        const start = () => { if (!t) t = setInterval(() => go((n + 1) % slides.length), 5000); };
+        const stop = () => { clearInterval(t); t = null; };
+        onScreen(box, vis => vis ? start() : stop());
+      }
+    }
+
+    // Dot card: a pixel download arrow falls through the grid; "100%" counts up
+    const dots = $("[data-dots]");
+    if (dots) {
+      const COLS = 7, ROWS = 5;
+      dots.innerHTML = Array.from({ length: COLS * ROWS }, () => "<i></i>").join("");
+      const cells = $$("i", dots);
+      const ARROW = ["...X...", "...X...", ".X.X.X.", "..XXX..", "...X..."];
+      const period = ROWS + ARROW.length + 2;
+      let step = 0, timer = null;
+      const paint = () => {
+        cells.forEach((c, k) => {
+          const r = Math.floor(k / COLS), col = k % COLS;
+          const ar = r - (step - ARROW.length);
+          const lit = ar >= 0 && ar < ARROW.length && ARROW[ar][col] === "X";
+          const trail = !lit && ar - 1 >= 0 && ar - 1 < ARROW.length && ARROW[ar - 1][col] === "X";
+          c.className = lit ? "on" : trail ? "trail" : "";
+        });
+      };
+      if (calm) { step = ARROW.length; paint(); }
+      else onScreen(dots, vis => {
+        clearInterval(timer); timer = null;
+        if (vis) timer = setInterval(() => { step = (step + 1) % period; paint(); }, 160);
+      });
+      const num = $("[data-count-to]");
+      if (num && !calm) {
+        let done = false;
+        onScreen(num, vis => {
+          if (!vis || done) return; done = true;
+          const to = +num.dataset.countTo, t0 = performance.now();
+          const tick = now => { const p = Math.min(1, (now - t0) / 1400); num.textContent = Math.round(to * (1 - Math.pow(1 - p, 3))); if (p < 1) requestAnimationFrame(tick); };
+          requestAnimationFrame(tick);
+        }, .6);
+      }
+    }
   }
 
   /* ---------- Format explorer (home) ---------- */

@@ -21,10 +21,17 @@
   <main id="main">
     <!-- HERO -->
     <section class="hero">
-      <div class="hero-panel">
+      <div class="hero-panel" data-hero>
+        <div class="hero-float" aria-hidden="true">
+          <div class="fchip c1"><span class="fmt" data-f="PSD">PSD</span><span><b>hoodie-mockup-one.psd</b><small>Smart objects · 3456 × 4608</small></span></div>
+          <div class="fchip c2"><span class="fmt" data-f="SVG">SVG</span><span><b>dore-logo.svg</b><small>Vector · 4 KB</small></span></div>
+          <div class="fchip c3"><span class="fmt" data-f="AI">AI</span><span><b>dore-logo.ai</b><small>Editable · 175 KB</small></span></div>
+          <div class="fcursor k1"><svg viewBox="0 0 20 22" aria-hidden="true"><path d="M2 2 18 9.5l-7 1.8-3.4 6.8z"/></svg><span>You</span></div>
+          <div class="fcursor k2"><svg viewBox="0 0 20 22" aria-hidden="true"><path d="M2 2 18 9.5l-7 1.8-3.4 6.8z"/></svg><span>Draft Studio</span></div>
+        </div>
         <div class="hero-copy">
           <span class="eyebrow"><span class="dot"></span>Free design resources</span>
-          <h1>Every <span class="h-pill" aria-hidden="true"><span class="coin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v13M6 12l6 6 6-6"/></svg></span><span class="chev"><svg viewBox="0 0 10 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 3 6 7-6 7"/></svg><svg viewBox="0 0 10 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 3 6 7-6 7"/></svg><svg viewBox="0 0 10 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 3 6 7-6 7"/></svg></span></span> design file<br> you need, ready to download.</h1>
+          <h1>Every <span class="h-pill" aria-hidden="true"><span class="coin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v13M6 12l6 6 6-6"/></svg></span><span class="chev"><svg viewBox="0 0 10 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 3 6 7-6 7"/></svg><svg viewBox="0 0 10 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 3 6 7-6 7"/></svg><svg viewBox="0 0 10 20" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="m2 3 6 7-6 7"/></svg></span></span> <span class="rot" data-rotator><span class="is-on">mockup</span><span>logo</span><span>vector</span><span>template</span><span>icon</span></span><br> you need, ready to download.</h1>
           <p class="hero-sub">
             <mark class="m-pink">PSD mockups,</mark> <mark class="m-white">vector logos,</mark> and <mark class="m-dark">templates</mark> in one place,<br>
             free for personal and commercial work. No sign-up.
@@ -35,15 +42,16 @@
           </div>
         </div>
         <div class="hero-cards">
-          <a class="hero-photo" href="item.html?id=t-shirt-mockup-one">
-            <img src="previews/t-shirt-mockup-one.jpg" alt="T-shirt mockup held up against a blue sky">
-            <span class="tag">T-Shirt Mockup · free PSD <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
-          </a>
+          <div class="hero-photo" data-slides>
+            <div class="slides-bars" aria-hidden="true"></div>
+            <a class="slides-link" href="browse.html?cat=mockups" aria-label="Browse mockups"></a>
+            <span class="tag"><span data-slide-title>Mockups</span> <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></span>
+          </div>
           <div class="hero-dots">
             <div class="hero-dots-in">
               <div class="dots" data-dots aria-hidden="true"></div>
               <div>
-                <div class="big">100% free</div>
+                <div class="big"><span data-count-to="100">100</span>% free</div>
                 <p><b><span data-item-count></span> designs</b> and <b><span data-icon-total></span> icons</b>. No sign-up, no watermark.</p>
               </div>
             </div>
