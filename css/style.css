@@ -951,6 +951,8 @@ h2 .soft { color: #a3a3a3; }
 .tb-left { flex: none; }
 .tb-right { flex: 1 1 auto; justify-content: flex-end; min-width: 0; }
 .tb-right .field { flex: 0 1 320px; min-width: 160px; }
+.tb-left .sel-menu { left: 0; right: auto; }
+.tb-left .sel-btn { min-width: 170px; }
 @media (max-width: 1600px) { .tb-right .result-count { display: none; } }
 .field {
   display: flex; align-items: center; gap: 10px; height: var(--ctl, 48px); padding: 0 14px; border-radius: 12px; border: 1px solid #e4e4e4; background: #fff;
@@ -1202,7 +1204,7 @@ input[type="range"] { accent-color: var(--lime); width: 100%; }
   .card-save { right: 8px; top: 8px; }
   .specs div { grid-template-columns: 100px minmax(0, 1fr); }
   .tb-left, .tb-right { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
-  .tb-left .dd, .tb-right .field { grid-column: 1 / -1; }
+  .tb-left .dd, .tb-right .field, .tb-left > .sel-wrap:only-child { grid-column: 1 / -1; }
   .color-menu { width: min(268px, calc(100vw - 32px)); }
   .dd-btn, .field { width: 100%; }
   .sel-btn { min-width: 0; }
