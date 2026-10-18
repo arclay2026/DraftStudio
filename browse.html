@@ -31,7 +31,15 @@
       <div class="wrap">
         <div class="toolbar">
           <div class="toolbar-row">
-            <div class="filters" data-cats role="group" aria-label="Category"></div>
+            <div class="dd" data-cats>
+              <button class="dd-btn" type="button" aria-haspopup="listbox" aria-expanded="false" data-dd-btn>
+                <span class="dd-ico" data-dd-ico></span>
+                <span class="dd-txt"><small>Showing</small><b data-dd-label>All files</b></span>
+                <span class="dd-n" data-dd-n></span>
+                <svg class="dd-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+              </button>
+              <div class="dd-menu" role="listbox" aria-label="Category" data-dd-menu></div>
+            </div>
             <label class="field">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
               <span class="sr-only">Search files</span>

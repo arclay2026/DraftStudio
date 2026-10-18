@@ -773,11 +773,24 @@
     const cats = $("[data-cats]"), fmts = $("[data-fmts]"), q = $("[data-q]"), sort = $("[data-sort]");
     const allFmts = ["PSD", "AI", "SVG", "EPS", "PDF", "PNG"];
 
-    cats.innerHTML = [{ name: "All", slug: "all" }].concat(CATS).map(c => {
-      const n = c.slug === "all" ? items.length : items.filter(it => slug(it.category) === c.slug).length;
-      return `<button class="chip" type="button" data-cat="${c.slug}">${c.name} <span class="n">${n}</span></button>`;
-    }).join("");
-    cats.insertAdjacentHTML("beforeend", `<button class="chip chip-saved" type="button" data-cat="saved">${icon("bookmark")} Saved <span class="n" data-saved-n>${saved.length}</span></button>`);
+    // Category dropdown
+    const CAT_ICON = { all: "grid", mockups: "t-shirt", vectors: "pen-tool", logos: "vector", templates: "file", saved: "bookmark" };
+    const options = [{ name: "All files", slug: "all" }].concat(CATS, [{ name: "Saved", slug: "saved" }]);
+    const countOf = c => c.slug === "all" ? items.length : c.slug === "saved" ? saved.length : items.filter(it => slug(it.category) === c.slug).length;
+    const menu = $("[data-dd-menu]", cats), ddBtn = $("[data-dd-btn]", cats);
+    const renderMenu = () => {
+      menu.innerHTML = options.map((c, i) => `${c.slug === "saved" ? '<span class="dd-sep"></span>' : ""}
+        <button type="button" role="option" data-cat="${c.slug}" aria-selected="${state.cat === c.slug}">
+          <span class="dd-ico">${icon(CAT_ICON[c.slug] || "folder")}</span><span class="dd-name">${c.name}</span>
+          <span class="dd-n"${c.slug === "saved" ? " data-saved-n" : ""}>${countOf(c)}</span>
+          <svg class="dd-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>
+        </button>`).join("");
+    };
+    const setOpen = open => { cats.classList.toggle("is-open", open); ddBtn.setAttribute("aria-expanded", open); };
+    ddBtn.addEventListener("click", e => { e.stopPropagation(); setOpen(!cats.classList.contains("is-open")); });
+    document.addEventListener("click", e => { if (!cats.contains(e.target)) setOpen(false); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") setOpen(false); });
+    renderMenu();
     fmts.innerHTML = allFmts.map(f => `<button class="chip" type="button" data-fmt="${f}">${fmtBadge(f)}</button>`).join("");
     q.value = state.q;
     sort.value = state.sort;
@@ -797,7 +810,11 @@
       $("[data-title]").innerHTML = mine ? `Saved <span class="hl">files.</span>` : cat ? esc(cat.name) : state.q ? `“${esc(state.q)}”` : `Every <span class="hl">file.</span>`;
       $("[data-lede]").textContent = mine ? "Your favourites, kept in this browser. Tap the bookmark on any design to add it here." : cat ? cat.blurb : "Every mockup, vector, logo and template in the studio. Free to download, free to use.";
       document.title = (mine ? "Saved" : cat ? cat.name : "Browse") + " · Draft Studio";
-      $$("[data-cat]", cats).forEach(b => b.setAttribute("aria-pressed", b.dataset.cat === state.cat));
+      const cur = options.find(o => o.slug === state.cat) || options[0];
+      renderMenu();
+      $("[data-dd-label]", cats).textContent = cur.name;
+      $("[data-dd-ico]", cats).innerHTML = icon(CAT_ICON[cur.slug] || "folder");
+      $("[data-dd-n]", cats).textContent = countOf(cur);
       $$("[data-fmt]", fmts).forEach(b => b.setAttribute("aria-pressed", b.dataset.fmt === state.fmt));
 
       const ql = state.q.toLowerCase();
@@ -817,11 +834,11 @@
       sync();
     };
 
-    cats.addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (b) { state.cat = b.dataset.cat; draw(); } });
+    menu.addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (b) { state.cat = b.dataset.cat; setOpen(false); draw(); } });
     fmts.addEventListener("click", e => { const b = e.target.closest("[data-fmt]"); if (b) { state.fmt = state.fmt === b.dataset.fmt ? "" : b.dataset.fmt; draw(); } });
     q.addEventListener("input", () => { state.q = q.value.trim(); draw(); });
     sort.addEventListener("change", () => { state.sort = sort.value; draw(); });
-    document.addEventListener("ds:saved", () => { $("[data-saved-n]").textContent = saved.length; if (state.cat === "saved") draw(); });
+    document.addEventListener("ds:saved", () => { $$("[data-saved-n]").forEach(n => { n.textContent = saved.length; }); if (state.cat === "saved") draw(); else renderMenu(); });
     draw();
   }
 
