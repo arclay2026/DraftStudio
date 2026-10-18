@@ -791,7 +791,7 @@
     document.addEventListener("click", e => { if (!cats.contains(e.target)) setOpen(false); });
     document.addEventListener("keydown", e => { if (e.key === "Escape") setOpen(false); });
     renderMenu();
-    fmts.innerHTML = allFmts.map(f => `<button class="chip" type="button" data-fmt="${f}">${fmtBadge(f)}</button>`).join("");
+    fmts.value = allFmts.includes(state.fmt) ? state.fmt : "";
     q.value = state.q;
     sort.value = state.sort;
 
@@ -815,7 +815,6 @@
       $("[data-dd-label]", cats).textContent = cur.name;
       $("[data-dd-ico]", cats).innerHTML = icon(CAT_ICON[cur.slug] || "folder");
       $("[data-dd-n]", cats).textContent = countOf(cur);
-      $$("[data-fmt]", fmts).forEach(b => b.setAttribute("aria-pressed", b.dataset.fmt === state.fmt));
 
       const ql = state.q.toLowerCase();
       let list = items.filter(it =>
@@ -835,7 +834,7 @@
     };
 
     menu.addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (b) { state.cat = b.dataset.cat; setOpen(false); draw(); } });
-    fmts.addEventListener("click", e => { const b = e.target.closest("[data-fmt]"); if (b) { state.fmt = state.fmt === b.dataset.fmt ? "" : b.dataset.fmt; draw(); } });
+    fmts.addEventListener("change", () => { state.fmt = fmts.value; draw(); });
     q.addEventListener("input", () => { state.q = q.value.trim(); draw(); });
     sort.addEventListener("change", () => { state.sort = sort.value; draw(); });
     document.addEventListener("ds:saved", () => { $$("[data-saved-n]").forEach(n => { n.textContent = saved.length; }); if (state.cat === "saved") draw(); else renderMenu(); });

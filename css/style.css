@@ -945,8 +945,9 @@ p { margin: 0; }
 .sel-native { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
 .sel-wrap { position: relative; display: block; }
 .sel { position: relative; z-index: 20; }
+.sel.is-open, .dd.is-open { z-index: 40; }
 .sel-btn {
-  display: flex; align-items: center; height: 56px; min-width: 210px; padding-left: 16px; border-radius: 16px;
+  display: flex; align-items: center; height: 56px; min-width: 190px; padding-left: 16px; border-radius: 16px;
   background: #fff; border: 1px solid #e4e4e4; transition: border-color .2s, box-shadow .2s;
 }
 .sel-btn:hover, .sel.is-open .sel-btn { border-color: #cfcfcf; box-shadow: 0 8px 24px -16px rgba(15, 15, 15, .35); }
