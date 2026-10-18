@@ -138,58 +138,38 @@
     const s = DS.site;
     const wa = s.whatsapp || "";
     const waPretty = wa.length > 9 ? `+${wa.slice(0, 2)} ${wa.slice(2, 4)} ${wa.slice(4, 7)} ${wa.slice(7)}` : wa;
-    const latest = items[0];
-    const CHK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>`;
     el.outerHTML = `
       <footer class="footer">
         <div class="wrap">
           <div class="fgrid">
-            <div class="fcell f-brand">
+            <div class="f-brand">
               <a class="logo" href="index.html" aria-label="Draft Studio home"><img src="assets/logo.svg" alt="Draft Studio" width="180" height="28"></a>
               <p>${esc(s.tagline)}</p>
-              <div class="f-stats">
-                <span><b>${items.length}</b> designs</span>
-                <span><b>${DS.icons.length}</b> icons</span>
-                <span><b>${CATS.length}</b> shelves</span>
-              </div>
-              <a class="btn btn-dark" href="browse.html">Browse files <span class="arr">${ARR}</span></a>
             </div>
-            <nav class="fcell f-links" aria-label="Files">
+            <nav class="f-links" aria-label="Files">
               <h4>Files</h4>
-              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}<span>${items.filter(i => slug(i.category) === c.slug).length}</span></a></li>`).join("")}<li><a href="icons.html">Icons<span>${DS.icons.length}</span></a></li></ul>
+              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="icons.html">Icons</a></li></ul>
             </nav>
-            <nav class="fcell f-links" aria-label="Studio">
+            <nav class="f-links" aria-label="Studio">
               <h4>Studio</h4>
               <ul>
                 <li><a href="license.html">License</a></li>
                 <li><a href="license.html#faq">FAQ</a></li>
                 <li><a href="index.html#request">Request a design</a></li>
-                <li><a href="browse.html?sort=new">What's new</a></li>
               </ul>
             </nav>
-            <div class="fcell f-contact">
-              <h4>Get in touch</h4>
-              <a class="f-row" href="mailto:${esc(s.email)}"><span><small>Email</small>${esc(s.email)}</span><i>${ARR}</i></a>
-              ${wa ? `<a class="f-row" href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener"><span><small>WhatsApp</small>${esc(waPretty)}</span><i>${ARR}</i></a>` : ""}
-              ${s.instagram ? `<a class="f-row" href="${esc(s.instagram)}" target="_blank" rel="noopener"><span><small>Instagram</small>Follow the studio</span><i>${ARR}</i></a>` : ""}
+            <div class="f-links">
+              <h4>Contact</h4>
+              <ul>
+                <li><a href="mailto:${esc(s.email)}">${esc(s.email)}</a></li>
+                ${wa ? `<li><a href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">${esc(waPretty)}</a></li>` : ""}
+                ${s.instagram ? `<li><a href="${esc(s.instagram)}" target="_blank" rel="noopener">Instagram</a></li>` : ""}
+              </ul>
             </div>
-            ${latest ? `
-            <a class="fcell f-latest" href="${itemUrl(latest)}">
-              <span class="f-thumb"><img src="${esc(latest.preview)}" alt="" loading="lazy"></span>
-              <span><small>Latest drop · ${ago(latest.date)}</small><b>${esc(latest.title)}</b><em>${formatsOf(latest).join(" · ")} · ${isPaid(latest) ? esc(latest.price) : "Free"}</em></span>
-              <i>${ARR}</i>
-            </a>` : ""}
-            <div class="fcell f-promise">
-              <span><i>${CHK}</i>Free for personal &amp; commercial use</span>
-              <span><i>${CHK}</i>No sign-up, no email wall</span>
-              <span><i>${CHK}</i>No watermarks, ever</span>
-            </div>
-            <div class="fcell f-word" aria-hidden="true"><span>Draft</span><span class="hl">Studio.</span></div>
-            <div class="fcell f-bottom">
-              <span>© ${new Date().getFullYear()} ${esc(s.name)}. Free files, made with care.</span>
-              <span class="f-legal"><a href="license.html">License</a><a href="license.html#faq">FAQ</a></span>
-              <a class="f-top" href="#top" data-top>Back to top <i>${icon("arrow-up")}</i></a>
-            </div>
+          </div>
+          <div class="f-bottom">
+            <span>© ${new Date().getFullYear()} ${esc(s.name)}</span>
+            <a href="#top" data-top>Back to top ↑</a>
           </div>
         </div>
       </footer>`;
