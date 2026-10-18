@@ -37,8 +37,8 @@ Upload a 24×24 SVG that uses `stroke="currentColor"` to `files/icons/`, add a l
 
 All colours, fonts and sizes are tokens at the top of `css/style.css`:
 
-- **Colours:** white page, grey panels `#f0f0f0`, ink `#0f0f0f`, lime accent `#a3f25d`, pink highlight
-  `#f7c6f4`, dark green card `#18201d`, plus one colour per file format (PSD blue, AI orange, SVG green, PDF red, EPS yellow).
+- **Colours:** black and white only — white page, grey panels `#f0f0f0`, brand black `#0f0f0f` for ink,
+  buttons and dark panels, with white as the accent on dark surfaces and light grey `#e8e8e8` for soft highlights.
 - **Font:** Plus Jakarta Sans everywhere, from Google Fonts.
 - **Nav links:** the `header` function in `js/site.js`.
 - **Contact details and license text:** the `site` block at the top of `js/data.js`.
