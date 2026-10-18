@@ -1076,6 +1076,8 @@
 
   /* ---------- License ---------- */
   function license() {
+    const lx = $("[data-lx]");
+    if (lx) licenseChecker(lx);
     const el = $("[data-license-text]");
     if (el) el.textContent = DS.site.license;
     $$("[data-wa]").forEach(a => { a.href = waLink(a.dataset.wa); a.target = "_blank"; a.rel = "noopener"; });
