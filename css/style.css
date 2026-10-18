@@ -890,16 +890,16 @@ p { margin: 0; }
 .rq-mail { font-size: 14px; color: rgba(255, 255, 255, .6); text-decoration: underline; text-underline-offset: 3px; }
 .rq-mail:hover { color: #fff; }
 
-/* ---------- Footer ---------- */
-.footer { padding: var(--section) 0 28px; }
+/* ---------- Footer (dark) ---------- */
+.footer { margin-top: var(--section); padding: clamp(56px, 6vw, 88px) 0 28px; background: var(--fg); color: #fff; }
 .fgrid { display: grid; grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)); gap: 40px; padding-bottom: 48px; }
-.f-brand p { color: var(--mute); max-width: 22em; margin-top: 16px; }
-.footer h4 { font-size: 13px; font-weight: 500; color: var(--mute); margin: 0 0 16px; }
+.f-brand p { color: rgba(255, 255, 255, .55); max-width: 22em; margin-top: 16px; }
+.footer h4 { font-size: 13px; font-weight: 500; color: rgba(255, 255, 255, .45); margin: 0 0 16px; }
 .f-links ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
-.f-links a { font-size: 15px; overflow-wrap: anywhere; transition: color .2s; }
-.f-links a:hover { color: var(--mute); }
-.f-bottom { display: flex; justify-content: space-between; gap: 16px; padding-top: 24px; border-top: 1px solid #e4e4e4; font-size: 14px; color: var(--mute); }
-.f-bottom a:hover { color: var(--fg); }
+.f-links a { font-size: 15px; color: rgba(255, 255, 255, .88); overflow-wrap: anywhere; transition: color .2s; }
+.f-links a:hover { color: #fff; }
+.f-bottom { display: flex; justify-content: space-between; gap: 16px; padding-top: 24px; border-top: 1px solid rgba(255, 255, 255, .12); font-size: 14px; color: rgba(255, 255, 255, .45); }
+.f-bottom a:hover { color: #fff; }
 
 /* ---------- Search overlay ---------- */
 .search-modal {

@@ -164,7 +164,7 @@
         <div class="wrap">
           <div class="fgrid">
             <div class="f-brand">
-              <a class="logo" href="index.html" aria-label="Draft Studio home"><img src="assets/logo.svg" alt="Draft Studio" width="180" height="28"></a>
+              <a class="logo" href="index.html" aria-label="Draft Studio home"><img src="assets/logo-dark.svg" alt="Draft Studio" width="180" height="28"></a>
               <p>${esc(s.tagline)}</p>
             </div>
             <nav class="f-links" aria-label="Files">
@@ -721,7 +721,6 @@
         <img src="${esc(it.preview)}" alt="" loading="lazy">
         <div class="drop-top">
           <span class="drop-new"><i></i>Latest drop</span>
-          ${isPaid(it) ? "" : `<span class="free-tag">Free</span>`}
         </div>
         <div class="drop-panel">
           <div class="drop-meta"><span>${it.num}</span><span>${esc(it.category)}</span><span>Added ${ago(it.date)}</span></div>
@@ -742,7 +741,6 @@
         <img src="${esc(it.preview)}" alt="" loading="lazy">
         <div class="drop-top">
           <span class="fmts">${fmts.slice(0, 2).map(f => fmtBadge(f, "solid")).join("")}${fmts.length > 2 ? `<span class="fmt solid more">+${fmts.length - 2}</span>` : ""}</span>
-          ${isPaid(it) ? "" : `<span class="free-tag">Free</span>`}
         </div>
         <div class="drop-info">
           <span><b><a href="${itemUrl(it)}">${esc(it.title)}</a></b><small>${esc(it.category)} · ${ago(it.date)}</small></span>
@@ -944,7 +942,7 @@
             <span class="eyebrow"><span class="dot"></span>${it.num} · ${esc(it.category)}</span>
             <h1>${esc(it.title)}</h1>
             <p class="desc">${esc(it.description || "")}</p>
-            <div class="item-fmts">${fmts.map(f => fmtBadge(f)).join("")}${isPaid(it) ? "" : `<span class="free-tag">Free</span>`}</div>
+            <div class="item-fmts">${fmts.map(f => fmtBadge(f)).join("")}</div>
             <dl class="specs">
               ${it.specs ? `<div><dt>Size</dt><dd>${esc(it.specs)}</dd></div>` : ""}
               <div><dt>Formats</dt><dd>${fmts.join(", ")}</dd></div>
