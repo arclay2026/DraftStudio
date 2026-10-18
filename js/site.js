@@ -29,6 +29,15 @@
   items.slice().reverse().forEach((it, i) => { it.num = "DS–" + String(i + 1).padStart(3, "0"); });
 
   const isPaid = it => !!it.price;
+  // Orientation: set it on a design with orientation: "vertical" (etc.), or it's worked out from the first "W × H" in specs
+  const orientationOf = it => {
+    if (it.orientation) return it.orientation;
+    const m = String(it.specs || "").match(/(\d[\d\s,.]*)\s*[×x]\s*(\d[\d\s,.]*)/);
+    if (!m) return "";
+    const w = parseFloat(m[1].replace(/[\s,]/g, "")), h = parseFloat(m[2].replace(/[\s,]/g, ""));
+    const r = w / h;
+    return r >= 2 ? "panoramic" : r > 1.05 ? "horizontal" : r < .95 ? "vertical" : "square";
+  };
   const formatsOf = it => {
     const list = isPaid(it) ? (it.includes || []) : (it.files || []).map(f => f.format.toUpperCase());
     return list.filter(f => f !== "ZIP").filter((f, i, a) => a.indexOf(f) === i);
@@ -768,7 +777,7 @@
   /* ---------- Browse ---------- */
   function browse() {
     const params = new URLSearchParams(location.search);
-    const state = { cat: params.get("cat") || "all", q: params.get("q") || "", fmt: params.get("format") || "", lic: params.get("license") || "", sort: params.get("sort") || "new" };
+    const state = { cat: params.get("cat") || "all", q: params.get("q") || "", fmt: params.get("format") || "", lic: params.get("license") || "", ori: params.get("orientation") || "", sort: params.get("sort") || "new" };
     if (state.sort === "free") { state.sort = "new"; state.lic = "free"; } // old "Free only" sort links
     const grid = $("[data-results]"), count = $("[data-count]");
     const cats = $("[data-cats]"), fmts = $("[data-fmts]"), q = $("[data-q]"), sort = $("[data-sort]");
@@ -796,6 +805,9 @@
     const lic = $("[data-license]");
     if (!["free", "premium"].includes(state.lic)) state.lic = "";
     lic.value = state.lic;
+    const ori = $("[data-orient]");
+    if (!["horizontal", "vertical", "square", "panoramic"].includes(state.ori)) state.ori = "";
+    ori.value = state.ori;
     q.value = state.q;
     sort.value = state.sort;
 
@@ -805,6 +817,7 @@
       if (state.q) p.set("q", state.q);
       if (state.fmt) p.set("format", state.fmt);
       if (state.lic) p.set("license", state.lic);
+      if (state.ori) p.set("orientation", state.ori);
       if (state.sort !== "new") p.set("sort", state.sort);
       history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : ""));
     };
@@ -829,6 +842,7 @@
         (state.cat === "all" || (state.cat === "saved" ? isSaved(it.id) : slug(it.category) === state.cat)) &&
         (!state.fmt || formatsOf(it).includes(state.fmt)) &&
         (!state.lic || (state.lic === "premium") === isPaid(it)) &&
+        (!state.ori || orientationOf(it) === state.ori) &&
         (!ql || [it.title, it.category, it.description, (it.tags || []).join(" "), formatsOf(it).join(" ")].join(" ").toLowerCase().includes(ql)));
       if (state.sort === "az") list = list.slice().sort((a, b) => a.title.localeCompare(b.title));
       if (state.sort === "old") list = list.slice().reverse();
@@ -836,7 +850,7 @@
       count.textContent = `${list.length} result${list.length === 1 ? "" : "s"}`;
       grid.innerHTML = list.length ? list.map(card).join("") : state.cat === "saved"
         ? `<div class="empty"><h3>Nothing saved yet.</h3><p>Tap the bookmark on any design to keep it here.</p><a class="btn btn-dark" href="browse.html">Browse files</a></div>`
-        : emptyState(state.q || state.fmt || state.lic ? null : cat);
+        : emptyState(state.q || state.fmt || state.lic || state.ori ? null : cat);
       reveal(grid);
       sync();
     };
@@ -844,6 +858,7 @@
     menu.addEventListener("click", e => { const b = e.target.closest("[data-cat]"); if (b) { state.cat = b.dataset.cat; setOpen(false); draw(); } });
     fmts.addEventListener("change", () => { state.fmt = fmts.value; draw(); });
     lic.addEventListener("change", () => { state.lic = lic.value; draw(); });
+    ori.addEventListener("change", () => { state.ori = ori.value; draw(); });
     q.addEventListener("input", () => { state.q = q.value.trim(); draw(); });
     sort.addEventListener("change", () => { state.sort = sort.value; draw(); });
     document.addEventListener("ds:saved", () => { $$("[data-saved-n]").forEach(n => { n.textContent = saved.length; }); if (state.cat === "saved") draw(); else renderMenu(); });
@@ -1073,9 +1088,18 @@
       sel.tabIndex = -1;
       const label = $(".sel-txt b", wrap), menu = $(".sel-menu", wrap), toggle = $(".sel-toggle", wrap);
       const tick = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>`;
+      // Options may carry data-shape="horizontal|vertical|square|panoramic|any" for a small outline icon
+      const SHAPES = { horizontal: [18, 12], vertical: [12, 18], square: [14, 14], panoramic: [20, 9] };
+      const shape = o => {
+        const k = o && o.dataset.shape; if (!k) return "";
+        if (k === "any") return `<svg class="sel-shape" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M12 3v18M3 12h9"/></svg>`;
+        const [w, h] = SHAPES[k];
+        return `<svg class="sel-shape" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="${(24 - w) / 2}" y="${(24 - h) / 2}" width="${w}" height="${h}" rx="2.5"/></svg>`;
+      };
       const render = () => {
-        label.textContent = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : "";
-        menu.innerHTML = Array.from(sel.options).map(o => `<button type="button" role="option" data-v="${esc(o.value)}" aria-selected="${o.value === sel.value}"><span>${esc(o.text)}</span>${tick}</button>`).join("");
+        const cur = sel.options[sel.selectedIndex];
+        label.innerHTML = cur ? shape(cur) + esc(cur.text) : "";
+        menu.innerHTML = Array.from(sel.options).map(o => `<button type="button" role="option" data-v="${esc(o.value)}" aria-selected="${o.value === sel.value}"><span>${shape(o)}${esc(o.text)}</span>${tick}</button>`).join("");
       };
       const setOpen = open => { wrap.classList.toggle("is-open", open); toggle.setAttribute("aria-expanded", open); };
       toggle.addEventListener("click", e => { e.stopPropagation(); render(); const open = !wrap.classList.contains("is-open"); if (open) closeDropdowns(); setOpen(open); });

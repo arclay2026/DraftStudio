@@ -982,6 +982,9 @@ p { margin: 0; }
 .sel-menu button svg { width: 16px; height: 16px; opacity: 0; }
 .sel-menu button[aria-selected="true"] { font-weight: 600; }
 .sel-menu button[aria-selected="true"] svg { opacity: 1; }
+.sel-txt b { display: flex; align-items: center; gap: 8px; }
+.sel-menu button > span { display: flex; align-items: center; gap: 12px; }
+.sel-shape, .sel-menu button svg.sel-shape { width: 18px; height: 18px; flex: none; opacity: 1; color: var(--fg); }
 .result-count { font: 500 12px/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--mute); }
 
 /* ---------- Item page ---------- */
@@ -1178,7 +1181,7 @@ input[type="range"] { accent-color: var(--lime); width: 100%; }
   .card-save { right: 8px; top: 8px; }
   .specs div { grid-template-columns: 100px minmax(0, 1fr); }
   .tb-left, .tb-right { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
-  .tb-left .dd, .tb-right .field { grid-column: 1 / -1; }
+  .tb-left .dd, .tb-right .field, .tb-left .sel-wrap:last-child { grid-column: 1 / -1; }
   .dd-btn, .field { width: 100%; }
   .sel-btn { min-width: 0; }
   .tb-right .result-count { grid-column: 1 / -1; order: 3; }
