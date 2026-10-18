@@ -20,6 +20,9 @@
      category     "Mockups", "Vectors", "Logos" or "Templates"
      description  one or two sentences
      specs        size or format, e.g. "A4 portrait" or "3456 × 4608 px"
+     orientation  (optional) "horizontal", "vertical", "square" or "panoramic"
+                  for the Orientation filter. Leave it out and it's worked out
+                  from the first "W × H" in specs.
      requires     (optional) the app needed to open it, e.g. "Adobe Photoshop"
      tags         search words
      preview      path to the preview image
