@@ -1037,11 +1037,50 @@
     $$("[data-mail]").forEach(a => { a.href = mailLink(a.dataset.mail); });
   }
 
+  /* ---------- Custom dropdowns for every <select class="select"> ---------- */
+  // The native select stays in the page (hidden) and keeps the value, so page code
+  // can keep reading select.value and listening for "change".
+  function enhanceSelects() {
+    $$("select.select").forEach(sel => {
+      const wrap = document.createElement("div");
+      wrap.className = "sel";
+      wrap.innerHTML = `
+        <div class="sel-btn">
+          <span class="sel-txt"><small>${esc(sel.dataset.label || "")}</small><b></b></span>
+          <button class="sel-toggle" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="${esc(sel.dataset.label || "Choose")}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+        </div>
+        <div class="sel-menu" role="listbox"></div>`;
+      sel.after(wrap);
+      sel.classList.add("sel-native");
+      sel.tabIndex = -1;
+      const label = $(".sel-txt b", wrap), menu = $(".sel-menu", wrap), toggle = $(".sel-toggle", wrap);
+      const tick = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>`;
+      const render = () => {
+        label.textContent = sel.options[sel.selectedIndex] ? sel.options[sel.selectedIndex].text : "";
+        menu.innerHTML = Array.from(sel.options).map(o => `<button type="button" role="option" data-v="${esc(o.value)}" aria-selected="${o.value === sel.value}"><span>${esc(o.text)}</span>${tick}</button>`).join("");
+      };
+      const setOpen = open => { wrap.classList.toggle("is-open", open); toggle.setAttribute("aria-expanded", open); };
+      toggle.addEventListener("click", e => { e.stopPropagation(); render(); setOpen(!wrap.classList.contains("is-open")); });
+      menu.addEventListener("click", e => {
+        const b = e.target.closest("[data-v]"); if (!b) return;
+        sel.value = b.dataset.v;
+        sel.dispatchEvent(new Event("change"));
+        render(); setOpen(false);
+      });
+      document.addEventListener("click", e => { if (!wrap.contains(e.target)) setOpen(false); });
+      document.addEventListener("keydown", e => { if (e.key === "Escape") setOpen(false); });
+      render();
+    });
+  }
+
   /* ---------- Boot ---------- */
   const page = document.body.dataset.page;
   header(page === "browse" ? (new URLSearchParams(location.search).get("cat") || "browse") : page);
   footer();
   chrome();
   ({ home, browse, item, icons, license }[page] || (() => {}))();
+  enhanceSelects();
   reveal();
 })();
