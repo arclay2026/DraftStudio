@@ -229,17 +229,43 @@
       </div>
     </section>
 
-    <!-- CTA -->
+    <!-- REQUEST -->
     <section style="padding-bottom:0">
       <div class="wrap">
-        <div class="cta reveal">
-          <svg class="scribble" viewBox="0 0 200 200" fill="none" aria-hidden="true"><path d="M20 160 C 40 40, 160 40, 180 150 S 60 190, 100 100" stroke="currentColor" stroke-width="10" stroke-linecap="round"/></svg>
-          <h2>Can't find<br><em>the one?</em></h2>
-          <div>
-            <p>Tell us what you need: a mockup, a logo style, a flyer template. We'll draft it and add it to the shelves for everyone.</p>
-            <div class="btns">
-              <a class="btn btn-dark" data-wa="Hi Draft Studio, I'd like to request a design: ">Request on WhatsApp <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a>
-              <a class="btn" data-mail="Design request">Send an email</a>
+        <div class="rq reveal" data-rq>
+          <div class="rq-copy">
+            <span class="eyebrow"><span class="dot"></span>Request a drop</span>
+            <h2>Can't find<br><em>the one?</em></h2>
+            <p>Build your request in three taps and send it straight to us. Popular requests get drafted and added to the shelves for everyone, free.</p>
+
+            <div class="rq-step">
+              <span class="rq-label"><b>1</b>I need a</span>
+              <div class="rq-pills" data-rq-type role="group" aria-label="What do you need"></div>
+            </div>
+            <div class="rq-step">
+              <span class="rq-label"><b>2</b>For</span>
+              <div class="rq-pills" data-rq-use role="group" aria-label="What is it for"></div>
+            </div>
+            <label class="rq-step">
+              <span class="rq-label"><b>3</b>Details <small>(optional)</small></span>
+              <input class="rq-input" type="text" maxlength="140" placeholder="e.g. a cap mockup with a front logo, streetwear vibe" data-rq-note>
+            </label>
+          </div>
+
+          <div class="rq-chat">
+            <div class="rq-phone">
+              <div class="rq-head">
+                <span class="rq-avatar"><img src="assets/favicon.svg" alt=""></span>
+                <span><b>Draft Studio</b><small>Requests</small></span>
+              </div>
+              <div class="rq-thread">
+                <span class="rq-day">Today</span>
+                <div class="rq-bubble"><p data-rq-msg></p><span class="rq-time" data-rq-time></span></div>
+              </div>
+              <div class="rq-send">
+                <a class="btn btn-dark btn-lg" data-rq-wa target="_blank" rel="noopener">Send on WhatsApp <span class="arr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></span></a>
+                <a class="rq-mail" data-rq-mail>or send it by email</a>
+              </div>
             </div>
           </div>
         </div>
