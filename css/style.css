@@ -459,7 +459,6 @@ p { margin: 0; }
 }
 .glass-btn svg { width: 18px; height: 18px; }
 .glass-btn:hover { background: rgba(15, 15, 15, .36); }
-.glass-btn svg { filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .25)); }
 .card-cta { right: 12px; bottom: 12px; pointer-events: none; transform: translateY(10px) scale(.85); opacity: 0; }
 .card-save { right: 12px; top: 12px; opacity: 0; transform: scale(.85); }
 .card:hover .card-cta, .card:focus-within .card-cta, .card:hover .card-save, .card:focus-within .card-save, .card-save[aria-pressed="true"] { transform: none; opacity: 1; }
