@@ -788,7 +788,7 @@
         </button>`).join("");
     };
     const setOpen = open => { cats.classList.toggle("is-open", open); ddBtn.setAttribute("aria-expanded", open); };
-    ddBtn.addEventListener("click", e => { e.stopPropagation(); setOpen(!cats.classList.contains("is-open")); });
+    ddBtn.addEventListener("click", e => { e.stopPropagation(); const open = !cats.classList.contains("is-open"); if (open) closeDropdowns(); setOpen(open); });
     document.addEventListener("click", e => { if (!cats.contains(e.target)) setOpen(false); });
     document.addEventListener("keydown", e => { if (e.key === "Escape") setOpen(false); });
     renderMenu();
@@ -1042,6 +1042,14 @@
     $$("[data-mail]").forEach(a => { a.href = mailLink(a.dataset.mail); });
   }
 
+  // Only one dropdown may be open at a time
+  function closeDropdowns() {
+    $$(".dd.is-open, .sel.is-open").forEach(d => {
+      d.classList.remove("is-open");
+      const t = $("[aria-expanded]", d); if (t) t.setAttribute("aria-expanded", "false");
+    });
+  }
+
   /* ---------- Custom dropdowns for every <select class="select"> ---------- */
   // The native select stays in the page (hidden) and keeps the value, so page code
   // can keep reading select.value and listening for "change".
@@ -1051,7 +1059,7 @@
       wrap.className = "sel";
       wrap.innerHTML = `
         <div class="sel-btn">
-          <span class="sel-txt"><small>${esc(sel.dataset.label || "")}</small><b></b></span>
+          <span class="sel-txt"><b></b></span>
           <button class="sel-toggle" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="${esc(sel.dataset.label || "Choose")}">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
           </button>
@@ -1067,7 +1075,7 @@
         menu.innerHTML = Array.from(sel.options).map(o => `<button type="button" role="option" data-v="${esc(o.value)}" aria-selected="${o.value === sel.value}"><span>${esc(o.text)}</span>${tick}</button>`).join("");
       };
       const setOpen = open => { wrap.classList.toggle("is-open", open); toggle.setAttribute("aria-expanded", open); };
-      toggle.addEventListener("click", e => { e.stopPropagation(); render(); setOpen(!wrap.classList.contains("is-open")); });
+      toggle.addEventListener("click", e => { e.stopPropagation(); render(); const open = !wrap.classList.contains("is-open"); if (open) closeDropdowns(); setOpen(open); });
       menu.addEventListener("click", e => {
         const b = e.target.closest("[data-v]"); if (!b) return;
         sel.value = b.dataset.v;
