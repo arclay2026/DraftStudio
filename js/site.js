@@ -996,7 +996,8 @@
       { c: "#ff6b5c", label: "Coral" }, { c: "#ff9a00", label: "Orange" }, { c: "#b98cff", label: "Violet" }
     ];
 
-    groups.innerHTML = names.map(g => `<button class="chip" type="button" data-g="${esc(g)}">${esc(g)} <span class="n">${g === "All" ? DS.icons.length : DS.icons.filter(i => i.group === g).length}</span></button>`).join("");
+    groups.innerHTML = names.map(g => `<option value="${esc(g)}">${g === "All" ? "All icons" : esc(g)}</option>`).join("");
+    groups.value = state.group;
 
     const svgFile = (ic, color, px) =>
       `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="0 0 24 24" fill="none" stroke="${color || "currentColor"}" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${ICONS[ic.id]}</svg>`;
@@ -1058,13 +1059,12 @@
       const ql = state.q.toLowerCase();
       const list = DS.icons.filter(i => (state.group === "All" || i.group === state.group) &&
         (!ql || [i.name, i.group, i.tags.join(" ")].join(" ").toLowerCase().includes(ql)));
-      $$("[data-g]", groups).forEach(b => b.setAttribute("aria-pressed", b.dataset.g === state.group));
       $("[data-count]").textContent = `${list.length} icon${list.length === 1 ? "" : "s"}`;
       grid.innerHTML = list.length ? list.map(i => `<button class="icon-cell" type="button" data-id="${i.id}" aria-pressed="${state.sel && state.sel.id === i.id}">${icon(i.id)}<span>${esc(i.name)}</span></button>`).join("")
         : `<div class="empty"><h3>No icon called that yet.</h3><p>Ask for it and we'll draw it.</p><a class="btn btn-dark" href="${waLink("Hi Draft Studio, could you add an icon for: " + state.q)}" target="_blank" rel="noopener">${icon("chat")} Request an icon</a></div>`;
     };
 
-    groups.addEventListener("click", e => { const b = e.target.closest("[data-g]"); if (b) { state.group = b.dataset.g; draw(); } });
+    groups.addEventListener("change", () => { state.group = groups.value; draw(); });
     q.addEventListener("input", () => { state.q = q.value.trim(); draw(); });
     grid.addEventListener("click", e => { const b = e.target.closest("[data-id]"); if (b) select(DS.icons.find(i => i.id === b.dataset.id), true); });
 
