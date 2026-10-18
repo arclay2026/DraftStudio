@@ -314,8 +314,10 @@ p { margin: 0; }
 @keyframes bar { to { width: 100%; } }
 .hero-photo .tag {
   position: absolute; z-index: 3; left: 18px; bottom: 18px; display: inline-flex; align-items: center; gap: 10px; pointer-events: none;
-  padding: 8px 8px 8px 16px; border-radius: 999px; background: rgba(255, 255, 255, .92); backdrop-filter: blur(8px);
-  font-size: 15px; font-weight: 500;
+  padding: 8px 8px 8px 16px; border-radius: 999px; font-size: 15px; font-weight: 500;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .45), rgba(255, 255, 255, .2));
+  backdrop-filter: blur(18px) saturate(1.8); -webkit-backdrop-filter: blur(18px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, .55);
 }
 .hero-photo .tag .arr { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--fg); color: #fff; transition: transform .3s var(--ease); }
 .hero-photo .tag .arr svg { width: 14px; height: 14px; }
@@ -497,28 +499,34 @@ p { margin: 0; }
 .drop-new i { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); animation: pulse 2.4s infinite; box-shadow: 0 0 0 4px color-mix(in srgb, var(--lime) 25%, transparent); }
 .drop-panel {
   position: relative; z-index: 1; width: min(100%, 560px); padding: clamp(18px, 2vw, 26px); border-radius: 20px;
-  background: rgba(255, 255, 255, .9); backdrop-filter: blur(16px) saturate(1.3); -webkit-backdrop-filter: blur(16px) saturate(1.3);
-  box-shadow: 0 30px 50px -30px rgba(0, 0, 0, .45); transform: translateY(0); transition: transform .6s var(--ease);
+  background: linear-gradient(135deg, rgba(255, 255, 255, .42), rgba(255, 255, 255, .16));
+  backdrop-filter: blur(22px) saturate(1.8); -webkit-backdrop-filter: blur(22px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, .55); box-shadow: 0 30px 50px -30px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .6);
+  transform: translateY(0); transition: transform .6s var(--ease);
 }
 .drop-feat:hover .drop-panel { transform: translateY(-4px); }
-.drop-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--mute); }
+.drop-meta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: rgba(15, 15, 15, .66); font-weight: 500; }
 .drop-meta span + span::before { content: "·"; margin-right: 14px; }
 .drop-panel h3 { font-size: clamp(26px, 2.4vw, 40px); margin: 8px 0 14px; }
 .drop-fmts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.drop-spec { font-size: 13px; color: var(--mute); margin-left: 6px; }
+.drop-spec { font-size: 13px; color: rgba(15, 15, 15, .66); font-weight: 500; margin-left: 6px; }
 .drop-actions { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+.drop-actions .btn:not(.btn-dark) { background: rgba(255, 255, 255, .35); border-color: rgba(15, 15, 15, .25); }
+.drop-panel .fmt { background: rgba(255, 255, 255, .7); }
 
 /* Small drop cards */
 .drop-card { display: flex; align-items: flex-end; padding: 10px; }
 .drop-info {
   position: relative; display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%;
-  padding: 10px 10px 10px 16px; border-radius: 18px; background: rgba(255, 255, 255, .92);
-  backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); box-shadow: 0 16px 30px -22px rgba(0, 0, 0, .5);
+  padding: 10px 10px 10px 16px; border-radius: 18px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, .45), rgba(255, 255, 255, .18));
+  backdrop-filter: blur(18px) saturate(1.8); -webkit-backdrop-filter: blur(18px) saturate(1.8);
+  border: 1px solid rgba(255, 255, 255, .55); box-shadow: 0 16px 30px -22px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .6);
 }
 .drop-info > span:first-child { min-width: 0; }
 .drop-info b { display: block; font-size: 15px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .drop-info b a::after { content: ""; position: absolute; inset: -400px -10px -10px; }
-.drop-info small { display: block; font-size: 12.5px; color: var(--mute); margin-top: 1px; }
+.drop-info small { display: block; font-size: 12.5px; color: rgba(15, 15, 15, .66); font-weight: 500; margin-top: 1px; }
 .drop-info .go { flex: none; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--fg); color: #fff; transition: transform .35s var(--ease), background .3s, color .3s; }
 .drop-info .go svg { width: 15px; height: 15px; }
 .drop-card:hover .go { transform: rotate(45deg); background: var(--lime); color: var(--on-lime); }
@@ -701,6 +709,69 @@ p { margin: 0; }
 .lic h3 { font-size: 26px; margin-bottom: 8px; }
 .lic p { color: var(--mute); }
 
+/* ---------- License checker (home) ---------- */
+.lx { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); gap: clamp(28px, 4vw, 72px); align-items: stretch; }
+.lx-copy { display: flex; flex-direction: column; align-items: flex-start; }
+.lx-copy h2 { font-size: clamp(44px, 5.6vw, 96px); margin: 22px 0 18px; }
+.lx-copy > p { color: var(--mute); font-size: clamp(16px, 1.2vw, 18px); max-width: 30em; }
+.lx-sum { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 34px 0; border-block: 1px solid var(--line-2); }
+.lx-sum dd { margin: 0; }
+.lx-sum div { padding: 18px 0; }
+.lx-sum div + div { padding-left: 18px; border-left: 1px solid var(--line-2); }
+.lx-sum b { display: flex; align-items: center; gap: 8px; font: 600 clamp(20px, 1.6vw, 26px)/1.1 var(--font-display); letter-spacing: -.03em; }
+.lx-sum b i { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--lime); color: var(--on-lime); flex: none; }
+.lx-sum b i svg { width: 13px; height: 13px; }
+.lx-sum span { display: block; font-size: 13px; color: var(--mute); margin-top: 6px; }
+.lx-copy .link-arrow { margin-top: auto; align-self: flex-start; }
+
+.lx-panel { border-radius: var(--radius-lg); background: var(--bg-2); padding: clamp(16px, 1.8vw, 24px); display: flex; flex-direction: column; gap: 16px; }
+.lx-ticket {
+  --tone: var(--lime);
+  position: relative; overflow: hidden; isolation: isolate; border-radius: 24px; background: var(--forest); color: #fff;
+  padding: clamp(24px, 2.6vw, 38px); height: 360px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px;
+}
+.lx-ticket[data-tone="no"] { --tone: #ff7a6b; }
+.lx-ticket[data-tone="but"] { --tone: #ffc24d; }
+.lx-ticket::before {
+  content: ""; position: absolute; z-index: -1; width: 60%; aspect-ratio: 1; right: -16%; top: -40%; border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--tone) 40%, transparent), transparent 65%); transition: background .5s;
+}
+/* perforated edge, like a ticket stub */
+.lx-ticket::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 64px; height: 0; border-top: 2px dashed rgba(255, 255, 255, .14);
+}
+.lx-q { font-size: 14px; color: rgba(255, 255, 255, .55); padding-right: 110px; }
+.lx-q b { color: #fff; font-weight: 500; }
+.lx-a { display: flex; flex-direction: column; gap: 12px; }
+.lx-a .word { font: 600 clamp(56px, 5.6vw, 100px)/.9 var(--font-display); letter-spacing: var(--tight); color: var(--tone); transition: color .4s; }
+.lx-a p { max-width: 34em; min-height: 3.2em; color: rgba(255, 255, 255, .78); font-size: clamp(15px, 1.1vw, 17px); }
+.lx-stamp {
+  position: absolute; right: clamp(20px, 2.4vw, 36px); top: clamp(20px, 2.4vw, 32px); display: grid; place-items: center;
+  width: 92px; height: 92px; border-radius: 50%; border: 2px solid var(--tone); color: var(--tone);
+  font: 700 12px/1.1 var(--font-body); letter-spacing: .08em; text-transform: uppercase; text-align: center; transform: rotate(-14deg);
+  transition: color .4s, border-color .4s;
+}
+.lx-stamp::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; border: 1px dashed currentColor; opacity: .6; }
+.lx-foot { display: flex; justify-content: space-between; gap: 12px; font-size: 13px; color: rgba(255, 255, 255, .5); }
+.lx-ticket.is-swap .lx-anim { animation: fx-in .5s var(--ease) both; }
+.lx-ticket.is-swap .lx-stamp { animation: stamp .55s var(--ease) both; }
+@keyframes stamp { 0% { transform: rotate(-14deg) scale(1.6); opacity: 0; } 60% { transform: rotate(-14deg) scale(.92); opacity: 1; } 100% { transform: rotate(-14deg) scale(1); } }
+
+.lx-label { font-size: 13px; font-weight: 500; color: var(--mute); padding: 4px 4px 0; }
+.lx-uses { display: flex; flex-wrap: wrap; gap: 8px; }
+.lx-uses button {
+  display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 16px 0 8px; border-radius: 999px;
+  background: #fff; border: 1px solid var(--line); font-size: 15px; font-weight: 500;
+  transition: background .25s, color .25s, border-color .25s, transform .25s var(--ease);
+}
+.lx-uses button:hover { transform: translateY(-2px); border-color: var(--line-2); }
+.lx-uses button i { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; flex: none; }
+.lx-uses button i svg { width: 14px; height: 14px; }
+.lx-uses button[data-tone="yes"] i { background: color-mix(in srgb, var(--lime) 55%, #fff); color: var(--on-lime); }
+.lx-uses button[data-tone="no"] i { background: #ffe1dd; color: #c2392c; }
+.lx-uses button[data-tone="but"] i { background: #ffefc7; color: #8a5a00; }
+.lx-uses button[aria-pressed="true"] { background: var(--fg); color: #fff; border-color: var(--fg); }
+
 /* ---------- CTA ---------- */
 .cta {
   position: relative; overflow: hidden; border-radius: var(--radius-lg); background: var(--forest); color: #fff;
@@ -877,6 +948,7 @@ input[type="range"] { accent-color: var(--lime); width: 100%; }
 
 /* ---------- Responsive ---------- */
 @media (max-width: 1100px) {
+  .lx { grid-template-columns: 1fr; }
   .ix { grid-template-columns: 1fr; }
   .nav-links { display: none; }
   .menu-btn { display: inline-grid; }
@@ -920,6 +992,13 @@ input[type="range"] { accent-color: var(--lime); width: 100%; }
   .item-media { position: static; }
 }
 @media (max-width: 640px) {
+  .lx-sum { grid-template-columns: 1fr; }
+  .lx-sum div + div { padding-left: 0; border-left: 0; border-top: 1px solid var(--line-2); }
+  .lx-ticket { height: auto; min-height: 330px; }
+  .lx-q { padding-right: 84px; }
+  .lx-stamp { width: 72px; height: 72px; font-size: 10px; }
+  .lx-ticket::after { bottom: 56px; }
+  .lx-uses button { height: 40px; font-size: 14px; }
   .drops { grid-auto-rows: 230px; gap: 10px; }
   .drops .drop-feat { grid-row: span 2; padding: 10px; }
   .drop-panel { padding: 16px; }
