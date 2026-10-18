@@ -382,7 +382,7 @@
         "cloud", "sun", "leaf", "map-pin", "plane", "car", "trophy", "lightbulb",
         "home", "search", "user", "bell", "mail", "chat", "share", "download",
         "cart", "bag", "wallet", "tag", "calendar", "clock", "lock", "smile"].map(id => DS.icons.find(i => i.id === id)).filter(Boolean);
-      const colours = [["Lime", "#a3f25d"], ["White", "#ffffff"], ["Pink", "#f7c6f4"], ["Sky", "#7cc4ff"], ["Orange", "#ff9a3c"], ["Coral", "#ff6b5c"]];
+      const colours = [["White", "#ffffff"], ["Silver", "#d4d4d4"], ["Grey", "#8a8a8a"]];
       sw.innerHTML = colours.map(([n, c], i) => `<button type="button" style="--sw:${c}" aria-label="${n}" aria-pressed="${i === 0}" data-c="${c}"></button>`).join("");
       grid.innerHTML = picks.map(i => `<a href="icons.html#${i.id}" data-id="${i.id}" aria-label="${esc(i.name)} icon">${icon(i.id)}</a>`).join("");
       const show = ic => {
@@ -992,7 +992,7 @@
     const names = ["All"].concat(DS.icons.map(i => i.group).filter((g, i, a) => a.indexOf(g) === i));
     const state = { group: "All", q: "", color: "", size: 28, sel: null };
     const swatches = [
-      { c: "", label: "Theme" }, { c: "#86de4e", label: "Lime" }, { c: "#31a8ff", label: "Blue" },
+      { c: "", label: "Theme" }, { c: "#8a8a8a", label: "Grey" }, { c: "#31a8ff", label: "Blue" },
       { c: "#ff6b5c", label: "Coral" }, { c: "#ff9a00", label: "Orange" }, { c: "#b98cff", label: "Violet" }
     ];
 
@@ -1013,7 +1013,7 @@
           <label>Colour
             <div class="swatches">
               ${swatches.map(s => `<button class="swatch" type="button" data-c="${s.c}" aria-label="${s.label}" aria-pressed="${state.color === s.c}" style="background:${s.c || "var(--fg)"}"></button>`).join("")}
-              <span class="swatch custom" title="Custom colour"><input type="color" aria-label="Custom colour" value="${state.color || "#86de4e"}"></span>
+              <span class="swatch custom" title="Custom colour"><input type="color" aria-label="Custom colour" value="${state.color || "#0f0f0f"}"></span>
             </div>
           </label>
           <label>Preview size · <span data-size-label>${state.size}px</span>
