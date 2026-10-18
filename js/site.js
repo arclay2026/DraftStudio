@@ -308,23 +308,39 @@
       }
     }
 
-    // Fresh drops with filter chips
-    const grid = $("[data-latest]"), chips = $("[data-latest-filters]");
-    if (grid) {
-      const draw = cat => {
-        const list = items.filter(i => cat === "all" || slug(i.category) === cat).slice(0, 8);
-        grid.innerHTML = list.length ? list.map(card).join("") : emptyState(catOf(cat));
-        reveal(grid);
-      };
-      chips.innerHTML = [{ name: "All", slug: "all" }].concat(CATS).map((c, i) => {
+    // Fresh drops: a featured latest drop, the next ones beside it, and a request card
+    const drops = $("[data-latest]"), seg = $("[data-latest-filters]");
+    if (drops) {
+      const thumb = $(".seg-thumb", seg);
+      seg.insertAdjacentHTML("beforeend", [{ name: "All", slug: "all" }].concat(CATS).map((c, i) => {
         const n = c.slug === "all" ? items.length : items.filter(it => slug(it.category) === c.slug).length;
-        return `<button class="chip" type="button" data-cat="${c.slug}" aria-pressed="${i === 0}">${c.name} <span class="n">${n}</span></button>`;
-      }).join("");
-      chips.addEventListener("click", e => {
+        return `<button type="button" data-cat="${c.slug}" aria-pressed="${i === 0}">${c.name}<span class="n">${n}</span></button>`;
+      }).join(""));
+      const moveThumb = () => {
+        const b = $("[aria-pressed=true]", seg); if (!b) return;
+        thumb.style.width = b.offsetWidth + "px";
+        thumb.style.transform = `translateX(${b.offsetLeft}px)`;
+      };
+      const draw = cat => {
+        const list = items.filter(i => cat === "all" || slug(i.category) === cat).slice(0, 5);
+        const c = catOf(cat);
+        const latest = list[0];
+        $("[data-drops-note]").textContent = latest ? `Last drop ${ago(latest.date)}` : "";
+        if (!list.length) { drops.className = "drops is-empty"; drops.innerHTML = requestCard(c, true); reveal(drops); return; }
+        const [first, ...rest] = list;
+        drops.className = "drops n" + Math.min(rest.length, 4);
+        drops.innerHTML = featuredDrop(first) + rest.slice(0, 3).map(dropCard).join("") + requestCard(c);
+        reveal(drops);
+      };
+      seg.addEventListener("click", e => {
         const b = e.target.closest("[data-cat]"); if (!b) return;
-        $$("[data-cat]", chips).forEach(x => x.setAttribute("aria-pressed", x === b));
+        $$("[data-cat]", seg).forEach(x => x.setAttribute("aria-pressed", x === b));
+        moveThumb();
         draw(b.dataset.cat);
       });
+      addEventListener("resize", moveThumb);
+      (document.fonts ? document.fonts.ready : Promise.resolve()).then(moveThumb);
+      moveThumb();
       draw("all");
     }
 
@@ -577,6 +593,79 @@
     });
     panel.addEventListener("pointerenter", stopAuto);
     show(0);
+  }
+
+  /* ---------- Fresh drops pieces (home) ---------- */
+  function ago(date) {
+    if (!date) return "";
+    const days = Math.round((Date.now() - new Date(date + "T00:00").getTime()) / 864e5);
+    if (days <= 0) return "today";
+    if (days === 1) return "yesterday";
+    const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+    if (days < 7) return rtf.format(-days, "day");
+    if (days < 31) return rtf.format(-Math.round(days / 7), "week");
+    if (days < 365) return rtf.format(-Math.round(days / 30), "month");
+    return rtf.format(-Math.round(days / 365), "year");
+  }
+
+  function dropAction(it) {
+    if (isPaid(it)) return { label: `Buy · ${it.price}`, href: itemUrl(it) };
+    const files = it.files || [];
+    const zip = files.find(f => f.format.toUpperCase() === "ZIP");
+    const one = files.length === 1 ? files[0] : null;
+    const f = zip || one;
+    if (f) return { label: `Download free ${zip ? "· all formats" : "· ." + f.format.toLowerCase()}`, href: f.path, ext: isExternal(f.path), dl: !isExternal(f.path) };
+    return { label: "Get it free", href: itemUrl(it) };
+  }
+
+  function featuredDrop(it) {
+    const a = dropAction(it), fmts = formatsOf(it);
+    return `
+      <article class="drop drop-feat reveal">
+        <img src="${esc(it.preview)}" alt="" loading="lazy">
+        <div class="drop-top">
+          <span class="drop-new"><i></i>Latest drop</span>
+          ${isPaid(it) ? `<span class="price-tag">${esc(it.price)}</span>` : `<span class="free-tag">Free</span>`}
+        </div>
+        <div class="drop-panel">
+          <div class="drop-meta"><span>${it.num}</span><span>${esc(it.category)}</span><span>Added ${ago(it.date)}</span></div>
+          <h3><a href="${itemUrl(it)}">${esc(it.title)}</a></h3>
+          <div class="drop-fmts">${fmts.map(f => fmtBadge(f)).join("")}${it.specs ? `<span class="drop-spec">${esc(it.specs.split("·")[0].trim())}</span>` : ""}</div>
+          <div class="drop-actions">
+            <a class="btn btn-dark" href="${esc(a.href)}"${a.ext ? ' target="_blank" rel="noopener"' : ""}${a.dl ? " download" : ""}>${esc(a.label)} <span class="arr">${ARR}</span></a>
+            <a class="btn" href="${itemUrl(it)}">Details</a>
+          </div>
+        </div>
+      </article>`;
+  }
+
+  function dropCard(it) {
+    const fmts = formatsOf(it);
+    return `
+      <article class="drop drop-card reveal">
+        <img src="${esc(it.preview)}" alt="" loading="lazy">
+        <div class="drop-top">
+          <span class="fmts">${fmts.slice(0, 2).map(f => fmtBadge(f, "solid")).join("")}${fmts.length > 2 ? `<span class="fmt solid more">+${fmts.length - 2}</span>` : ""}</span>
+          ${isPaid(it) ? `<span class="price-tag">${esc(it.price)}</span>` : `<span class="free-tag">Free</span>`}
+        </div>
+        <div class="drop-info">
+          <span><b><a href="${itemUrl(it)}">${esc(it.title)}</a></b><small>${esc(it.category)} · ${ago(it.date)}</small></span>
+          <span class="go" aria-hidden="true">${ARR}</span>
+        </div>
+      </article>`;
+  }
+
+  function requestCard(cat, empty) {
+    const what = cat ? cat.name.toLowerCase().replace(/s$/, "") : "design";
+    return `
+      <article class="drop drop-req reveal">
+        <span class="req-icon">${icon("plus")}</span>
+        <div>
+          <h3>${empty ? `Fresh ${esc(cat ? cat.name.toLowerCase() : "files")}<br>are on the way.` : `Your ${esc(what)}<br>could be next.`}</h3>
+          <p>${empty ? "Nothing on this shelf yet. Tell us what you'd like and it could be the first drop." : "Tell us what you need. Popular requests become free drops for everyone."}</p>
+        </div>
+        <a class="btn btn-dark" href="${waLink(`Hi Draft Studio, I'd like to request a ${what}: `)}" target="_blank" rel="noopener">Request a drop <span class="arr">${ARR}</span></a>
+      </article>`;
   }
 
   function emptyState(cat) {
