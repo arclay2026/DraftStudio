@@ -148,8 +148,11 @@
           </div>
           <a class="link-arrow" href="browse.html">See everything <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
         </div>
-        <div class="filters reveal" data-latest-filters style="margin-bottom:28px"></div>
-        <div class="grid" data-latest></div>
+        <div class="drops-bar reveal">
+          <div class="seg" data-latest-filters role="group" aria-label="Filter fresh drops"><span class="seg-thumb" aria-hidden="true"></span></div>
+          <span class="drops-note" data-drops-note></span>
+        </div>
+        <div class="drops" data-latest aria-live="polite"></div>
       </div>
     </section>
 
