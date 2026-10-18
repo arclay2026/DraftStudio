@@ -32,12 +32,14 @@
         <div class="toolbar">
           <div class="toolbar-row">
             <div class="dd" data-cats>
-              <button class="dd-btn" type="button" aria-haspopup="listbox" aria-expanded="false" data-dd-btn>
+              <div class="dd-btn">
                 <span class="dd-ico" data-dd-ico></span>
                 <span class="dd-txt"><small>Showing</small><b data-dd-label>All files</b></span>
                 <span class="dd-n" data-dd-n></span>
-                <svg class="dd-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
-              </button>
+                <button class="dd-toggle" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choose a category" data-dd-btn>
+                  <svg class="dd-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </button>
+              </div>
               <div class="dd-menu" role="listbox" aria-label="Category" data-dd-menu></div>
             </div>
             <label class="field">
