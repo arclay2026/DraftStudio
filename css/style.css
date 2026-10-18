@@ -317,7 +317,6 @@ p { margin: 0; }
   padding: 8px 8px 8px 16px; border-radius: 999px; font-size: 15px; font-weight: 500;
   background: linear-gradient(135deg, rgba(255, 255, 255, .45), rgba(255, 255, 255, .2));
   backdrop-filter: blur(18px) saturate(1.8); -webkit-backdrop-filter: blur(18px) saturate(1.8);
-  border: 1px solid rgba(255, 255, 255, .55);
 }
 .hero-photo .tag .arr { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--fg); color: #fff; transition: transform .3s var(--ease); }
 .hero-photo .tag .arr svg { width: 14px; height: 14px; }
@@ -501,7 +500,7 @@ p { margin: 0; }
   position: relative; z-index: 1; width: min(100%, 560px); padding: clamp(18px, 2vw, 26px); border-radius: 20px;
   background: linear-gradient(135deg, rgba(255, 255, 255, .42), rgba(255, 255, 255, .16));
   backdrop-filter: blur(22px) saturate(1.8); -webkit-backdrop-filter: blur(22px) saturate(1.8);
-  border: 1px solid rgba(255, 255, 255, .55); box-shadow: 0 30px 50px -30px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .6);
+  box-shadow: 0 30px 50px -30px rgba(0, 0, 0, .3);
   transform: translateY(0); transition: transform .6s var(--ease);
 }
 .drop-feat:hover .drop-panel { transform: translateY(-4px); }
@@ -521,7 +520,7 @@ p { margin: 0; }
   padding: 10px 10px 10px 16px; border-radius: 18px;
   background: linear-gradient(135deg, rgba(255, 255, 255, .45), rgba(255, 255, 255, .18));
   backdrop-filter: blur(18px) saturate(1.8); -webkit-backdrop-filter: blur(18px) saturate(1.8);
-  border: 1px solid rgba(255, 255, 255, .55); box-shadow: 0 16px 30px -22px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .6);
+  box-shadow: 0 16px 30px -22px rgba(0, 0, 0, .35);
 }
 .drop-info > span:first-child { min-width: 0; }
 .drop-info b { display: block; font-size: 15px; font-weight: 600; letter-spacing: -.01em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
