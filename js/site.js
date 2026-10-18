@@ -94,7 +94,6 @@
       <article class="card${slug(it.category) === "logos" ? " is-logo" : ""} reveal">
         <div class="card-media">
           <img src="${esc(it.preview)}" alt="" loading="lazy">
-          ${isPaid(it) ? `<span class="price-tag">${esc(it.price)}</span>` : ""}
           <button class="card-save glass-btn" type="button" data-save="${esc(it.id)}" aria-pressed="${on}" aria-label="${on ? "Remove from saved" : "Save"}">${icon("bookmark")}</button>
           <span class="card-cta glass-btn" aria-hidden="true">${ARR}</span>
         </div>
@@ -722,7 +721,7 @@
         <img src="${esc(it.preview)}" alt="" loading="lazy">
         <div class="drop-top">
           <span class="drop-new"><i></i>Latest drop</span>
-          ${isPaid(it) ? `<span class="price-tag">${esc(it.price)}</span>` : `<span class="free-tag">Free</span>`}
+          ${isPaid(it) ? "" : `<span class="free-tag">Free</span>`}
         </div>
         <div class="drop-panel">
           <div class="drop-meta"><span>${it.num}</span><span>${esc(it.category)}</span><span>Added ${ago(it.date)}</span></div>
@@ -743,7 +742,7 @@
         <img src="${esc(it.preview)}" alt="" loading="lazy">
         <div class="drop-top">
           <span class="fmts">${fmts.slice(0, 2).map(f => fmtBadge(f, "solid")).join("")}${fmts.length > 2 ? `<span class="fmt solid more">+${fmts.length - 2}</span>` : ""}</span>
-          ${isPaid(it) ? `<span class="price-tag">${esc(it.price)}</span>` : `<span class="free-tag">Free</span>`}
+          ${isPaid(it) ? "" : `<span class="free-tag">Free</span>`}
         </div>
         <div class="drop-info">
           <span><b><a href="${itemUrl(it)}">${esc(it.title)}</a></b><small>${esc(it.category)} · ${ago(it.date)}</small></span>
