@@ -463,6 +463,8 @@ p { margin: 0; }
 .card-save { right: 12px; top: 12px; opacity: 0; transform: scale(.85); }
 .card:hover .card-cta, .card:focus-within .card-cta, .card:hover .card-save, .card:focus-within .card-save, .card-save[aria-pressed="true"] { transform: none; opacity: 1; }
 .card-save[aria-pressed="true"] svg { fill: currentColor; }
+/* Logo previews are white, so their buttons are solid brand black */
+.card.is-logo .glass-btn, .card.is-logo .glass-btn:hover { background: var(--fg); }
 @media (hover: none) { .card-cta, .card-save { transform: none; opacity: 1; } }
 .card-body { min-width: 0; }
 .card h3 { font-size: 19px; font-weight: 500; letter-spacing: -.02em; line-height: 1.25; font-family: var(--font-body); }

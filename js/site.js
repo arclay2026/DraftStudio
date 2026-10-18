@@ -82,7 +82,7 @@
   function card(it) {
     const on = isSaved(it.id);
     return `
-      <article class="card reveal">
+      <article class="card${slug(it.category) === "logos" ? " is-logo" : ""} reveal">
         <div class="card-media">
           <img src="${esc(it.preview)}" alt="" loading="lazy">
           ${isPaid(it) ? `<span class="price-tag">${esc(it.price)}</span>` : ""}
