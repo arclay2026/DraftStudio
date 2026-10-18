@@ -783,7 +783,7 @@
       menu.innerHTML = options.map((c, i) => `${c.slug === "saved" ? '<span class="dd-sep"></span>' : ""}
         <button type="button" role="option" data-cat="${c.slug}" aria-selected="${state.cat === c.slug}">
           <span class="dd-ico">${icon(CAT_ICON[c.slug] || "folder")}</span><span class="dd-name">${c.name}</span>
-          <span class="dd-n"${c.slug === "saved" ? " data-saved-n" : ""}>${countOf(c)}</span>
+          ${c.slug === "saved" ? `<span class="dd-n" data-saved-n>${countOf(c)}</span>` : ""}
           <svg class="dd-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>
         </button>`).join("");
     };
@@ -819,7 +819,10 @@
       renderMenu();
       $("[data-dd-label]", cats).textContent = cur.name;
       $("[data-dd-ico]", cats).innerHTML = icon(CAT_ICON[cur.slug] || "folder");
-      $("[data-dd-n]", cats).textContent = countOf(cur);
+      // Only the Saved view shows a count
+      const n = $("[data-dd-n]", cats);
+      n.textContent = cur.slug === "saved" ? countOf(cur) : "";
+      n.hidden = cur.slug !== "saved";
 
       const ql = state.q.toLowerCase();
       let list = items.filter(it =>
