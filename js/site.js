@@ -60,25 +60,38 @@
     }
   }
 
+  // Saved designs live in the visitor's browser only
+  const SAVE_KEY = "ds-saved";
+  const loadSaved = () => { try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || []; } catch (e) { return []; } };
+  let saved = loadSaved();
+  const isSaved = id => saved.includes(id);
+  const toggleSaved = id => {
+    saved = isSaved(id) ? saved.filter(x => x !== id) : saved.concat(id);
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(saved)); } catch (e) {}
+    document.dispatchEvent(new CustomEvent("ds:saved"));
+    return isSaved(id);
+  };
+  document.addEventListener("click", e => {
+    const b = e.target.closest("[data-save]"); if (!b) return;
+    e.preventDefault();
+    const on = toggleSaved(b.dataset.save);
+    $$(`[data-save="${b.dataset.save}"]`).forEach(x => { x.setAttribute("aria-pressed", on); x.setAttribute("aria-label", on ? "Remove from saved" : "Save"); });
+    toast(on ? "Saved" : "Removed from saved");
+  });
+
   function card(it) {
-    const fmts = formatsOf(it);
-    const tag = isPaid(it) ? `<span class="price-tag">${esc(it.price)}</span>` : `<span class="free-tag">Free</span>`;
+    const on = isSaved(it.id);
     return `
       <article class="card reveal">
         <div class="card-media">
           <img src="${esc(it.preview)}" alt="" loading="lazy">
-          <div class="card-badges">
-            <span class="fmts">${fmts.slice(0, 2).map(f => fmtBadge(f, "solid")).join("")}${fmts.length > 2 ? `<span class="fmt solid more">+${fmts.length - 2}</span>` : ""}</span>
-            ${tag}
-          </div>
-          <span class="card-cta" aria-hidden="true">${icon(isPaid(it) ? "arrow-right" : "download")}</span>
+          ${isPaid(it) ? `<span class="price-tag">${esc(it.price)}</span>` : ""}
+          <button class="card-save glass-btn" type="button" data-save="${esc(it.id)}" aria-pressed="${on}" aria-label="${on ? "Remove from saved" : "Save"}">${icon("bookmark")}</button>
+          <span class="card-cta glass-btn" aria-hidden="true">${ARR}</span>
         </div>
         <div class="card-body">
-          <div>
-            <h3><a href="${itemUrl(it)}">${esc(it.title)}</a></h3>
-            <p class="sub">${esc(it.category)}${it.specs ? " · " + esc(it.specs.split("·")[0].trim()) : ""}</p>
-          </div>
-          <span class="num">${it.num}</span>
+          <h3><a href="${itemUrl(it)}">${esc(it.title)}</a></h3>
+          <p class="sub">${esc(it.category)}${it.specs ? " · " + esc(it.specs.split("·")[0].trim()) : ""}</p>
         </div>
       </article>`;
   }
@@ -764,6 +777,7 @@
       const n = c.slug === "all" ? items.length : items.filter(it => slug(it.category) === c.slug).length;
       return `<button class="chip" type="button" data-cat="${c.slug}">${c.name} <span class="n">${n}</span></button>`;
     }).join("");
+    cats.insertAdjacentHTML("beforeend", `<button class="chip chip-saved" type="button" data-cat="saved">${icon("bookmark")} Saved <span class="n" data-saved-n>${saved.length}</span></button>`);
     fmts.innerHTML = allFmts.map(f => `<button class="chip" type="button" data-fmt="${f}">${fmtBadge(f)}</button>`).join("");
     q.value = state.q;
     sort.value = state.sort;
@@ -779,15 +793,16 @@
 
     const draw = () => {
       const cat = catOf(state.cat);
-      $("[data-title]").innerHTML = cat ? esc(cat.name) : state.q ? `“${esc(state.q)}”` : `Every <span class="hl">file.</span>`;
-      $("[data-lede]").textContent = cat ? cat.blurb : "Every mockup, vector, logo and template in the studio. Free to download, free to use.";
-      document.title = (cat ? cat.name : "Browse") + " · Draft Studio";
+      const mine = state.cat === "saved";
+      $("[data-title]").innerHTML = mine ? `Saved <span class="hl">files.</span>` : cat ? esc(cat.name) : state.q ? `“${esc(state.q)}”` : `Every <span class="hl">file.</span>`;
+      $("[data-lede]").textContent = mine ? "Your favourites, kept in this browser. Tap the bookmark on any design to add it here." : cat ? cat.blurb : "Every mockup, vector, logo and template in the studio. Free to download, free to use.";
+      document.title = (mine ? "Saved" : cat ? cat.name : "Browse") + " · Draft Studio";
       $$("[data-cat]", cats).forEach(b => b.setAttribute("aria-pressed", b.dataset.cat === state.cat));
       $$("[data-fmt]", fmts).forEach(b => b.setAttribute("aria-pressed", b.dataset.fmt === state.fmt));
 
       const ql = state.q.toLowerCase();
       let list = items.filter(it =>
-        (state.cat === "all" || slug(it.category) === state.cat) &&
+        (state.cat === "all" || (state.cat === "saved" ? isSaved(it.id) : slug(it.category) === state.cat)) &&
         (!state.fmt || formatsOf(it).includes(state.fmt)) &&
         (!ql || [it.title, it.category, it.description, (it.tags || []).join(" "), formatsOf(it).join(" ")].join(" ").toLowerCase().includes(ql)));
       if (state.sort === "az") list = list.slice().sort((a, b) => a.title.localeCompare(b.title));
@@ -795,7 +810,9 @@
       if (state.sort === "free") list = list.filter(i => !isPaid(i));
 
       count.textContent = `${list.length} result${list.length === 1 ? "" : "s"}`;
-      grid.innerHTML = list.length ? list.map(card).join("") : emptyState(state.q || state.fmt ? null : cat);
+      grid.innerHTML = list.length ? list.map(card).join("") : state.cat === "saved"
+        ? `<div class="empty"><h3>Nothing saved yet.</h3><p>Tap the bookmark on any design to keep it here.</p><a class="btn btn-dark" href="browse.html">Browse files</a></div>`
+        : emptyState(state.q || state.fmt ? null : cat);
       reveal(grid);
       sync();
     };
@@ -804,6 +821,7 @@
     fmts.addEventListener("click", e => { const b = e.target.closest("[data-fmt]"); if (b) { state.fmt = state.fmt === b.dataset.fmt ? "" : b.dataset.fmt; draw(); } });
     q.addEventListener("input", () => { state.q = q.value.trim(); draw(); });
     sort.addEventListener("change", () => { state.sort = sort.value; draw(); });
+    document.addEventListener("ds:saved", () => { $("[data-saved-n]").textContent = saved.length; if (state.cat === "saved") draw(); });
     draw();
   }
 
