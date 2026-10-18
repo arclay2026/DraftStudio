@@ -49,7 +49,17 @@
             </label>
           </div>
           <div class="toolbar-row">
-            <div class="filters" data-fmts role="group" aria-label="Format"></div>
+            <label class="sel-wrap"><span class="sr-only">Format</span>
+              <select class="select" data-fmts data-label="Format">
+                <option value="">All formats</option>
+                <option value="PSD">PSD</option>
+                <option value="AI">AI</option>
+                <option value="SVG">SVG</option>
+                <option value="EPS">EPS</option>
+                <option value="PDF">PDF</option>
+                <option value="PNG">PNG</option>
+              </select>
+            </label>
             <div style="display:flex;align-items:center;gap:14px">
               <span class="result-count" data-count></span>
               <label class="sel-wrap"><span class="sr-only">Sort</span>
