@@ -777,7 +777,7 @@
   /* ---------- Browse ---------- */
   function browse() {
     const params = new URLSearchParams(location.search);
-    const state = { cat: params.get("cat") || "all", q: params.get("q") || "", fmt: params.get("format") || "", lic: params.get("license") || "", ori: params.get("orientation") || "", sort: params.get("sort") || "new" };
+    const state = { cat: params.get("cat") || "all", q: params.get("q") || "", fmt: params.get("format") || "", lic: params.get("license") || "", ori: params.get("orientation") || "", color: params.get("color") || "", sort: params.get("sort") || "new" };
     if (state.sort === "free") { state.sort = "new"; state.lic = "free"; } // old "Free only" sort links
     const grid = $("[data-results]"), count = $("[data-count]");
     const cats = $("[data-cats]"), fmts = $("[data-fmts]"), q = $("[data-q]"), sort = $("[data-sort]");
@@ -818,6 +818,7 @@
       if (state.fmt) p.set("format", state.fmt);
       if (state.lic) p.set("license", state.lic);
       if (state.ori) p.set("orientation", state.ori);
+      if (state.color) p.set("color", state.color);
       if (state.sort !== "new") p.set("sort", state.sort);
       history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : ""));
     };
@@ -843,6 +844,7 @@
         (!state.fmt || formatsOf(it).includes(state.fmt)) &&
         (!state.lic || (state.lic === "premium") === isPaid(it)) &&
         (!state.ori || orientationOf(it) === state.ori) &&
+        (!state.color || (it.colors || []).includes(state.color)) &&
         (!ql || [it.title, it.category, it.description, (it.tags || []).join(" "), formatsOf(it).join(" ")].join(" ").toLowerCase().includes(ql)));
       if (state.sort === "az") list = list.slice().sort((a, b) => a.title.localeCompare(b.title));
       if (state.sort === "old") list = list.slice().reverse();
@@ -850,7 +852,7 @@
       count.textContent = `${list.length} result${list.length === 1 ? "" : "s"}`;
       grid.innerHTML = list.length ? list.map(card).join("") : state.cat === "saved"
         ? `<div class="empty"><h3>Nothing saved yet.</h3><p>Tap the bookmark on any design to keep it here.</p><a class="btn btn-dark" href="browse.html">Browse files</a></div>`
-        : emptyState(state.q || state.fmt || state.lic || state.ori ? null : cat);
+        : emptyState(state.q || state.fmt || state.lic || state.ori || state.color ? null : cat);
       reveal(grid);
       sync();
     };
@@ -859,6 +861,29 @@
     fmts.addEventListener("change", () => { state.fmt = fmts.value; draw(); });
     lic.addEventListener("change", () => { state.lic = lic.value; draw(); });
     ori.addEventListener("change", () => { state.ori = ori.value; draw(); });
+
+    // Colour dropdown: a grid of swatches
+    const COLORS = DS.colors || {};
+    if (!COLORS[state.color]) state.color = "";
+    const cdd = $("[data-color-dd]"), cmenu = $("[data-color-menu]"), ctoggle = $(".sel-toggle", cdd);
+    const nice = k => k.replace(/-/g, " ").replace(/^./, c => c.toUpperCase());
+    const paintColor = () => {
+      $("[data-color-label]").innerHTML = state.color
+        ? `<i class="sw-dot" style="--sw:${COLORS[state.color]}"></i>${esc(nice(state.color))}`
+        : `${icon("palette", "sel-shape")}Any colour`;
+      cmenu.innerHTML = `<div class="sw-grid">${Object.entries(COLORS).map(([k, v]) =>
+        `<button type="button" class="sw" style="--sw:${v}" data-color="${esc(k)}" aria-pressed="${state.color === k}" aria-label="${esc(nice(k))}" title="${esc(nice(k))}"></button>`).join("")}</div>
+        <button type="button" class="sw-clear" data-color=""${state.color ? "" : " disabled"}>Any colour</button>`;
+    };
+    const setColorOpen = open => { cdd.classList.toggle("is-open", open); ctoggle.setAttribute("aria-expanded", open); };
+    ctoggle.addEventListener("click", e => { e.stopPropagation(); const open = !cdd.classList.contains("is-open"); if (open) closeDropdowns(); setColorOpen(open); });
+    cmenu.addEventListener("click", e => {
+      const b = e.target.closest("[data-color]"); if (!b) return;
+      state.color = b.dataset.color; setColorOpen(false); paintColor(); draw();
+    });
+    document.addEventListener("click", e => { if (!cdd.contains(e.target)) setColorOpen(false); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") setColorOpen(false); });
+    paintColor();
     q.addEventListener("input", () => { state.q = q.value.trim(); draw(); });
     sort.addEventListener("change", () => { state.sort = sort.value; draw(); });
     document.addEventListener("ds:saved", () => { $$("[data-saved-n]").forEach(n => { n.textContent = saved.length; }); if (state.cat === "saved") draw(); else renderMenu(); });

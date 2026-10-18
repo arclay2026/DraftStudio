@@ -20,6 +20,8 @@
      category     "Mockups", "Vectors", "Logos" or "Templates"
      description  one or two sentences
      specs        size or format, e.g. "A4 portrait" or "3456 × 4608 px"
+     colors       main colours, for the Colour filter. Pick from the names in
+                  `colors` below the items list, e.g. ["blue", "white"]
      orientation  (optional) "horizontal", "vertical", "square" or "panoramic"
                   for the Orientation filter. Leave it out and it's worked out
                   from the first "W × H" in specs.
@@ -62,6 +64,7 @@ window.DS = {
       files: [
         { format: "PSD", path: "https://drive.google.com/file/d/16XtB5is0IBh-21NNVC92bz6gr_rTmDUT/view?usp=sharing", name: "hoodie-mockup-one.psd" }
       ],
+      colors: ["blue", "white", "grey"],
       date: "2026-09-29",
       featured: true
     },
@@ -77,6 +80,7 @@ window.DS = {
       files: [
         { format: "PSD", path: "https://drive.google.com/file/d/1HXHTuVA8gntAGUeb1la18R-RaDOHxfpo/view?usp=sharing", name: "t-shirt-mockup-one.psd" }
       ],
+      colors: ["blue", "white", "light-blue"],
       date: "2026-09-28",
       featured: true
     },
@@ -96,6 +100,7 @@ window.DS = {
         { format: "JPG", path: "files/logos/dore/dore-logo.jpg", size: "134 KB" },
         { format: "ZIP", path: "files/logos/dore/dore-logo.zip", size: "271 KB" }
       ],
+      colors: ["red", "black", "white"],
       date: "2026-09-28",
       featured: true
     },
@@ -109,9 +114,16 @@ window.DS = {
       preview: "previews/mato-logo.jpg",
       price: "R350",
       includes: ["AI", "SVG", "PDF", "PNG", "JPG"],
+      colors: ["red", "black", "white"],
       date: "2026-09-27"
     }
   ],
+
+  // COLOURS for the Colour filter on the browse page (name: hex)
+  colors: {
+    black: "#1f2328", white: "#ffffff", teal: "#4fd9cf", "light-blue": "#92cdf8", blue: "#1673ea", purple: "#8582f0",
+    pink: "#ffb8c9", red: "#ff5252", orange: "#ffa024", yellow: "#ffd77a", grey: "#c4c4c4"
+  },
 
   // ICONS — each one is files/icons/<id>.svg (24×24, stroke uses currentColor)
   icons: [
