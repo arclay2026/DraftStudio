@@ -344,6 +344,9 @@
       draw("all");
     }
 
+    const lx = $("[data-lx]");
+    if (lx) licenseChecker(lx);
+
     const fx = $("[data-formats]");
     if (fx) formatExplorer(fx);
 
@@ -592,6 +595,42 @@
       });
     });
     panel.addEventListener("pointerenter", stopAuto);
+    show(0);
+  }
+
+  /* ---------- License checker (home) ---------- */
+  const USES = [
+    { q: "Client work", tone: "yes", a: "Use any free file in work you deliver to clients, and charge for that work." },
+    { q: "Merch you sell", tone: "yes", a: "T-shirts, hoodies, mugs, stickers. Put our designs in your product and sell it." },
+    { q: "Social media posts", tone: "yes", a: "Posts, stories, ads and thumbnails. No credit needed (a tag is always nice)." },
+    { q: "Websites & apps", tone: "yes", a: "Icons, logos and graphics in sites and apps, personal or commercial." },
+    { q: "Print & packaging", tone: "yes", a: "Flyers, posters, labels, boxes. Print as many copies as you need." },
+    { q: "Pitch decks", tone: "yes", a: "Make your slides look expensive. Nobody needs to know." },
+    { q: "My own brand logo", tone: "but", a: "You can, but free logos can be downloaded by anyone. For a logo only you own, buy an exclusive one." },
+    { q: "Reselling the files", tone: "no", a: "Please don't sell our files as they are, alone or in a bundle. Make something new with them instead." },
+    { q: "Re-uploading them", tone: "no", a: "Don't post our files on other download sites. Link to Draft Studio instead, so people get the latest version." },
+    { q: "Claiming you made them", tone: "no", a: "Use them in your work, sure. Just don't present the original files as your own design." }
+  ];
+  const WORD = { yes: "Yes.", no: "No.", but: "Yes, but…" };
+  const STAMP = { yes: "Free to<br>use", no: "Not<br>allowed", but: "Read the<br>fine print" };
+
+  function licenseChecker(root) {
+    const ticket = $("[data-lx-ticket]", root), uses = $("[data-lx-uses]", root);
+    const mark = t => t === "yes" ? icon("check") : t === "no" ? icon("close") : icon("lightbulb");
+    uses.innerHTML = USES.map((u, i) => `<button type="button" data-i="${i}" data-tone="${u.tone}" aria-pressed="${i === 0}"><i>${mark(u.tone)}</i>${esc(u.q)}</button>`).join("");
+    const show = i => {
+      const u = USES[i];
+      ticket.dataset.tone = u.tone;
+      ticket.innerHTML = `
+        <span class="lx-stamp" aria-hidden="true">${STAMP[u.tone]}</span>
+        <p class="lx-q lx-anim">Can I use Draft Studio files for <b>${esc(u.q.toLowerCase())}</b>?</p>
+        <div class="lx-a lx-anim"><span class="word">${WORD[u.tone]}</span><p>${esc(u.a)}</p></div>
+        <div class="lx-foot"><span>Draft Studio license</span><span>Free files · v1</span></div>`;
+      ticket.classList.remove("is-swap"); void ticket.offsetWidth; ticket.classList.add("is-swap");
+      $$("button", uses).forEach(b => b.setAttribute("aria-pressed", +b.dataset.i === i));
+    };
+    uses.addEventListener("click", e => { const b = e.target.closest("[data-i]"); if (b) show(+b.dataset.i); });
+    uses.addEventListener("mouseover", e => { const b = e.target.closest("[data-i]"); if (b && matchMedia("(hover: hover)").matches && b.getAttribute("aria-pressed") !== "true") show(+b.dataset.i); });
     show(0);
   }
 
