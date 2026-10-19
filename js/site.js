@@ -69,6 +69,50 @@
     }
   }
 
+  // Tooltips: one styled bubble for every icon-only control (its aria-label) and anything with data-tip.
+  // Native title attributes are converted on first hover so the browser's grey box never shows.
+  function tooltips() {
+    if (!matchMedia("(hover: hover)").matches) return;
+    const tip = document.createElement("div");
+    tip.className = "tip"; tip.setAttribute("role", "tooltip"); tip.hidden = true;
+    document.body.appendChild(tip);
+    const SKIP = ".logo, [data-slides] *, .sel-toggle, .dd-toggle, .sel-menu *, .dd-menu *";
+    let cur = null, timer = 0;
+    const textOf = el => {
+      if (el.hasAttribute("title")) { el.dataset.tip = el.getAttribute("title"); el.removeAttribute("title"); }
+      if (el.dataset.tip) return el.dataset.tip;
+      if (el.matches(SKIP) || el.textContent.trim()) return "";
+      return el.getAttribute("aria-label") || "";
+    };
+    const find = t => {
+      const el = t.closest && t.closest("[data-tip], [title], button[aria-label], a[aria-label], label[aria-label]");
+      return el && textOf(el) ? el : null;
+    };
+    const place = () => {
+      if (!cur) return;
+      tip.textContent = textOf(cur);
+      const r = cur.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, gap = 9;
+      const below = r.top - h - gap < 8;
+      const left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2));
+      tip.style.left = left + "px";
+      tip.style.top = (below ? r.bottom + gap : r.top - h - gap) + "px";
+      tip.style.setProperty("--ax", (r.left + r.width / 2 - left) + "px");
+      tip.classList.toggle("is-below", below);
+    };
+    const show = (el, wait) => {
+      clearTimeout(timer);
+      cur = el;
+      timer = setTimeout(() => { if (cur !== el) return; tip.hidden = false; place(); requestAnimationFrame(() => tip.classList.add("is-on")); }, wait);
+    };
+    const hide = () => { clearTimeout(timer); cur = null; tip.classList.remove("is-on"); tip.hidden = true; };
+    document.addEventListener("mouseover", e => { const el = find(e.target); if (el !== cur) el ? show(el, tip.classList.contains("is-on") ? 0 : 280) : hide(); });
+    document.addEventListener("focusin", e => { const el = find(e.target); if (el && e.target.matches(":focus-visible")) show(el, 0); });
+    document.addEventListener("focusout", hide);
+    document.addEventListener("click", () => setTimeout(place, 0)); // labels like Save / Remove from saved can change on click
+    addEventListener("scroll", hide, { passive: true });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") hide(); });
+  }
+
   // Saved designs live in the visitor's browser only
   const SAVE_KEY = "ds-saved";
   const loadSaved = () => { try { return JSON.parse(localStorage.getItem(SAVE_KEY)) || []; } catch (e) { return []; } };
@@ -871,7 +915,7 @@
         ? `<i class="sw-dot" style="--sw:${COLORS[state.color]}"></i>${esc(nice(state.color))}`
         : `${icon("palette", "sel-shape")}Any colour`;
       cmenu.innerHTML = `<div class="sw-grid">${Object.entries(COLORS).map(([k, v]) =>
-        `<button type="button" class="sw" style="--sw:${v}" data-color="${esc(k)}" aria-pressed="${state.color === k}" aria-label="${esc(nice(k))}" title="${esc(nice(k))}"></button>`).join("")}</div>
+        `<button type="button" class="sw" style="--sw:${v}" data-color="${esc(k)}" aria-pressed="${state.color === k}" aria-label="${esc(nice(k))}" data-tip="${esc(nice(k))}"></button>`).join("")}</div>
         <button type="button" class="sw-clear" data-color=""${state.color ? "" : " disabled"}>Any colour</button>`;
     };
     const setColorOpen = open => { cdd.classList.toggle("is-open", open); ctoggle.setAttribute("aria-expanded", open); };
@@ -994,7 +1038,7 @@
     const names = ["All"].concat(DS.icons.map(i => i.group).filter((g, i, a) => a.indexOf(g) === i));
     const state = { group: "All", q: "", color: "", size: 28, sel: null };
     const swatches = [
-      { c: "", label: "Theme" }, { c: "#8a8a8a", label: "Grey" }, { c: "#31a8ff", label: "Blue" },
+      { c: "", label: "Black (default)" }, { c: "#8a8a8a", label: "Grey" }, { c: "#31a8ff", label: "Blue" },
       { c: "#ff6b5c", label: "Coral" }, { c: "#ff9a00", label: "Orange" }, { c: "#b98cff", label: "Violet" }
     ];
 
@@ -1015,7 +1059,7 @@
           <label>Colour
             <div class="swatches">
               ${swatches.map(s => `<button class="swatch" type="button" data-c="${s.c}" aria-label="${s.label}" aria-pressed="${state.color === s.c}" style="background:${s.c || "var(--fg)"}"></button>`).join("")}
-              <span class="swatch custom" title="Custom colour"><input type="color" aria-label="Custom colour" value="${state.color || "#0f0f0f"}"></span>
+              <span class="swatch custom" data-tip="Custom colour"><input type="color" aria-label="Custom colour" value="${state.color || "#0f0f0f"}"></span>
             </div>
           </label>
           <label>Preview size · <span data-size-label>${state.size}px</span>
@@ -1252,9 +1296,9 @@
             <div class="pal-meta">
               <div><h3>${esc(p.name)}</h3><p>${esc(p.mood)} · ${p.colors.length} colours</p></div>
               <div class="pal-actions">
-                <button type="button" class="pal-btn" data-pal-open="${i}" aria-label="Edit in generator" title="Edit in generator">${icon("magic")}</button>
-                <button type="button" class="pal-btn" data-pal-css="${i}" aria-label="Copy CSS" title="Copy CSS">${icon("copy")}</button>
-                <button type="button" class="pal-btn is-dark" data-pal-png="${i}" aria-label="Download PNG" title="Download PNG">${icon("download")}</button>
+                <button type="button" class="pal-btn" data-pal-open="${i}" aria-label="Edit in generator" data-tip="Edit in generator">${icon("magic")}</button>
+                <button type="button" class="pal-btn" data-pal-css="${i}" aria-label="Copy CSS" data-tip="Copy CSS">${icon("copy")}</button>
+                <button type="button" class="pal-btn is-dark" data-pal-png="${i}" aria-label="Download PNG" data-tip="Download PNG">${icon("download")}</button>
               </div>
             </div>
           </article>`;
@@ -1354,5 +1398,6 @@
   chrome();
   ({ home, browse, item, icons, palettes, learn, license }[page] || (() => {}))();
   enhanceSelects();
+  tooltips();
   reveal();
 })();
