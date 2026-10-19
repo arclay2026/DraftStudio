@@ -834,9 +834,9 @@
     const P = DS.palettes || [];
     const picks = [0, 4, 7, 16, 9, 25, 33, 5].filter(i => P[i]);
     if (!picks.length) return;
-    const sw = $("[data-pt-sw]", root), rows = $("[data-pt-rows]", root), dots = $("[data-pt-dots]", root);
+    const sw = $("[data-pt-sw]", root), rows = $("[data-pt-rows]", root), dots = $("[data-pt-dots]", root), meta = $(".pt-meta", root);
     const max = Math.max(...picks.map(i => P[i].colors.length));
-    sw.innerHTML = Array.from({ length: max }, (_, k) => `<button type="button" style="transition-delay:${k * 60}ms"><span></span></button>`).join("");
+    sw.innerHTML = Array.from({ length: max }, (_, k) => `<button type="button" style="--i:${k}"><span></span></button>`).join("");
     dots.innerHTML = picks.map(() => "<i></i>").join("");
     let n = 0, timer = 0;
     const show = k => {
@@ -855,11 +855,14 @@
       $$("i", dots).forEach((d, i) => d.classList.toggle("on", i === n));
       rows.innerHTML = [1, 2, 3].map(d => {
         const j = (n + d) % picks.length, q = P[picks[j]];
-        return `<button type="button" data-pt-go="${j}" aria-label="Show ${esc(q.name)}">${q.colors.map(c => `<i style="background:${c}"></i>`).join("")}</button>`;
+        return `<button type="button" data-pt-go="${j}" style="--i:${d - 1}" aria-label="Show ${esc(q.name)}">${q.colors.map(c => `<i style="background:${c}"></i>`).join("")}</button>`;
       }).join("");
+      // Restart the swap choreography: colour wave, sheen, labels and rows ease in
+      [sw, meta, rows].forEach(el => { el.classList.remove("is-swap"); void el.offsetWidth; el.classList.add("is-swap"); });
     };
     const play = () => { clearInterval(timer); if (!matchMedia("(prefers-reduced-motion: reduce)").matches) timer = setInterval(() => show(n + 1), 3200); };
     rows.addEventListener("click", e => { const b = e.target.closest("[data-pt-go]"); if (b) { show(+b.dataset.ptGo); play(); } });
+    dots.addEventListener("click", e => { const i = $$("i", dots).indexOf(e.target); if (i > -1 && i !== n) { show(i); play(); } });
     sw.addEventListener("click", e => { const b = e.target.closest("[data-copy]"); if (b) copy(b.dataset.copy.toUpperCase(), `${b.dataset.copy.toUpperCase()} copied`); });
     root.addEventListener("mouseenter", () => clearInterval(timer));
     root.addEventListener("mouseleave", play);
