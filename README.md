@@ -58,3 +58,7 @@ python3 -m http.server 8000
 The site is live at https://arclay2026.github.io/DraftStudio/ and is published by GitHub Pages
 straight from the `main` branch (Settings → Pages → Deploy from a branch → `main` / root).
 Every change to `main` goes live within a minute or two.
+
+## Publishing changes
+
+The pages load `css/style.css` and `js/*.js` with a `?v=` stamp so browsers fetch fresh copies after a change. When you edit CSS or JS, bump the stamp in every `.html` file (any new number works, e.g. today's date and time).
