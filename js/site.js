@@ -276,7 +276,8 @@
     const more = [
       { href: "browse.html?cat=vectors", label: "Vectors", key: "vectors", note: "AI · SVG · EPS" },
       { href: "icons.html", label: "Icons", key: "icons", note: "SVG · PNG" },
-      { href: "palettes.html", label: "Palettes", key: "palettes", note: "PNG · CSS" }
+      { href: "palettes.html", label: "Palettes", key: "palettes", note: "PNG · CSS" },
+      { href: "qr.html", label: "QR codes", key: "qr", note: "SVG · PNG" }
     ];
     const el = $("[data-header]");
     if (!el) return;
@@ -313,6 +314,7 @@
         ${CATS.map(c => `<a href="browse.html?cat=${c.slug}">${c.name}<span>${c.formats.join(" · ")}</span></a>`).join("")}
         <a href="icons.html">Icons<span>SVG · PNG</span></a>
         <a href="palettes.html">Palettes<span>PNG · CSS</span></a>
+        <a href="qr.html">QR codes<span>SVG · PNG</span></a>
         <a href="learn.html">Learn<span>File formats</span></a>
         <a href="license.html">License<span>FAQ</span></a>
         <button type="button" data-open-search>Search<span>Find a file</span></button>
@@ -336,7 +338,7 @@
             </div>
             <nav class="f-links" aria-label="Files">
               <h4>Files</h4>
-              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="icons.html">Icons</a></li><li><a href="palettes.html">Palettes</a></li></ul>
+              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="icons.html">Icons</a></li><li><a href="palettes.html">Palettes</a></li><li><a href="qr.html">QR codes</a></li></ul>
             </nav>
             <nav class="f-links" aria-label="Studio">
               <h4>Studio</h4>
@@ -1623,8 +1625,8 @@
   /* ---------- Custom dropdowns for every <select class="select"> ---------- */
   // The native select stays in the page (hidden) and keeps the value, so page code
   // can keep reading select.value and listening for "change".
-  function enhanceSelects() {
-    $$("select.select").forEach(sel => {
+  function enhanceSelects(scope = document) {
+    $$("select.select:not(.sel-native)", scope).forEach(sel => {
       const wrap = document.createElement("div");
       wrap.className = "sel";
       wrap.innerHTML = `
@@ -1668,12 +1670,20 @@
     });
   }
 
+  window.DSEnhanceSelects = scope => enhanceSelects(scope);
+
+  /* ---------- QR Studio (qr.html) ---------- */
+  // The studio lives in js/qr-studio.js; it gets the shared helpers from here.
+  function qr() {
+    if (window.QRStudio) window.QRStudio({ $, $$, esc, icon, copy, toast, inkOn, hexRgb, lum, ICONS, palettes: DS.palettes || [] });
+  }
+
   /* ---------- Boot ---------- */
   const page = document.body.dataset.page;
   header(page === "browse" ? (new URLSearchParams(location.search).get("cat") || "browse") : page);
   footer();
   chrome();
-  ({ home, browse, item, icons, palettes, learn, license }[page] || (() => {}))();
+  ({ home, browse, item, icons, palettes, qr, learn, license }[page] || (() => {}))();
   enhanceSelects();
   tooltips();
   colorPicker();
