@@ -880,7 +880,7 @@
   }
 
   function featuredDrop(it) {
-    const a = dropAction(it), fmts = formatsOf(it);
+    const a = dropAction(it);
     return `
       <article class="drop drop-feat reveal">
         <img src="${esc(it.preview)}" alt="" loading="lazy">
@@ -890,7 +890,7 @@
         <div class="drop-panel">
           <div class="drop-meta"><span>${it.num}</span><span>${esc(it.category)}</span><span>Added ${ago(it.date)}</span></div>
           <h3><a href="${itemUrl(it)}">${esc(it.title)}</a></h3>
-          <div class="drop-fmts">${fmts.map(f => fmtBadge(f)).join("")}${it.specs ? `<span class="drop-spec">${esc(it.specs.split("·")[0].trim())}</span>` : ""}</div>
+          ${it.specs ? `<div class="drop-fmts"><span class="drop-spec">${esc(it.specs.split("·")[0].trim())}</span></div>` : ""}
           <div class="drop-actions">
             <a class="btn btn-dark" href="${esc(a.href)}"${a.ext ? ' target="_blank" rel="noopener"' : ""}${a.dl ? " download" : ""}>${esc(a.label)} <span class="arr">${ARR}</span></a>
             <a class="btn" href="${itemUrl(it)}">Details</a>
@@ -900,13 +900,9 @@
   }
 
   function dropCard(it) {
-    const fmts = formatsOf(it);
     return `
       <article class="drop drop-card reveal">
         <img src="${esc(it.preview)}" alt="" loading="lazy">
-        <div class="drop-top">
-          <span class="fmts">${fmts.slice(0, 2).map(f => fmtBadge(f, "solid")).join("")}${fmts.length > 2 ? `<span class="fmt solid more">+${fmts.length - 2}</span>` : ""}</span>
-        </div>
         <div class="drop-info">
           <span><b><a href="${itemUrl(it)}">${esc(it.title)}</a></b><small>${esc(it.category)} · ${ago(it.date)}</small></span>
           <span class="go" aria-hidden="true">${ARR}</span>

@@ -297,10 +297,7 @@ p { margin: 0; }
 @keyframes chev { 0%, 100% { opacity: .35; } 40% { opacity: 1; } }
 
 .hero-sub { font-size: clamp(15px, 1.2vw, 18px); line-height: 1.6; color: var(--mute); letter-spacing: -.01em; max-width: 36em; margin: 0 auto; }
-.hero-sub mark { color: var(--fg); padding: .1em .32em; border-radius: .35em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
-.hero-sub .m-pink { background: #dcdcdc; }
-.hero-sub .m-white { background: #fff; }
-.hero-sub .m-dark { background: var(--fg); color: #fff; }
+.hero-sub mark { background: none; color: var(--fg); padding: 0; }  /* keywords: dark text, no highlight */
 .hero-ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px 28px; margin: 39px 0 clamp(49px, 5.3vw, 74px); }
 .hero-ctas .btn-dark { box-shadow: 0 16px 30px -12px rgba(15, 15, 15, .5); }
 
@@ -548,7 +545,6 @@ h2 .soft { color: #a3a3a3; }
 .drop:hover > img { transform: scale(1.05); }
 .drop h3 a::after { content: ""; position: absolute; inset: 0; z-index: 0; }
 .drop-top { position: absolute; z-index: 2; top: 14px; left: 14px; right: 14px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; pointer-events: none; }
-.drop-top .fmts { display: flex; gap: 4px; }
 
 /* Featured drop */
 .drop-feat { grid-column: span 2; grid-row: span 2; display: flex; align-items: flex-end; padding: 12px; }
@@ -566,7 +562,7 @@ h2 .soft { color: #a3a3a3; }
 .drop-meta span + span::before { content: "·"; margin-right: 12px; }
 .drop-panel h3 { font-size: clamp(23px, 2.1vw, 35px); margin: 8px 0 12px; }
 .drop-fmts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.drop-spec { font-size: 12px; color: rgba(15, 15, 15, .66); font-weight: 500; margin-left: 6px; }
+.drop-spec { font-size: 12px; color: rgba(15, 15, 15, .66); font-weight: 500; }
 .drop-actions { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
 .drop-actions .btn:not(.btn-dark) { background: rgba(255, 255, 255, .35); border-color: rgba(15, 15, 15, .25); }
 .drop-panel .fmt { background: rgba(255, 255, 255, .7); }
@@ -1182,7 +1178,6 @@ input[type="range"] { accent-color: var(--fg); width: 100%; }
   .drop-info { padding: 8px 8px 8px 12px; border-radius: 12px; }
   .drop-info b { font-size: 12px; }
   .drop-info .go { width: 26px; height: 26px; }
-  .drop-top .fmts .fmt:nth-child(n+2) { display: none; }
   .drop-req { min-height: 211px; }
   .ix-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .ix-grid a { height: 46px; }
