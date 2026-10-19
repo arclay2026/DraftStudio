@@ -163,7 +163,14 @@ p { margin: 0; }
   transition: color .2s, background .2s;
 }
 .nav-links > a:hover, .nav-more-btn:hover { color: var(--fg); }
-.nav-links > a[aria-current="page"], .nav-more-btn.is-current { color: var(--fg); background: #ececec; font-weight: 500; }
+/* Current page: black text with a small dot underneath, no background */
+.nav-links > a, .nav-more-btn { position: relative; }
+.nav-links > a::after, .nav-more-btn::after {
+  content: ""; position: absolute; left: 50%; bottom: 1px; width: 4px; height: 4px; border-radius: 50%;
+  background: var(--fg); transform: translateX(-50%) scale(0); transition: transform .25s var(--ease);
+}
+.nav-links > a[aria-current="page"], .nav-more-btn.is-current { color: var(--fg); font-weight: 500; }
+.nav-links > a[aria-current="page"]::after, .nav-more-btn.is-current::after { transform: translateX(-50%) scale(1); }
 .nav-more { position: relative; }
 .nav-more-btn svg { width: 14px; height: 14px; transform: rotate(90deg); transition: transform .25s var(--ease); }
 .nav-more.is-open .nav-more-btn svg { transform: rotate(-90deg); }
