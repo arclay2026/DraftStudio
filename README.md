@@ -8,7 +8,7 @@ GitHub Pages or any web host.
 
 | Page | What it does |
 |------|--------------|
-| `index.html` | Home: a grey rounded hero panel with the headline, highlighted keywords, two buttons, a photo card and a dark dot card; then category shelves, fresh drops, a format guide, the icon wall, the license in plain words and a request call-to-action |
+| `index.html` | Home: a grey rounded hero panel with the headline, highlighted keywords, two buttons, a photo card and a dark dot card; then category shelves, fresh drops and the icon wall |
 | `browse.html` | Every file, with category tabs, format filters, search and sort. Links like `browse.html?cat=logos` or `browse.html?q=hoodie` open pre-filtered |
 | `item.html?id=…` | One design: large zoomable preview, specs, downloads (or a WhatsApp buy button for paid logos), share and related designs |
 | `icons.html` | The icon set: search, filter, recolour, download SVG/PNG or copy the code |
