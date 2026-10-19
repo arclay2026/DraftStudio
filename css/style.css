@@ -342,8 +342,9 @@ p { margin: 0; }
 .dots { flex: 1; min-height: 0; container-type: size; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); place-items: center; }
 .dots i { width: min(calc(100cqw / 7 - 8px), calc(100cqh / 5 - 8px)); aspect-ratio: 1; border-radius: 50%; background: var(--forest-2); }
 .dots i { transition: background .18s, transform .3s var(--ease); }
-.dots i.on { background: var(--lime); transform: scale(1.04); box-shadow: 0 0 16px -2px color-mix(in srgb, var(--lime) 60%, transparent); }
-.dots i.trail { background: color-mix(in srgb, var(--lime) 35%, var(--forest-2)); }
+.dots { --neon: #ff2d95; }  /* hot pink, only for this dot grid */
+.dots i.on { background: var(--neon); transform: scale(1.04); box-shadow: 0 0 18px -1px color-mix(in srgb, var(--neon) 70%, transparent); }
+.dots i.trail { background: color-mix(in srgb, var(--neon) 40%, var(--forest-2)); }
 .hero-dots .big { font: 600 clamp(35px, 3.5vw, 67px)/1 var(--font-display); letter-spacing: var(--tight); white-space: nowrap; }
 .hero-dots p { color: rgba(255, 255, 255, .62); font-size: 13px; margin-top: 8px; }
 .hero-dots p b { color: #fff; font-weight: 500; }
