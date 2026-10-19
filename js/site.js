@@ -542,6 +542,9 @@
     const pt = $("[data-pt]");
     if (pt) paletteTeaser(pt);
 
+    const qt = $("[data-qt]");
+    if (qt) qrTeaser(qt);
+
     const ix = $("[data-ix]");
     if (ix) {
       const grid = $("[data-ix-grid]", ix), sw = $("[data-ix-swatches]", ix);
@@ -861,6 +864,89 @@
     root.addEventListener("mouseenter", () => clearInterval(timer));
     root.addEventListener("mouseleave", play);
     show(0); play();
+  }
+
+  /* ---------- QR Studio teaser (home) ---------- */
+  // A live QR code that morphs between looks in a ripple, gets "scanned" by a laser
+  // and tilts in 3D toward the pointer. Every module is its own <rect>, so shape,
+  // size, rotation and colour all animate with plain CSS transitions.
+  function qrTeaser(root) {
+    if (!window.qrcode) return;
+    const q = window.qrcode(0, "M");
+    q.addData("https://arclay2026.github.io/DraftStudio/qr.html");
+    q.make();
+    const n = q.getModuleCount(), m = 2, S = n + m * 2, mid = (n - 1) / 2;
+    const finder = (x, y) => (x < 7 && y < 7) || (x >= n - 7 && y < 7) || (x < 7 && y >= n - 7);
+    const svg = $("[data-qt-svg]", root);
+    svg.setAttribute("viewBox", `0 0 ${S} ${S}`);
+    let cells = "";
+    for (let y = 0; y < n; y++) for (let x = 0; x < n; x++) {
+      if (finder(x, y) || !q.isDark(y, x)) continue;
+      const d = Math.hypot(x - mid, y - mid);
+      cells += `<rect class="qt-m" x="${x + m}" y="${y + m}" width="1" height="1" style="--d:${d.toFixed(2)};--px:${(x / n).toFixed(3)};--py:${(y / n).toFixed(3)}"/>`;
+    }
+    const eyes = [[0, 0], [n - 7, 0], [0, n - 7]].map(([x, y]) =>
+      `<rect class="qt-ring" x="${x + m + .5}" y="${y + m + .5}" width="6" height="6"/><rect class="qt-ball" x="${x + m + 2}" y="${y + m + 2}" width="3" height="3"/>`).join("");
+    svg.innerHTML = `<rect class="qt-bg" width="${S}" height="${S}"/>${cells}${eyes}`;
+    const mods = $$(".qt-m", svg), card = $("[data-qt-card]", root);
+
+    const LOOKS = [
+      { name: "Studio",  rx: .28, s: .9,  rot: 0,  c1: "#0f0f0f", c2: "#0f0f0f", bg: "#ffffff", ring: 1.6, ball: .8 },
+      { name: "Neon",    rx: .5,  s: .84, rot: 0,  c1: "#2de2e6", c2: "#f6019d", bg: "#0d0221", ring: 3,   ball: 1.5 },
+      { name: "Diamond", rx: .06, s: .74, rot: 45, c1: "#283618", c2: "#606c38", bg: "#fefae0", ring: .6,  ball: .2, eye: "#bc6c25" },
+      { name: "Sunset",  rx: .5,  s: .9,  rot: 0,  c1: "#c2410c", c2: "#7f1d1d", bg: "#fff7ed", ring: 2.2, ball: 1.5 },
+      { name: "Classic", rx: 0,   s: 1,   rot: 0,  c1: "#0f0f0f", c2: "#0f0f0f", bg: "#ffffff", ring: 0,   ball: 0 },
+      { name: "Ocean",   rx: .5,  s: .82, rot: 0,  c1: "#00b4d8", c2: "#03045e", bg: "#eaf6fb", ring: 3,   ball: .7 },
+      { name: "Violet",  rx: .2,  s: .7,  rot: 45, c1: "#7b2cbf", c2: "#f72585", bg: "#ffffff", ring: 1.2, ball: 1.5 }
+    ];
+    const mix = (a, b, t) => { const A = hexRgb(a), B = hexRgb(b); return rgbHex(...A.map((v, i) => v + (B[i] - v) * t)); };
+    const dots = $("[data-qt-dots]", root);
+    dots.innerHTML = LOOKS.map(() => "<i></i>").join("");
+    let n0 = 0;
+    const apply = k => {
+      n0 = (k + LOOKS.length) % LOOKS.length;
+      const L = LOOKS[n0];
+      root.style.setProperty("--qt-bg", L.bg);
+      root.style.setProperty("--qt-rx", L.rx);
+      root.style.setProperty("--qt-s", L.s);
+      root.style.setProperty("--qt-rot", L.rot + "deg");
+      root.style.setProperty("--qt-ring", L.ring);
+      root.style.setProperty("--qt-ball", L.ball);
+      root.style.setProperty("--qt-eye", L.eye || L.c1);
+      root.style.setProperty("--qt-glow", L.c2 === L.c1 ? "#2b5bff" : L.c2);
+      // Each module takes its own colour along the diagonal, so gradients morph smoothly too
+      mods.forEach(r => { const t = (+r.style.getPropertyValue("--px") + +r.style.getPropertyValue("--py")) / 2; r.style.fill = mix(L.c1, L.c2, t); });
+      $("[data-qt-name]", root).textContent = L.name;
+      $$("[data-qt-sw]", root).forEach((s, i) => { s.style.background = [L.c1, L.c2, L.bg][i]; });
+      $$("i", dots).forEach((d, i) => d.classList.toggle("on", i === n0));
+      card.classList.remove("is-scan"); void card.offsetWidth; card.classList.add("is-scan");
+    };
+
+    // Autoplay only while the card is on screen
+    let timer = 0, visible = false;
+    const play = () => { clearInterval(timer); if (visible && !matchMedia("(prefers-reduced-motion: reduce)").matches) timer = setInterval(() => apply(n0 + 1), 3600); };
+    let started = false;
+    if ("IntersectionObserver" in window) new IntersectionObserver(es => {
+      visible = es[0].isIntersecting;
+      if (visible && !started) { started = true; apply(n0); } // first view: replay the ripple build
+      play();
+    }, { threshold: .3 }).observe(root);
+    dots.addEventListener("click", e => { const i = $$("i", dots).indexOf(e.target); if (i > -1) { apply(i); play(); } });
+
+    // Smooth 3D tilt toward the pointer (eased every frame)
+    const stage = $("[data-qt-stage]", root), tilt = $("[data-qt-tilt]", root);
+    let tx = 0, ty = 0, cx = 0, cy = 0, raf = 0;
+    const loop = () => {
+      cx += (tx - cx) * .08; cy += (ty - cy) * .08;
+      tilt.style.transform = `rotateX(${cy.toFixed(2)}deg) rotateY(${cx.toFixed(2)}deg)`;
+      raf = Math.abs(tx - cx) + Math.abs(ty - cy) > .01 ? requestAnimationFrame(loop) : 0;
+    };
+    const aim = (x, y) => { tx = x; ty = y; if (!raf) raf = requestAnimationFrame(loop); };
+    if (matchMedia("(hover: hover)").matches) {
+      stage.addEventListener("pointermove", e => { const r = stage.getBoundingClientRect(); aim(((e.clientX - r.left) / r.width - .5) * 16, -((e.clientY - r.top) / r.height - .5) * 16); });
+      stage.addEventListener("pointerleave", () => aim(0, 0));
+    }
+    apply(0);
   }
 
   /* ---------- Fresh drops pieces (home) ---------- */

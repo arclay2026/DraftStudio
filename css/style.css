@@ -352,7 +352,7 @@ p { margin: 0; }
 /* ---------- Section heads ---------- */
 .sec-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 21px; margin-bottom: clamp(28px, 3.5vw, 46px); flex-wrap: wrap; }
 /* Section titles: one calm size everywhere, second half in soft grey */
-.sec-head h2, .ix h2, .lx-copy h2, .pt h2 { font-size: clamp(26px, 2.6vw, 40px); font-weight: 600; letter-spacing: -.035em; line-height: 1.12; }
+.sec-head h2, .ix h2, .lx-copy h2, .pt h2, .qt h2 { font-size: clamp(26px, 2.6vw, 40px); font-weight: 600; letter-spacing: -.035em; line-height: 1.12; }
 .sec-head h2 { margin-top: 12px; max-width: 18em; }
 h2 .soft { color: #a3a3a3; }
 .sec-head p { color: var(--mute); max-width: 30em; }
@@ -1589,4 +1589,91 @@ html.qv-lock { overflow: hidden; }
   .qs-looks { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .qs-export .sel-wrap { flex: 1 1 40%; }
   .qs-export .sel-btn { min-width: 0; }
+}
+
+/* ---------- QR Studio teaser (home) ---------- */
+.qt {
+  --qt-bg: #fff; --qt-rx: .28; --qt-s: .9; --qt-rot: 0deg; --qt-ring: 1.6; --qt-ball: .8; --qt-eye: #0f0f0f; --qt-glow: #2b5bff;
+  display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: clamp(28px, 4vw, 72px); align-items: center;
+  border-radius: var(--radius-lg); background: var(--fg); color: #fff; padding: clamp(26px, 4vw, 64px); overflow: hidden;
+}
+.qt .eyebrow { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .1); color: #fff; box-shadow: none; }
+.qt h2 { margin: 16px 0 12px; }
+.qt h2 .soft { color: rgba(255, 255, 255, .42); }
+.qt-copy > p { color: rgba(255, 255, 255, .66); font-size: clamp(14px, 1.1vw, 16px); max-width: 32em; }
+.qt-feats { list-style: none; margin: 26px 0 30px; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; }
+.qt-feats li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: rgba(255, 255, 255, .88); }
+.qt-feats svg { flex: none; width: 22px; height: 22px; padding: 5px; border-radius: 50%; background: rgba(255, 255, 255, .1); }
+.qt-btns { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; }
+.qt-free { font-size: 13px; color: rgba(255, 255, 255, .5); }
+
+.qt-stage { position: relative; display: flex; flex-direction: column; align-items: center; gap: 22px; perspective: 1100px; padding: clamp(10px, 2vw, 30px) 0; }
+.qt-tilt { position: relative; width: min(100%, 360px); transform-style: preserve-3d; will-change: transform; }
+.qt-card {
+  position: relative; aspect-ratio: 1; border-radius: 26px; overflow: hidden; background: var(--qt-bg);
+  box-shadow: 0 50px 90px -40px rgba(0, 0, 0, .8), 0 0 0 1px rgba(255, 255, 255, .06); transition: background-color .9s var(--ease);
+}
+.qt-svg { display: block; width: 100%; height: 100%; }
+.qt-bg { fill: var(--qt-bg); transition: fill .9s var(--ease); }
+
+/* Every module morphs on its own, delayed by its distance from the centre: a ripple */
+.qt-m {
+  transform-box: fill-box; transform-origin: center;
+  transform: rotate(var(--qt-rot)) scale(var(--qt-s)); rx: calc(var(--qt-rx) * 1px);
+  transition: transform .8s cubic-bezier(.3, 1.4, .5, 1), rx .8s var(--ease), fill .8s var(--ease);
+  transition-delay: calc(var(--d) * 24ms);
+}
+.qt-card.is-scan .qt-m { animation: qt-wave .9s var(--ease) both; animation-delay: calc(var(--d) * 24ms); }
+@keyframes qt-wave { 0% { opacity: .12; } 100% { opacity: 1; } }
+.qt-ring { fill: none; stroke: var(--qt-eye); stroke-width: 1; rx: calc(var(--qt-ring) * 1px); transition: rx .8s var(--ease), stroke .8s var(--ease); }
+.qt-ball { fill: var(--qt-eye); rx: calc(var(--qt-ball) * 1px); transition: rx .8s var(--ease), fill .8s var(--ease); transform-box: fill-box; transform-origin: center; }
+.qt-card.is-scan .qt-ball { animation: qt-ball .7s cubic-bezier(.3, 1.6, .5, 1) .15s both; }
+@keyframes qt-ball { 0% { transform: scale(.4); } 100% { transform: scale(1); } }
+
+/* Laser scan, then a spring "Scanned" badge */
+.qt-scan {
+  position: absolute; left: 7%; right: 7%; top: 0; height: 3px; border-radius: 3px; opacity: 0; pointer-events: none;
+  background: linear-gradient(90deg, transparent, var(--qt-glow) 20%, #fff 50%, var(--qt-glow) 80%, transparent);
+  box-shadow: 0 0 18px 4px color-mix(in srgb, var(--qt-glow) 55%, transparent);
+}
+.qt-scan::after { content: ""; position: absolute; left: 0; right: 0; bottom: 3px; height: 70px; background: linear-gradient(to top, color-mix(in srgb, var(--qt-glow) 22%, transparent), transparent); }
+.qt-card.is-scan .qt-scan { animation: qt-scan 1.5s .65s cubic-bezier(.45, 0, .2, 1) both; }
+@keyframes qt-scan { 0% { top: 5%; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { top: 95%; opacity: 0; } }
+.qt-ok {
+  position: absolute; left: 50%; bottom: 16px; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px 0 8px;
+  border-radius: 999px; background: #0f0f0f; color: #fff; font-size: 12px; font-weight: 600; white-space: nowrap;
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, .5); opacity: 0; transform: translate(-50%, 14px) scale(.85); pointer-events: none;
+}
+.qt-ok svg { width: 18px; height: 18px; padding: 3px; border-radius: 50%; background: #16a34a; }
+.qt-card.is-scan .qt-ok { animation: qt-ok 2.6s 2.1s both; }
+@keyframes qt-ok {
+  0% { opacity: 0; transform: translate(-50%, 14px) scale(.85); animation-timing-function: cubic-bezier(.3, 1.6, .5, 1); }
+  18% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  82% { opacity: 1; transform: translate(-50%, 0) scale(1); animation-timing-function: ease-in; }
+  100% { opacity: 0; transform: translate(-50%, 6px) scale(.95); }
+}
+
+/* Floating chips sit in front of the card in 3D */
+.qt-chip {
+  position: absolute; display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 15px; border-radius: 999px;
+  background: rgba(255, 255, 255, .1); border: 1px solid rgba(255, 255, 255, .16); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+  color: #fff; font-size: 12.5px; font-weight: 600; white-space: nowrap; transform: translateZ(80px);
+  animation: qt-float 6s ease-in-out infinite; box-shadow: 0 18px 30px -18px rgba(0, 0, 0, .7);
+}
+.qt-chip-a { top: 9%; left: -18%; }
+.qt-chip-b { top: 44%; right: -16%; padding: 0 10px; gap: 4px; animation-delay: -2s; transform: translateZ(110px); }
+.qt-chip-b i { width: 16px; height: 16px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .3); transition: background .8s var(--ease); }
+.qt-chip-c { bottom: -5%; left: -12%; animation-delay: -4s; transform: translateZ(60px); }
+@keyframes qt-float { 50% { translate: 0 -12px; } }
+
+.qt-dots { display: flex; gap: 6px; }
+.qt-dots i { width: 7px; height: 7px; border-radius: 4px; background: rgba(255, 255, 255, .25); cursor: pointer; transition: width .4s var(--ease), background .4s; }
+.qt-dots i.on { width: 22px; background: #fff; }
+
+@media (max-width: 1100px) { .qt { grid-template-columns: 1fr; } }
+@media (max-width: 640px) {
+  .qt-feats { grid-template-columns: 1fr; }
+  .qt-tilt { width: min(78%, 300px); }
+  .qt-chip { height: 30px; padding: 0 11px; font-size: 11px; }
+  .qt-chip-a { left: -14%; } .qt-chip-b { right: -14%; } .qt-chip-c { left: -8%; bottom: -6%; }
 }
