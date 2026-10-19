@@ -175,15 +175,16 @@ p { margin: 0; }
 .nav-more-btn svg { width: 14px; height: 14px; transform: rotate(90deg); transition: transform .25s var(--ease); }
 .nav-more.is-open .nav-more-btn svg { transform: rotate(-90deg); }
 .nav-drop {
-  position: absolute; top: calc(100% + 10px); left: 50%; min-width: 194px; padding: 8px;
+  position: absolute; top: calc(100% + 10px); left: 50%; min-width: 248px; padding: 6px;
+  display: flex; flex-direction: column; gap: 3px;
   background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 21px 44px -18px rgba(15, 15, 15, .25);
   opacity: 0; visibility: hidden; transform: translate(-50%, -6px);
   transition: opacity .2s, transform .2s var(--ease), visibility .2s;
 }
 .nav-more.is-open .nav-drop { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
 .nav-drop a, .nav-drop button {
-  display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;
-  padding: 11px 12px; border-radius: 12px; font-size: 14px; text-align: left; color: var(--fg);
+  display: flex; align-items: center; justify-content: space-between; gap: 28px; width: 100%;
+  padding: 10px 12px; border-radius: 10px; font-size: 14px; text-align: left; color: var(--fg); white-space: nowrap;
 }
 .nav-drop a:hover, .nav-drop button:hover, .nav-drop a[aria-current="page"] { background: var(--bg-2); }
 .nav-drop small { color: var(--mute); font-size: 12px; }
