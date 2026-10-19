@@ -344,7 +344,7 @@
                 <li><a href="learn.html">Learn</a></li>
                 <li><a href="license.html">License</a></li>
                 <li><a href="license.html#faq">FAQ</a></li>
-                <li><a href="index.html#request">Request a design</a></li>
+                <li><a href="${waLink("Hi Draft Studio, I'd like to request a design: ")}" target="_blank" rel="noopener">Request a design</a></li>
               </ul>
             </nav>
             <div class="f-links">
@@ -532,8 +532,6 @@
       draw("all");
     }
 
-    const rq = $("[data-rq]");
-    if (rq) requestBuilder(rq);
 
     const lx = $("[data-lx]");
     if (lx) licenseChecker(lx);
@@ -820,40 +818,6 @@
     uses.addEventListener("click", e => { const b = e.target.closest("[data-i]"); if (b) show(+b.dataset.i); });
     uses.addEventListener("mouseover", e => { const b = e.target.closest("[data-i]"); if (b && matchMedia("(hover: hover)").matches && b.getAttribute("aria-pressed") !== "true") show(+b.dataset.i); });
     show(0);
-  }
-
-  /* ---------- Request builder (home) ---------- */
-  function requestBuilder(root) {
-    const TYPES = ["Mockup", "Logo", "Vector", "Template", "Icon"];
-    const USES = ["Clothing & merch", "Packaging", "Social media", "Print & flyers", "A new brand", "A website"];
-    const state = { type: "Mockup", use: "Clothing & merch", note: "" };
-    const pills = (el, list, key) => {
-      el.innerHTML = list.map(v => `<button type="button" aria-pressed="${state[key] === v}" data-v="${esc(v)}">${esc(v)}</button>`).join("");
-      el.addEventListener("click", e => {
-        const b = e.target.closest("[data-v]"); if (!b) return;
-        state[key] = b.dataset.v;
-        $$("button", el).forEach(x => x.setAttribute("aria-pressed", x === b));
-        update(true);
-      });
-    };
-    const msg = $("[data-rq-msg]", root), bubble = msg.parentElement, note = $("[data-rq-note]", root);
-    const an = w => (/^[aeiou]/i.test(w) ? "an " : "a ") + w.toLowerCase();
-    const text = () => {
-      const use = state.use.charAt(0).toLowerCase() + state.use.slice(1);
-      return `Hi Draft Studio! I'm looking for ${an(state.type)} for ${use}.` + (state.note ? `\n${state.note}` : "");
-    };
-    const update = pop => {
-      const t = text();
-      msg.innerHTML = esc(t) + '<span class="caret"></span>';
-      $("[data-rq-wa]", root).href = waLink(t);
-      $("[data-rq-mail]", root).href = mailLink(`Design request: ${state.type}`, t);
-      if (pop) { bubble.classList.remove("pop"); void bubble.offsetWidth; bubble.classList.add("pop"); }
-    };
-    pills($("[data-rq-type]", root), TYPES, "type");
-    pills($("[data-rq-use]", root), USES, "use");
-    note.addEventListener("input", () => { state.note = note.value.trim(); update(false); });
-    $("[data-rq-time]", root).textContent = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) + " ✓✓";
-    update(false);
   }
 
   /* ---------- Fresh drops pieces (home) ---------- */
