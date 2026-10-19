@@ -153,9 +153,10 @@ p { margin: 0; }
 .logo img { height: 25px; width: auto; }
 
 .nav-links {
-  position: absolute; left: 50%; transform: translateX(-50%);
+  margin-left: auto; margin-right: 8px;  /* links sit on the right, beside Browse files */
   display: flex; align-items: center; gap: 6px;
 }
+.nav-links + .nav-tools { margin-left: 0; }
 .nav-links > a, .nav-more-btn {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 10px 16px; border-radius: 879px; font-size: 15px; font-weight: 400; letter-spacing: -.01em; color: #6a6a6a;
@@ -1112,6 +1113,7 @@ input[type="range"] { accent-color: var(--fg); width: 100%; }
   .lx { grid-template-columns: 1fr; }
   .ix { grid-template-columns: 1fr; }
   .nav-links { display: none; }
+  .nav-links + .nav-tools { margin-left: auto; }
   .menu-btn { display: inline-grid; }
   .hero-cards { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); }
   .icons-layout { grid-template-columns: 1fr; }
