@@ -112,7 +112,8 @@
     const link = (href, label, key) => `<a href="${href}"${active === key ? ' aria-current="page"' : ""}>${label}</a>`;
     const more = [
       { href: "browse.html?cat=vectors", label: "Vectors", key: "vectors", note: "AI · SVG · EPS" },
-      { href: "icons.html", label: "Icons", key: "icons", note: "SVG · PNG" }
+      { href: "icons.html", label: "Icons", key: "icons", note: "SVG · PNG" },
+      { href: "palettes.html", label: "Palettes", key: "palettes", note: "PNG · CSS" }
     ];
     const el = $("[data-header]");
     if (!el) return;
@@ -148,6 +149,7 @@
         <a href="index.html">Home</a>
         ${CATS.map(c => `<a href="browse.html?cat=${c.slug}">${c.name}<span>${c.formats.join(" · ")}</span></a>`).join("")}
         <a href="icons.html">Icons<span>SVG · PNG</span></a>
+        <a href="palettes.html">Palettes<span>PNG · CSS</span></a>
         <a href="learn.html">Learn<span>File formats</span></a>
         <a href="license.html">License<span>FAQ</span></a>
         <button type="button" data-open-search>Search<span>Find a file</span></button>
@@ -171,7 +173,7 @@
             </div>
             <nav class="f-links" aria-label="Files">
               <h4>Files</h4>
-              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="icons.html">Icons</a></li></ul>
+              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="icons.html">Icons</a></li><li><a href="palettes.html">Palettes</a></li></ul>
             </nav>
             <nav class="f-links" aria-label="Studio">
               <h4>Studio</h4>
@@ -1074,6 +1076,205 @@
     if (fromHash) setTimeout(() => { const b = $(`[data-id="${fromHash.id}"]`, grid); b && b.scrollIntoView({ block: "center" }); }, 50);
   }
 
+  /* ---------- Colour palettes ---------- */
+  // Colour maths: hex <-> rgb <-> hsl, plus readable text on any swatch
+  const hexRgb = h => { const n = parseInt(h.slice(1), 16); return [n >> 16 & 255, n >> 8 & 255, n & 255]; };
+  const rgbHex = (r, g, b) => "#" + [r, g, b].map(v => Math.round(Math.max(0, Math.min(255, v))).toString(16).padStart(2, "0")).join("");
+  const hslHex = (h, s, l) => {
+    h = ((h % 360) + 360) % 360; s /= 100; l /= 100;
+    const k = n => (n + h / 30) % 12, a = s * Math.min(l, 1 - l);
+    const f = n => l - a * Math.max(-1, Math.min(k(n) - 3, 9 - k(n), 1));
+    return rgbHex(f(0) * 255, f(8) * 255, f(4) * 255);
+  };
+  const hexHsl = hex => {
+    let [r, g, b] = hexRgb(hex).map(v => v / 255);
+    const mx = Math.max(r, g, b), mn = Math.min(r, g, b), l = (mx + mn) / 2, d = mx - mn;
+    let h = 0, s = 0;
+    if (d) {
+      s = d / (1 - Math.abs(2 * l - 1));
+      h = mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4;
+      h *= 60;
+    }
+    return [(h + 360) % 360, s * 100, l * 100];
+  };
+  const lum = hex => hexRgb(hex).map(v => { v /= 255; return v <= .03928 ? v / 12.92 : Math.pow((v + .055) / 1.055, 2.4); }).reduce((a, v, i) => a + v * [.2126, .7152, .0722][i], 0);
+  const inkOn = hex => lum(hex) > .36 ? "#0f0f0f" : "#ffffff";
+  const rnd = (a, b) => a + Math.random() * (b - a);
+
+  const paletteCss = (colors, name = "palette") => `:root {\n${colors.map((c, i) => `  --${slug(name)}-${i + 1}: ${c};`).join("\n")}\n}`;
+
+  // A clean 1600×900 PNG: tall swatches with each hex underneath
+  function palettePng(colors, name) {
+    const W = 1600, H = 900, pad = 64, top = 120, sw = (W - pad * 2) / colors.length, sh = 560;
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const x = c.getContext("2d");
+    x.fillStyle = "#ffffff"; x.fillRect(0, 0, W, H);
+    x.fillStyle = "#0f0f0f"; x.font = "600 40px Inter, system-ui, sans-serif"; x.textBaseline = "alphabetic";
+    x.fillText(name, pad, 84);
+    x.fillStyle = "#8a8a8a"; x.font = "500 20px Inter, system-ui, sans-serif"; x.textAlign = "right";
+    x.fillText("Draft Studio", W - pad, 84); x.textAlign = "left";
+    x.save(); x.beginPath(); x.roundRect(pad, top, W - pad * 2, sh, 28); x.clip();
+    colors.forEach((col, i) => { x.fillStyle = col; x.fillRect(pad + i * sw, top, Math.ceil(sw), sh); });
+    x.restore();
+    colors.forEach((col, i) => {
+      const cx = pad + i * sw;
+      x.fillStyle = "#0f0f0f"; x.font = "600 26px Inter, system-ui, sans-serif";
+      x.fillText(col.toUpperCase(), cx + 4, top + sh + 58);
+      x.fillStyle = "#8a8a8a"; x.font = "400 18px Inter, system-ui, sans-serif";
+      x.fillText("RGB " + hexRgb(col).join(" "), cx + 4, top + sh + 90);
+    });
+    c.toBlob(b => {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(b); a.download = `${slug(name)}${/palette/i.test(name) ? "" : "-palette"}.png`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+      toast("PNG downloaded");
+    });
+  }
+
+  // Harmony rules: each returns `n` colours around a base hue
+  function harmony(mode, n, base) {
+    const [bh, bs, bl] = base ? hexHsl(base) : [rnd(0, 360), rnd(55, 85), rnd(45, 60)];
+    const ramp = i => n === 1 ? 50 : 18 + (i / (n - 1)) * 70; // dark → light
+    const out = [];
+    for (let i = 0; i < n; i++) {
+      const t = n === 1 ? 0 : i / (n - 1);
+      let h, s, l;
+      switch (mode) {
+        case "analogous": h = bh + (t - .5) * 70; s = bs * rnd(.8, 1.05); l = ramp(i); break;
+        case "mono": h = bh + rnd(-4, 4); s = Math.max(18, bs * rnd(.6, 1)); l = ramp(i); break;
+        case "complement": h = i < Math.ceil(n / 2) ? bh : bh + 180; s = bs * rnd(.75, 1); l = ramp(i); break;
+        case "split": h = bh + [0, 150, 210][i % 3]; s = bs * rnd(.75, 1); l = ramp(i) * .85 + 8; break;
+        case "triad": h = bh + [0, 120, 240][i % 3]; s = bs * rnd(.7, 1); l = 30 + t * 50; break;
+        case "pastel": h = bh + i * rnd(30, 70); s = rnd(55, 80); l = rnd(80, 90); break;
+        case "earthy": h = bh % 60 + 20 + rnd(-15, 25); s = rnd(18, 45); l = 20 + t * 62; break;
+        default: // smart random: neighbouring hues + one accent, smooth light/dark ramp
+          h = i === n - 2 && n > 3 ? bh + 180 + rnd(-20, 20) : bh + rnd(-35, 35);
+          s = rnd(45, 90); l = 14 + t * 74 + rnd(-6, 6);
+      }
+      out.push(hslHex(h, Math.max(0, Math.min(100, s)), Math.max(6, Math.min(96, l))));
+    }
+    if (base && mode !== "pastel") { // keep the exact base colour in the palette, at its closest spot
+      const idx = out.reduce((best, c, i) => Math.abs(hexHsl(c)[2] - bl) < Math.abs(hexHsl(out[best])[2] - bl) ? i : best, 0);
+      out[idx] = base;
+    }
+    return out;
+  }
+
+  function palettes() {
+    const pg = $("[data-pg]"), strip = $("[data-pg-strip]", pg);
+    const mode = $("[data-pg-mode]"), count = $("[data-pg-count]"), baseIn = $("[data-pg-base]");
+    const state = { colors: [], locked: [], base: "" };
+    const LOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
+    const UNLOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.6-1.7"/></svg>`;
+
+    const drawGen = () => {
+      strip.innerHTML = state.colors.map((c, i) => {
+        const ink = inkOn(c), [h, s, l] = hexHsl(c);
+        return `
+          <div class="pg-sw" style="--c:${c};--ink:${ink}" data-i="${i}">
+            <div class="pg-sw-tools">
+              <button type="button" class="pg-tool" data-lock="${i}" aria-pressed="${!!state.locked[i]}" aria-label="${state.locked[i] ? "Unlock" : "Lock"} colour">${state.locked[i] ? LOCK : UNLOCK}</button>
+              <button type="button" class="pg-tool" data-copy="${c}" aria-label="Copy ${c}">${icon("copy")}</button>
+              <label class="pg-tool" aria-label="Edit colour">${icon("eyedropper")}<input type="color" value="${c}" data-edit="${i}"></label>
+            </div>
+            <button type="button" class="pg-sw-label" data-copy="${c}">
+              <b>${c.slice(1).toUpperCase()}</b>
+              <span>HSL ${Math.round(h)} ${Math.round(s)}% ${Math.round(l)}%</span>
+            </button>
+          </div>`;
+      }).join("");
+      $("[data-pg-hexes]", pg).innerHTML = state.colors.map(c => `<button type="button" data-copy="${c}"><i style="background:${c}"></i>${c.toUpperCase()}</button>`).join("");
+      history.replaceState(null, "", "#" + state.colors.map(c => c.slice(1)).join("-"));
+    };
+    const generate = () => {
+      const n = +count.value;
+      const fresh = harmony(mode.value, n, state.base || (state.locked.some(Boolean) ? state.colors[state.locked.findIndex(Boolean)] : ""));
+      state.colors = fresh.map((c, i) => state.locked[i] && state.colors[i] ? state.colors[i] : c);
+      state.locked.length = n;
+      drawGen();
+      strip.classList.remove("is-new"); void strip.offsetWidth; strip.classList.add("is-new");
+    };
+    const load = colors => { state.colors = colors.slice(0, 7); state.locked = []; count.value = String(Math.max(3, state.colors.length)); count.dispatchEvent(new Event("sync")); drawGen(); };
+
+    // Start from a shared link (#ff6b35-f7931e-…) or a fresh palette
+    const fromHash = location.hash.slice(1).split("-").filter(h => /^[0-9a-f]{6}$/i.test(h)).map(h => "#" + h.toLowerCase());
+    if (fromHash.length >= 2) load(fromHash); else generate();
+
+    $("[data-pg-go]", pg).addEventListener("click", generate);
+    mode.addEventListener("change", generate);
+    count.addEventListener("change", generate);
+    baseIn.addEventListener("input", () => {
+      state.base = baseIn.value;
+      $("[data-pg-base-chip]", pg).style.background = state.base;
+      $("[data-pg-base-txt]", pg).textContent = state.base.toUpperCase();
+      pg.classList.add("has-base");
+      generate();
+    });
+    document.addEventListener("keydown", e => {
+      if (e.code !== "Space" || e.target.closest("input, textarea, select, a, [contenteditable]")) return;
+      if (e.target.closest("button") && !e.target.closest("[data-pg-strip], [data-pg-go]")) return; // let other buttons work
+      e.preventDefault(); generate();
+    });
+    pg.addEventListener("click", e => {
+      const l = e.target.closest("[data-lock]");
+      if (l) { const i = +l.dataset.lock; state.locked[i] = !state.locked[i]; drawGen(); return; }
+    });
+    pg.addEventListener("input", e => {
+      const ed = e.target.closest("[data-edit]"); if (!ed) return;
+      const i = +ed.dataset.edit; state.colors[i] = ed.value; state.locked[i] = true;
+      const sw = $(`.pg-sw[data-i="${i}"]`, strip);
+      sw.style.setProperty("--c", ed.value); sw.style.setProperty("--ink", inkOn(ed.value));
+      $("b", sw).textContent = ed.value.slice(1).toUpperCase();
+    });
+    pg.addEventListener("change", e => { if (e.target.closest("[data-edit]")) drawGen(); });
+    $("[data-pg-hex]", pg).addEventListener("click", () => copy(state.colors.map(c => c.toUpperCase()).join(", "), "HEX codes copied"));
+    $("[data-pg-css]", pg).addEventListener("click", () => copy(paletteCss(state.colors), "CSS copied"));
+    $("[data-pg-link]", pg).addEventListener("click", () => copy(location.href, "Link copied"));
+    $("[data-pg-png]", pg).addEventListener("click", () => palettePng(state.colors, "Draft Studio palette"));
+
+    // Library of hand-picked palettes
+    const grid = $("[data-pal-grid]"), moodSel = $("[data-pal-mood]"), q = $("[data-pal-q]");
+    const PALS = DS.palettes || [];
+    const moods = PALS.map(p => p.mood).filter((m, i, a) => a.indexOf(m) === i);
+    moodSel.innerHTML = `<option value="">All moods</option>` + moods.map(m => `<option value="${esc(m)}">${esc(m)}</option>`).join("");
+    const lib = { mood: "", q: "" };
+    const drawLib = () => {
+      const ql = lib.q.toLowerCase().replace(/^#/, "");
+      const list = PALS.filter(p => (!lib.mood || p.mood === lib.mood) &&
+        (!ql || [p.name, p.mood, p.colors.join(" ")].join(" ").toLowerCase().includes(ql)));
+      $("[data-pal-count]").textContent = `${list.length} palette${list.length === 1 ? "" : "s"}`;
+      grid.innerHTML = list.length ? list.map(p => {
+        const i = PALS.indexOf(p);
+        return `
+          <article class="pal reveal">
+            <div class="pal-strip">${p.colors.map(c => `<button type="button" style="--c:${c};--ink:${inkOn(c)}" data-copy="${c}" aria-label="Copy ${c}"><span>${c.slice(1).toUpperCase()}</span></button>`).join("")}</div>
+            <div class="pal-meta">
+              <div><h3>${esc(p.name)}</h3><p>${esc(p.mood)} · ${p.colors.length} colours</p></div>
+              <div class="pal-actions">
+                <button type="button" class="pal-btn" data-pal-open="${i}" aria-label="Edit in generator" title="Edit in generator">${icon("magic")}</button>
+                <button type="button" class="pal-btn" data-pal-css="${i}" aria-label="Copy CSS" title="Copy CSS">${icon("copy")}</button>
+                <button type="button" class="pal-btn is-dark" data-pal-png="${i}" aria-label="Download PNG" title="Download PNG">${icon("download")}</button>
+              </div>
+            </div>
+          </article>`;
+      }).join("") : `<div class="empty"><h3>No palette matches that.</h3><p>Try another word, or make one with the generator above.</p></div>`;
+      reveal(grid);
+    };
+    moodSel.addEventListener("change", () => { lib.mood = moodSel.value; drawLib(); });
+    q.addEventListener("input", () => { lib.q = q.value.trim(); drawLib(); });
+    grid.addEventListener("click", e => {
+      const b = e.target.closest("[data-pal-open], [data-pal-css], [data-pal-png]"); if (!b) return;
+      const p = PALS[+(b.dataset.palOpen || b.dataset.palCss || b.dataset.palPng)];
+      if (b.dataset.palCss) copy(paletteCss(p.colors, p.name), "CSS copied");
+      else if (b.dataset.palPng) palettePng(p.colors, p.name);
+      else { load(p.colors); pg.scrollIntoView({ behavior: "smooth", block: "start" }); toast(`${p.name} loaded in the generator`); }
+    });
+    // Any [data-copy] on the page copies its hex
+    document.addEventListener("click", e => { const c = e.target.closest("[data-copy]"); if (c) copy(c.dataset.copy.toUpperCase(), `${c.dataset.copy.toUpperCase()} copied`); });
+    drawLib();
+  }
+
   /* ---------- Learn ---------- */
   function learn() {
     const fx = $("[data-formats]");
@@ -1141,6 +1342,7 @@
       });
       document.addEventListener("click", e => { if (!wrap.contains(e.target)) setOpen(false); });
       document.addEventListener("keydown", e => { if (e.key === "Escape") setOpen(false); });
+      sel.addEventListener("sync", render); // page code changed the value without a user pick
       render();
     });
   }
@@ -1150,7 +1352,7 @@
   header(page === "browse" ? (new URLSearchParams(location.search).get("cat") || "browse") : page);
   footer();
   chrome();
-  ({ home, browse, item, icons, learn, license }[page] || (() => {}))();
+  ({ home, browse, item, icons, palettes, learn, license }[page] || (() => {}))();
   enhanceSelects();
   reveal();
 })();
