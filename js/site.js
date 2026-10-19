@@ -108,9 +108,128 @@
     document.addEventListener("mouseover", e => { const el = find(e.target); if (el !== cur) el ? show(el, tip.classList.contains("is-on") ? 0 : 280) : hide(); });
     document.addEventListener("focusin", e => { const el = find(e.target); if (el && e.target.matches(":focus-visible")) show(el, 0); });
     document.addEventListener("focusout", hide);
-    document.addEventListener("click", () => setTimeout(place, 0)); // labels like Save / Remove from saved can change on click
+    document.addEventListener("pointerdown", hide); // a click starts something new (menus, the colour picker)
     addEventListener("scroll", hide, { passive: true });
     document.addEventListener("keydown", e => { if (e.key === "Escape") hide(); });
+  }
+
+  // Colour picker: replaces the browser's picker for every <input type="color"> on the site.
+  // It writes back to the input and fires "input" while dragging and "change" when it closes,
+  // so page code keeps listening to the input as before.
+  function colorPicker() {
+    const RECENT_KEY = "ds-recent-colours";
+    const loadRecent = () => { try { return JSON.parse(localStorage.getItem(RECENT_KEY)) || []; } catch (e) { return []; } };
+    const hsvRgb = (h, s, v) => {
+      const f = n => { const k = (n + h / 60) % 6; return v - v * s * Math.max(0, Math.min(k, 4 - k, 1)); };
+      return [f(5) * 255, f(3) * 255, f(1) * 255];
+    };
+    const rgbHsv = (r, g, b) => {
+      r /= 255; g /= 255; b /= 255;
+      const mx = Math.max(r, g, b), d = mx - Math.min(r, g, b);
+      const h = d ? 60 * (mx === r ? ((g - b) / d) % 6 : mx === g ? (b - r) / d + 2 : (r - g) / d + 4) : 0;
+      return [(h + 360) % 360, mx ? d / mx : 0, mx];
+    };
+    const pk = document.createElement("div");
+    pk.className = "cpick"; pk.hidden = true;
+    pk.setAttribute("role", "dialog"); pk.setAttribute("aria-label", "Pick a colour");
+    pk.innerHTML = `
+      <div class="cp-sv" data-sv><span class="cp-thumb" data-sv-thumb></span></div>
+      <div class="cp-row">
+        ${"EyeDropper" in window ? `<button type="button" class="cp-drop" data-drop aria-label="Pick from screen">${icon("eyedropper")}</button>` : ""}
+        <span class="cp-now" data-now></span>
+        <div class="cp-hue" data-hue><span class="cp-thumb" data-hue-thumb></span></div>
+      </div>
+      <div class="cp-fields">
+        <label class="cp-hex"><span>#</span><input data-hex maxlength="7" spellcheck="false" autocomplete="off" aria-label="Hex"></label>
+        <label><input data-ch="0" inputmode="numeric" aria-label="Red"><small>R</small></label>
+        <label><input data-ch="1" inputmode="numeric" aria-label="Green"><small>G</small></label>
+        <label><input data-ch="2" inputmode="numeric" aria-label="Blue"><small>B</small></label>
+      </div>
+      <div class="cp-recent" data-recent></div>`;
+    document.body.appendChild(pk);
+    const sv = $("[data-sv]", pk), hue = $("[data-hue]", pk), hexIn = $("[data-hex]", pk);
+    let target = null, hsv = [0, 0, 0], start = "";
+
+    const hex = () => rgbHex(...hsvRgb(...hsv));
+    const render = (skip) => {
+      const c = hex(), [r, g, b] = hexRgb(c);
+      sv.style.setProperty("--hue", `hsl(${hsv[0]}, 100%, 50%)`);
+      $("[data-sv-thumb]", pk).style.cssText = `left:${hsv[1] * 100}%;top:${(1 - hsv[2]) * 100}%;background:${c}`;
+      $("[data-hue-thumb]", pk).style.cssText = `left:${hsv[0] / 360 * 100}%;background:hsl(${hsv[0]}, 100%, 50%)`;
+      $("[data-now]", pk).style.background = c;
+      if (skip !== "hex") hexIn.value = c.slice(1).toUpperCase();
+      if (skip !== "rgb") $$("[data-ch]", pk).forEach((el, i) => { el.value = [r, g, b][i]; });
+    };
+    const emit = () => {
+      if (!target) return;
+      target.value = hex();
+      target.dispatchEvent(new Event("input", { bubbles: true }));
+    };
+    const set = (c, skip) => { hsv = rgbHsv(...hexRgb(c)); render(skip); emit(); };
+    const drawRecent = () => {
+      const list = loadRecent();
+      $("[data-recent]", pk).innerHTML = list.length ? `<small>Recent</small>` + list.map(c => `<button type="button" style="background:${c}" data-recent-c="${c}" aria-label="${c}"></button>`).join("") : "";
+    };
+    const place = () => {
+      const r = target.getBoundingClientRect(), w = pk.offsetWidth, h = pk.offsetHeight;
+      const below = r.bottom + 10 + h < innerHeight || r.top - h - 10 < 0;
+      pk.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + scrollX + "px";
+      pk.style.top = (below ? r.bottom + 10 : r.top - h - 10) + scrollY + "px";
+    };
+    const open = input => {
+      if (target === input) return close();
+      if (target) close();
+      target = input; start = input.value;
+      hsv = rgbHsv(...hexRgb(/^#[0-9a-f]{6}$/i.test(input.value) ? input.value : "#0f0f0f"));
+      drawRecent(); render();
+      pk.hidden = false; place();
+      requestAnimationFrame(() => pk.classList.add("is-on"));
+    };
+    const close = () => {
+      if (!target) return;
+      const t = target, c = hex();
+      target = null;
+      pk.classList.remove("is-on"); pk.hidden = true;
+      if (c !== start.toLowerCase()) {
+        try { localStorage.setItem(RECENT_KEY, JSON.stringify([c].concat(loadRecent().filter(x => x !== c)).slice(0, 9))); } catch (e) {}
+        if (t.isConnected) t.dispatchEvent(new Event("change", { bubbles: true }));
+      }
+    };
+    const drag = (el, fn) => el.addEventListener("pointerdown", e => {
+      e.preventDefault(); el.setPointerCapture(e.pointerId);
+      const move = ev => { const r = el.getBoundingClientRect(); fn(Math.max(0, Math.min(1, (ev.clientX - r.left) / r.width)), Math.max(0, Math.min(1, (ev.clientY - r.top) / r.height))); render(); emit(); };
+      move(e);
+      el.addEventListener("pointermove", move);
+      el.addEventListener("pointerup", () => el.removeEventListener("pointermove", move), { once: true });
+    });
+    drag(sv, (x, y) => { hsv[1] = x; hsv[2] = 1 - y; });
+    drag(hue, x => { hsv[0] = Math.min(359.9, x * 360); });
+    hexIn.addEventListener("input", () => {
+      const v = hexIn.value.replace(/[^0-9a-f]/gi, "");
+      const full = v.length === 3 ? v.split("").map(x => x + x).join("") : v;
+      if (full.length === 6) set("#" + full.toLowerCase(), "hex");
+    });
+    $$("[data-ch]", pk).forEach(el => el.addEventListener("input", () => {
+      const rgb = $$("[data-ch]", pk).map(x => Math.max(0, Math.min(255, parseInt(x.value, 10) || 0)));
+      set(rgbHex(...rgb), "rgb");
+    }));
+    pk.addEventListener("keydown", e => { if (e.key === "Enter") close(); });
+    pk.addEventListener("click", e => {
+      const rc = e.target.closest("[data-recent-c]"); if (rc) set(rc.dataset.recentC);
+      if (e.target.closest("[data-drop]")) new window.EyeDropper().open().then(r => set(r.sRGBHex.toLowerCase())).catch(() => {});
+    });
+    // Take over every colour input, now and in content drawn later
+    document.addEventListener("click", e => {
+      const input = e.target.closest && e.target.closest('input[type="color"]');
+      if (input) { e.preventDefault(); open(input); return; }
+      if (target && !pk.contains(e.target)) close();
+    }, true);
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape" && target) { set(start); close(); }
+      const input = e.target.closest && e.target.closest('input[type="color"]');
+      if (input && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); open(input); }
+    });
+    addEventListener("resize", () => target && place());
   }
 
   // Saved designs live in the visitor's browser only
@@ -1087,7 +1206,13 @@
         img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(src);
       });
       $$("[data-c]", insp).forEach(b => b.addEventListener("click", () => { state.color = b.dataset.c; apply(); }));
-      $("input[type=color]", insp).addEventListener("input", e => { state.color = e.target.value; apply(); });
+      const ci = $("input[type=color]", insp);
+      ci.addEventListener("input", () => { // live while picking; rebuild (download links) when the picker closes
+        state.color = ci.value;
+        grid.style.setProperty("--ic", state.color); $(".big", insp).style.setProperty("--ic", state.color);
+        $$("[data-c]", insp).forEach(x => x.setAttribute("aria-pressed", "false"));
+      });
+      ci.addEventListener("change", apply);
       $("[data-size]", insp).addEventListener("input", e => { state.size = +e.target.value; $("[data-size-label]", insp).textContent = state.size + "px"; grid.style.setProperty("--isz", state.size + "px"); });
     };
 
@@ -1315,6 +1440,8 @@
       const i = +ed.dataset.edit; state.colors[i] = ed.value; state.locked[i] = true;
       const row = $(`.ps-row[data-i="${i}"]`, strip);
       row.style.setProperty("--c", ed.value); $(".ps-hex", row).textContent = ed.value.toUpperCase();
+      const [h, sat, l] = hexHsl(ed.value);
+      $(".ps-meta", row).textContent = `RGB ${hexRgb(ed.value).join(" ")} · HSL ${Math.round(h)} ${Math.round(sat)}% ${Math.round(l)}%`;
       paint();
     });
     pg.addEventListener("change", e => { if (e.target.closest("[data-edit]")) drawGen(); });
@@ -1453,5 +1580,6 @@
   ({ home, browse, item, icons, palettes, learn, license }[page] || (() => {}))();
   enhanceSelects();
   tooltips();
+  colorPicker();
   reveal();
 })();
