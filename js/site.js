@@ -437,9 +437,10 @@
     const more = $(".nav-more"), moreBtn = $(".nav-more-btn");
     if (more) {
       const setMore = open => { more.classList.toggle("is-open", open); moreBtn.setAttribute("aria-expanded", open); };
-      moreBtn.addEventListener("click", e => { e.stopPropagation(); setMore(!more.classList.contains("is-open")); });
+      let hoverAt = 0; // a click right after hover-opening should not close it again
+      moreBtn.addEventListener("click", e => { e.stopPropagation(); setMore(performance.now() - hoverAt < 700 ? true : !more.classList.contains("is-open")); });
       if (matchMedia("(hover: hover)").matches) {
-        more.addEventListener("mouseenter", () => setMore(true));
+        more.addEventListener("mouseenter", () => { hoverAt = performance.now(); setMore(true); });
         more.addEventListener("mouseleave", () => setMore(false));
       }
       document.addEventListener("click", e => { if (!more.contains(e.target)) setMore(false); });
@@ -1266,7 +1267,8 @@
     qv.innerHTML = `
       <div class="qv-backdrop" data-qv-close></div>
       <div class="qv-panel" role="dialog" aria-modal="true" aria-label="File preview" tabindex="-1">
-        <div class="qv-bar">
+        <div class="qv-bar" data-qv-drag>
+          <span class="qv-grab" aria-hidden="true"></span>
           <span class="qv-pos" data-qv-pos></span>
           <div class="qv-tools">
             <button class="qv-btn" type="button" data-qv-step="-1" aria-label="Previous file">${icon("arrow-left")}</button>
@@ -1302,6 +1304,10 @@
       if (how === "replace") history.replaceState({ qv: id }, "", itemUrl(it));
       if (qv.hidden) {
         returnTo = document.activeElement;
+        document.documentElement.style.setProperty("--qv-origin", (scrollY + innerHeight / 2) + "px");
+        document.documentElement.style.setProperty("--qv-pull", 0);
+        // keep the page from shifting when the scrollbar disappears under the lock
+        document.documentElement.style.paddingRight = (innerWidth - document.documentElement.clientWidth) + "px";
         qv.hidden = false; document.documentElement.classList.add("qv-lock");
         requestAnimationFrame(() => qv.classList.add("is-open"));
       }
@@ -1310,8 +1316,8 @@
     const hide = () => {
       if (!cur) return;
       cur = null; list = [];
-      qv.classList.remove("is-open"); document.documentElement.classList.remove("qv-lock");
-      setTimeout(() => { if (!cur) qv.hidden = true; }, 260);
+      qv.classList.remove("is-open"); document.documentElement.classList.remove("qv-lock"); document.documentElement.style.paddingRight = "";
+      setTimeout(() => { if (!cur) { qv.hidden = true; panel.style.transform = panel.style.transition = ""; const bd = $(".qv-backdrop", qv); bd.style.opacity = bd.style.transition = ""; } }, 560);
       if (returnTo && returnTo.focus) returnTo.focus({ preventScroll: true });
     };
     const close = () => { if (history.state && history.state.qv) history.back(); else hide(); };
@@ -1336,6 +1342,85 @@
       else if (!e.target.closest("input, textarea") && (e.key === "ArrowRight" || e.key === "ArrowLeft")) step(e.key === "ArrowRight" ? 1 : -1);
     });
     addEventListener("popstate", e => { if (e.state && e.state.qv) show(e.state.qv); else hide(); });
+
+    // Drag the sheet by its top bar: it follows the pointer 1:1, rubber-bands upward,
+    // and a long pull or a quick flick down dismisses it (iOS sheet behaviour)
+    const bar = $("[data-qv-drag]", qv), backdrop = $(".qv-backdrop", qv), html = document.documentElement;
+    let drag = null;
+    bar.addEventListener("pointerdown", e => {
+      if (e.button || e.target.closest("button, a")) return;
+      drag = { y0: e.clientY, last: e.clientY, lt: performance.now(), v: 0, dy: 0, on: false, id: e.pointerId };
+    });
+    addEventListener("pointermove", e => {
+      if (!drag || e.pointerId !== drag.id) return;
+      const dy = e.clientY - drag.y0;
+      if (!drag.on) {
+        if (Math.abs(dy) < 4) return;
+        drag.on = true; try { bar.setPointerCapture(drag.id); } catch (err) {}
+        panel.classList.add("is-dragging"); html.classList.add("qv-dragging");
+        panel.style.transition = "none"; backdrop.style.transition = "none";
+      }
+      const now = performance.now();
+      drag.v = .8 * ((e.clientY - drag.last) / Math.max(1, now - drag.lt)) + .2 * drag.v;
+      drag.last = e.clientY; drag.lt = now; drag.dy = dy;
+      const y = dy >= 0 ? dy : -Math.pow(-dy, .62); // resistance when pulled up
+      const pull = Math.max(0, Math.min(1, dy / (panel.offsetHeight * .8)));
+      panel.style.transform = `translateY(${y.toFixed(1)}px)`;
+      backdrop.style.opacity = String(1 - pull * .9);
+      html.style.setProperty("--qv-pull", pull.toFixed(3));
+    });
+    const endDrag = e => {
+      if (!drag || (e && e.pointerId !== drag.id)) return;
+      const d = drag; drag = null;
+      if (!d.on) return;
+      panel.classList.remove("is-dragging"); html.classList.remove("qv-dragging");
+      const dismiss = d.dy > panel.offsetHeight * .22 || (d.v > .4 && d.dy > 20);
+      if (dismiss) {
+        // carry the flick's speed: faster flicks finish quicker
+        const ms = Math.round(Math.max(220, Math.min(520, (panel.offsetHeight - d.dy) / Math.max(.8, d.v * 1.4))));
+        panel.style.transition = `transform ${ms}ms cubic-bezier(.2, .7, .3, 1)`; backdrop.style.transition = `opacity ${ms}ms ease`;
+        html.style.setProperty("--qv-pull", 1);
+        if (navigator.vibrate) navigator.vibrate(6);
+        requestAnimationFrame(() => { panel.style.transform = ""; backdrop.style.opacity = ""; close(); });
+      } else {
+        panel.style.transition = "transform var(--dur-bouncy) var(--spring-bouncy)"; backdrop.style.transition = "";
+        panel.style.transform = ""; backdrop.style.opacity = ""; html.style.setProperty("--qv-pull", 0);
+        setTimeout(() => { panel.style.transition = ""; }, 600);
+      }
+    };
+    addEventListener("pointerup", endDrag);
+    addEventListener("pointercancel", endDrag);
+  }
+
+  /* ---------- Press feedback (iOS style) ---------- */
+  // Anything tappable shrinks a touch under the finger and springs back on release.
+  // Uses the Web Animations API on the `scale` property, so it never fights the
+  // element's own CSS transforms, and it can be interrupted mid-motion.
+  const SPRING_BOUNCY = "linear(0, 0.035, 0.125, 0.249, 0.389, 0.531, 0.665, 0.784, 0.885, 0.966, 1.026, 1.068, 1.094, 1.106, 1.108, 1.102, 1.091, 1.077, 1.062, 1.046, 1.032, 1.02, 1.01, 1.002, 0.996, 0.992, 0.989, 0.988, 0.988, 0.989, 0.991, 0.992, 0.994, 0.995, 0.997, 0.998, 1)";
+  function pressFX() {
+    if (!document.body.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const springOK = (() => { try { return CSS.supports("transition-timing-function", "linear(0, 1)"); } catch (e) { return false; } })();
+    const SEL = [".btn", ".card", ".drop-card", ".drop-req", ".pal", ".qs-tile", ".qs-type", ".qs-look", ".qs-ico", ".qs-seg-btn", ".qs-iconbtn", ".qs-upload",
+      ".pal-btn", ".pt-rows button", ".pt-swatches button", ".glass-btn", ".qv-btn", ".icon-btn", ".icon-cell", ".swatch", ".sel-btn", ".dd-btn",
+      ".nav-links > a", ".nav-more-btn", ".fx-row", ".lx-uses button", ".chip", ".seg button", ".ix-grid a", ".ps-tool", ".ps-theme button",
+      ".pg-base", ".cp-drop", ".cp-recent button", ".shelves > *", ".logo", ".pg-hexes button", ".qt-dots i", ".pt-dots i"].join(",");
+    const scaleOf = el => { const w = el.offsetWidth; return w > 420 ? .985 : w > 200 ? .97 : w > 64 ? .95 : .9; };
+    const anim = (el, to, down) => {
+      const from = parseFloat(getComputedStyle(el).scale) || 1;
+      if (el._press) el._press.cancel();
+      el._press = el.animate([{ scale: from }, { scale: to }], down
+        ? { duration: 140, easing: "cubic-bezier(.2, .8, .2, 1)", fill: "forwards" }
+        : { duration: springOK ? 580 : 420, easing: springOK ? SPRING_BOUNCY : "cubic-bezier(.34, 1.56, .64, 1)", fill: "forwards" });
+      if (!down) el._press.onfinish = () => { if (el._press) { el._press.cancel(); el._press = null; } };
+    };
+    document.addEventListener("pointerdown", e => {
+      if (e.button) return;
+      const el = e.target.closest(SEL);
+      if (!el || el.disabled || el.closest("[data-qv-drag]")) return;
+      anim(el, scaleOf(el), true);
+      const up = () => { anim(el, 1, false); removeEventListener("pointerup", up); removeEventListener("pointercancel", up); el.removeEventListener("pointerleave", up); };
+      addEventListener("pointerup", up); addEventListener("pointercancel", up); el.addEventListener("pointerleave", up);
+    }, { passive: true });
   }
 
   /* ---------- Icons ---------- */
@@ -1777,5 +1862,6 @@
   tooltips();
   colorPicker();
   quickView();
+  pressFX();
   reveal();
 })();
