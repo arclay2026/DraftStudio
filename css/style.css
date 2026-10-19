@@ -1595,7 +1595,7 @@ html.qv-lock { overflow: hidden; }
 .qt {
   --qt-bg: #fff; --qt-rx: .28; --qt-s: .9; --qt-rot: 0deg; --qt-ring: 1.6; --qt-ball: .8; --qt-eye: #0f0f0f; --qt-glow: #2b5bff;
   display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: clamp(28px, 4vw, 72px); align-items: center;
-  border-radius: var(--radius-lg); background: var(--fg); color: #fff; padding: clamp(26px, 4vw, 64px); overflow: hidden;
+  border-radius: 0; background: var(--fg); color: #fff; padding: clamp(48px, 6vw, 104px) var(--edge); overflow: hidden;  /* full-bleed band */
 }
 .qt .eyebrow { background: rgba(255, 255, 255, .08); border-color: rgba(255, 255, 255, .1); color: #fff; box-shadow: none; }
 .qt h2 { margin: 16px 0 12px; }
@@ -1675,5 +1675,5 @@ html.qv-lock { overflow: hidden; }
   .qt-feats { grid-template-columns: 1fr; }
   .qt-tilt { width: min(78%, 300px); }
   .qt-chip { height: 30px; padding: 0 11px; font-size: 11px; }
-  .qt-chip-a { left: -14%; } .qt-chip-b { right: -14%; } .qt-chip-c { left: -8%; bottom: -6%; }
+  .qt-chip-a { left: -6%; } .qt-chip-b { right: -8%; } .qt-chip-c { left: -4%; bottom: -6%; }
 }
