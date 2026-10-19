@@ -91,7 +91,7 @@
     const place = () => {
       if (!cur) return;
       tip.textContent = textOf(cur);
-      const r = cur.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, gap = 9;
+      const r = cur.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight, gap = 7;
       const below = r.top - h - gap < 8;
       const left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2));
       tip.style.left = left + "px";
