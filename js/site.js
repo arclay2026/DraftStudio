@@ -112,9 +112,7 @@
     const link = (href, label, key) => `<a href="${href}"${active === key ? ' aria-current="page"' : ""}>${label}</a>`;
     const more = [
       { href: "browse.html?cat=vectors", label: "Vectors", key: "vectors", note: "AI · SVG · EPS" },
-      { href: "icons.html", label: "Icons", key: "icons", note: "SVG · PNG" },
-      { href: "learn.html", label: "Learn", key: "learn", note: "File formats" },
-      { href: "license.html", label: "License", key: "license", note: "& FAQ" }
+      { href: "icons.html", label: "Icons", key: "icons", note: "SVG · PNG" }
     ];
     const el = $("[data-header]");
     if (!el) return;
@@ -130,6 +128,8 @@
             ${link("browse.html?cat=mockups", "Mockups", "mockups")}
             ${link("browse.html?cat=logos", "Logos", "logos")}
             ${link("browse.html?cat=templates", "Templates", "templates")}
+            ${link("learn.html", "Learn", "learn")}
+            ${link("license.html", "License", "license")}
             <div class="nav-more">
               <button class="nav-more-btn${more.some(m => m.key === active) ? " is-current" : ""}" type="button" aria-expanded="false" aria-haspopup="true">More ${icon("chevron-right")}</button>
               <div class="nav-drop">
