@@ -551,8 +551,16 @@ h2 .soft { color: #a3a3a3; }
 
 /* Featured drop */
 .drop-feat { grid-column: span 2; grid-row: span 2; display: flex; align-items: flex-end; padding: 12px; }
-.drop-new { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px 0 10px; border-radius: 879px; background: var(--fg); color: #fff; font-size: 12px; font-weight: 600; }
-.drop-new i { width: 8px; height: 8px; border-radius: 50%; background: var(--lime); animation: pulse 2.4s infinite; box-shadow: 0 0 0 4px color-mix(in srgb, var(--lime) 25%, transparent); }
+/* "Latest drop" badge: electric blue with a live pulse */
+.drop-new {
+  --live: #2b5bff;
+  display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 12px 0 10px; border-radius: 879px;
+  background: var(--live); color: #fff; font-size: 12px; font-weight: 600; animation: live-glow 2s ease-out infinite;
+}
+.drop-new i { position: relative; width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+.drop-new i::after { content: ""; position: absolute; inset: 0; border-radius: 50%; background: #fff; animation: live-ping 2s ease-out infinite; }
+@keyframes live-ping { 0% { transform: scale(1); opacity: .8; } 80%, 100% { transform: scale(2.8); opacity: 0; } }
+@keyframes live-glow { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--live) 55%, transparent); } 80%, 100% { box-shadow: 0 0 0 10px transparent; } }
 .drop-panel {
   position: relative; z-index: 1; width: min(100%, 493px); padding: clamp(16px, 1.8vw, 23px); border-radius: 18px;
   background: linear-gradient(135deg, rgba(255, 255, 255, .42), rgba(255, 255, 255, .16));
