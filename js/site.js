@@ -1206,30 +1206,76 @@
   }
 
   function palettes() {
-    const pg = $("[data-pg]"), strip = $("[data-pg-strip]", pg);
+    const pg = $("[data-pg]"), strip = $("[data-pg-strip]", pg), preview = $("[data-ps-preview]", pg);
     const mode = $("[data-pg-mode]"), count = $("[data-pg-count]"), baseIn = $("[data-pg-base]");
-    const state = { colors: [], locked: [], base: "" };
+    const state = { colors: [], locked: [], base: "", dark: false };
+
     const LOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
     const UNLOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.6-1.7"/></svg>`;
 
+    // Roles: lightest = background, darkest = text, most saturated = primary, then accent, the rest surfaces
+    const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
+    const grade = r => r >= 7 ? "AAA" : r >= 4.5 ? "AA" : r >= 3 ? "AA Large" : "Low";
+    const PREVIEW_HTML_ = `
+      <div class="pv-nav"><span class="pv-logo"><i></i>Studio</span><span class="pv-links"><i></i><i></i><i></i></span><span class="pv-btn pv-sm">Sign up</span></div>
+      <div class="pv-hero">
+        <span class="pv-tag">New season</span>
+        <h3>Colour that<br>does the work.</h3>
+        <p>See your palette on a real layout before you commit to it.</p>
+        <div class="pv-row"><span class="pv-btn">Get started</span><span class="pv-ghost">Learn more</span></div>
+      </div>
+      <div class="pv-cards">
+        <div class="pv-card"><small>Growth</small><b>84%</b><div class="pv-bars"><i style="height:38%"></i><i style="height:62%"></i><i style="height:48%"></i><i style="height:80%"></i><i style="height:66%"></i><i style="height:94%"></i></div></div>
+        <div class="pv-card pv-alt"><div class="pv-avatars"><i></i><i></i><i></i></div><small>Team</small><b>12 people</b><span class="pv-line"></span><span class="pv-line s"></span></div>
+      </div>`;
+    const rolesOf = colors => {
+      const idx = colors.map((c, i) => i);
+      const byLum = idx.slice().sort((a, b) => lum(colors[b]) - lum(colors[a]));
+      const bg = byLum[0], ink = byLum[byLum.length - 1];
+      const rest = idx.filter(i => i !== bg && i !== ink).sort((a, b) => hexHsl(colors[b])[1] - hexHsl(colors[a])[1]);
+      const r = {}; r[bg] = "Background"; r[ink] = "Text";
+      rest.forEach((i, k) => { r[i] = ["Primary", "Accent", "Surface", "Surface 2", "Surface 3"][k]; });
+      return { r, bg, ink, primary: rest[0] ?? ink, accent: rest[1] ?? rest[0] ?? ink, surface: rest[2] };
+    };
+    preview.innerHTML = PREVIEW_HTML_;
+    const paint = () => {
+      const c = state.colors, ro = rolesOf(c);
+      const light = c[ro.bg], dark = c[ro.ink];
+      // A page needs a true light or dark ground: tint white/black with the palette when it has none
+      const paper = lum(light) > .55 ? light : rgbHex(...hexRgb(light).map(v => v * .1 + 255 * .9));
+      const night = lum(dark) < .06 ? dark : rgbHex(...hexRgb(dark).map(v => v * .3 + 15 * .7));
+      const bg = state.dark ? night : paper, ink = state.dark ? paper : night;
+      const pri = c[ro.primary], acc = c[ro.accent];
+      const surf = ro.surface != null ? c[ro.surface] : rgbHex(...hexRgb(bg).map((v, k) => v * .9 + hexRgb(ink)[k] * .1));
+      const v = preview.style;
+      v.setProperty("--bg", bg); v.setProperty("--ink", ink); v.setProperty("--pri", pri); v.setProperty("--on-pri", inkOn(pri));
+      v.setProperty("--acc", acc); v.setProperty("--on-acc", inkOn(acc)); v.setProperty("--surf", surf);
+      v.setProperty("--on-surf", ratio(surf, bg) > ratio(surf, ink) ? bg : ink);
+      $$(".pv-bars i", preview).forEach((b, i) => { b.style.background = c[i % c.length]; });
+      $$(".pv-avatars i", preview).forEach((b, i) => { b.style.background = [pri, acc, dark][i]; });
+      return ro;
+    };
     const drawGen = () => {
-      strip.innerHTML = state.colors.map((c, i) => {
-        const ink = inkOn(c), [h, s, l] = hexHsl(c);
+      const ro = paint(), c = state.colors, bg = c[ro.bg];
+      strip.innerHTML = c.map((col, i) => {
+        const [h, s, l] = hexHsl(col), rgb = hexRgb(col);
+        const vs = i === ro.bg ? c[ro.ink] : bg, r = ratio(col, vs);
         return `
-          <div class="pg-sw" style="--c:${c};--ink:${ink}" data-i="${i}">
-            <div class="pg-sw-tools">
-              <button type="button" class="pg-tool" data-lock="${i}" aria-pressed="${!!state.locked[i]}" aria-label="${state.locked[i] ? "Unlock" : "Lock"} colour">${state.locked[i] ? LOCK : UNLOCK}</button>
-              <button type="button" class="pg-tool" data-copy="${c}" aria-label="Copy ${c}">${icon("copy")}</button>
-              <label class="pg-tool" aria-label="Edit colour">${icon("eyedropper")}<input type="color" value="${c}" data-edit="${i}"></label>
+          <div class="ps-row" data-i="${i}" style="--c:${col}">
+            <button type="button" class="ps-chip" data-copy="${col}" aria-label="Copy ${col}"></button>
+            <div class="ps-info">
+              <span class="ps-role">${ro.r[i]}</span>
+              <button type="button" class="ps-hex" data-copy="${col}">${col.toUpperCase()}</button>
+              <span class="ps-meta">RGB ${rgb.join(" ")} · HSL ${Math.round(h)} ${Math.round(s)}% ${Math.round(l)}%</span>
             </div>
-            <button type="button" class="pg-sw-label" data-copy="${c}">
-              <b>${c.slice(1).toUpperCase()}</b>
-              <span>HSL ${Math.round(h)} ${Math.round(s)}% ${Math.round(l)}%</span>
-            </button>
+            <span class="ps-score" data-grade="${grade(r)}" data-tip="Contrast against ${i === ro.bg ? "text" : "background"}">${r.toFixed(1)} <b>${grade(r)}</b></span>
+            <div class="ps-tools">
+              <button type="button" class="ps-tool" data-lock="${i}" aria-pressed="${!!state.locked[i]}" aria-label="${state.locked[i] ? "Unlock" : "Lock"} colour">${state.locked[i] ? LOCK : UNLOCK}</button>
+              <label class="ps-tool" aria-label="Edit colour">${icon("eyedropper")}<input type="color" value="${col}" data-edit="${i}"></label>
+            </div>
           </div>`;
       }).join("");
-      $("[data-pg-hexes]", pg).innerHTML = state.colors.map(c => `<button type="button" data-copy="${c}"><i style="background:${c}"></i>${c.toUpperCase()}</button>`).join("");
-      history.replaceState(null, "", "#" + state.colors.map(c => c.slice(1)).join("-"));
+      history.replaceState(null, "", "#" + c.map(x => x.slice(1)).join("-"));
     };
     const generate = () => {
       const n = +count.value;
@@ -1237,7 +1283,7 @@
       state.colors = fresh.map((c, i) => state.locked[i] && state.colors[i] ? state.colors[i] : c);
       state.locked.length = n;
       drawGen();
-      strip.classList.remove("is-new"); void strip.offsetWidth; strip.classList.add("is-new");
+      pg.classList.remove("is-new"); void pg.offsetWidth; pg.classList.add("is-new");
     };
     const load = colors => { state.colors = colors.slice(0, 7); state.locked = []; count.value = String(Math.max(3, state.colors.length)); count.dispatchEvent(new Event("sync")); drawGen(); };
 
@@ -1267,15 +1313,20 @@
     pg.addEventListener("input", e => {
       const ed = e.target.closest("[data-edit]"); if (!ed) return;
       const i = +ed.dataset.edit; state.colors[i] = ed.value; state.locked[i] = true;
-      const sw = $(`.pg-sw[data-i="${i}"]`, strip);
-      sw.style.setProperty("--c", ed.value); sw.style.setProperty("--ink", inkOn(ed.value));
-      $("b", sw).textContent = ed.value.slice(1).toUpperCase();
+      const row = $(`.ps-row[data-i="${i}"]`, strip);
+      row.style.setProperty("--c", ed.value); $(".ps-hex", row).textContent = ed.value.toUpperCase();
+      paint();
     });
     pg.addEventListener("change", e => { if (e.target.closest("[data-edit]")) drawGen(); });
     $("[data-pg-hex]", pg).addEventListener("click", () => copy(state.colors.map(c => c.toUpperCase()).join(", "), "HEX codes copied"));
     $("[data-pg-css]", pg).addEventListener("click", () => copy(paletteCss(state.colors), "CSS copied"));
     $("[data-pg-link]", pg).addEventListener("click", () => copy(location.href, "Link copied"));
     $("[data-pg-png]", pg).addEventListener("click", () => palettePng(state.colors, "Draft Studio palette"));
+    $$("[data-ps-theme]", pg).forEach(b => b.addEventListener("click", () => {
+      state.dark = b.dataset.psTheme === "dark";
+      $$("[data-ps-theme]", pg).forEach(x => x.setAttribute("aria-pressed", x === b));
+      preview.classList.toggle("is-dark", state.dark); paint();
+    }));
 
     // Library of hand-picked palettes
     const grid = $("[data-pal-grid]"), moodSel = $("[data-pal-mood]"), q = $("[data-pal-q]");
@@ -1289,17 +1340,20 @@
         (!ql || [p.name, p.mood, p.colors.join(" ")].join(" ").toLowerCase().includes(ql)));
       $("[data-pal-count]").textContent = `${list.length} palette${list.length === 1 ? "" : "s"}`;
       grid.innerHTML = list.length ? list.map(p => {
-        const i = PALS.indexOf(p);
+        const i = PALS.indexOf(p), ro = rolesOf(p.colors);
+        // Bar widths follow the 60-30-10 idea: background widest, then text, primary, accent, surfaces
+        const W = { Background: 34, Text: 22, Primary: 18, Accent: 13 };
+        const w = p.colors.map((c, k) => W[ro.r[k]] || 13 / Math.max(1, p.colors.length - 4));
         return `
           <article class="pal reveal">
-            <div class="pal-strip">${p.colors.map(c => `<button type="button" style="--c:${c};--ink:${inkOn(c)}" data-copy="${c}" aria-label="Copy ${c}"><span>${c.slice(1).toUpperCase()}</span></button>`).join("")}</div>
-            <div class="pal-meta">
-              <div><h3>${esc(p.name)}</h3><p>${esc(p.mood)} · ${p.colors.length} colours</p></div>
-              <div class="pal-actions">
-                <button type="button" class="pal-btn" data-pal-open="${i}" aria-label="Edit in generator" data-tip="Edit in generator">${icon("magic")}</button>
-                <button type="button" class="pal-btn" data-pal-css="${i}" aria-label="Copy CSS" data-tip="Copy CSS">${icon("copy")}</button>
-                <button type="button" class="pal-btn is-dark" data-pal-png="${i}" aria-label="Download PNG" data-tip="Download PNG">${icon("download")}</button>
-              </div>
+            <span class="pal-num">${String(i + 1).padStart(2, "0")}</span>
+            <div class="pal-name"><h3>${esc(p.name)}</h3><p>${esc(p.mood)} · ${p.colors.length} colours</p></div>
+            <div class="pal-ribbon">${p.colors.map((c, k) => `<button type="button" style="--c:${c};--ink:${inkOn(c)};flex:${w[k]}" data-copy="${c}" aria-label="Copy ${c}"><span>${c.slice(1).toUpperCase()}</span></button>`).join("")}</div>
+            <div class="pal-hexes">${p.colors.map(c => `<span>${c.slice(1).toUpperCase()}</span>`).join("")}</div>
+            <div class="pal-actions">
+              <button type="button" class="pal-btn" data-pal-open="${i}" aria-label="Edit in generator">${icon("magic")}</button>
+              <button type="button" class="pal-btn" data-pal-css="${i}" aria-label="Copy CSS">${icon("copy")}</button>
+              <button type="button" class="pal-btn is-dark" data-pal-png="${i}" aria-label="Download PNG">${icon("download")}</button>
             </div>
           </article>`;
       }).join("") : `<div class="empty"><h3>No palette matches that.</h3><p>Try another word, or make one with the generator above.</p></div>`;
