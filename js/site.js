@@ -1049,17 +1049,11 @@
   }
 
   /* ---------- Item ---------- */
-  function item() {
-    const id = new URLSearchParams(location.search).get("id");
-    const it = items.find(i => i.id === id);
-    const main = $("[data-item]");
-    if (!it) {
-      main.innerHTML = `<div class="wrap section"><div class="empty"><h3>That file has moved.</h3><p>We couldn't find “${esc(id || "")}”. Try browsing instead.</p><a class="btn btn-dark" href="browse.html">Browse all files</a></div></div>`;
-      return;
-    }
-    document.title = `${it.title} · Draft Studio`;
-    const cat = catOf(it.category);
+  // The file view: big preview on the left, details and downloads on the right.
+  // Used by item.html and by the quick-view pop-up.
+  function itemBody(it) {
     const fmts = formatsOf(it);
+    const cat = catOf(it.category);
     const zip = (it.files || []).find(f => f.format.toUpperCase() === "ZIP");
     const fileName = f => f.name || f.path.split("/").pop();
     const dlRow = f => {
@@ -1070,7 +1064,6 @@
         ${icon(ext ? "external-link" : "download")}
       </a>`;
     };
-
     const actions = isPaid(it) ? `
       <div class="price-box">
         <span class="mono mute">${it.sold ? "Sold" : "Exclusive · sold once"}</span>
@@ -1082,17 +1075,7 @@
       ${it.requires ? `<div class="notice">${icon("lightbulb")}<span>This file needs <b>${esc(it.requires)}</b> (or free Photopea in your browser).</span></div>` : ""}
       ${zip ? `<a class="btn btn-dark dl-all" href="${esc(zip.path)}" download>${icon("download")} Download all${zip.size ? " · " + esc(zip.size) : ""}</a>` : ""}
       <div class="downloads">${(it.files || []).filter(f => f !== zip).map(dlRow).join("")}</div>`;
-
-    const related = items.filter(i => i !== it && i.category === it.category).concat(items.filter(i => i !== it && i.category !== it.category)).slice(0, 4);
-
-    main.innerHTML = `
-      <div class="wrap">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href="index.html">Home</a><span>/</span>
-          <a href="browse.html?cat=${cat ? cat.slug : ""}">${esc(it.category)}</a><span>/</span>
-          <span>${it.num}</span>
-        </nav>
-        <div class="item">
+    return `
           <div class="item-media">
             <button class="frame" type="button" data-zoom aria-label="Enlarge preview">
               <img src="${esc(it.preview)}" alt="${esc(it.title)} preview">
@@ -1117,8 +1100,55 @@
               <a class="btn btn-sm" href="browse.html?cat=${cat ? cat.slug : ""}">More ${esc(it.category.toLowerCase())}</a>
             </div>
             ${isPaid(it) ? "" : `<p class="lic-note">${esc(DS.site.license)} <a href="license.html">Read the license</a></p>`}
-          </div>
-        </div>
+          </div>`;
+  }
+
+  // Full-screen zoom, shared by the page and the pop-up
+  let lightbox = null;
+  function zoom(it) {
+    if (!lightbox) {
+      lightbox = document.createElement("div");
+      lightbox.className = "lightbox";
+      document.body.appendChild(lightbox);
+      const shut = () => { lightbox.classList.remove("is-open"); if (!document.documentElement.classList.contains("qv-lock")) document.body.style.overflow = ""; };
+      lightbox.addEventListener("click", shut);
+      document.addEventListener("keydown", e => { if (e.key === "Escape" && lightbox.classList.contains("is-open")) { e.stopImmediatePropagation(); shut(); } }, true);
+    }
+    lightbox.innerHTML = `<img src="${esc(it.preview)}" alt="${esc(it.title)} preview"><button class="icon-btn" type="button" aria-label="Close">${icon("close")}</button>`;
+    lightbox.classList.add("is-open"); document.body.style.overflow = "hidden";
+  }
+
+  function bindItem(root, it) {
+    const fmts = formatsOf(it);
+    $("[data-zoom]", root).addEventListener("click", () => zoom(it));
+    $("[data-share]", root).addEventListener("click", () => {
+      const url = new URL(itemUrl(it), location.href).href;
+      const data = { title: it.title + " · Draft Studio", text: isPaid(it) ? it.title : `Free ${fmts.join("/")} download: ${it.title}`, url };
+      if (navigator.share) navigator.share(data).catch(() => {});
+      else copy(url, "Link copied");
+    });
+  }
+
+  function item() {
+    const id = new URLSearchParams(location.search).get("id");
+    const it = items.find(i => i.id === id);
+    const main = $("[data-item]");
+    if (!it) {
+      main.innerHTML = `<div class="wrap section"><div class="empty"><h3>That file has moved.</h3><p>We couldn't find “${esc(id || "")}”. Try browsing instead.</p><a class="btn btn-dark" href="browse.html">Browse all files</a></div></div>`;
+      return;
+    }
+    document.title = `${it.title} · Draft Studio`;
+    const cat = catOf(it.category);
+    const related = items.filter(i => i !== it && i.category === it.category).concat(items.filter(i => i !== it && i.category !== it.category)).slice(0, 4);
+
+    main.innerHTML = `
+      <div class="wrap">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href="index.html">Home</a><span>/</span>
+          <a href="browse.html?cat=${cat ? cat.slug : ""}">${esc(it.category)}</a><span>/</span>
+          <span>${it.num}</span>
+        </nav>
+        <div class="item">${itemBody(it)}</div>
       </div>
       ${related.length ? `
       <section class="section">
@@ -1128,23 +1158,89 @@
           <div class="grid">${related.map(card).join("")}</div>
         </div>
       </section>` : ""}`;
-
-    // Zoom
-    const lb = document.createElement("div");
-    lb.className = "lightbox";
-    lb.innerHTML = `<img src="${esc(it.preview)}" alt="${esc(it.title)} preview"><button class="icon-btn" type="button" aria-label="Close">${icon("close")}</button>`;
-    document.body.appendChild(lb);
-    const closeLb = () => { lb.classList.remove("is-open"); document.body.style.overflow = ""; };
-    $("[data-zoom]").addEventListener("click", () => { lb.classList.add("is-open"); document.body.style.overflow = "hidden"; });
-    lb.addEventListener("click", closeLb);
-    document.addEventListener("keydown", e => { if (e.key === "Escape") closeLb(); });
-
-    $("[data-share]").addEventListener("click", () => {
-      const data = { title: it.title + " · Draft Studio", text: isPaid(it) ? it.title : `Free ${fmts.join("/")} download: ${it.title}`, url: location.href };
-      if (navigator.share) navigator.share(data).catch(() => {});
-      else copy(location.href, "Link copied");
-    });
+    bindItem(main, it);
     reveal(main);
+  }
+
+  /* ---------- Quick view ---------- */
+  // Clicking any file card opens the file in a large pop-up instead of a new page.
+  // The address bar still changes to the file's own link, so sharing, refreshing and Back all work.
+  function quickView() {
+    const qv = document.createElement("div");
+    qv.className = "qv"; qv.hidden = true;
+    qv.innerHTML = `
+      <div class="qv-backdrop" data-qv-close></div>
+      <div class="qv-panel" role="dialog" aria-modal="true" aria-label="File preview" tabindex="-1">
+        <div class="qv-bar">
+          <span class="qv-pos" data-qv-pos></span>
+          <div class="qv-tools">
+            <button class="qv-btn" type="button" data-qv-step="-1" aria-label="Previous file">${icon("arrow-left")}</button>
+            <button class="qv-btn" type="button" data-qv-step="1" aria-label="Next file">${icon("arrow-right")}</button>
+            <a class="qv-btn" data-qv-full aria-label="Open full page">${icon("external-link")}</a>
+            <button class="qv-btn is-dark" type="button" data-qv-close aria-label="Close">${icon("close")}</button>
+          </div>
+        </div>
+        <div class="qv-body" data-qv-body></div>
+      </div>`;
+    document.body.appendChild(qv);
+    const panel = $(".qv-panel", qv), body = $("[data-qv-body]", qv);
+    let cur = null, list = [], returnTo = null;
+    const idOf = a => {
+      try {
+        const u = new URL(a.href, location.href);
+        return /\/item\.html$/.test(u.pathname) && u.origin === location.origin ? u.searchParams.get("id") : null;
+      } catch (e) { return null; }
+    };
+    const pageIds = () => $$('a[href*="item.html?id="]').filter(a => !a.closest(".qv, .search-box")).map(idOf)
+      .filter((id, i, a) => id && a.indexOf(id) === i && items.some(x => x.id === id));
+    const show = (id, how) => {
+      const it = items.find(i => i.id === id); if (!it) return;
+      cur = id;
+      if (!list.includes(id)) list = pageIds();
+      body.innerHTML = `<div class="item is-qv">${itemBody(it)}</div>`;
+      bindItem(body, it);
+      const n = list.indexOf(id);
+      $("[data-qv-pos]", qv).innerHTML = n > -1 && list.length > 1 ? `<b>${String(n + 1).padStart(2, "0")}</b> / ${String(list.length).padStart(2, "0")}` : `<b>${it.num}</b>`;
+      $$("[data-qv-step]", qv).forEach(b => { b.disabled = list.length < 2; });
+      $("[data-qv-full]", qv).href = itemUrl(it);
+      if (how === "push") history.pushState({ qv: id }, "", itemUrl(it));
+      if (how === "replace") history.replaceState({ qv: id }, "", itemUrl(it));
+      if (qv.hidden) {
+        returnTo = document.activeElement;
+        qv.hidden = false; document.documentElement.classList.add("qv-lock");
+        requestAnimationFrame(() => qv.classList.add("is-open"));
+      }
+      body.scrollTop = 0; panel.focus({ preventScroll: true });
+    };
+    const hide = () => {
+      if (!cur) return;
+      cur = null; list = [];
+      qv.classList.remove("is-open"); document.documentElement.classList.remove("qv-lock");
+      setTimeout(() => { if (!cur) qv.hidden = true; }, 260);
+      if (returnTo && returnTo.focus) returnTo.focus({ preventScroll: true });
+    };
+    const close = () => { if (history.state && history.state.qv) history.back(); else hide(); };
+    const step = d => { if (list.length < 2) return; const n = list.indexOf(cur); show(list[(n + d + list.length) % list.length], "replace"); };
+
+    document.addEventListener("click", e => {
+      if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      const a = e.target.closest && e.target.closest("a[href]");
+      if (!a || a.target === "_blank" || a.closest(".search-box")) return;
+      const id = idOf(a);
+      if (!id || !items.some(x => x.id === id)) return;
+      e.preventDefault();
+      show(id, cur ? "replace" : "push");
+    });
+    qv.addEventListener("click", e => {
+      if (e.target.closest("[data-qv-close]")) close();
+      const s = e.target.closest("[data-qv-step]"); if (s) step(+s.dataset.qvStep);
+    });
+    document.addEventListener("keydown", e => {
+      if (!cur) return;
+      if (e.key === "Escape") close();
+      else if (!e.target.closest("input, textarea") && (e.key === "ArrowRight" || e.key === "ArrowLeft")) step(e.key === "ArrowRight" ? 1 : -1);
+    });
+    addEventListener("popstate", e => { if (e.state && e.state.qv) show(e.state.qv); else hide(); });
   }
 
   /* ---------- Icons ---------- */
@@ -1577,5 +1673,6 @@
   enhanceSelects();
   tooltips();
   colorPicker();
+  quickView();
   reveal();
 })();
