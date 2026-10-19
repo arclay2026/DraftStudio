@@ -537,6 +537,9 @@
     if (lx) licenseChecker(lx);
 
     // Icon showcase: colour swatches, hover preview, icon grid
+    const pt = $("[data-pt]");
+    if (pt) paletteTeaser(pt);
+
     const ix = $("[data-ix]");
     if (ix) {
       const grid = $("[data-ix-grid]", ix), sw = $("[data-ix-swatches]", ix);
@@ -818,6 +821,44 @@
     uses.addEventListener("click", e => { const b = e.target.closest("[data-i]"); if (b) show(+b.dataset.i); });
     uses.addEventListener("mouseover", e => { const b = e.target.closest("[data-i]"); if (b && matchMedia("(hover: hover)").matches && b.getAttribute("aria-pressed") !== "true") show(+b.dataset.i); });
     show(0);
+  }
+
+  /* ---------- Palettes teaser (home) ---------- */
+  // Cycles through a few hand-picked palettes; click a swatch to copy it, a row to jump to it.
+  function paletteTeaser(root) {
+    const P = DS.palettes || [];
+    const picks = [0, 4, 7, 16, 9, 25, 33, 5].filter(i => P[i]);
+    if (!picks.length) return;
+    const sw = $("[data-pt-sw]", root), rows = $("[data-pt-rows]", root), dots = $("[data-pt-dots]", root);
+    const max = Math.max(...picks.map(i => P[i].colors.length));
+    sw.innerHTML = Array.from({ length: max }, (_, k) => `<button type="button" style="transition-delay:${k * 60}ms"><span></span></button>`).join("");
+    dots.innerHTML = picks.map(() => "<i></i>").join("");
+    let n = 0, timer = 0;
+    const show = k => {
+      n = (k + picks.length) % picks.length;
+      const p = P[picks[n]];
+      $$("button", sw).forEach((b, i) => {
+        const c = p.colors[i];
+        b.hidden = !c; if (!c) return;
+        b.style.setProperty("--c", c); b.style.setProperty("--ink", inkOn(c));
+        b.dataset.copy = c; b.setAttribute("aria-label", `Copy ${c}`);
+        $("span", b).textContent = c.slice(1).toUpperCase();
+      });
+      $("[data-pt-name]", root).textContent = p.name;
+      $("[data-pt-mood]", root).textContent = `${p.mood} · ${p.colors.length} colours`;
+      $("[data-pt-open]", root).href = "palettes.html#" + p.colors.map(c => c.slice(1)).join("-");
+      $$("i", dots).forEach((d, i) => d.classList.toggle("on", i === n));
+      rows.innerHTML = [1, 2, 3].map(d => {
+        const j = (n + d) % picks.length, q = P[picks[j]];
+        return `<button type="button" data-pt-go="${j}" aria-label="Show ${esc(q.name)}">${q.colors.map(c => `<i style="background:${c}"></i>`).join("")}</button>`;
+      }).join("");
+    };
+    const play = () => { clearInterval(timer); if (!matchMedia("(prefers-reduced-motion: reduce)").matches) timer = setInterval(() => show(n + 1), 3200); };
+    rows.addEventListener("click", e => { const b = e.target.closest("[data-pt-go]"); if (b) { show(+b.dataset.ptGo); play(); } });
+    sw.addEventListener("click", e => { const b = e.target.closest("[data-copy]"); if (b) copy(b.dataset.copy.toUpperCase(), `${b.dataset.copy.toUpperCase()} copied`); });
+    root.addEventListener("mouseenter", () => clearInterval(timer));
+    root.addEventListener("mouseleave", play);
+    show(0); play();
   }
 
   /* ---------- Fresh drops pieces (home) ---------- */
