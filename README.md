@@ -39,7 +39,7 @@ All colours, fonts and sizes are tokens at the top of `css/style.css`:
 
 - **Colours:** black and white only — white page, grey panels `#f0f0f0`, brand black `#0f0f0f` for ink,
   buttons and dark panels, with white as the accent on dark surfaces and light grey `#e8e8e8` for soft highlights.
-- **Font:** Plus Jakarta Sans everywhere, from Google Fonts.
+- **Font:** Inter everywhere (with optical sizing), from Google Fonts.
 - **Nav links:** the `header` function in `js/site.js`.
 - **Contact details and license text:** the `site` block at the top of `js/data.js`.
 - **Logo:** `assets/logo.svg`, `assets/favicon.svg`.
