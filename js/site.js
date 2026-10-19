@@ -1083,7 +1083,6 @@
             </button>
           </div>
           <div class="item-info">
-            <span class="eyebrow"><span class="dot"></span>${it.num} · ${esc(it.category)}</span>
             <h1>${esc(it.title)}</h1>
             <p class="desc">${esc(it.description || "")}</p>
             <div class="item-fmts">${fmts.map(f => fmtBadge(f)).join("")}</div>
