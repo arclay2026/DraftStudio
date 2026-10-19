@@ -113,6 +113,7 @@
     const more = [
       { href: "browse.html?cat=vectors", label: "Vectors", key: "vectors", note: "AI · SVG · EPS" },
       { href: "icons.html", label: "Icons", key: "icons", note: "SVG · PNG" },
+      { href: "learn.html", label: "Learn", key: "learn", note: "File formats" },
       { href: "license.html", label: "License", key: "license", note: "& FAQ" }
     ];
     const el = $("[data-header]");
@@ -147,6 +148,7 @@
         <a href="index.html">Home</a>
         ${CATS.map(c => `<a href="browse.html?cat=${c.slug}">${c.name}<span>${c.formats.join(" · ")}</span></a>`).join("")}
         <a href="icons.html">Icons<span>SVG · PNG</span></a>
+        <a href="learn.html">Learn<span>File formats</span></a>
         <a href="license.html">License<span>FAQ</span></a>
         <button type="button" data-open-search>Search<span>Find a file</span></button>
         <a class="btn btn-dark btn-lg" href="browse.html">Browse files <span class="arr">${ARR}</span></a>
@@ -174,6 +176,7 @@
             <nav class="f-links" aria-label="Studio">
               <h4>Studio</h4>
               <ul>
+                <li><a href="learn.html">Learn</a></li>
                 <li><a href="license.html">License</a></li>
                 <li><a href="license.html#faq">FAQ</a></li>
                 <li><a href="index.html#request">Request a design</a></li>
@@ -369,9 +372,6 @@
 
     const lx = $("[data-lx]");
     if (lx) licenseChecker(lx);
-
-    const fx = $("[data-formats]");
-    if (fx) formatExplorer(fx);
 
     // Icon showcase: colour swatches, hover preview, icon grid
     const ix = $("[data-ix]");
@@ -1074,6 +1074,12 @@
     if (fromHash) setTimeout(() => { const b = $(`[data-id="${fromHash.id}"]`, grid); b && b.scrollIntoView({ block: "center" }); }, 50);
   }
 
+  /* ---------- Learn ---------- */
+  function learn() {
+    const fx = $("[data-formats]");
+    if (fx) formatExplorer(fx);
+  }
+
   /* ---------- License ---------- */
   function license() {
     const lx = $("[data-lx]");
@@ -1144,7 +1150,7 @@
   header(page === "browse" ? (new URLSearchParams(location.search).get("cat") || "browse") : page);
   footer();
   chrome();
-  ({ home, browse, item, icons, license }[page] || (() => {}))();
+  ({ home, browse, item, icons, learn, license }[page] || (() => {}))();
   enhanceSelects();
   reveal();
 })();

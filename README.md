@@ -12,6 +12,7 @@ GitHub Pages or any web host.
 | `browse.html` | Every file, with category tabs, format filters, search and sort. Links like `browse.html?cat=logos` or `browse.html?q=hoodie` open pre-filtered |
 | `item.html?id=…` | One design: large zoomable preview, specs, downloads (or a WhatsApp buy button for paid logos), share and related designs |
 | `icons.html` | The icon set: search, filter, recolour, download SVG/PNG or copy the code |
+| `learn.html` | Learn: the file format guide (what each format is for, which apps open it) |
 | `license.html` | License and FAQ |
 
 Everywhere: press `/` to search (also under **More** in the nav).
