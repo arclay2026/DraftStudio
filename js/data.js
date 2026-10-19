@@ -236,5 +236,47 @@ window.DS = {
     { id: "rocket", name: "Rocket", group: "General", tags: ["launch", "start", "fast"] },
     { id: "trophy", name: "Trophy", group: "General", tags: ["award", "winner", "prize"] },
     { id: "smile", name: "Smile", group: "General", tags: ["happy", "emoji", "face"] }
+  ],
+
+  /* ---------- Colour palettes (palettes.html) ----------
+     name: shown on the card · mood: one of Warm, Cool, Pastel, Earthy, Bold, Dark, Neutral, Retro
+     colors: hex values, light or dark in any order (5 reads best) */
+  palettes: [
+    { name: "Sunset Boulevard", mood: "Warm",    colors: ["#ff6b35", "#f7931e", "#ffd23f", "#ee4266", "#540d6e"] },
+    { name: "Desert Clay",      mood: "Earthy",  colors: ["#e07a5f", "#3d405b", "#81b29a", "#f2cc8f", "#f4f1de"] },
+    { name: "Nordic Frost",     mood: "Cool",    colors: ["#2e3440", "#3b4252", "#88c0d0", "#81a1c1", "#eceff4"] },
+    { name: "Matcha Latte",     mood: "Earthy",  colors: ["#e9edc9", "#ccd5ae", "#fefae0", "#faedcd", "#d4a373"] },
+    { name: "Midnight Neon",    mood: "Dark",    colors: ["#0d0221", "#261447", "#ff3864", "#2de2e6", "#f6019d"] },
+    { name: "Cotton Candy",     mood: "Pastel",  colors: ["#cdb4db", "#ffc8dd", "#ffafcc", "#bde0fe", "#a2d2ff"] },
+    { name: "Ocean Depths",     mood: "Cool",    colors: ["#03045e", "#0077b6", "#00b4d8", "#90e0ef", "#caf0f8"] },
+    { name: "Vintage Poster",   mood: "Retro",   colors: ["#264653", "#2a9d8f", "#e9c46a", "#f4a261", "#e76f51"] },
+    { name: "Citrus Pop",       mood: "Bold",    colors: ["#ff9f1c", "#ffbf69", "#ffffff", "#cbf3f0", "#2ec4b6"] },
+    { name: "Berry Smoothie",   mood: "Bold",    colors: ["#3a0ca3", "#7209b7", "#f72585", "#4361ee", "#4cc9f0"] },
+    { name: "Monochrome Studio",mood: "Neutral", colors: ["#0f0f0f", "#3a3a3a", "#8a8a8a", "#d4d4d4", "#f5f5f5"] },
+    { name: "Sage & Stone",     mood: "Earthy",  colors: ["#3f4238", "#6b705c", "#a5a58d", "#b7b7a4", "#ffe8d6"] },
+    { name: "Peach Fuzz",       mood: "Pastel",  colors: ["#ffcdb2", "#ffb4a2", "#e5989b", "#b5838d", "#6d6875"] },
+    { name: "Forest Floor",     mood: "Earthy",  colors: ["#283618", "#606c38", "#fefae0", "#dda15e", "#bc6c25"] },
+    { name: "Black & Amber",    mood: "Dark",    colors: ["#000000", "#14213d", "#fca311", "#e5e5e5", "#ffffff"] },
+    { name: "Ultra Violet",     mood: "Bold",    colors: ["#e0aaff", "#c77dff", "#9d4edd", "#7b2cbf", "#5a189a"] },
+    { name: "Lavender Haze",    mood: "Pastel",  colors: ["#f8f7ff", "#e7e6f7", "#c8c6f0", "#a9a3e5", "#8b80d9"] },
+    { name: "Miami Vice",       mood: "Retro",   colors: ["#f15bb5", "#fee440", "#00bbf9", "#00f5d4", "#9b5de5"] },
+    { name: "Coffee House",     mood: "Earthy",  colors: ["#582f0e", "#7f4f24", "#936639", "#a68a64", "#b6ad90"] },
+    { name: "Arctic Mint",      mood: "Cool",    colors: ["#d8f3dc", "#b7e4c7", "#95d5b2", "#74c69d", "#40916c"] },
+    { name: "Royal Ink",        mood: "Dark",    colors: ["#10002b", "#240046", "#3c096c", "#5a189a", "#e0aaff"] },
+    { name: "Playground",       mood: "Bold",    colors: ["#ff595e", "#ffca3a", "#8ac926", "#1982c4", "#6a4c93"] },
+    { name: "Coral Reef",       mood: "Warm",    colors: ["#ff7f50", "#ff6f61", "#ffb5a7", "#fcd5ce", "#f8edeb"] },
+    { name: "Deep Tech",        mood: "Dark",    colors: ["#0b132b", "#1c2541", "#3a506b", "#5bc0be", "#ffffff"] },
+    { name: "Paper & Ink",      mood: "Neutral", colors: ["#fbf8f1", "#f0e9d8", "#c9bfa9", "#57534e", "#1c1917"] },
+    { name: "Tokyo Night",      mood: "Dark",    colors: ["#1a1b26", "#24283b", "#7aa2f7", "#bb9af7", "#f7768e"] },
+    { name: "Golden Hour",      mood: "Warm",    colors: ["#ffba08", "#faa307", "#f48c06", "#e85d04", "#d00000"] },
+    { name: "Seventies Lounge", mood: "Retro",   colors: ["#f4a259", "#f4e285", "#8cb369", "#5b8e7d", "#bc4b51"] },
+    { name: "Dusty Rose",       mood: "Neutral", colors: ["#f9dbdd", "#f4acb7", "#9d8189", "#4a4e69", "#22223b"] },
+    { name: "Glacier",          mood: "Cool",    colors: ["#e3f2fd", "#bbdefb", "#64b5f6", "#1e88e5", "#0d47a1"] },
+    { name: "Chilli Market",    mood: "Warm",    colors: ["#6a040f", "#9d0208", "#d00000", "#dc2f02", "#e85d04"] },
+    { name: "Olive Grove",      mood: "Earthy",  colors: ["#414833", "#656d4a", "#a4ac86", "#c2c5aa", "#ebebeb"] },
+    { name: "Bubblegum",        mood: "Pastel",  colors: ["#fff1e6", "#fde2e4", "#fad2e1", "#e2ece9", "#bee1e6"] },
+    { name: "Brutalist",        mood: "Bold",    colors: ["#f5f0e1", "#ff6e40", "#ffc13b", "#1e3d59", "#0f0f0f"] },
+    { name: "Aurora",           mood: "Dark",    colors: ["#0b090a", "#22333b", "#00a6a6", "#8ef6e4", "#c3f0ca"] },
+    { name: "Retro Diner",      mood: "Retro",   colors: ["#d62828", "#f77f00", "#fcbf49", "#eae2b7", "#003049"] }
   ]
 };
