@@ -176,7 +176,7 @@ p { margin: 0; }
 .nav-more-btn svg { width: 14px; height: 14px; transform: rotate(90deg); transition: transform .25s var(--ease); }
 .nav-more.is-open .nav-more-btn svg { transform: rotate(-90deg); }
 .nav-drop {
-  position: absolute; top: calc(100% + 10px); left: 50%; min-width: 248px; padding: 6px;
+  position: absolute; top: calc(100% + 10px); left: 50%; min-width: 180px; padding: 6px;
   display: flex; flex-direction: column; gap: 3px;
   background: #fff; border: 1px solid var(--line); border-radius: 16px; box-shadow: 0 21px 44px -18px rgba(15, 15, 15, .25);
   opacity: 0; visibility: hidden; transform: translate(-50%, -6px);

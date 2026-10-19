@@ -298,8 +298,8 @@
             <div class="nav-more">
               <button class="nav-more-btn${more.some(m => m.key === active) ? " is-current" : ""}" type="button" aria-expanded="false" aria-haspopup="true">More ${icon("chevron-right")}</button>
               <div class="nav-drop">
-                ${more.map(m => `<a href="${m.href}"${active === m.key ? ' aria-current="page"' : ""}>${m.label}<small>${m.note}</small></a>`).join("")}
-                <button type="button" data-open-search>Search<small>press /</small></button>
+                ${more.map(m => `<a href="${m.href}"${active === m.key ? ' aria-current="page"' : ""}>${m.label}</a>`).join("")}
+                <button type="button" data-open-search>Search</button>
               </div>
             </div>
           </nav>
