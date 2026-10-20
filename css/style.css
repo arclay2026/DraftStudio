@@ -1946,6 +1946,7 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
    on each scene, and --p (whole tour 0-1) on the section.
    ===================================================================== */
 .cine { position: relative; height: 520vh; margin-top: var(--section); }
+@media (min-width: 901px) { .cine { display: none; } }  /* the tour only plays on phones and small tablets */
 .cine-stage {
   position: sticky; top: 0; height: 100vh; height: 100svh; overflow: hidden;
   display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); align-items: center; gap: clamp(24px, 4vw, 72px);
