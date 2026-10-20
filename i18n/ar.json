@@ -799,21 +799,7 @@
   "Copied": "تم النسخ",
   "Removed from saved": "أُزيل من المحفوظات",
   "HEX codes copied": "تم نسخ رموز HEX",
-  "Colours copied": "تم نسخ الألوان",
-  "What's inside Draft Studio": "ما الذي يقدّمه Draft Studio",
-  "Mockups that": "موك أب",
-  "sell the idea.": "يُقنع بالفكرة.",
-  "Photoshop scenes with smart objects. Drop your design in, save, done.": "مشاهد Photoshop بكائنات ذكية. ضع تصميمك، احفظ، وانتهى.",
-  "Logos ready to": "شعارات جاهزة",
-  "make your own.": "لتصبح لك.",
-  "Editable AI, SVG and PDF files. Rename them, recolour them, ship them.": "ملفات AI وSVG وPDF قابلة للتعديل. غيّر اسمها ولونها وانشرها.",
-  "100 icons,": "100 أيقونة،",
-  "Hand-drawn on one grid. Recolour any icon and download it as SVG or PNG.": "مرسومة يدويًا على شبكة واحدة. غيّر لون أي أيقونة ونزّلها بصيغة SVG أو PNG.",
-  "just works.": "تعمل ببساطة.",
-  "36 hand-picked palettes and a generator with live contrast scores.": "36 لوحة ألوان مختارة بعناية ومولّد يعرض درجات التباين مباشرة.",
-  "Shape every dot and corner, add your logo, and download a code that's scan-checked live.": "شكّل كل نقطة وزاوية، أضف شعارك، ونزّل رمزًا يُفحص مسحه مباشرة.",
-  "Open QR Code Studio": "افتح QR Code Studio",
-  "Scroll": "مرّر"
+  "Colours copied": "تم نسخ الألوان"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",
