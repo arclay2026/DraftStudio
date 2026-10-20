@@ -1830,7 +1830,7 @@ body { padding-left: var(--side-w); background: var(--side-bg); transition: padd
 .side-search span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; }
 .side-search .kbd { padding: 2px 5px; border: 0; border-radius: 4px; background: var(--fill); font-size: 10px; color: var(--mute); }
 
-.side-nav { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; padding-bottom: 8px; }
+.side-nav { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; margin: 0 -4px; padding: 2px 4px 8px; }
 .side-nav::-webkit-scrollbar { display: none; }
 .side-group { display: flex; flex-direction: column; gap: 1px; }
 .side-label { margin: 16px 0 5px; padding: 0 10px; font-size: calc(11px * var(--ts)); font-weight: 500; color: var(--mute); opacity: .85; white-space: nowrap; letter-spacing: .01em; }
@@ -1860,7 +1860,7 @@ body { padding-left: var(--side-w); background: var(--side-bg); transition: padd
 :root[data-rail] .side-link { justify-content: center; gap: 0; padding: 0; height: 32px; }
 :root[data-rail] .side-link span, :root[data-rail] .side-search span, :root[data-rail] .side-search .kbd { flex: 0 0 0; width: 0; padding: 0; opacity: 0; }
 :root[data-rail] .side-label { height: 1px; margin: 10px 8px; padding: 0; background: var(--border); color: transparent; opacity: 1; overflow: hidden; }
-:root[data-rail] .side-nav { overflow: visible; }
+:root[data-rail] .side-nav { overflow: visible; margin: 0; padding-inline: 0; }
 :root[data-rail] .side [data-label]:hover::after {
   content: attr(data-label); position: absolute; z-index: 5; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
   padding: 5px 9px; border-radius: 7px; background: var(--fg); color: var(--on-fg); font-size: 11.5px; font-weight: 500; white-space: nowrap;
@@ -1896,7 +1896,7 @@ body { padding-left: var(--side-w); background: var(--side-bg); transition: padd
   .side { width: min(280px, 84vw); z-index: 90; transform: translateX(-100%); background: var(--bg); border-right: 1px solid var(--border); }
   .side.is-open { transform: none; box-shadow: 24px 0 60px -24px rgba(0, 0, 0, .35); }
   .side-fold { display: none; }
-  .side-scrim { display: block; position: fixed; inset: 0; z-index: 85; background: rgba(0, 0, 0, .32); opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s; }
+  .side-scrim { display: block; position: fixed; inset: 0; z-index: 85; background: rgba(0, 0, 0, .45); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s; }
   .side-open .side-scrim { opacity: 1; visibility: visible; }
   :root[data-rail] .side .logo-full, :root[data-rail] .side-link span, :root[data-rail] .side-search span, :root[data-rail] .side-search .kbd { opacity: 1; width: auto; flex: initial; }
   :root[data-rail] .logo-mark { opacity: 0; }
@@ -1931,6 +1931,8 @@ body { padding-left: var(--side-w); background: var(--side-bg); transition: padd
 :root[data-theme="dark"] .set { --surface: #1c1c1c; --fill: #282828; --fill-2: #323232; --border: #343434; box-shadow: 0 30px 80px -18px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .04); }
 :root[data-theme="dark"] { --side-bg: #000000; }
 :root[data-theme="dark"] .shell { box-shadow: none; }
+:root[data-theme="dark"] .side-scrim { background: rgba(0, 0, 0, .72); }
+@media (max-width: 1023.98px) { :root[data-theme="dark"] .side { background: #121212; border-right-color: #262626; } }
 /* glass cards on photos stay light */
 :root[data-theme="dark"] .drop-panel, :root[data-theme="dark"] .drop-info { --fg: #0f0f0f; --on-fg: #ffffff; --mute: #6f6f6f; --surface: #ffffff; --outline: #a6a6a6; --f-psd: #0f0f0f; --f-ai: #0f0f0f; --f-svg: #0f0f0f; --f-pdf: #0f0f0f; --f-eps: #0f0f0f; --f-fig: #0f0f0f; --f-img: #0f0f0f; color: var(--fg); }
 :root[data-theme="dark"] .hero-dots, :root[data-theme="dark"] .s-vectors, :root[data-theme="dark"] .drop-req, :root[data-theme="dark"] .fx-panel, :root[data-theme="dark"] .ix, :root[data-theme="dark"] .lx-ticket { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); }
@@ -1951,6 +1953,8 @@ body { padding-left: var(--side-w); background: var(--side-bg); transition: padd
   :root:not([data-theme="light"]) .set { --surface: #1c1c1c; --fill: #282828; --fill-2: #323232; --border: #343434; box-shadow: 0 30px 80px -18px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .04); }
   :root:not([data-theme="light"]) { --side-bg: #000000; }
   :root:not([data-theme="light"]) .shell { box-shadow: none; }
+  :root:not([data-theme="light"]) .side-scrim { background: rgba(0, 0, 0, .72); }
+  @media (max-width: 1023.98px) { :root:not([data-theme="light"]) .side { background: #121212; border-right-color: #262626; } }
   /* glass cards on photos stay light */
   :root:not([data-theme="light"]) .drop-panel, :root:not([data-theme="light"]) .drop-info { --fg: #0f0f0f; --on-fg: #ffffff; --mute: #6f6f6f; --surface: #ffffff; --outline: #a6a6a6; --f-psd: #0f0f0f; --f-ai: #0f0f0f; --f-svg: #0f0f0f; --f-pdf: #0f0f0f; --f-eps: #0f0f0f; --f-fig: #0f0f0f; --f-img: #0f0f0f; color: var(--fg); }
   :root:not([data-theme="light"]) .hero-dots, :root:not([data-theme="light"]) .s-vectors, :root:not([data-theme="light"]) .drop-req, :root:not([data-theme="light"]) .fx-panel, :root:not([data-theme="light"]) .ix, :root:not([data-theme="light"]) .lx-ticket { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); }
