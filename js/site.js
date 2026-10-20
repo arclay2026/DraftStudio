@@ -543,8 +543,95 @@
      ===================================================================== */
 
   /* ---------- Home ---------- */
+  /* ---------- Cinematic tour (home) ----------
+     The stage sticks to the screen while the section scrolls past. Scroll
+     progress p (0-1) runs five scenes; each scene gets --e (entering, 0-1),
+     --x (leaving, 0-1) and --l (its own progress, 0-1) for the CSS to use. */
+  function cinema() {
+    const sec = $("[data-cine]");
+    if (!sec) return;
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const N = 5;
+
+    // Scene art that needs data: icons, palettes, a QR code
+    const iconIds = ["home", "search", "heart", "star", "camera", "music", "map-pin", "bolt", "palette", "pen-tool", "layers", "image",
+      "send", "bookmark", "gift", "rocket", "globe", "bell", "chat", "calendar", "cloud", "smile", "trophy", "coffee"].filter(id => ICONS[id]);
+    const ib = $("[data-cine-icons]");
+    ib.innerHTML = `<div class="cs-grid">${iconIds.map((id, i) => `<span style="--i:${i}">${icon(id)}</span>`).join("")}</div>`;
+    const tiles = $$(".cs-grid span", ib);
+    const pals = (DS.palettes || []).slice(0, 3);
+    const pb = $("[data-cine-pal]");
+    pb.innerHTML = pals.length ? `<div class="cs-bars">${pals[0].colors.map((c, i) => `<span style="--i:${i}"><b>${c.toUpperCase()}</b></span>`).join("")}</div>` : "";
+    const bars = $$(".cs-bars span", pb);
+    let palAt = -1;
+    const paint = k => {
+      if (k === palAt || !pals[k]) return;
+      palAt = k;
+      bars.forEach((b, i) => {
+        const c = pals[k].colors[i % pals[k].colors.length];
+        b.style.background = c;
+        b.style.color = inkOn(c);
+        b.firstChild.textContent = c.toUpperCase();
+      });
+    };
+    paint(0);
+    const qb = $("[data-cine-qr]");
+    if (window.qrcode) {
+      const q = window.qrcode(0, "M");
+      q.addData("https://arclay2026.github.io/DraftStudio/");
+      q.make();
+      const n = q.getModuleCount(), eye = (r, c) => (r < 7 && c < 7) || (r < 7 && c >= n - 7) || (r >= n - 7 && c < 7);
+      let dots = "";
+      for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c) && !eye(r, c)) dots += `<rect x="${c + .1}" y="${r + .1}" width=".8" height=".8" rx=".3"/>`;
+      const ring = (x, y) => `<rect x="${x + .5}" y="${y + .5}" width="6" height="6" rx="1.8" fill="none" stroke="currentColor" stroke-width="1"/><rect x="${x + 2}" y="${y + 2}" width="3" height="3" rx=".9"/>`;
+      qb.innerHTML = `<svg viewBox="-1 -1 ${n + 2} ${n + 2}" fill="currentColor"><g class="cs-dots">${dots}</g><g class="cs-eyes">${ring(0, 0)}${ring(n - 7, 0)}${ring(0, n - 7)}</g></svg><i class="cs-scan"></i>`;
+    }
+
+    const parts = [...$$(".cine-text", sec), ...$$(".cs", sec)];
+    const rail = $$(".cine-rail i", sec), num = $("[data-cine-n]", sec);
+    const clamp = v => Math.max(0, Math.min(1, v));
+    let shown = -1, ticking = false;
+    const frame = () => {
+      ticking = false;
+      const r = sec.getBoundingClientRect();
+      const p = clamp(-r.top / Math.max(1, r.height - innerHeight));
+      const f = p * N;
+      const cur = Math.min(N - 1, Math.floor(f));
+      sec.style.setProperty("--p", p.toFixed(4));
+      parts.forEach(el => {
+        const i = +el.dataset.scene;
+        let e = i === 0 ? 1 : clamp((f - i) / .22 + 1);
+        let x = i === N - 1 ? 0 : clamp((f - i - .78) / .22);
+        const l = clamp(f - i);
+        if (calm) { e = i === cur ? 1 : 0; x = 0; }
+        el.style.setProperty("--e", e.toFixed(3));
+        el.style.setProperty("--x", x.toFixed(3));
+        el.style.setProperty("--l", l.toFixed(3));
+        el.classList.toggle("is-on", i === cur);
+      });
+      // In-scene details: a moving highlight across the icons, palettes that change
+      const li = clamp(f - 2);
+      tiles.forEach((t, i) => t.classList.toggle("is-hot", i === Math.min(tiles.length - 1, Math.floor(li * tiles.length))));
+      paint(Math.min(pals.length - 1, Math.floor(clamp(f - 3) * pals.length)));
+      if (cur !== shown) {
+        shown = cur;
+        num.textContent = String(cur + 1).padStart(2, "0");
+        rail.forEach((d, i) => d.classList.toggle("is-on", i === cur));
+      }
+      sec.classList.toggle("is-started", p > .01);
+    };
+    const onScroll = () => { if (!ticking) { ticking = true; requestAnimationFrame(frame); } };
+    // Only listen while the tour is near the screen
+    new IntersectionObserver(([en]) => {
+      if (en.isIntersecting) { addEventListener("scroll", onScroll, { passive: true }); addEventListener("resize", onScroll); onScroll(); }
+      else { removeEventListener("scroll", onScroll); removeEventListener("resize", onScroll); }
+    }, { rootMargin: "200px 0px" }).observe(sec);
+    frame();
+  }
+
   function home() {
     heroFx();
+    cinema();
 
     $$("[data-item-count]").forEach(el => { el.textContent = items.length; });
     $$("[data-icon-total]").forEach(el => { el.textContent = DS.icons.length; });

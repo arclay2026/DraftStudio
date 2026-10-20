@@ -799,7 +799,21 @@
   "Copied": "已复制",
   "Removed from saved": "已从收藏中移除",
   "HEX codes copied": "HEX 色值已复制",
-  "Colours copied": "颜色已复制"
+  "Colours copied": "颜色已复制",
+  "What's inside Draft Studio": "Draft Studio 里有什么",
+  "Mockups that": "好样机，",
+  "sell the idea.": "让创意一眼打动人。",
+  "Photoshop scenes with smart objects. Drop your design in, save, done.": "带智能对象的 Photoshop 场景。放入你的设计，保存，完成。",
+  "Logos ready to": "现成的 Logo，",
+  "make your own.": "改成你自己的。",
+  "Editable AI, SVG and PDF files. Rename them, recolour them, ship them.": "可编辑的 AI、SVG 和 PDF 文件。改名、换色，直接上线。",
+  "100 icons,": "100 个图标，",
+  "Hand-drawn on one grid. Recolour any icon and download it as SVG or PNG.": "在同一网格上手绘。任意图标都能换色，并下载为 SVG 或 PNG。",
+  "just works.": "恰到好处。",
+  "36 hand-picked palettes and a generator with live contrast scores.": "36 套精选配色，外加实时显示对比度评分的生成器。",
+  "Shape every dot and corner, add your logo, and download a code that's scan-checked live.": "塑造每个点和角，加上你的 Logo，下载实时检测可扫描的二维码。",
+  "Open QR Code Studio": "打开 QR Code Studio",
+  "Scroll": "向下滚动"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",
