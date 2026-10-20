@@ -526,7 +526,7 @@ h2 .soft { color: var(--soft); }
 .drop-fmts { display: flex; flex-wrap: wrap; align-items: center; gap: 5.5px; }
 .drop-spec { font-size: calc(11px * var(--ts)); color: rgba(15, 15, 15, .66); font-weight: 500; }
 .drop-actions { position: relative; z-index: 1; display: flex; flex-wrap: wrap; gap: 9px; margin-top: 16px; }
-.drop-actions .btn:not(.btn-dark) { background: rgba(255, 255, 255, .35); border-color: rgba(15, 15, 15, .25); }
+.drop-actions .btn:not(.btn-dark):not(.btn-dl) { background: rgba(255, 255, 255, .35); border-color: rgba(15, 15, 15, .25); }
 .drop-panel .fmt { background: rgba(255, 255, 255, .7); }
 
 /* Small drop cards */
@@ -1075,7 +1075,7 @@ input[type="range"] { accent-color: var(--fg); width: 100%; }
   .drop-panel { padding: 12.5px; }
   .drop-actions .btn { min-height: 35px; font-size: calc(12px * var(--ts)); }
   .drop-meta span:nth-child(3) { display: none; }
-  .drop-actions .btn:not(.btn-dark), .drop-spec { display: none; }
+  .drop-actions .btn:not(.btn-dark):not(.btn-dl), .drop-spec { display: none; }
   .drop-actions { margin-top: 11px; }
   .drop-panel h3 { font-size: calc(17.5px * var(--ts)); margin: 5.5px 0 9px; }
   .drop-info small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -1919,6 +1919,14 @@ body { padding-left: var(--side-w); background: var(--side-bg); transition: padd
   :root[data-rail] .logo-mark { opacity: 0; }
   .set { top: calc(var(--bar-h) + 6px); }
 }
+
+
+/* Download buttons: one blue across the site, in light and dark */
+:root { --dl: #1f7aff; }
+.btn.btn-dl, .pal-btn.is-dl { background: var(--dl); border-color: var(--dl); color: #fff; }
+.btn.btn-dl.btn-dl:hover { background: #0f6ef5; border-color: #0f6ef5; box-shadow: 0 14px 26px -12px rgba(31, 122, 255, .6); }
+.btn.btn-dl .arr { background: #fff; color: var(--dl); }
+.pal-btn.is-dl:hover { background: #0f6ef5; border-color: #0f6ef5; color: #fff; }
 
 /* =====================================================================
    DARK MODE
