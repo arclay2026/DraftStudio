@@ -799,21 +799,7 @@
   "Copied",
   "Removed from saved",
   "HEX codes copied",
-  "Colours copied",
-  "What's inside Draft Studio",
-  "Mockups that",
-  "sell the idea.",
-  "Photoshop scenes with smart objects. Drop your design in, save, done.",
-  "Logos ready to",
-  "make your own.",
-  "Editable AI, SVG and PDF files. Rename them, recolour them, ship them.",
-  "100 icons,",
-  "Hand-drawn on one grid. Recolour any icon and download it as SVG or PNG.",
-  "just works.",
-  "36 hand-picked palettes and a generator with live contrast scores.",
-  "Shape every dot and corner, add your logo, and download a code that's scan-checked live.",
-  "Open QR Code Studio",
-  "Scroll"
+  "Colours copied"
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",
