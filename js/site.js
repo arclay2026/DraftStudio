@@ -18,6 +18,66 @@
     { name: "Templates", slug: "templates", blurb: "Flyers, posters, social posts and cards with editable text.", formats: ["PSD", "AI", "PDF"] }
   ];
 
+  /* ---------- Language ---------- */
+  // The markup is written in English. For other languages the page head loads
+  // js/i18n/<code>.js first (window.DS_I18N); i18n() then swaps every text
+  // node and label that has an entry, including anything added later.
+  const LANGS = { en: "English", fr: "Français", es: "Español", pt: "Português", ar: "العربية", zh: "中文" };
+  const LANG = document.documentElement.lang in LANGS ? document.documentElement.lang : "en";
+
+  function i18n() {
+    const root = document.documentElement;
+    const done = () => root.classList.remove("i18n-wait");
+    const D = window.DS_I18N;
+    if (LANG === "en" || !D) return done();
+    const S = D.strings || {};
+    const P = (D.patterns || []).map(([re, out]) => [new RegExp(re), out]);
+    const one = s => {
+      if (S[s] != null) return S[s];
+      for (const [re, o] of P) if (re.test(s)) return s.replace(re, (...m) => o.replace(/\$(\d)/g, (_, n) => S[m[n]] || m[n]));
+      return null;
+    };
+    const tr = raw => {
+      const s = raw.trim();
+      if (!s || !/[A-Za-z]/.test(s)) return null;
+      let out = one(s);
+      // "Mockups · 3 weeks ago": translate each part on its own
+      if (out == null && s.includes(" · ")) {
+        const parts = s.split(" · "), got = parts.map(x => one(x));
+        if (got.some(x => x != null)) out = parts.map((x, i) => got[i] ?? x).join(" · ");
+      }
+      return out == null ? null : raw.replace(s, out);
+    };
+    const ATTRS = ["placeholder", "aria-label", "title", "data-tip", "data-label", "alt"];
+    const SKIP = "script, style, code, pre, textarea, [data-no-i18n], .qs-preview, .qs-look, .qt-stage svg";
+    const attrs = el => ATTRS.forEach(a => {
+      const v = el.getAttribute(a);
+      if (!v) return;
+      const o = tr(v);
+      if (o != null && o !== v) el.setAttribute(a, o);
+    });
+    const walk = node => {
+      if (node.nodeType === 3) {
+        const p = node.parentElement;
+        if (!p || p.closest(SKIP)) return;
+        const o = tr(node.nodeValue);
+        if (o != null && o !== node.nodeValue) node.nodeValue = o;
+        return;
+      }
+      if (node.nodeType !== 1 || node.closest(SKIP)) return;
+      attrs(node);
+      node.childNodes.forEach(walk);
+    };
+    walk(document.body);
+    document.title = document.title.split(" · ").map(x => tr(x) || x).join(" · ");
+    new MutationObserver(ms => ms.forEach(m => {
+      if (m.type === "attributes") { if (!m.target.closest(SKIP)) attrs(m.target); }
+      else if (m.type === "characterData") walk(m.target);
+      else m.addedNodes.forEach(walk);
+    })).observe(document.body, { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ATTRS });
+    done();
+  }
+
   /* ---------- Helpers ---------- */
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const icon = (id, cls = "") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[id] || ""}</svg>`;
@@ -966,9 +1026,9 @@
   function ago(date) {
     if (!date) return "";
     const days = Math.round((Date.now() - new Date(date + "T00:00").getTime()) / 864e5);
-    if (days <= 0) return "today";
-    if (days === 1) return "yesterday";
-    const rtf = new Intl.RelativeTimeFormat("en", { numeric: "auto" });
+    const rtf = new Intl.RelativeTimeFormat(LANG, { numeric: "auto" });
+    if (days <= 0) return rtf.format(0, "day");
+    if (days === 1) return rtf.format(-1, "day");
     if (days < 7) return rtf.format(-days, "day");
     if (days < 31) return rtf.format(-Math.round(days / 7), "week");
     if (days < 365) return rtf.format(-Math.round(days / 30), "month");
@@ -1208,7 +1268,7 @@
               ${it.specs ? `<div><dt>Size</dt><dd>${esc(it.specs)}</dd></div>` : ""}
               <div><dt>Formats</dt><dd>${fmts.join(", ")}</dd></div>
               ${it.requires ? `<div><dt>Opens in</dt><dd>${esc(it.requires)}</dd></div>` : ""}
-              <div><dt>Added</dt><dd>${it.date ? new Date(it.date + "T00:00").toLocaleDateString(undefined, { day: "numeric", month: "long", year: "numeric" }) : "—"}</dd></div>
+              <div><dt>Added</dt><dd>${it.date ? new Date(it.date + "T00:00").toLocaleDateString(LANG, { day: "numeric", month: "long", year: "numeric" }) : "—"}</dd></div>
               <div><dt>License</dt><dd>${isPaid(it) ? "Exclusive, full rights to the buyer" : "Free for personal &amp; commercial use"}</dd></div>
             </dl>
             ${actions}
@@ -1911,7 +1971,8 @@
     theme:  { key: "ds-theme",  def: "device",  opts: { light: "Light", dark: "Dark", device: "Device" } },
     text:   { key: "ds-text",   def: "default", opts: { default: "Default", large: "Large", larger: "Larger" } },
     open:   { key: "ds-open",   def: "quick",   opts: { quick: "Quick view", page: "Full page" } },
-    format: { key: "ds-format", def: "auto",    opts: { auto: "Auto", png: "PNG", svg: "SVG", jpg: "JPG" } }
+    format: { key: "ds-format", def: "auto",    opts: { auto: "Auto", png: "PNG", svg: "SVG", jpg: "JPG" } },
+    lang:   { key: "ds-lang",   def: "auto",    opts: Object.assign({ auto: "Automatic" }, LANGS) }
   };
   const pref = name => {
     const p = PREFS[name];
@@ -1931,9 +1992,10 @@
     const NOTES = {
       text: { default: "The size the site was designed at", large: "A little bigger, easier to read", larger: "Biggest, for small or far-away screens" },
       open: { quick: "A big preview sheet; flip through files without leaving the page", page: "Go straight to the file's own page" },
+      lang: { auto: "Matches your browser's language", en: "English (original)", fr: "French", es: "Spanish", pt: "Portuguese", ar: "Arabic · right to left", zh: "Chinese (Simplified)" },
       format: { auto: "SVG for icons, PNG for QR codes", png: "Pixels, works everywhere", svg: "Vector, stays sharp at any size", jpg: "Smallest file, no transparency (QR codes; icons use PNG)" }
     };
-    const TITLES = { appearance: "Appearance", text: "Text size", open: "Open files in", format: "Default download" };
+    const TITLES = { lang: "Language", appearance: "Appearance", text: "Text size", open: "Open files in", format: "Default download" };
 
     const head = (title, back) => back
       ? `<div class="set-head"><button class="set-back" type="button" data-set-back>${icon("chevron-right")}<span>Settings</span></button><b>${title}</b><span></span></div>`
@@ -1966,7 +2028,7 @@
       <div class="set-view is-on" data-view="root">
         ${head("Settings")}
         <p class="set-label">Display</p>
-        <div class="set-group">${row("appearance", "sun", "Appearance")}${row("text", "type", "Text size")}</div>
+        <div class="set-group">${row("lang", "globe", "Language")}${row("appearance", "sun", "Appearance")}${row("text", "type", "Text size")}</div>
         <p class="set-label">Files</p>
         <div class="set-group">${row("open", "eye", "Open files in")}${row("format", "download", "Default download")}</div>
         <div class="set-group set-gap">
@@ -1984,6 +2046,10 @@
         ${head("Text size", true)}
         ${list("text")}
         <p class="set-note">Headings stay the same; body text, labels and buttons grow.</p>
+      </div>
+      <div class="set-view" data-view="lang">
+        ${head("Language", true)}
+        ${list("lang")}
       </div>
       <div class="set-view" data-view="open">
         ${head("Open files in", true)}
@@ -2026,6 +2092,7 @@
         try { v === PREFS[name].def ? localStorage.removeItem(PREFS[name].key) : localStorage.setItem(PREFS[name].key, v); } catch (e) {}
         refresh();
         document.dispatchEvent(new CustomEvent("ds-pref", { detail: { name, value: v } }));
+        if (name === "lang") setTimeout(() => location.reload(), 180);  // the page head loads the new dictionary
       };
       // Theme changes cross-fade the whole page when the browser can
       const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -2141,6 +2208,7 @@
   /* ---------- Boot ---------- */
   const page = document.body.dataset.page;
   freshness();
+  i18n();
   header(page === "browse" ? (new URLSearchParams(location.search).get("cat") || "browse") : page);
   footer();
   chrome();

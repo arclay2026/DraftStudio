@@ -63,3 +63,12 @@ Every change to `main` goes live within a minute or two.
 ## Publishing changes
 
 The pages load `css/style.css` and `js/*.js` with a `?v=` stamp so browsers fetch fresh copies after a change. After editing CSS or JS, run `tools/bump.sh`: it stamps a new version on every `.html` file and writes `version.json`. GitHub Pages lets browsers keep a page for up to 10 minutes, so each page also checks `version.json` when it opens and reloads itself once if a newer version is live.
+
+## Languages
+
+The site speaks English, French, Spanish, Portuguese, Arabic (right to left) and Chinese. Visitors get their browser's language automatically, or pick one under Settings › Language.
+
+- The markup stays in English. `i18n/<code>.json` maps each English string to its translation (`strings`), plus a few patterns for text with numbers in it (`patterns`).
+- `i18n/_source.json` is the list of English strings to translate.
+- After editing a translation, run `node tools/build-i18n.js` to rebuild `js/i18n/<code>.js`, then `tools/bump.sh`.
+- New English text shows in English until it's added to every `i18n/<code>.json`.
