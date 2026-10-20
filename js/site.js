@@ -1331,6 +1331,7 @@
       if (!a || a.target === "_blank" || a.closest(".search-box")) return;
       const id = idOf(a);
       if (!id || !items.some(x => x.id === id)) return;
+      if (!cur && pref("open") === "page") return;  // Settings > Open files in > Full page
       e.preventDefault();
       show(id, cur ? "replace" : "push");
     });
@@ -1444,6 +1445,10 @@
     const drawInspector = () => {
       const ic = state.sel;
       if (!ic) return;
+      // Settings > Default download picks which button leads
+      const pngFirst = pref("format") === "png" || pref("format") === "jpg";
+      const dlSvg = `<a class="btn${pngFirst ? "" : " btn-dark"}" data-dl-svg>${icon("download")} Download SVG</a>`;
+      const dlPng = `<button class="btn${pngFirst ? " btn-dark" : ""}" type="button" data-dl-png>${icon(pngFirst ? "download" : "image")} Download PNG · 512px</button>`;
       insp.innerHTML = `
         <div class="big" style="--ic:${state.color || "var(--fg)"}">${icon(ic.id)}</div>
         <span class="mono mute">${esc(ic.group)}</span>
@@ -1460,8 +1465,7 @@
           </label>
         </div>
         <div class="btns">
-          <a class="btn btn-dark" data-dl-svg>${icon("download")} Download SVG</a>
-          <button class="btn" type="button" data-dl-png>${icon("image")} Download PNG · 512px</button>
+          ${pngFirst ? dlPng + dlSvg : dlSvg + dlPng}
           <button class="btn" type="button" data-copy>${icon("copy")} Copy SVG code</button>
         </div>`;
       const svgText = svgFile(ic, state.color, 24);
@@ -1491,6 +1495,7 @@
     };
 
     const apply = () => { grid.style.setProperty("--ic", state.color || "var(--fg)"); drawInspector(); };
+    document.addEventListener("ds-pref", e => { if (e.detail.name === "format") drawInspector(); });
 
     const select = (ic, scroll) => {
       state.sel = ic;
@@ -1851,18 +1856,61 @@
   /* ---------- QR Studio (qr.html) ---------- */
   // The studio lives in js/qr-studio.js; it gets the shared helpers from here.
   function qr() {
-    if (window.QRStudio) window.QRStudio({ $, $$, esc, icon, copy, toast, inkOn, hexRgb, lum, ICONS, palettes: DS.palettes || [] });
+    if (window.QRStudio) window.QRStudio({ $, $$, esc, icon, copy, toast, inkOn, hexRgb, lum, ICONS, pref, palettes: DS.palettes || [] });
   }
 
-  /* ---------- Settings: Appearance > Theme (Light, Dark, Device) ---------- */
-  // The head of every page applies the saved theme before paint; this builds
-  // the panel behind the gear button and keeps the choice in sync.
+  /* ---------- Settings (gear in the header) ---------- */
+  // Each preference lives in localStorage as "ds-<name>"; leaving the default
+  // removes the key. The head of every page applies theme and text size before
+  // paint; the others are read where they are used through pref().
+  const PREFS = {
+    theme:  { key: "ds-theme",  def: "device",  opts: { light: "Light", dark: "Dark", device: "Device" } },
+    text:   { key: "ds-text",   def: "default", opts: { default: "Default", large: "Large", larger: "Larger" } },
+    open:   { key: "ds-open",   def: "quick",   opts: { quick: "Quick view", page: "Full page" } },
+    format: { key: "ds-format", def: "auto",    opts: { auto: "Auto", png: "PNG", svg: "SVG", jpg: "JPG" } }
+  };
+  const pref = name => {
+    const p = PREFS[name];
+    try { const v = localStorage.getItem(p.key); return v in p.opts ? v : p.def; } catch (e) { return p.def; }
+  };
+
   function settings() {
-    const KEY = "ds-theme", root = document.documentElement;
-    const NAMES = { light: "Light", dark: "Dark", device: "Device" };
-    const read = () => { try { const t = localStorage.getItem(KEY); return t === "light" || t === "dark" ? t : "device"; } catch (e) { return "device"; } };
+    const root = document.documentElement;
     const meta = $('meta[name="theme-color"]');
     const paintMeta = () => meta && meta.setAttribute("content", getComputedStyle(document.body).backgroundColor);
+    const paintRoot = () => {
+      const t = pref("theme"), x = pref("text");
+      if (t === "device") delete root.dataset.theme; else root.dataset.theme = t;
+      if (x === "default") delete root.dataset.text; else root.dataset.text = x;
+    };
+
+    const NOTES = {
+      text: { default: "The size the site was designed at", large: "A little bigger, easier to read", larger: "Biggest, for small or far-away screens" },
+      open: { quick: "A big preview sheet; flip through files without leaving the page", page: "Go straight to the file's own page" },
+      format: { auto: "SVG for icons, PNG for QR codes", png: "Pixels, works everywhere", svg: "Vector, stays sharp at any size", jpg: "Smallest file, no transparency (QR codes; icons use PNG)" }
+    };
+    const TITLES = { appearance: "Appearance", text: "Text size", open: "Open files in", format: "Default download" };
+
+    const head = (title, back) => back
+      ? `<div class="set-head"><button class="set-back" type="button" data-set-back>${icon("chevron-right")}<span>Settings</span></button><b>${title}</b><span></span></div>`
+      : `<div class="set-head"><span></span><b>${title}</b><button class="set-x" type="button" aria-label="Close settings" data-set-close>${icon("close")}</button></div>`;
+    const row = (view, ico, label) => `
+      <button class="set-row" type="button" data-set-go="${view}">
+        <i class="set-ico" data-set-ico="${view}">${icon(ico)}</i><span>${label}</span><em data-set-val="${view}"></em>${icon("chevron-right")}
+      </button>`;
+    const list = name => `
+      <div class="set-group set-list" role="radiogroup" aria-label="${TITLES[name]}">
+        ${Object.entries(PREFS[name].opts).map(([v, l]) => `
+          <button class="set-opt" type="button" role="radio" aria-checked="false" data-pick="${name}" data-v="${v}">
+            <span><b>${l}</b><small>${NOTES[name][v]}</small></span><i class="set-check" aria-hidden="true">${icon("check")}</i>
+          </button>`).join("")}
+      </div>`;
+    const tile = t => `
+      <button class="set-theme" type="button" role="radio" aria-checked="false" data-pick="theme" data-v="${t}">
+        <span class="set-prev is-${t}" aria-hidden="true"><span><i></i><i></i><i></i></span><span><i></i><i></i><i></i></span></span>
+        <b>${PREFS.theme.opts[t]}</b>
+        <span class="set-tick" aria-hidden="true">${icon("check")}</span>
+      </button>`;
 
     const el = document.createElement("div");
     el.className = "set";
@@ -1870,30 +1918,41 @@
     el.setAttribute("role", "dialog");
     el.setAttribute("aria-label", "Settings");
     el.hidden = true;
-    const tile = t => `
-      <button class="set-theme" type="button" role="radio" aria-checked="false" data-theme-pick="${t}">
-        <span class="set-prev is-${t}" aria-hidden="true"><span><i></i><i></i><i></i></span><span><i></i><i></i><i></i></span></span>
-        <b>${NAMES[t]}</b>
-        <span class="set-tick" aria-hidden="true">${icon("check")}</span>
-      </button>`;
     el.innerHTML = `
       <div class="set-view is-on" data-view="root">
-        <div class="set-head"><span></span><b>Settings</b><button class="set-x" type="button" aria-label="Close settings" data-set-close>${icon("close")}</button></div>
-        <div class="set-group">
-          <button class="set-row" type="button" data-set-go="appearance">
-            <i class="set-ico" data-set-ico>${icon("sun")}</i><span>Appearance</span><em data-set-val></em>${icon("chevron-right")}
-          </button>
+        ${head("Settings")}
+        <p class="set-label">Display</p>
+        <div class="set-group">${row("appearance", "sun", "Appearance")}${row("text", "type", "Text size")}</div>
+        <p class="set-label">Files</p>
+        <div class="set-group">${row("open", "eye", "Open files in")}${row("format", "download", "Default download")}</div>
+        <div class="set-group set-gap">
+          <button class="set-row set-danger" type="button" data-set-clear><i class="set-ico">${icon("trash")}</i><span data-clear-label>Clear my saved stuff</span></button>
         </div>
+        <p class="set-note">Removes your settings, saved files, QR design and recent colours from this browser.</p>
       </div>
       <div class="set-view" data-view="appearance">
-        <div class="set-head"><button class="set-back" type="button" data-set-back>${icon("chevron-right")}<span>Settings</span></button><b>Appearance</b><span></span></div>
+        ${head("Appearance", true)}
         <p class="set-label">Theme</p>
-        <div class="set-group set-themes" role="radiogroup" aria-label="Theme">${["light", "dark", "device"].map(tile).join("")}</div>
+        <div class="set-group set-themes" role="radiogroup" aria-label="Theme">${Object.keys(PREFS.theme.opts).map(tile).join("")}</div>
         <p class="set-note">Device follows your system and switches on its own.</p>
+      </div>
+      <div class="set-view" data-view="text">
+        ${head("Text size", true)}
+        <div class="set-sample" aria-hidden="true"><b>Free files, ready to download.</b><span>Mockups, logos and icons. No sign-up, no watermark.</span></div>
+        ${list("text")}
+        <p class="set-note">Headings stay the same; body text, labels and buttons grow.</p>
+      </div>
+      <div class="set-view" data-view="open">
+        ${head("Open files in", true)}
+        ${list("open")}
+      </div>
+      <div class="set-view" data-view="format">
+        ${head("Default download", true)}
+        ${list("format")}
+        <p class="set-note">Used by the QR code studio and the icon set. Palettes and design files keep their own formats.</p>
       </div>`;
     document.body.appendChild(el);
 
-    const btns = () => $$(".set-btn");
     const views = $$(".set-view", el);
     const fit = v => { el.style.height = v.offsetHeight + "px"; };
     const go = name => {
@@ -1908,23 +1967,56 @@
     };
 
     const sync = () => {
-      const t = read();
-      $("[data-set-val]", el).textContent = NAMES[t];
-      $("[data-set-ico]", el).innerHTML = icon(t === "dark" ? "moon" : t === "light" ? "sun" : "monitor");
-      $$("[data-theme-pick]", el).forEach(b => b.setAttribute("aria-checked", b.dataset.themePick === t));
+      const t = pref("theme");
+      $$("[data-set-val]", el).forEach(e => {
+        const name = e.dataset.setVal === "appearance" ? "theme" : e.dataset.setVal;
+        e.textContent = PREFS[name].opts[pref(name)];
+      });
+      $('[data-set-ico="appearance"]', el).innerHTML = icon(t === "dark" ? "moon" : t === "light" ? "sun" : "monitor");
+      $$("[data-pick]", el).forEach(b => b.setAttribute("aria-checked", b.dataset.v === pref(b.dataset.pick)));
     };
-    const apply = t => {
+    const refresh = () => { paintRoot(); sync(); paintMeta(); };
+
+    const apply = (name, v) => {
+      if (pref(name) === v) return;
       const set = () => {
-        try { t === "device" ? localStorage.removeItem(KEY) : localStorage.setItem(KEY, t); } catch (e) {}
-        if (t === "device") delete root.dataset.theme; else root.dataset.theme = t;
-        sync(); paintMeta();
+        try { v === PREFS[name].def ? localStorage.removeItem(PREFS[name].key) : localStorage.setItem(PREFS[name].key, v); } catch (e) {}
+        refresh();
+        document.dispatchEvent(new CustomEvent("ds-pref", { detail: { name, value: v } }));
       };
-      // Cross-fade the whole page when the browser can
+      // Theme changes cross-fade the whole page when the browser can
       const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (document.startViewTransition && !calm && t !== read()) {
+      if (name === "theme" && document.startViewTransition && !calm) {
         root.classList.add("is-theming");
         document.startViewTransition(set).finished.finally(() => root.classList.remove("is-theming"));
       } else set();
+      if (name === "text") requestAnimationFrame(() => fit($('[data-view="text"]', el)));
+      // The QR studio's format menu follows a new default straight away
+      const fmt = $('select[data-k="exp.fmt"]');
+      if (name === "format" && fmt && v !== "auto" && fmt.value !== v) {
+        fmt.value = v;
+        fmt.dispatchEvent(new Event("change", { bubbles: true }));
+        fmt.dispatchEvent(new Event("sync"));
+      }
+    };
+
+    // Clear: first tap arms it, a second tap within 3 seconds wipes everything
+    const clearBtn = $("[data-set-clear]", el), clearLabel = $("[data-clear-label]", el);
+    const disarm = () => { clearBtn.classList.remove("is-armed"); clearLabel.textContent = "Clear my saved stuff"; };
+    const clearAll = () => {
+      if (!clearBtn.classList.contains("is-armed")) {
+        clearBtn.classList.add("is-armed");
+        clearLabel.textContent = "Tap again to clear everything";
+        clearTimeout(clearBtn._t);
+        clearBtn._t = setTimeout(disarm, 3000);
+        return;
+      }
+      clearTimeout(clearBtn._t);
+      try { Object.keys(localStorage).filter(k => k.startsWith("ds-")).forEach(k => localStorage.removeItem(k)); } catch (e) {}
+      disarm();
+      refresh();
+      toast("All cleared. Starting fresh");
+      setTimeout(() => location.reload(), 900);
     };
 
     let lastBtn = null;
@@ -1939,11 +2031,13 @@
         setTimeout(() => $(".set-row", el).focus({ preventScroll: true }), 60);
       } else {
         el.classList.remove("is-open");
+        disarm();
         el._t = setTimeout(() => { el.hidden = true; }, 260);
         if (lastBtn && el.contains(document.activeElement)) lastBtn.focus({ preventScroll: true });
       }
-      btns().forEach(b => b.setAttribute("aria-expanded", on));
+      $$(".set-btn").forEach(b => b.setAttribute("aria-expanded", on));
     };
+    const toRoot = () => { go("root"); $(".set-row", el).focus({ preventScroll: true }); };
 
     $$("[data-open-settings]").forEach(b => b.addEventListener("click", e => {
       e.stopPropagation();
@@ -1952,33 +2046,38 @@
       open(el.hidden, b.classList.contains("set-btn") ? b : null);
     }));
     el.addEventListener("click", e => {
-      const t = e.target.closest("[data-theme-pick], [data-set-go], [data-set-back], [data-set-close]");
+      const t = e.target.closest("[data-pick], [data-set-go], [data-set-back], [data-set-close], [data-set-clear]");
       if (!t) return;
-      if (t.dataset.themePick) apply(t.dataset.themePick);
-      else if (t.dataset.setGo) { go(t.dataset.setGo); setTimeout(() => $(`[data-theme-pick="${read()}"]`, el).focus({ preventScroll: true }), 60); }
-      else if (t.hasAttribute("data-set-back")) { go("root"); $(".set-row", el).focus({ preventScroll: true }); }
+      if (t.dataset.pick) apply(t.dataset.pick, t.dataset.v);
+      else if (t.dataset.setGo) {
+        const view = t.dataset.setGo, name = view === "appearance" ? "theme" : view;
+        go(view);
+        setTimeout(() => $(`[data-pick="${name}"][data-v="${pref(name)}"]`, el).focus({ preventScroll: true }), 60);
+      }
+      else if (t.hasAttribute("data-set-back")) toRoot();
+      else if (t.hasAttribute("data-set-clear")) clearAll();
       else open(false);
     });
-    // Arrow keys move between the three themes, like a native radio group
-    $(".set-themes", el).addEventListener("keydown", e => {
+    // Arrow keys move through each list, like a native radio group
+    el.addEventListener("keydown", e => {
       const keys = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
-      if (!keys[e.key]) return;
+      const cur = document.activeElement.closest && document.activeElement.closest("[data-pick]");
+      if (!keys[e.key] || !cur) return;
       e.preventDefault();
-      const all = $$("[data-theme-pick]", el), i = all.indexOf(document.activeElement);
+      const all = $$(`[data-pick="${cur.dataset.pick}"]`, el), i = all.indexOf(cur);
       const next = all[(i + keys[e.key] + all.length) % all.length];
-      next.focus(); apply(next.dataset.themePick);
+      next.focus(); apply(next.dataset.pick, next.dataset.v);
     });
     document.addEventListener("pointerdown", e => { if (!el.hidden && !el.contains(e.target) && !e.target.closest("[data-open-settings]")) open(false); });
     document.addEventListener("keydown", e => {
       if (e.key !== "Escape" || el.hidden) return;
       const sub = views.find(v => v.classList.contains("is-on") && v.dataset.view !== "root");
-      sub ? (go("root"), $(".set-row", el).focus({ preventScroll: true })) : open(false);
+      sub ? toRoot() : open(false);
     });
 
     matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paintMeta);
-    window.addEventListener("storage", e => { if (e.key === KEY) { const t = read(); if (t === "device") delete root.dataset.theme; else root.dataset.theme = t; sync(); paintMeta(); } });
-    sync();
-    paintMeta();
+    window.addEventListener("storage", e => { if (!e.key || e.key.startsWith("ds-")) refresh(); });
+    refresh();
   }
 
   /* ---------- Boot ---------- */
