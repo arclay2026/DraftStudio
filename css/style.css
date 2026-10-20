@@ -293,7 +293,7 @@ p { margin: 0; }
 .dots { flex: 1; min-height: 0; container-type: size; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); place-items: center; }
 .dots i { width: min(calc(100cqw / 7 - 7px), calc(100cqh / 5 - 7px)); aspect-ratio: 1; border-radius: 50%; background: var(--forest-2); }
 .dots i { transition: background .18s, transform .3s var(--ease); }
-.dots { --neon: #1fe36c; }  /* neon green in light mode, hot pink in dark; only for this dot grid */
+.dots { --neon: #1fe36c; }  /* neon green on the dark card (light mode), site blue on the white card (dark mode) */
 .dots i.on { background: var(--neon); transform: scale(1.04); box-shadow: 0 0 16px -1px color-mix(in srgb, var(--neon) 70%, transparent); }
 .dots i.trail { background: color-mix(in srgb, var(--neon) 40%, var(--forest-2)); }
 .hero-dots .big { font: 600 clamp(32.5px, 3.5vw, 62.5px)/1 var(--font-display); letter-spacing: var(--tight); white-space: nowrap; }
@@ -1961,7 +1961,7 @@ body { padding-left: var(--side-w); background: var(--side-bg); transition: padd
 :root[data-theme="dark"] .hero-dots-in { border-color: rgba(15, 15, 15, .08); }
 :root[data-theme="dark"] .hero-dots p { color: rgba(15, 15, 15, .6); }
 :root[data-theme="dark"] .hero-dots p b { color: #0f0f0f; }
-:root[data-theme="dark"] .dots { --neon: #ff2d95; }
+:root[data-theme="dark"] .dots { --neon: var(--dl); }
 /* settings floats above the page like an iOS sheet */
 :root[data-theme="dark"] .set { --surface: #1c1c1c; --fill: #282828; --fill-2: #323232; --border: #343434; box-shadow: 0 30px 80px -18px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .04); }
 :root[data-theme="dark"] { --side-bg: #000000; }
@@ -1982,7 +1982,7 @@ body { padding-left: var(--side-w); background: var(--side-bg); transition: padd
   :root:not([data-theme="light"]) .hero-dots-in { border-color: rgba(15, 15, 15, .08); }
   :root:not([data-theme="light"]) .hero-dots p { color: rgba(15, 15, 15, .6); }
   :root:not([data-theme="light"]) .hero-dots p b { color: #0f0f0f; }
-  :root:not([data-theme="light"]) .dots { --neon: #ff2d95; }
+  :root:not([data-theme="light"]) .dots { --neon: var(--dl); }
   /* settings floats above the page like an iOS sheet */
   :root:not([data-theme="light"]) .set { --surface: #1c1c1c; --fill: #282828; --fill-2: #323232; --border: #343434; box-shadow: 0 30px 80px -18px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .04); }
   :root:not([data-theme="light"]) { --side-bg: #000000; }
