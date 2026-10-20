@@ -1938,7 +1938,6 @@
       </div>
       <div class="set-view" data-view="text">
         ${head("Text size", true)}
-        <div class="set-sample" aria-hidden="true"><b>Free files, ready to download.</b><span>Mockups, logos and icons. No sign-up, no watermark.</span></div>
         ${list("text")}
         <p class="set-note">Headings stay the same; body text, labels and buttons grow.</p>
       </div>

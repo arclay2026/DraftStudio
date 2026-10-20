@@ -1853,9 +1853,6 @@ html.qv-dragging #main, html.qv-dragging .footer, html.qv-dragging .qv-backdrop 
 .set-check { flex: none; display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; color: transparent; transition: background .2s, color .2s, transform .35s var(--spring, var(--ease)); transform: scale(.6); }
 .set-check svg { width: 13px; height: 13px; stroke-width: 3; }
 .set-opt[aria-checked="true"] .set-check { background: var(--fg); color: var(--on-fg); transform: none; }
-.set-sample { margin: 2px 0 12px; padding: 14px 16px; border-radius: 16px; border: 1px solid var(--border); }
-.set-sample b { display: block; font-size: calc(15px * var(--ts)); font-weight: 600; letter-spacing: -.01em; transition: font-size .25s var(--ease); }
-.set-sample span { display: block; margin-top: 4px; font-size: calc(13px * var(--ts)); color: var(--mute); line-height: 1.45; transition: font-size .25s var(--ease); }
 :root[data-text="large"] { --ts: 1.12; }
 :root[data-text="larger"] { --ts: 1.25; }
 .set-note { margin: 10px 4px 0; font-size: calc(12px * var(--ts)); color: var(--mute); }
