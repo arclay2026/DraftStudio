@@ -2120,8 +2120,25 @@
     refresh();
   }
 
+  // GitHub Pages lets browsers keep a page for up to 10 minutes. If a newer
+  // version is live, reload once so nobody sits on a stale page.
+  function freshness() {
+    const meta = $('meta[name="ds-version"]');
+    if (!meta || !window.fetch || location.protocol === "file:") return;
+    fetch("version.json?t=" + Date.now(), { cache: "no-store" })
+      .then(r => (r.ok ? r.json() : null))
+      .then(j => {
+        if (!j || !j.v || !(j.v > meta.content)) return;
+        const key = "ds-reloaded-" + j.v;
+        try { if (sessionStorage.getItem(key)) return; sessionStorage.setItem(key, "1"); } catch (e) { return; }
+        location.reload();
+      })
+      .catch(() => {});
+  }
+
   /* ---------- Boot ---------- */
   const page = document.body.dataset.page;
+  freshness();
   header(page === "browse" ? (new URLSearchParams(location.search).get("cat") || "browse") : page);
   footer();
   chrome();
