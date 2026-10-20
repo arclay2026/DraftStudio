@@ -62,4 +62,4 @@ Every change to `main` goes live within a minute or two.
 
 ## Publishing changes
 
-The pages load `css/style.css` and `js/*.js` with a `?v=` stamp so browsers fetch fresh copies after a change. When you edit CSS or JS, bump the stamp in every `.html` file (any new number works, e.g. today's date and time).
+The pages load `css/style.css` and `js/*.js` with a `?v=` stamp so browsers fetch fresh copies after a change. After editing CSS or JS, run `tools/bump.sh`: it stamps a new version on every `.html` file and writes `version.json`. GitHub Pages lets browsers keep a page for up to 10 minutes, so each page also checks `version.json` when it opens and reloads itself once if a newer version is live.
