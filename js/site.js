@@ -996,7 +996,7 @@
           <h3><a href="${itemUrl(it)}">${esc(it.title)}</a></h3>
           ${it.specs ? `<div class="drop-fmts"><span class="drop-spec">${esc(it.specs.split("·")[0].trim())}</span></div>` : ""}
           <div class="drop-actions">
-            <a class="btn btn-dark" href="${esc(a.href)}"${a.ext ? ' target="_blank" rel="noopener"' : ""}${a.dl ? " download" : ""}>${esc(a.label)} <span class="arr">${ARR}</span></a>
+            <a class="btn ${/^Download/.test(a.label) ? "btn-dl" : "btn-dark"}" href="${esc(a.href)}"${a.ext ? ' target="_blank" rel="noopener"' : ""}${a.dl ? " download" : ""}>${esc(a.label)} <span class="arr">${ARR}</span></a>
             <a class="btn" href="${itemUrl(it)}">Details</a>
           </div>
         </div>
@@ -1178,7 +1178,7 @@
               data-href="${esc(f.path)}" data-name="${esc(fileName(f))}" data-ext="${isExternal(f.path) ? 1 : ""}">${fileLine(f)}${icon("check", "dlx-tick")}</button>`).join("")}
           </div>
         </div>
-        <a class="btn btn-dark dlx-go" data-dlx-go>${icon("download")}<span>Download</span></a>
+        <a class="btn btn-dl dlx-go" data-dlx-go>${icon("download")}<span>Download</span></a>
       </div>`;
     const actions = isPaid(it) ? `
       <div class="price-box">
@@ -1189,7 +1189,7 @@
           `<a class="btn btn-dark" href="${waLink(`Hi Draft Studio, I'd like to buy “${it.title}” (${it.num}) for ${it.price}.`)}" target="_blank" rel="noopener">${icon("chat")} Buy on WhatsApp</a>`}
       </div>` : `
       ${it.requires ? `<div class="notice">${icon("lightbulb")}<span>This file needs <b>${esc(it.requires)}</b> (or free Photopea in your browser).</span></div>` : ""}
-      ${zip ? `<a class="btn btn-dark dl-all" href="${esc(zip.path)}" download>${icon("download")} Download all${zip.size ? " · " + esc(zip.size) : ""}</a>` : ""}
+      ${zip ? `<a class="btn btn-dl dl-all" href="${esc(zip.path)}" download>${icon("download")} Download all${zip.size ? " · " + esc(zip.size) : ""}</a>` : ""}
       ${picker}`;
     return `
           <div class="item-media">
@@ -1489,8 +1489,8 @@
       if (!ic) return;
       // Settings > Default download picks which button leads
       const pngFirst = pref("format") === "png" || pref("format") === "jpg";
-      const dlSvg = `<a class="btn${pngFirst ? "" : " btn-dark"}" data-dl-svg>${icon("download")} Download SVG</a>`;
-      const dlPng = `<button class="btn${pngFirst ? " btn-dark" : ""}" type="button" data-dl-png>${icon(pngFirst ? "download" : "image")} Download PNG · 512px</button>`;
+      const dlSvg = `<a class="btn${pngFirst ? "" : " btn-dl"}" data-dl-svg>${icon("download")} Download SVG</a>`;
+      const dlPng = `<button class="btn${pngFirst ? " btn-dl" : ""}" type="button" data-dl-png>${icon(pngFirst ? "download" : "image")} Download PNG · 512px</button>`;
       insp.innerHTML = `
         <div class="big" style="--ic:${state.color || "var(--fg)"}">${icon(ic.id)}</div>
         <span class="mono mute">${esc(ic.group)}</span>
@@ -1801,7 +1801,7 @@
             <div class="pal-actions">
               <button type="button" class="pal-btn" data-pal-open="${i}" aria-label="Edit in generator">${icon("magic")}</button>
               <button type="button" class="pal-btn" data-pal-css="${i}" aria-label="Copy CSS">${icon("copy")}</button>
-              <button type="button" class="pal-btn is-dark" data-pal-png="${i}" aria-label="Download PNG">${icon("download")}</button>
+              <button type="button" class="pal-btn is-dl" data-pal-png="${i}" aria-label="Download PNG">${icon("download")}</button>
             </div>
           </article>`;
       }).join("") : `<div class="empty"><h3>No palette matches that.</h3><p>Try another word, or make one with the generator above.</p></div>`;
