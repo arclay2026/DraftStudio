@@ -1171,7 +1171,7 @@
       <div class="dlx" data-dlx>
         <div class="dlx-pick">
           <button class="dlx-btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choose a format" data-dlx-toggle${singles.length < 2 ? " disabled" : ""}>
-            <span class="dlx-cur" data-dlx-cur>${fileLine(singles[start])}</span>${singles.length < 2 ? "" : icon("chevron-right", "dlx-chev")}
+            <span class="dlx-cur" data-dlx-cur>${fileLine(singles[start])}</span>${singles.length < 2 ? "" : `<span class="dlx-toggle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>`}
           </button>
           <div class="dlx-menu" role="listbox" aria-label="Formats">
             ${singles.map((f, i) => `<button type="button" role="option" aria-selected="${i === start}" data-dlx-opt="${i}"

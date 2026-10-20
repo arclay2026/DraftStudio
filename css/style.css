@@ -928,19 +928,22 @@ h2 .soft { color: var(--soft); }
 /* Download: pick a format, then one button */
 .dlx { display: flex; gap: 7px; }
 .dlx-pick { position: relative; flex: 1; min-width: 0; }
+/* Same look as every other dropdown: grey fill, chevron in its own section */
 .dlx-btn {
-  display: flex; align-items: center; gap: 10px; width: 100%; height: 50px; padding: 0 12px 0 9px; border-radius: 12px; text-align: left;
-  background: var(--card); border: 1px solid var(--border); transition: border-color .2s, background .2s;
+  display: flex; align-items: center; gap: 10px; width: 100%; height: 50px; padding-left: 8px; border-radius: 11px; text-align: left;
+  background: var(--fill); border: 0; transition: background .2s;
 }
-.dlx-btn:not(:disabled):hover, .dlx.is-open .dlx-btn { border-color: var(--border-2); background: var(--surface); }
-.dlx-btn:disabled { cursor: default; }
+.dlx-btn:not(:disabled):hover, .dlx.is-open .dlx-btn { background: var(--fill-2); }
+.dlx-btn:disabled { cursor: default; padding-right: 12px; }
 .dlx-cur { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
 .dlx .fmt { height: 30px; min-width: 40px; justify-content: center; font-size: calc(10.5px * var(--ts)); border-radius: 8px; }
 .dlx .name { flex: 1; min-width: 0; line-height: 1.25; }
 .dlx .name b { display: block; font-size: calc(13px * var(--ts)); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dlx .name small { display: block; color: var(--mute); font-size: calc(11px * var(--ts)); }
-.dlx-chev { flex: none; width: 15px; height: 15px; color: var(--mute); transform: rotate(90deg); transition: transform .3s var(--spring, var(--ease)); }
-.dlx.is-open .dlx-chev { transform: rotate(-90deg); }
+.dlx-toggle { align-self: stretch; flex: none; display: grid; place-items: center; width: 40px; border-left: 1px solid var(--border); border-radius: 0 11px 11px 0; color: var(--mute); transition: background .2s; }
+.dlx-btn:hover .dlx-toggle, .dlx.is-open .dlx-toggle { background: var(--border); }
+.dlx-toggle svg { width: 14.5px; height: 14.5px; transition: transform .3s var(--spring, var(--ease)); }
+.dlx.is-open .dlx-toggle svg { transform: rotate(180deg); }
 .dlx-menu {
   position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 6px); padding: 5px; display: flex; flex-direction: column; gap: 2px;
   background: var(--surface); border: 1px solid var(--border); border-radius: 13px; box-shadow: 0 22px 44px -20px rgba(0, 0, 0, .3);
@@ -949,7 +952,7 @@ h2 .soft { color: var(--soft); }
 }
 .dlx.is-open .dlx-menu { opacity: 1; visibility: visible; transform: none; }
 .dlx-menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 10px 7px 6px; border-radius: 9px; text-align: left; transition: background .12s; }
-.dlx-menu button:hover, .dlx-menu button:focus-visible { background: var(--fill); outline: none; }
+.dlx-menu button:hover, .dlx-menu button:focus-visible { background: var(--surface-2); outline: none; }
 .dlx-tick { flex: none; width: 15px; height: 15px; stroke-width: 2.4; opacity: 0; }
 .dlx-menu [aria-selected="true"] .dlx-tick { opacity: 1; }
 .dlx-go { flex: none; height: 50px; min-height: 50px; padding: 0 20px; border-radius: 12px; gap: 8px; }
