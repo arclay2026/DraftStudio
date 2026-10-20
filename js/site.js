@@ -43,6 +43,8 @@
     return list.filter(f => f !== "ZIP").filter((f, i, a) => a.indexOf(f) === i);
   };
   const isExternal = p => /^https?:\/\//.test(p);
+  // Big files live on Google Drive; their buttons carry the Drive logo
+  const DRIVE = `<img class="gd" src="assets/google-drive.svg" alt="" width="14" height="14">`;
   const fmtBadge = (f, extra = "") => `<span class="fmt ${extra}" data-f="${esc(f)}">${esc(f)}</span>`;
   const itemUrl = it => `item.html?id=${encodeURIComponent(it.id)}`;
   const waLink = text => `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(text)}`;
@@ -996,7 +998,7 @@
           <h3><a href="${itemUrl(it)}">${esc(it.title)}</a></h3>
           ${it.specs ? `<div class="drop-fmts"><span class="drop-spec">${esc(it.specs.split("·")[0].trim())}</span></div>` : ""}
           <div class="drop-actions">
-            <a class="btn ${/^Download/.test(a.label) ? "btn-dl" : "btn-dark"}" href="${esc(a.href)}"${a.ext ? ' target="_blank" rel="noopener"' : ""}${a.dl ? " download" : ""}>${esc(a.label)} <span class="arr">${ARR}</span></a>
+            <a class="btn ${/^Download/.test(a.label) ? "btn-dl" : "btn-dark"}" href="${esc(a.href)}"${a.ext ? ' target="_blank" rel="noopener"' : ""}${a.dl ? " download" : ""}>${esc(a.label)} <span class="arr${a.ext ? " gd-arr" : ""}">${a.ext ? DRIVE : ARR}</span></a>
             <a class="btn" href="${itemUrl(it)}">Details</a>
           </div>
         </div>
@@ -1166,7 +1168,7 @@
     const want = pref("format").toUpperCase();
     const start = Math.max(0, singles.findIndex(f => f.format.toUpperCase() === want));
     const fileLine = f => `${fmtBadge(f.format.toUpperCase())}
-        <span class="name"><b>${esc(fileName(f))}</b><small>${isExternal(f.path) ? "Opens Google Drive" : esc(f.size || "")}</small></span>`;
+        <span class="name"><b>${esc(fileName(f))}</b><small>${isExternal(f.path) ? `${DRIVE}Google Drive` : esc(f.size || "")}</small></span>`;
     const picker = !singles.length ? "" : `
       <div class="dlx" data-dlx>
         <div class="dlx-pick">
@@ -1254,8 +1256,8 @@
       opts.forEach(x => x.setAttribute("aria-selected", x === o));
       $("[data-dlx-cur]", box).innerHTML = o.innerHTML.replace(/<svg class="dlx-tick[\s\S]*?<\/svg>/, "");
       go.href = o.dataset.href;
-      if (o.dataset.ext) { go.target = "_blank"; go.rel = "noopener"; go.removeAttribute("download"); go.lastElementChild.textContent = "Open"; }
-      else { go.removeAttribute("target"); go.download = o.dataset.name; go.lastElementChild.textContent = "Download"; }
+      if (o.dataset.ext) { go.target = "_blank"; go.rel = "noopener"; go.removeAttribute("download"); go.innerHTML = `<span class="gd-chip">${DRIVE}</span><span>Open in Drive</span>`; }
+      else { go.removeAttribute("target"); go.download = o.dataset.name; go.innerHTML = `${icon("download")}<span>Download</span>`; }
     };
     const setOpen = on => { box.classList.toggle("is-open", on); btn.setAttribute("aria-expanded", on); };
     pick(opts.find(o => o.getAttribute("aria-selected") === "true") || opts[0]);
