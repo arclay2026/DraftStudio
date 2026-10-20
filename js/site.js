@@ -286,7 +286,7 @@
       { items: [["index.html", "Home", "home", "home"], ["browse.html", "Browse all", "browse", "grid"]] },
       { title: "Files", items: [["browse.html?cat=mockups", "Mockups", "mockups", "t-shirt"], ["browse.html?cat=vectors", "Vectors", "vectors", "vector"],
         ["browse.html?cat=logos", "Logos", "logos", "pen-tool"], ["browse.html?cat=templates", "Templates", "templates", "layers"]] },
-      { title: "Tools", items: [["icons.html", "Icons", "icons", "smile"], ["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR codes", "qr", "ui-qr"]] },
+      { title: "Tools", items: [["icons.html", "Icons", "icons", "smile"], ["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR Code Studio", "qr", "ui-qr"]] },
       { title: "Help", items: [["learn.html", "Learn", "learn", "lightbulb"], ["license.html", "License", "license", "file"]] }
     ];
     const link = ([href, label, key, ic]) =>
@@ -335,7 +335,7 @@
             </div>
             <nav class="f-links" aria-label="Files">
               <h4>Files</h4>
-              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="icons.html">Icons</a></li><li><a href="palettes.html">Palettes</a></li><li><a href="qr.html">QR codes</a></li></ul>
+              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="icons.html">Icons</a></li><li><a href="palettes.html">Palettes</a></li><li><a href="qr.html">QR Code Studio</a></li></ul>
             </nav>
             <nav class="f-links" aria-label="Studio">
               <h4>Studio</h4>
@@ -1992,7 +1992,7 @@
       <div class="set-view" data-view="format">
         ${head("Default download", true)}
         ${list("format")}
-        <p class="set-note">Used by the QR code studio and the icon set. Palettes and design files keep their own formats.</p>
+        <p class="set-note">Used by QR Code Studio and the icon set. Palettes and design files keep their own formats.</p>
       </div>`;
     document.body.appendChild(el);
 
