@@ -1810,14 +1810,14 @@ html.qv-dragging #main, html.qv-dragging .footer, html.qv-dragging .qv-backdrop 
 .set-group { border-radius: 16px; background: var(--fill); overflow: hidden; }
 .set-gap { margin-top: 14px; }
 .set-row { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px 12px 10px 10px; text-align: left; font-size: calc(14px * var(--ts)); font-weight: 500; transition: background .15s, color .2s; }
-.set-row + .set-row::before, .set-opt + .set-opt::before { content: ""; position: absolute; top: 0; right: 0; left: 52px; height: 1px; background: var(--border); }
+.set-row + .set-row::before, .set-opt + .set-opt::before { content: ""; position: absolute; top: 0; right: 0; left: 48px; height: 1px; background: var(--border); }
 .set-opt + .set-opt::before { left: 14px; }
 .set-row:hover { background: var(--fill-2); }
 .set-row > span { flex: 1; }
 .set-row em { font-style: normal; font-size: calc(13px * var(--ts)); color: var(--mute); }
 .set-row > svg { width: 16px; height: 16px; color: var(--mute); }
-.set-ico { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: var(--fg); color: var(--on-fg); }
-.set-ico svg { width: 16px; height: 16px; }
+.set-ico { flex: none; display: grid; place-items: center; width: 24px; height: 30px; margin-left: 2px; color: var(--fg); }  /* plain line icon, no tile */
+.set-ico svg { width: 19px; height: 19px; }
 .set-themes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; padding: 12px 8px 10px; }
 .set-theme { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 4px 0; border-radius: 14px; font-size: calc(13px * var(--ts)); }
 .set-theme b { font-weight: 500; }
@@ -1841,9 +1841,9 @@ html.qv-dragging #main, html.qv-dragging .footer, html.qv-dragging .qv-backdrop 
 .set-tick svg { width: 12px; height: 12px; stroke-width: 3; }
 .set-theme[aria-checked="true"] .set-tick { background: var(--fg); box-shadow: none; color: var(--on-fg); }
 .set-danger { color: #e5383b; }
-.set-danger .set-ico { background: #e5383b; color: #fff; }
+.set-danger .set-ico { color: inherit; }
 .set-danger.is-armed { background: #e5383b; color: #fff; }
-.set-danger.is-armed .set-ico { background: rgba(255, 255, 255, .22); }
+.set-danger.is-armed .set-ico { color: #fff; }
 .set-list { margin-top: 4px; }
 .set-opt { position: relative; display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 14px; text-align: left; transition: background .15s; }
 .set-opt:hover { background: var(--fill-2); }
