@@ -356,7 +356,7 @@ p { margin: 0; }
 .dots { flex: 1; min-height: 0; container-type: size; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); place-items: center; }
 .dots i { width: min(calc(100cqw / 7 - 8px), calc(100cqh / 5 - 8px)); aspect-ratio: 1; border-radius: 50%; background: var(--forest-2); }
 .dots i { transition: background .18s, transform .3s var(--ease); }
-.dots { --neon: #ff2d95; }  /* hot pink, only for this dot grid */
+.dots { --neon: #1fe36c; }  /* neon green in light mode, hot pink in dark; only for this dot grid */
 .dots i.on { background: var(--neon); transform: scale(1.04); box-shadow: 0 0 18px -1px color-mix(in srgb, var(--neon) 70%, transparent); }
 .dots i.trail { background: color-mix(in srgb, var(--neon) 40%, var(--forest-2)); }
 .hero-dots .big { font: 600 clamp(35px, 3.5vw, 67px)/1 var(--font-display); letter-spacing: var(--tight); white-space: nowrap; }
@@ -1866,6 +1866,7 @@ html.qv-dragging #main, html.qv-dragging .footer, html.qv-dragging .qv-backdrop 
 :root[data-theme="dark"] .hero-dots-in { border-color: rgba(15, 15, 15, .08); }
 :root[data-theme="dark"] .hero-dots p { color: rgba(15, 15, 15, .6); }
 :root[data-theme="dark"] .hero-dots p b { color: #0f0f0f; }
+:root[data-theme="dark"] .dots { --neon: #ff2d95; }
 /* glass cards on photos stay light */
 :root[data-theme="dark"] .drop-panel, :root[data-theme="dark"] .drop-info { --fg: #0f0f0f; --on-fg: #ffffff; --mute: #6f6f6f; --surface: #ffffff; --outline: #a6a6a6; --f-psd: #0f0f0f; --f-ai: #0f0f0f; --f-svg: #0f0f0f; --f-pdf: #0f0f0f; --f-eps: #0f0f0f; --f-fig: #0f0f0f; --f-img: #0f0f0f; color: var(--fg); }
 :root[data-theme="dark"] .hero-dots, :root[data-theme="dark"] .s-vectors, :root[data-theme="dark"] .drop-req, :root[data-theme="dark"] .fx-panel, :root[data-theme="dark"] .ix, :root[data-theme="dark"] .lx-ticket { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); }
@@ -1881,6 +1882,7 @@ html.qv-dragging #main, html.qv-dragging .footer, html.qv-dragging .qv-backdrop 
   :root:not([data-theme="light"]) .hero-dots-in { border-color: rgba(15, 15, 15, .08); }
   :root:not([data-theme="light"]) .hero-dots p { color: rgba(15, 15, 15, .6); }
   :root:not([data-theme="light"]) .hero-dots p b { color: #0f0f0f; }
+  :root:not([data-theme="light"]) .dots { --neon: #ff2d95; }
   /* glass cards on photos stay light */
   :root:not([data-theme="light"]) .drop-panel, :root:not([data-theme="light"]) .drop-info { --fg: #0f0f0f; --on-fg: #ffffff; --mute: #6f6f6f; --surface: #ffffff; --outline: #a6a6a6; --f-psd: #0f0f0f; --f-ai: #0f0f0f; --f-svg: #0f0f0f; --f-pdf: #0f0f0f; --f-eps: #0f0f0f; --f-fig: #0f0f0f; --f-img: #0f0f0f; color: var(--fg); }
   :root:not([data-theme="light"]) .hero-dots, :root:not([data-theme="light"]) .s-vectors, :root:not([data-theme="light"]) .drop-req, :root:not([data-theme="light"]) .fx-panel, :root:not([data-theme="light"]) .ix, :root:not([data-theme="light"]) .lx-ticket { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); }
