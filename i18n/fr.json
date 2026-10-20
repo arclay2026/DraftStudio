@@ -799,7 +799,21 @@
   "Copied": "Copié",
   "Removed from saved": "Retiré des favoris",
   "HEX codes copied": "Codes HEX copiés",
-  "Colours copied": "Couleurs copiées"
+  "Colours copied": "Couleurs copiées",
+  "What's inside Draft Studio": "Ce que contient Draft Studio",
+  "Mockups that": "Des mockups qui",
+  "sell the idea.": "vendent l'idée.",
+  "Photoshop scenes with smart objects. Drop your design in, save, done.": "Des scènes Photoshop avec objets dynamiques. Déposez votre design, enregistrez, c'est fait.",
+  "Logos ready to": "Des logos prêts à",
+  "make your own.": "devenir les vôtres.",
+  "Editable AI, SVG and PDF files. Rename them, recolour them, ship them.": "Fichiers AI, SVG et PDF modifiables. Renommez-les, recolorez-les, publiez-les.",
+  "100 icons,": "100 icônes,",
+  "Hand-drawn on one grid. Recolour any icon and download it as SVG or PNG.": "Dessinées à la main sur une même grille. Recolorez n'importe quelle icône et téléchargez-la en SVG ou PNG.",
+  "just works.": "qui fonctionne, tout simplement.",
+  "36 hand-picked palettes and a generator with live contrast scores.": "36 palettes choisies à la main et un générateur avec scores de contraste en direct.",
+  "Shape every dot and corner, add your logo, and download a code that's scan-checked live.": "Façonnez chaque point et chaque coin, ajoutez votre logo et téléchargez un code vérifié en direct.",
+  "Open QR Code Studio": "Ouvrir QR Code Studio",
+  "Scroll": "Défiler"
  },
  "patterns": {
   "^(\\d+) files$": "$1 fichiers",
