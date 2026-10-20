@@ -955,6 +955,13 @@ h2 .soft { color: var(--soft); }
 .dlx-menu button:hover, .dlx-menu button:focus-visible { background: var(--surface-2); outline: none; }
 .dlx-tick { flex: none; width: 15px; height: 15px; stroke-width: 2.4; opacity: 0; }
 .dlx-menu [aria-selected="true"] .dlx-tick { opacity: 1; }
+.gd { flex: none; width: 14px; height: 14px; }
+.dlx .name small { display: flex; align-items: center; gap: 5px; }
+.dlx .name small .gd { width: 12px; height: 12px; }
+.gd-chip { display: grid; place-items: center; width: 24px; height: 24px; margin-left: -6px; border-radius: 50%; background: #fff; flex: none; }
+.btn .arr.gd-arr { background: #fff; }
+.btn .arr.gd-arr .gd { width: 15px; height: 15px; }
+.btn:hover .arr.gd-arr { transform: none; }
 .dlx-go { flex: none; height: 50px; min-height: 50px; padding: 0 20px; border-radius: 12px; gap: 8px; }
 .dl-all { width: 100%; min-height: 50px; border-radius: 12px; font-size: calc(14px * var(--ts)); margin-bottom: 7px; }
 .item-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14.5px; }
