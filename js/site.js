@@ -304,6 +304,7 @@
             </div>
           </nav>
           <div class="nav-tools">
+            <button class="icon-btn set-btn" type="button" aria-label="Settings" aria-expanded="false" aria-controls="settings" data-open-settings>${icon("settings")}</button>
             <a class="btn btn-dark btn-nav" href="browse.html">Browse files <span class="arr">${ARR}</span></a>
             <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">${icon("menu")}</button>
           </div>
@@ -318,6 +319,7 @@
         <a href="learn.html">Learn<span>File formats</span></a>
         <a href="license.html">License<span>FAQ</span></a>
         <button type="button" data-open-search>Search<span>Find a file</span></button>
+        <button type="button" data-open-settings>Settings<span>Appearance</span></button>
         <a class="btn btn-dark btn-lg" href="browse.html">Browse files <span class="arr">${ARR}</span></a>
       </div>`;
   }
@@ -1852,11 +1854,139 @@
     if (window.QRStudio) window.QRStudio({ $, $$, esc, icon, copy, toast, inkOn, hexRgb, lum, ICONS, palettes: DS.palettes || [] });
   }
 
+  /* ---------- Settings: Appearance > Theme (Light, Dark, Device) ---------- */
+  // The head of every page applies the saved theme before paint; this builds
+  // the panel behind the gear button and keeps the choice in sync.
+  function settings() {
+    const KEY = "ds-theme", root = document.documentElement;
+    const NAMES = { light: "Light", dark: "Dark", device: "Device" };
+    const read = () => { try { const t = localStorage.getItem(KEY); return t === "light" || t === "dark" ? t : "device"; } catch (e) { return "device"; } };
+    const meta = $('meta[name="theme-color"]');
+    const paintMeta = () => meta && meta.setAttribute("content", getComputedStyle(document.body).backgroundColor);
+
+    const el = document.createElement("div");
+    el.className = "set";
+    el.id = "settings";
+    el.setAttribute("role", "dialog");
+    el.setAttribute("aria-label", "Settings");
+    el.hidden = true;
+    const tile = t => `
+      <button class="set-theme" type="button" role="radio" aria-checked="false" data-theme-pick="${t}">
+        <span class="set-prev is-${t}" aria-hidden="true"><span><i></i><i></i><i></i></span><span><i></i><i></i><i></i></span></span>
+        <b>${NAMES[t]}</b>
+        <span class="set-tick" aria-hidden="true">${icon("check")}</span>
+      </button>`;
+    el.innerHTML = `
+      <div class="set-view is-on" data-view="root">
+        <div class="set-head"><span></span><b>Settings</b><button class="set-x" type="button" aria-label="Close settings" data-set-close>${icon("close")}</button></div>
+        <div class="set-group">
+          <button class="set-row" type="button" data-set-go="appearance">
+            <i class="set-ico" data-set-ico>${icon("sun")}</i><span>Appearance</span><em data-set-val></em>${icon("chevron-right")}
+          </button>
+        </div>
+      </div>
+      <div class="set-view" data-view="appearance">
+        <div class="set-head"><button class="set-back" type="button" data-set-back>${icon("chevron-right")}<span>Settings</span></button><b>Appearance</b><span></span></div>
+        <p class="set-label">Theme</p>
+        <div class="set-group set-themes" role="radiogroup" aria-label="Theme">${["light", "dark", "device"].map(tile).join("")}</div>
+        <p class="set-note">Device follows your system and switches on its own.</p>
+      </div>`;
+    document.body.appendChild(el);
+
+    const btns = () => $$(".set-btn");
+    const views = $$(".set-view", el);
+    const fit = v => { el.style.height = v.offsetHeight + "px"; };
+    const go = name => {
+      const back = name === "root";
+      views.forEach(v => {
+        const on = v.dataset.view === name;
+        v.classList.toggle("is-on", on);
+        v.classList.toggle("is-left", !on && !back);
+        v.inert = !on;
+      });
+      fit(views.find(v => v.dataset.view === name));
+    };
+
+    const sync = () => {
+      const t = read();
+      $("[data-set-val]", el).textContent = NAMES[t];
+      $("[data-set-ico]", el).innerHTML = icon(t === "dark" ? "moon" : t === "light" ? "sun" : "monitor");
+      $$("[data-theme-pick]", el).forEach(b => b.setAttribute("aria-checked", b.dataset.themePick === t));
+    };
+    const apply = t => {
+      const set = () => {
+        try { t === "device" ? localStorage.removeItem(KEY) : localStorage.setItem(KEY, t); } catch (e) {}
+        if (t === "device") delete root.dataset.theme; else root.dataset.theme = t;
+        sync(); paintMeta();
+      };
+      // Cross-fade the whole page when the browser can
+      const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (document.startViewTransition && !calm && t !== read()) {
+        root.classList.add("is-theming");
+        document.startViewTransition(set).finished.finally(() => root.classList.remove("is-theming"));
+      } else set();
+    };
+
+    let lastBtn = null;
+    const open = (on, from) => {
+      if (on === !el.hidden) return;
+      clearTimeout(el._t);
+      if (on) {
+        lastBtn = from || $(".set-btn");
+        el.hidden = false;
+        go("root");
+        requestAnimationFrame(() => el.classList.add("is-open"));
+        setTimeout(() => $(".set-row", el).focus({ preventScroll: true }), 60);
+      } else {
+        el.classList.remove("is-open");
+        el._t = setTimeout(() => { el.hidden = true; }, 260);
+        if (lastBtn && el.contains(document.activeElement)) lastBtn.focus({ preventScroll: true });
+      }
+      btns().forEach(b => b.setAttribute("aria-expanded", on));
+    };
+
+    $$("[data-open-settings]").forEach(b => b.addEventListener("click", e => {
+      e.stopPropagation();
+      const mm = $("#mobile-menu");
+      if (mm && mm.contains(b) && mm.classList.contains("is-open")) $(".menu-btn").click();
+      open(el.hidden, b.classList.contains("set-btn") ? b : null);
+    }));
+    el.addEventListener("click", e => {
+      const t = e.target.closest("[data-theme-pick], [data-set-go], [data-set-back], [data-set-close]");
+      if (!t) return;
+      if (t.dataset.themePick) apply(t.dataset.themePick);
+      else if (t.dataset.setGo) { go(t.dataset.setGo); setTimeout(() => $(`[data-theme-pick="${read()}"]`, el).focus({ preventScroll: true }), 60); }
+      else if (t.hasAttribute("data-set-back")) { go("root"); $(".set-row", el).focus({ preventScroll: true }); }
+      else open(false);
+    });
+    // Arrow keys move between the three themes, like a native radio group
+    $(".set-themes", el).addEventListener("keydown", e => {
+      const keys = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 };
+      if (!keys[e.key]) return;
+      e.preventDefault();
+      const all = $$("[data-theme-pick]", el), i = all.indexOf(document.activeElement);
+      const next = all[(i + keys[e.key] + all.length) % all.length];
+      next.focus(); apply(next.dataset.themePick);
+    });
+    document.addEventListener("pointerdown", e => { if (!el.hidden && !el.contains(e.target) && !e.target.closest("[data-open-settings]")) open(false); });
+    document.addEventListener("keydown", e => {
+      if (e.key !== "Escape" || el.hidden) return;
+      const sub = views.find(v => v.classList.contains("is-on") && v.dataset.view !== "root");
+      sub ? (go("root"), $(".set-row", el).focus({ preventScroll: true })) : open(false);
+    });
+
+    matchMedia("(prefers-color-scheme: dark)").addEventListener("change", paintMeta);
+    window.addEventListener("storage", e => { if (e.key === KEY) { const t = read(); if (t === "device") delete root.dataset.theme; else root.dataset.theme = t; sync(); paintMeta(); } });
+    sync();
+    paintMeta();
+  }
+
   /* ---------- Boot ---------- */
   const page = document.body.dataset.page;
   header(page === "browse" ? (new URLSearchParams(location.search).get("cat") || "browse") : page);
   footer();
   chrome();
+  settings();
   ({ home, browse, item, icons, palettes, qr, learn, license }[page] || (() => {}))();
   enhanceSelects();
   tooltips();
