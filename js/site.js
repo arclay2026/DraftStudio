@@ -1160,14 +1160,26 @@
     const cat = catOf(it.category);
     const zip = (it.files || []).find(f => f.format.toUpperCase() === "ZIP");
     const fileName = f => f.name || f.path.split("/").pop();
-    const dlRow = f => {
-      const ext = isExternal(f.path);
-      return `<a class="dl" href="${esc(f.path)}" ${ext ? 'target="_blank" rel="noopener"' : `download="${esc(fileName(f))}"`}>
-        ${fmtBadge(f.format.toUpperCase())}
-        <span class="name"><b>${esc(fileName(f))}</b><small>${ext ? "Opens Google Drive" : esc(f.size || "")}</small></span>
-        ${icon(ext ? "external-link" : "download")}
-      </a>`;
-    };
+    // One file at a time: pick a format, then download. Starts on the format
+    // chosen in Settings > Default download when this file has it.
+    const singles = (it.files || []).filter(f => f !== zip);
+    const want = pref("format").toUpperCase();
+    const start = Math.max(0, singles.findIndex(f => f.format.toUpperCase() === want));
+    const fileLine = f => `${fmtBadge(f.format.toUpperCase())}
+        <span class="name"><b>${esc(fileName(f))}</b><small>${isExternal(f.path) ? "Opens Google Drive" : esc(f.size || "")}</small></span>`;
+    const picker = !singles.length ? "" : `
+      <div class="dlx" data-dlx>
+        <div class="dlx-pick">
+          <button class="dlx-btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choose a format" data-dlx-toggle${singles.length < 2 ? " disabled" : ""}>
+            <span class="dlx-cur" data-dlx-cur>${fileLine(singles[start])}</span>${singles.length < 2 ? "" : icon("chevron-right", "dlx-chev")}
+          </button>
+          <div class="dlx-menu" role="listbox" aria-label="Formats">
+            ${singles.map((f, i) => `<button type="button" role="option" aria-selected="${i === start}" data-dlx-opt="${i}"
+              data-href="${esc(f.path)}" data-name="${esc(fileName(f))}" data-ext="${isExternal(f.path) ? 1 : ""}">${fileLine(f)}${icon("check", "dlx-tick")}</button>`).join("")}
+          </div>
+        </div>
+        <a class="btn btn-dark dlx-go" data-dlx-go>${icon("download")}<span>Download</span></a>
+      </div>`;
     const actions = isPaid(it) ? `
       <div class="price-box">
         <span class="mono mute">${it.sold ? "Sold" : "Exclusive · sold once"}</span>
@@ -1178,7 +1190,7 @@
       </div>` : `
       ${it.requires ? `<div class="notice">${icon("lightbulb")}<span>This file needs <b>${esc(it.requires)}</b> (or free Photopea in your browser).</span></div>` : ""}
       ${zip ? `<a class="btn btn-dark dl-all" href="${esc(zip.path)}" download>${icon("download")} Download all${zip.size ? " · " + esc(zip.size) : ""}</a>` : ""}
-      <div class="downloads">${(it.files || []).filter(f => f !== zip).map(dlRow).join("")}</div>`;
+      ${picker}`;
     return `
           <div class="item-media">
             <button class="frame" type="button" data-zoom aria-label="Enlarge preview">
@@ -1223,6 +1235,7 @@
 
   function bindItem(root, it) {
     const fmts = formatsOf(it);
+    downloadPicker(root);
     $("[data-zoom]", root).addEventListener("click", () => zoom(it));
     $("[data-share]", root).addEventListener("click", () => {
       const url = new URL(itemUrl(it), location.href).href;
@@ -1230,6 +1243,30 @@
       if (navigator.share) navigator.share(data).catch(() => {});
       else copy(url, "Link copied");
     });
+  }
+
+  function downloadPicker(root) {
+    const box = $("[data-dlx]", root);
+    if (!box) return;
+    const btn = $("[data-dlx-toggle]", box), menu = $(".dlx-menu", box), go = $("[data-dlx-go]", box);
+    const opts = $$("[data-dlx-opt]", box);
+    const pick = o => {
+      opts.forEach(x => x.setAttribute("aria-selected", x === o));
+      $("[data-dlx-cur]", box).innerHTML = o.innerHTML.replace(/<svg class="dlx-tick[\s\S]*?<\/svg>/, "");
+      go.href = o.dataset.href;
+      if (o.dataset.ext) { go.target = "_blank"; go.rel = "noopener"; go.removeAttribute("download"); go.lastElementChild.textContent = "Open"; }
+      else { go.removeAttribute("target"); go.download = o.dataset.name; go.lastElementChild.textContent = "Download"; }
+    };
+    const setOpen = on => { box.classList.toggle("is-open", on); btn.setAttribute("aria-expanded", on); };
+    pick(opts.find(o => o.getAttribute("aria-selected") === "true") || opts[0]);
+    btn.addEventListener("click", e => { e.stopPropagation(); setOpen(!box.classList.contains("is-open")); if (box.classList.contains("is-open")) (opts.find(o => o.getAttribute("aria-selected") === "true") || opts[0]).focus(); });
+    opts.forEach(o => o.addEventListener("click", () => { pick(o); setOpen(false); btn.focus(); }));
+    menu.addEventListener("keydown", e => {
+      const i = opts.indexOf(document.activeElement);
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); opts[(i + (e.key === "ArrowDown" ? 1 : -1) + opts.length) % opts.length].focus(); }
+      if (e.key === "Escape") { e.stopPropagation(); setOpen(false); btn.focus(); }
+    });
+    document.addEventListener("click", e => { if (!box.contains(e.target)) setOpen(false); });
   }
 
   function item() {

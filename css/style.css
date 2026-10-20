@@ -925,18 +925,35 @@ h2 .soft { color: var(--soft); }
 .specs dd { margin: 0; }
 .notice { display: flex; gap: 11px; padding: 11px 12.5px; border-radius: 11px; background: color-mix(in srgb, var(--f-psd) 10%, transparent); border: 1px solid color-mix(in srgb, var(--f-psd) 30%, transparent); font-size: calc(11px * var(--ts)); margin-bottom: 14.5px; }
 .notice svg { width: 16px; height: 16px; flex: none; color: var(--f-psd); margin-top: 1px; }
-.downloads { display: grid; gap: 7px; }
-.dl {
-  display: flex; align-items: center; gap: 11px; padding: 11px 11px 11px 11px; border-radius: 11px; background: var(--card); border: 1px solid var(--line);
-  transition: border-color .2s, transform .25s var(--ease);
+/* Download: pick a format, then one button */
+.dlx { display: flex; gap: 7px; }
+.dlx-pick { position: relative; flex: 1; min-width: 0; }
+.dlx-btn {
+  display: flex; align-items: center; gap: 10px; width: 100%; height: 50px; padding: 0 12px 0 9px; border-radius: 12px; text-align: left;
+  background: var(--card); border: 1px solid var(--border); transition: border-color .2s, background .2s;
 }
-.dl:hover { border-color: var(--fg); transform: translateX(3.5px); }
-.dl .fmt { height: 31.5px; min-width: 41.5px; justify-content: center; font-size: calc(11px * var(--ts)); border-radius: 9px; }
-.dl .name { flex: 1; min-width: 0; }
-.dl .name b { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.dl .name small { color: var(--mute); font-size: calc(11px * var(--ts)); }
-.dl > svg { width: 16px; height: 16px; flex: none; color: var(--mute); }
-.dl-all { width: 100%; min-height: 47.5px; font-size: calc(14px * var(--ts)); margin-bottom: 7px; }
+.dlx-btn:not(:disabled):hover, .dlx.is-open .dlx-btn { border-color: var(--border-2); background: var(--surface); }
+.dlx-btn:disabled { cursor: default; }
+.dlx-cur { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.dlx .fmt { height: 30px; min-width: 40px; justify-content: center; font-size: calc(10.5px * var(--ts)); border-radius: 8px; }
+.dlx .name { flex: 1; min-width: 0; line-height: 1.25; }
+.dlx .name b { display: block; font-size: calc(13px * var(--ts)); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dlx .name small { display: block; color: var(--mute); font-size: calc(11px * var(--ts)); }
+.dlx-chev { flex: none; width: 15px; height: 15px; color: var(--mute); transform: rotate(90deg); transition: transform .3s var(--spring, var(--ease)); }
+.dlx.is-open .dlx-chev { transform: rotate(-90deg); }
+.dlx-menu {
+  position: absolute; z-index: 20; left: 0; right: 0; top: calc(100% + 6px); padding: 5px; display: flex; flex-direction: column; gap: 2px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 13px; box-shadow: 0 22px 44px -20px rgba(0, 0, 0, .3);
+  transform-origin: 50% 0; opacity: 0; visibility: hidden; transform: translateY(-4px) scale(.97);
+  transition: opacity .16s ease, transform .4s var(--spring, var(--ease)), visibility .16s;
+}
+.dlx.is-open .dlx-menu { opacity: 1; visibility: visible; transform: none; }
+.dlx-menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 10px 7px 6px; border-radius: 9px; text-align: left; transition: background .12s; }
+.dlx-menu button:hover, .dlx-menu button:focus-visible { background: var(--fill); outline: none; }
+.dlx-tick { flex: none; width: 15px; height: 15px; stroke-width: 2.4; opacity: 0; }
+.dlx-menu [aria-selected="true"] .dlx-tick { opacity: 1; }
+.dlx-go { flex: none; height: 50px; min-height: 50px; padding: 0 20px; border-radius: 12px; gap: 8px; }
+.dl-all { width: 100%; min-height: 50px; border-radius: 12px; font-size: calc(14px * var(--ts)); margin-bottom: 7px; }
 .item-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14.5px; }
 .price-box { padding: 19px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); }
 .price-box .amount { font: 600 45.5px/1 var(--font-display); letter-spacing: var(--tight); }
