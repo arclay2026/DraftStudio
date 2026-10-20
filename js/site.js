@@ -271,57 +271,50 @@
   // Diagonal arrow used in the round badge on dark pill buttons
   const ARR = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>`;
 
+  // Extra glyphs for the side menu that the icon set doesn't have
+  Object.assign(ICONS, {
+    "ui-qr": '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 17h4v4h-4"/>',
+    "ui-side": '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/>'
+  });
+
+  /* Side menu: a dashboard-style rail on the left. On phones it becomes a
+     drawer behind a slim top bar. */
   function header(active) {
-    const link = (href, label, key) => `<a href="${href}"${active === key ? ' aria-current="page"' : ""}>${label}</a>`;
-    const more = [
-      { href: "browse.html?cat=vectors", label: "Vectors", key: "vectors", note: "AI · SVG · EPS" },
-      { href: "icons.html", label: "Icons", key: "icons", note: "SVG · PNG" },
-      { href: "palettes.html", label: "Palettes", key: "palettes", note: "PNG · CSS" },
-      { href: "qr.html", label: "QR codes", key: "qr", note: "SVG · PNG" }
+    const GROUPS = [
+      { items: [["index.html", "Home", "home", "home"], ["browse.html", "Browse all", "browse", "grid"]] },
+      { title: "Files", items: [["browse.html?cat=mockups", "Mockups", "mockups", "t-shirt"], ["browse.html?cat=vectors", "Vectors", "vectors", "vector"],
+        ["browse.html?cat=logos", "Logos", "logos", "pen-tool"], ["browse.html?cat=templates", "Templates", "templates", "layers"]] },
+      { title: "Tools", items: [["icons.html", "Icons", "icons", "smile"], ["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR codes", "qr", "ui-qr"]] },
+      { title: "Help", items: [["learn.html", "Learn", "learn", "lightbulb"], ["license.html", "License", "license", "file"]] }
     ];
+    const link = ([href, label, key, ic]) =>
+      `<a class="side-link" href="${href}" data-label="${label}"${active === key ? ' aria-current="page"' : ""}>${icon(ic)}<span>${label}</span></a>`;
     const el = $("[data-header]");
     if (!el) return;
     el.outerHTML = `
       <a class="skip" href="#main">Skip to content</a>
-      <header class="nav">
-        <div class="nav-in">
-          <a class="logo" href="index.html" aria-label="Draft Studio home">
-            <img src="assets/logo.svg" alt="Draft Studio" width="180" height="28">
-          </a>
-          <nav class="nav-links" aria-label="Main">
-            ${link("index.html", "Home", "home")}
-            ${link("browse.html?cat=mockups", "Mockups", "mockups")}
-            ${link("browse.html?cat=logos", "Logos", "logos")}
-            ${link("browse.html?cat=templates", "Templates", "templates")}
-            ${link("learn.html", "Learn", "learn")}
-            ${link("license.html", "License", "license")}
-            <div class="nav-more">
-              <button class="nav-more-btn${more.some(m => m.key === active) ? " is-current" : ""}" type="button" aria-expanded="false" aria-haspopup="true">More ${icon("chevron-right")}</button>
-              <div class="nav-drop">
-                ${more.map(m => `<a href="${m.href}"${active === m.key ? ' aria-current="page"' : ""}>${m.label}</a>`).join("")}
-                <button type="button" data-open-search>Search</button>
-              </div>
-            </div>
-          </nav>
-          <div class="nav-tools">
-            <button class="icon-btn set-btn" type="button" aria-label="Settings" aria-expanded="false" aria-controls="settings" data-open-settings>${icon("settings")}</button>
-            <a class="btn btn-dark btn-nav" href="browse.html">Browse files <span class="arr">${ARR}</span></a>
-            <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-menu">${icon("menu")}</button>
-          </div>
-        </div>
+      <header class="topbar">
+        <a class="logo" href="index.html" aria-label="Draft Studio home"><img src="assets/logo.svg" alt="Draft Studio" width="180" height="28"></a>
+        <button class="icon-btn" type="button" aria-label="Search" data-open-search>${icon("search")}</button>
+        <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="side">${icon("menu")}</button>
       </header>
-      <div class="mobile-menu" id="mobile-menu" aria-label="Menu">
-        <a href="index.html">Home</a>
-        ${CATS.map(c => `<a href="browse.html?cat=${c.slug}">${c.name}<span>${c.formats.join(" · ")}</span></a>`).join("")}
-        <a href="icons.html">Icons<span>SVG · PNG</span></a>
-        <a href="palettes.html">Palettes<span>PNG · CSS</span></a>
-        <a href="qr.html">QR codes<span>SVG · PNG</span></a>
-        <a href="learn.html">Learn<span>File formats</span></a>
-        <a href="license.html">License<span>FAQ</span></a>
-        <button type="button" data-open-search>Search<span>Find a file</span></button>
-        <button type="button" data-open-settings>Settings<span>Appearance</span></button>
-        <a class="btn btn-dark btn-lg" href="browse.html">Browse files <span class="arr">${ARR}</span></a>
-      </div>`;
+      <aside class="side" id="side" aria-label="Main">
+        <div class="side-top">
+          <a class="logo" href="index.html" aria-label="Draft Studio home">
+            <img class="logo-full" src="assets/logo.svg" alt="Draft Studio" width="180" height="28">
+            <span class="logo-mark" aria-hidden="true">D</span>
+          </a>
+          <button class="side-fold" type="button" aria-label="Collapse menu" data-side-fold>${icon("ui-side")}</button>
+        </div>
+        <button class="side-search" type="button" data-open-search data-label="Search">${icon("search")}<span>Search files</span><kbd class="kbd">/</kbd></button>
+        <nav class="side-nav" aria-label="Main">
+          ${GROUPS.map(g => `<div class="side-group">${g.title ? `<p class="side-label">${g.title}</p>` : ""}${g.items.map(link).join("")}</div>`).join("")}
+        </nav>
+        <div class="side-foot">
+          <button class="side-link set-btn" type="button" data-label="Settings" aria-expanded="false" aria-controls="settings" data-open-settings>${icon("settings")}<span>Settings</span></button>
+        </div>
+      </aside>
+      <div class="side-scrim" data-side-close></div>`;
   }
 
   function footer() {
@@ -432,31 +425,43 @@
 
   /* ---------- Shared behaviour ---------- */
   function chrome() {
-    const nav = $(".nav");
-    const onScroll = () => nav && nav.classList.toggle("is-scrolled", scrollY > 8);
-    addEventListener("scroll", onScroll, { passive: true }); onScroll();
-
-    const more = $(".nav-more"), moreBtn = $(".nav-more-btn");
-    if (more) {
-      const setMore = open => { more.classList.toggle("is-open", open); moreBtn.setAttribute("aria-expanded", open); };
-      let hoverAt = 0; // a click right after hover-opening should not close it again
-      moreBtn.addEventListener("click", e => { e.stopPropagation(); setMore(performance.now() - hoverAt < 700 ? true : !more.classList.contains("is-open")); });
-      if (matchMedia("(hover: hover)").matches) {
-        more.addEventListener("mouseenter", () => { hoverAt = performance.now(); setMore(true); });
-        more.addEventListener("mouseleave", () => setMore(false));
-      }
-      document.addEventListener("click", e => { if (!more.contains(e.target)) setMore(false); });
-      document.addEventListener("keydown", e => { if (e.key === "Escape") setMore(false); });
+    // The page sits on a raised panel beside the side menu
+    const main = $("main"), foot = $(".footer");
+    if (main) {
+      const shell = document.createElement("div");
+      shell.className = "shell";
+      main.before(shell);
+      shell.append(main);
+      if (foot) shell.append(foot);
     }
 
-    const mb = $(".menu-btn"), mm = $("#mobile-menu");
-    mb && mb.addEventListener("click", () => {
-      const open = !mm.classList.contains("is-open");
-      mm.classList.toggle("is-open", open);
+    const bar = $(".topbar");
+    const onScroll = () => bar && bar.classList.toggle("is-scrolled", scrollY > 8);
+    addEventListener("scroll", onScroll, { passive: true }); onScroll();
+
+    // Desktop: fold the menu down to an icon rail (remembered). Phones: drawer.
+    const root = document.documentElement, side = $("#side"), mb = $(".menu-btn");
+    const fold = $("[data-side-fold]");
+    const setRail = on => {
+      if (on) root.dataset.rail = ""; else delete root.dataset.rail;
+      fold.setAttribute("aria-label", on ? "Expand menu" : "Collapse menu");
+      try { on ? localStorage.setItem("ds-rail", "1") : localStorage.removeItem("ds-rail"); } catch (e) {}
+    };
+    fold && fold.addEventListener("click", () => setRail(!root.hasAttribute("data-rail")));
+    if (fold) fold.setAttribute("aria-label", root.hasAttribute("data-rail") ? "Expand menu" : "Collapse menu");
+    const setDrawer = open => {
+      side.classList.toggle("is-open", open);
+      document.body.classList.toggle("side-open", open);
       mb.setAttribute("aria-expanded", open);
       mb.innerHTML = icon(open ? "close" : "menu");
       document.body.style.overflow = open ? "hidden" : "";
-    });
+    };
+    window.DSCloseDrawer = () => side.classList.contains("is-open") && setDrawer(false);
+    mb && mb.addEventListener("click", () => setDrawer(!side.classList.contains("is-open")));
+    $("[data-side-close]").addEventListener("click", () => setDrawer(false));
+    document.addEventListener("keydown", e => { if (e.key === "Escape" && side.classList.contains("is-open")) setDrawer(false); });
+    matchMedia("(min-width: 1024px)").addEventListener("change", e => e.matches && window.DSCloseDrawer());
+    $$("[data-open-search]").forEach(b => b.addEventListener("click", () => window.DSCloseDrawer()));
 
     $$("[data-top]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); scrollTo({ top: 0 }); }));
     searchModal();
@@ -1405,7 +1410,7 @@
     const springOK = (() => { try { return CSS.supports("transition-timing-function", "linear(0, 1)"); } catch (e) { return false; } })();
     const SEL = [".btn", ".card", ".drop-card", ".drop-req", ".pal", ".qs-tile", ".qs-type", ".qs-look", ".qs-ico", ".qs-seg-btn", ".qs-iconbtn", ".qs-upload",
       ".pal-btn", ".pt-rows button", ".pt-swatches button", ".glass-btn", ".qv-btn", ".icon-btn", ".icon-cell", ".swatch", ".sel-btn", ".dd-btn",
-      ".nav-links > a", ".nav-more-btn", ".fx-row", ".lx-uses button", ".chip", ".seg button", ".ix-grid a", ".ps-tool", ".ps-theme button",
+      ".side-link", ".side-search", ".fx-row", ".lx-uses button", ".chip", ".seg button", ".ix-grid a", ".ps-tool", ".ps-theme button",
       ".pg-base", ".cp-drop", ".cp-recent button", ".shelves > *", ".logo", ".pg-hexes button", ".qt-dots i", ".pt-dots i"].join(",");
     const scaleOf = el => { const w = el.offsetWidth; return w > 420 ? .985 : w > 200 ? .97 : w > 64 ? .95 : .9; };
     const anim = (el, to, down) => {
@@ -2040,9 +2045,8 @@
 
     $$("[data-open-settings]").forEach(b => b.addEventListener("click", e => {
       e.stopPropagation();
-      const mm = $("#mobile-menu");
-      if (mm && mm.contains(b) && mm.classList.contains("is-open")) $(".menu-btn").click();
-      open(el.hidden, b.classList.contains("set-btn") ? b : null);
+      if (innerWidth < 1024 && window.DSCloseDrawer) window.DSCloseDrawer();
+      open(el.hidden, b);
     }));
     el.addEventListener("click", e => {
       const t = e.target.closest("[data-pick], [data-set-go], [data-set-back], [data-set-close], [data-set-clear]");
