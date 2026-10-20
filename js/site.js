@@ -926,7 +926,7 @@
       root.style.setProperty("--qt-ring", L.ring);
       root.style.setProperty("--qt-ball", L.ball);
       root.style.setProperty("--qt-eye", L.eye || L.c1);
-      root.style.setProperty("--qt-glow", L.c2 === L.c1 ? "#2b5bff" : L.c2);
+      root.style.setProperty("--qt-glow", L.c2 === L.c1 ? "#1f7aff" : L.c2);
       // Each module takes its own colour along the diagonal, so gradients morph smoothly too
       mods.forEach(r => { const t = (+r.style.getPropertyValue("--px") + +r.style.getPropertyValue("--py")) / 2; r.style.fill = mix(L.c1, L.c2, t); });
       $("[data-qt-name]", root).textContent = L.name;

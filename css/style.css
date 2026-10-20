@@ -504,7 +504,7 @@ h2 .soft { color: var(--soft); }
 .drop-feat { grid-column: span 2; grid-row: span 2; display: flex; align-items: flex-end; padding: 11px; }
 /* "Latest drop" badge: electric blue with a live pulse */
 .drop-new {
-  --live: #2b5bff;
+  --live: var(--dl);
   display: inline-flex; align-items: center; gap: 7px; height: 25px; padding: 0 11px 0 9px; border-radius: 791px;
   background: var(--live); color: #fff; font-size: calc(11px * var(--ts)); font-weight: 600; animation: live-glow 2s ease-out infinite;
 }
@@ -886,7 +886,7 @@ h2 .soft { color: var(--soft); }
 .sel.is-open .sel-menu { opacity: 1; visibility: visible; transform: none; }
 .sel-menu button { display: flex; align-items: center; justify-content: space-between; gap: 12.5px; width: 100%; height: 35px; padding: 0 11px; border-radius: 11px; font-size: calc(12px * var(--ts)); text-align: left; white-space: nowrap; transition: background .15s; }
 .sel-menu button:hover { background: var(--surface-2); }
-.sel-menu button svg { width: 12.5px; height: 12.5px; flex: none; opacity: 0; }
+.sel-menu button svg { width: 12.5px; height: 12.5px; flex: none; opacity: 0; color: var(--dl); }
 .sel-menu button[aria-selected="true"] { font-weight: 600; }
 .sel-menu button[aria-selected="true"] svg { opacity: 1; }
 .sel-txt b { display: flex; align-items: center; gap: 7px; }
@@ -953,7 +953,7 @@ h2 .soft { color: var(--soft); }
 .dlx.is-open .dlx-menu { opacity: 1; visibility: visible; transform: none; }
 .dlx-menu button { display: flex; align-items: center; gap: 10px; width: 100%; padding: 7px 10px 7px 6px; border-radius: 9px; text-align: left; transition: background .12s; }
 .dlx-menu button:hover, .dlx-menu button:focus-visible { background: var(--surface-2); outline: none; }
-.dlx-tick { flex: none; width: 15px; height: 15px; stroke-width: 2.4; opacity: 0; }
+.dlx-tick { flex: none; width: 15px; height: 15px; stroke-width: 2.4; opacity: 0; color: var(--dl); }
 .dlx-menu [aria-selected="true"] .dlx-tick { opacity: 1; }
 .gd { flex: none; width: 14px; height: 14px; }
 .dlx .name small { display: flex; align-items: center; gap: 5px; }
@@ -1007,7 +1007,7 @@ h2 .soft { color: var(--soft); }
 .swatch[aria-pressed="true"] { outline: 2px solid var(--fg); outline-offset: 2px; }
 .swatch.custom { position: relative; overflow: hidden; background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red); }
 .swatch.custom input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-input[type="range"] { accent-color: var(--fg); width: 100%; }
+input[type="range"] { accent-color: var(--dl); width: 100%; }
 .inspector .btns { display: grid; gap: 7px; }
 
 /* ---------- Prose (license page) ---------- */
@@ -1418,7 +1418,7 @@ html.qv-lock { overflow: hidden; }
 .qs-stage { border-radius: var(--radius-lg); background: var(--bg-2); padding: 12.5px; display: flex; flex-direction: column; gap: 11px; }
 .qs-stage-top { display: flex; justify-content: space-between; align-items: center; gap: 11px; padding: 3.5px 5.5px 0; font-size: calc(11px * var(--ts)); color: var(--mute); }
 .qs-live { display: inline-flex; align-items: center; gap: 7px; font-weight: 500; color: var(--fg); }
-.qs-live i { width: 6.5px; height: 6.5px; border-radius: 50%; background: #2b5bff; box-shadow: 0 0 0 3.5px rgba(43, 91, 255, .18); }
+.qs-live i { width: 6.5px; height: 6.5px; border-radius: 50%; background: var(--dl); box-shadow: 0 0 0 3.5px rgba(31, 122, 255, .18); }
 .qs-info { font-variant-numeric: tabular-nums; text-align: right; }
 .qs-preview {
   display: grid; place-items: center; height: clamp(270px, calc(100vh - 387px), 468px); padding: clamp(14.5px, 2vw, 32.5px); border-radius: 18px;
@@ -1522,7 +1522,7 @@ html.qv-lock { overflow: hidden; }
 .qs-switch input { position: absolute; opacity: 0; pointer-events: none; }
 .qs-switch i { flex: none; position: relative; width: 32.5px; height: 20px; border-radius: 899px; background: var(--border-2); transition: background .2s; }
 .qs-switch i::after { content: ""; position: absolute; top: 2.5px; left: 2.5px; width: 14.5px; height: 14.5px; border-radius: 50%; background: #fff; box-shadow: 0 1px 2.5px rgba(0, 0, 0, .2); transition: transform .25s var(--ease); }
-.qs-switch input:checked + i { background: var(--fg); }
+.qs-switch input:checked + i { background: var(--dl); }
 .qs-switch input:checked + i::after { transform: translateX(12.5px); }
 .qs-switch input:focus-visible + i { outline: 2px solid var(--fg); outline-offset: 2px; }
 
@@ -1530,7 +1530,7 @@ html.qv-lock { overflow: hidden; }
 .qs-range { display: flex; flex-direction: column; gap: 7px; }
 .qs-range > span { display: flex; justify-content: space-between; font-size: calc(11px * var(--ts)); font-weight: 500; color: var(--mute); }
 .qs-range b { color: var(--fg); font-weight: 600; font-variant-numeric: tabular-nums; }
-.qs-range input { width: 100%; accent-color: var(--fg); }
+.qs-range input { width: 100%; accent-color: var(--dl); }
 
 /* Logo */
 .qs-logos { display: flex; flex-direction: column; gap: 7px; }
@@ -1566,7 +1566,7 @@ html.qv-lock { overflow: hidden; }
 
 /* ---------- QR Studio teaser (home) ---------- */
 .qt {
-  --qt-bg: #fff; --qt-rx: .28; --qt-s: .9; --qt-rot: 0deg; --qt-ring: 1.6; --qt-ball: .8; --qt-eye: #0f0f0f; --qt-glow: #2b5bff;
+  --qt-bg: #fff; --qt-rx: .28; --qt-s: .9; --qt-rot: 0deg; --qt-ring: 1.6; --qt-ball: .8; --qt-eye: #0f0f0f; --qt-glow: #1f7aff;
   display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: clamp(25px, 3.5vw, 65px); align-items: center;
   border-radius: 0; background: var(--forest); color: #fff; padding: clamp(43px, 5.5vw, 93.5px) calc(var(--edge) + clamp(22.5px, 3.5vw, 56.5px)); overflow: hidden;  /* full-bleed band; content lines up with the cards (page edge + card padding) */
 }
@@ -1790,10 +1790,10 @@ html.qv-dragging #main, html.qv-dragging .footer, html.qv-dragging .qv-backdrop 
 .set-prev.is-device > span + span { display: flex; position: absolute; inset: 0; background: #141414; clip-path: polygon(100% 0, 100% 100%, 0 100%); }
 .set-prev.is-device > span + span i { background: #3a3a3a; }
 .set-theme:hover .set-prev { transform: translateY(-2px); }
-.set-theme[aria-checked="true"] .set-prev { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--fg); }
+.set-theme[aria-checked="true"] .set-prev { box-shadow: 0 0 0 2px var(--surface), 0 0 0 3.5px var(--dl); }
 .set-tick { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; box-shadow: inset 0 0 0 1.5px var(--border-2); color: transparent; transition: background .2s, box-shadow .2s, color .2s; }
 .set-tick svg { width: 11px; height: 11px; stroke-width: 3; }
-.set-theme[aria-checked="true"] .set-tick { background: var(--fg); box-shadow: none; color: var(--on-fg); }
+.set-theme[aria-checked="true"] .set-tick { background: var(--dl); box-shadow: none; color: #fff; }
 .set-danger { color: #e5383b; }
 .set-danger .set-ico { color: inherit; }
 .set-danger.is-armed { background: #e5383b; color: #fff; }
@@ -1806,7 +1806,7 @@ html.qv-dragging #main, html.qv-dragging .footer, html.qv-dragging .qv-backdrop 
 .set-opt small { display: block; margin-top: 1px; font-size: calc(11px * var(--ts)); line-height: 1.35; color: var(--mute); }
 .set-check { flex: none; display: grid; place-items: center; width: 20px; height: 20px; border-radius: 50%; color: transparent; transition: background .2s, color .2s, transform .35s var(--spring, var(--ease)); transform: scale(.6); }
 .set-check svg { width: 11.5px; height: 11.5px; stroke-width: 3; }
-.set-opt[aria-checked="true"] .set-check { background: var(--fg); color: var(--on-fg); transform: none; }
+.set-opt[aria-checked="true"] .set-check { background: var(--dl); color: #fff; transform: none; }
 :root[data-text="large"] { --ts: 1.12; }
 :root[data-text="larger"] { --ts: 1.25; }
 .set-note { margin: 9px 3.5px 0; font-size: calc(11px * var(--ts)); color: var(--mute); }
@@ -1972,7 +1972,6 @@ body { padding-left: var(--side-w); background: var(--side-bg); transition: padd
 :root[data-theme="dark"] .drop-panel, :root[data-theme="dark"] .drop-info { --fg: #0f0f0f; --on-fg: #ffffff; --mute: #6f6f6f; --surface: #ffffff; --outline: #a6a6a6; --f-psd: #0f0f0f; --f-ai: #0f0f0f; --f-svg: #0f0f0f; --f-pdf: #0f0f0f; --f-eps: #0f0f0f; --f-fig: #0f0f0f; --f-img: #0f0f0f; color: var(--fg); }
 :root[data-theme="dark"] .hero-dots, :root[data-theme="dark"] .s-vectors, :root[data-theme="dark"] .drop-req, :root[data-theme="dark"] .fx-panel, :root[data-theme="dark"] .ix, :root[data-theme="dark"] .lx-ticket { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); }
 :root[data-theme="dark"] .footer, :root[data-theme="dark"] .qt { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), inset 0 -1px 0 rgba(255, 255, 255, .07); }
-:root[data-theme="dark"] .qs-switch input:checked + i::after { background: #0a0a0a; }
 :root[data-theme="dark"] .qv-backdrop { background: rgba(0, 0, 0, .62); }
 :root[data-theme="dark"] .btn-dark:hover { box-shadow: 0 14px 26px -12px rgba(255, 255, 255, .2); }
 @media (prefers-color-scheme: dark) {
@@ -1994,7 +1993,6 @@ body { padding-left: var(--side-w); background: var(--side-bg); transition: padd
   :root:not([data-theme="light"]) .drop-panel, :root:not([data-theme="light"]) .drop-info { --fg: #0f0f0f; --on-fg: #ffffff; --mute: #6f6f6f; --surface: #ffffff; --outline: #a6a6a6; --f-psd: #0f0f0f; --f-ai: #0f0f0f; --f-svg: #0f0f0f; --f-pdf: #0f0f0f; --f-eps: #0f0f0f; --f-fig: #0f0f0f; --f-img: #0f0f0f; color: var(--fg); }
   :root:not([data-theme="light"]) .hero-dots, :root:not([data-theme="light"]) .s-vectors, :root:not([data-theme="light"]) .drop-req, :root:not([data-theme="light"]) .fx-panel, :root:not([data-theme="light"]) .ix, :root:not([data-theme="light"]) .lx-ticket { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); }
   :root:not([data-theme="light"]) .footer, :root:not([data-theme="light"]) .qt { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), inset 0 -1px 0 rgba(255, 255, 255, .07); }
-  :root:not([data-theme="light"]) .qs-switch input:checked + i::after { background: #0a0a0a; }
   :root:not([data-theme="light"]) .qv-backdrop { background: rgba(0, 0, 0, .62); }
   :root:not([data-theme="light"]) .btn-dark:hover { box-shadow: 0 14px 26px -12px rgba(255, 255, 255, .2); }
   :root:not([data-theme="light"]) {
