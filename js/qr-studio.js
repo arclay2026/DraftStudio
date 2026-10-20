@@ -251,6 +251,9 @@
       return clone(DEFAULT);
     };
     let st = load();
+    // Settings > Default download sets the export format for each visit
+    const fmtPref = kit.pref ? kit.pref("format") : "auto";
+    if (fmtPref !== "auto") st.exp.fmt = fmtPref;
     const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) { const s = clone(st); s.logo.src = ""; try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e2) {} } };
     const get = path => path.split(".").reduce((o, k) => o && o[k], st);
     const set = (path, v) => { const ks = path.split("."), last = ks.pop(); ks.reduce((o, k) => o[k], st)[last] = v; };
