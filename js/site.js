@@ -285,8 +285,8 @@
     const GROUPS = [
       { items: [["index.html", "Home", "home", "home"], ["browse.html", "Browse all", "browse", "grid"]] },
       { title: "Files", items: [["browse.html?cat=mockups", "Mockups", "mockups", "t-shirt"], ["browse.html?cat=vectors", "Vectors", "vectors", "vector"],
-        ["browse.html?cat=logos", "Logos", "logos", "pen-tool"], ["browse.html?cat=templates", "Templates", "templates", "layers"]] },
-      { title: "Tools", items: [["icons.html", "Icons", "icons", "smile"], ["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR Code Studio", "qr", "ui-qr"]] },
+        ["browse.html?cat=logos", "Logos", "logos", "pen-tool"], ["browse.html?cat=templates", "Templates", "templates", "layers"], ["icons.html", "Icons", "icons", "smile"]] },
+      { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR Code Studio", "qr", "ui-qr"]] },
       { title: "Help", items: [["learn.html", "Learn", "learn", "lightbulb"], ["license.html", "License", "license", "file"]] }
     ];
     const link = ([href, label, key, ic]) =>
