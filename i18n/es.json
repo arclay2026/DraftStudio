@@ -799,7 +799,12 @@
   "Copied": "Copiado",
   "Removed from saved": "Eliminado de guardados",
   "HEX codes copied": "Códigos HEX copiados",
-  "Colours copied": "Colores copiados"
+  "Colours copied": "Colores copiados",
+  "Popular": "Popular",
+  "Try “hoodie mockup”": "Prueba “hoodie mockup”",
+  "Try “letter D logo”": "Prueba “letter D logo”",
+  "Try “arrow icon”": "Prueba “arrow icon”",
+  "Try “PSD”": "Prueba “PSD”"
  },
  "patterns": {
   "^(\\d+) files$": "$1 archivos",

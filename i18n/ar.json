@@ -799,7 +799,12 @@
   "Copied": "تم النسخ",
   "Removed from saved": "أُزيل من المحفوظات",
   "HEX codes copied": "تم نسخ رموز HEX",
-  "Colours copied": "تم نسخ الألوان"
+  "Colours copied": "تم نسخ الألوان",
+  "Popular": "الأكثر رواجًا",
+  "Try “hoodie mockup”": "جرّب “hoodie mockup”",
+  "Try “letter D logo”": "جرّب “letter D logo”",
+  "Try “arrow icon”": "جرّب “arrow icon”",
+  "Try “PSD”": "جرّب “PSD”"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",
