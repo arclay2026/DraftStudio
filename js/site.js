@@ -368,7 +368,6 @@
           </a>
           <button class="side-fold" type="button" aria-label="Collapse menu" data-side-fold>${icon("ui-side")}</button>
         </div>
-        <button class="side-search" type="button" data-open-search data-label="Search">${icon("search")}<span>Search files</span><kbd class="kbd">/</kbd></button>
         <nav class="side-nav" aria-label="Main">
           ${GROUPS.map(g => `<div class="side-group">${g.title ? `<p class="side-label">${g.title}</p>` : ""}${g.items.map(link).join("")}</div>`).join("")}
         </nav>
@@ -424,6 +423,74 @@
   }
 
   /* ---------- Search overlay ---------- */
+  // Search results for a query: files, icons and categories (search pop-up and home search)
+  function searchHtml(raw) {
+    const input = { value: raw };
+    const q = input.value.trim().toLowerCase();
+    const hit = x => x.toLowerCase().includes(q);
+    const its = items.filter(it => !q || hit([it.title, it.category, (it.tags || []).join(" "), formatsOf(it).join(" ")].join(" "))).slice(0, 6);
+    const ics = q ? DS.icons.filter(i => hit([i.name, i.group, i.tags.join(" ")].join(" "))).slice(0, 6) : [];
+    const cats = CATS.filter(c => !q || hit(c.name + " " + c.formats.join(" ")));
+    let html = "";
+    if (its.length) html += `<div class="group">Files</div>` + its.map(it => `
+      <a href="${itemUrl(it)}"><span class="thumb"><img src="${esc(it.preview)}" alt=""></span>
+        <span><span class="t">${esc(it.title)}</span><br><span class="s">${esc(it.category)} · ${formatsOf(it).join(", ")}</span></span></a>`).join("");
+    if (ics.length) html += `<div class="group">Icons</div>` + ics.map(i => `
+      <a href="icons.html#${i.id}"><span class="thumb">${icon(i.id)}</span>
+        <span><span class="t">${esc(i.name)}</span><br><span class="s">Icon · ${esc(i.group)}</span></span></a>`).join("");
+    if (cats.length) html += `<div class="group">Categories</div>` + cats.map(c => `
+      <a href="browse.html?cat=${c.slug}"><span class="thumb">${icon("folder")}</span>
+        <span><span class="t">${c.name}</span><br><span class="s">${c.formats.join(" · ")}</span></span></a>`).join("");
+    if (q) html += `<a href="browse.html?q=${encodeURIComponent(input.value.trim())}"><span class="thumb">${icon("arrow-right")}</span><span><span class="t">See all results for “${esc(input.value.trim())}”</span></span></a>`;
+    if (!its.length && !ics.length && !cats.length) html = `<div class="none">Nothing matches “${esc(input.value)}” yet.<br>Press Enter to search all files.</div>`;
+    return html;
+  }
+
+
+  // Arrow keys move through results; Enter opens one, or all results for the query
+  function searchKeys(e, input, results, active) {
+    const links = $$("a", results);
+    if ((e.key === "ArrowDown" || e.key === "ArrowUp") && links.length) {
+      e.preventDefault();
+      active = (active + (e.key === "ArrowDown" ? 1 : -1) + links.length) % links.length;
+      links.forEach((l, i) => l.classList.toggle("is-active", i === active));
+      links[active].scrollIntoView({ block: "nearest" });
+    } else if (e.key === "Enter") {
+      e.preventDefault();
+      if (links[active]) location.href = links[active].href;
+      else if (input.value.trim()) location.href = `browse.html?q=${encodeURIComponent(input.value.trim())}`;
+    }
+    return active;
+  }
+
+  /* Home: the big search bar above the headline, with results right under it */
+  function heroSearch() {
+    const form = $("[data-hsearch]");
+    if (!form) return;
+    const input = $("input", form), results = $("[data-hsearch-results]", form);
+    let active = -1;
+    const show = on => { form.classList.toggle("is-open", on); input.setAttribute("aria-expanded", on); };
+    const render = () => { results.innerHTML = searchHtml(input.value); active = -1; show(true); };
+    input.addEventListener("focus", render);
+    input.addEventListener("input", render);
+    input.addEventListener("keydown", e => {
+      if (e.key === "Escape") { show(false); input.blur(); return; }
+      active = searchKeys(e, input, results, active);
+    });
+    form.addEventListener("submit", e => { e.preventDefault(); if (input.value.trim()) location.href = `browse.html?q=${encodeURIComponent(input.value.trim())}`; else input.focus(); });
+    document.addEventListener("pointerdown", e => { if (!form.contains(e.target)) show(false); });
+    // Placeholder cycles through ideas while the field is empty and idle
+    const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const ideas = $$("[data-hsearch-ideas] span", form).map(x => x.textContent);
+    let n = 0;
+    if (!calm && ideas.length) setInterval(() => {
+      if (document.activeElement === input || input.value) return;
+      n = (n + 1) % ideas.length;
+      input.classList.add("is-swap");
+      setTimeout(() => { input.placeholder = ideas[n]; input.classList.remove("is-swap"); }, 220);
+    }, 2800);
+  }
+
   function searchModal() {
     const wrap = document.createElement("div");
     wrap.className = "search-modal";
@@ -440,47 +507,21 @@
     let active = -1;
 
     const render = () => {
-      const q = input.value.trim().toLowerCase();
-      const hit = s => s.toLowerCase().includes(q);
-      const its = items.filter(it => !q || hit([it.title, it.category, (it.tags || []).join(" "), formatsOf(it).join(" ")].join(" "))).slice(0, 6);
-      const ics = q ? DS.icons.filter(i => hit([i.name, i.group, i.tags.join(" ")].join(" "))).slice(0, 6) : [];
-      const cats = CATS.filter(c => !q || hit(c.name + " " + c.formats.join(" ")));
-      let html = "";
-      if (its.length) html += `<div class="group">Files</div>` + its.map(it => `
-        <a href="${itemUrl(it)}"><span class="thumb"><img src="${esc(it.preview)}" alt=""></span>
-          <span><span class="t">${esc(it.title)}</span><br><span class="s">${esc(it.category)} · ${formatsOf(it).join(", ")}</span></span></a>`).join("");
-      if (ics.length) html += `<div class="group">Icons</div>` + ics.map(i => `
-        <a href="icons.html#${i.id}"><span class="thumb">${icon(i.id)}</span>
-          <span><span class="t">${esc(i.name)}</span><br><span class="s">Icon · ${esc(i.group)}</span></span></a>`).join("");
-      if (cats.length) html += `<div class="group">Categories</div>` + cats.map(c => `
-        <a href="browse.html?cat=${c.slug}"><span class="thumb">${icon("folder")}</span>
-          <span><span class="t">${c.name}</span><br><span class="s">${c.formats.join(" · ")}</span></span></a>`).join("");
-      if (q) html += `<a href="browse.html?q=${encodeURIComponent(input.value.trim())}"><span class="thumb">${icon("arrow-right")}</span><span><span class="t">See all results for “${esc(input.value.trim())}”</span></span></a>`;
-      if (!its.length && !ics.length && !cats.length) html = `<div class="none">Nothing matches “${esc(input.value)}” yet.<br>Press Enter to search all files.</div>`;
-      results.innerHTML = html;
+      results.innerHTML = searchHtml(input.value);
       active = -1;
     };
-
     const open = () => { const mm = $("#mobile-menu.is-open"); if (mm) $(".menu-btn").click(); wrap.classList.add("is-open"); document.body.style.overflow = "hidden"; input.value = ""; render(); input.focus(); };
     const close = () => { wrap.classList.remove("is-open"); document.body.style.overflow = ""; };
     input.addEventListener("input", render);
-    input.addEventListener("keydown", e => {
-      const links = $$("a", results);
-      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-        e.preventDefault();
-        active = (active + (e.key === "ArrowDown" ? 1 : -1) + links.length) % links.length;
-        links.forEach((l, i) => l.classList.toggle("is-active", i === active));
-        links[active] && links[active].scrollIntoView({ block: "nearest" });
-      } else if (e.key === "Enter") {
-        e.preventDefault();
-        if (links[active]) location.href = links[active].href;
-        else if (input.value.trim()) location.href = `browse.html?q=${encodeURIComponent(input.value.trim())}`;
-      }
-    });
+    input.addEventListener("keydown", e => { active = searchKeys(e, input, results, active); });
     wrap.addEventListener("click", e => { if (e.target === wrap) close(); });
     document.addEventListener("keydown", e => {
       if (e.key === "Escape" && wrap.classList.contains("is-open")) close();
-      if (e.key === "/" && !/input|textarea|select/i.test(document.activeElement.tagName)) { e.preventDefault(); open(); }
+      if (e.key === "/" && !/input|textarea|select/i.test(document.activeElement.tagName)) {
+        e.preventDefault();
+        const hs = $("[data-hsearch] input");
+        if (hs) { hs.scrollIntoView({ block: "center", behavior: "smooth" }); hs.focus({ preventScroll: true }); } else open();
+      }
     });
     $$("[data-open-search]").forEach(b => b.addEventListener("click", open));
   }
@@ -545,6 +586,7 @@
   /* ---------- Home ---------- */
   function home() {
     heroFx();
+    heroSearch();
 
     $$("[data-item-count]").forEach(el => { el.textContent = items.length; });
     $$("[data-icon-total]").forEach(el => { el.textContent = DS.icons.length; });
@@ -1509,7 +1551,7 @@
     const springOK = (() => { try { return CSS.supports("transition-timing-function", "linear(0, 1)"); } catch (e) { return false; } })();
     const SEL = [".btn", ".card", ".drop-card", ".drop-req", ".pal", ".qs-tile", ".qs-type", ".qs-look", ".qs-ico", ".qs-seg-btn", ".qs-iconbtn", ".qs-upload",
       ".pal-btn", ".pt-rows button", ".pt-swatches button", ".glass-btn", ".qv-btn", ".icon-btn", ".icon-cell", ".swatch", ".sel-btn", ".dd-btn",
-      ".side-link", ".side-search", ".fx-row", ".lx-uses button", ".chip", ".seg button", ".ix-grid a", ".ps-tool", ".ps-theme button",
+      ".side-link", ".hsearch-go", ".fx-row", ".lx-uses button", ".chip", ".seg button", ".ix-grid a", ".ps-tool", ".ps-theme button",
       ".pg-base", ".cp-drop", ".cp-recent button", ".shelves > *", ".logo", ".pg-hexes button", ".qt-dots i", ".pt-dots i"].join(",");
     const scaleOf = el => { const w = el.offsetWidth; return w > 420 ? .985 : w > 200 ? .97 : w > 64 ? .95 : .9; };
     const anim = (el, to, down) => {

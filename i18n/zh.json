@@ -799,7 +799,12 @@
   "Copied": "已复制",
   "Removed from saved": "已从收藏中移除",
   "HEX codes copied": "HEX 色值已复制",
-  "Colours copied": "颜色已复制"
+  "Colours copied": "颜色已复制",
+  "Popular": "热门",
+  "Try “hoodie mockup”": "试试“hoodie mockup”",
+  "Try “letter D logo”": "试试“letter D logo”",
+  "Try “arrow icon”": "试试“arrow icon”",
+  "Try “PSD”": "试试“PSD”"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",
