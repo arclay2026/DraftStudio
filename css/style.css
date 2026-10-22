@@ -173,7 +173,7 @@ p { margin: 0; }
 .hero { padding: 0 var(--edge); }
 .hero-panel {
   position: relative; border-radius: var(--radius-lg); overflow: hidden;
-  padding: clamp(44px, 5.5vw, 83px) 9px 9px;
+  padding: clamp(36px, 4.4vw, 64px) 9px 9px;
   background:
     linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 25% 100%,
     var(--bg-2);
@@ -1104,7 +1104,7 @@ input[type="range"] { accent-color: var(--dl); width: 100%; }
   .shelf, .shelf.is-open { height: 364.5px; }
   .tpl { max-height: 119px; }
   .logo img { height: 17px; }
-  .hero-panel { padding-top: 35px; }
+  .hero-panel { padding-top: 26px; }
   .hero-ctas { flex-direction: column; align-items: center; gap: 11px; margin: 27px 0 35px; }
   .hero-cards { grid-template-columns: 1fr; height: auto; }
   .hero-photo { height: 269px; }
@@ -1932,7 +1932,7 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 
 
 /* ---------- Home search (above the headline) ---------- */
-.hsearch { position: relative; z-index: 6; width: min(100%, 620px); margin: 22px auto 0; text-align: start; }
+.hsearch { position: relative; z-index: 6; width: min(100%, 620px); margin: 0 auto; text-align: start; }
 .hsearch-field {
   position: relative; display: flex; align-items: center; gap: 12px; height: 60px; padding: 0 7px 0 22px; border-radius: 999px;
   background: var(--surface); border: 1px solid var(--border);
@@ -1980,7 +1980,6 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 .hsearch + h1 { margin-top: 30px; }
 
 @media (max-width: 640px) {
-  .hsearch { margin-top: 16px; }
   .hsearch-field { height: 52px; padding-inline-start: 16px; gap: 10px; }
   .hsearch-go { width: 40px; height: 40px; }
   .hsearch-kbd { display: none; }
