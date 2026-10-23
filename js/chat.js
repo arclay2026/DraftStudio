@@ -70,7 +70,17 @@ window.DSChat = function (kit) {
       return say([f.desc], [{ type: "apps", ext: f.ext }, { type: "links", keys: ["learn"] }]);
     }
     if (has(q, KW.license)) return say(["Yes, you can.", DS.site.license, "Exclusive logos are the exception: they're sold once, with full rights to the buyer."], [{ type: "links", keys: ["license"] }]);
-    if (has(q, KW.price) && !Object.values(CAT_WORDS).flat().some(c => q.includes(c))) return say(["Everything marked Free costs nothing. No sign-up, no watermark.", "Exclusive logos are the exception: they're sold once, with full rights to the buyer."], [{ type: "links", keys: ["browse"] }]);
+    // "how much for a logo?": say what each matching design costs
+    if (has(q, KW.price) && searchItems(q).length) {
+      const found = searchItems(q);
+      const free = found.filter(it => !it.price), paid = found.filter(it => it.price && !it.sold);
+      const lines = [];
+      if (free.length) lines.push(`${free.map(it => it.title.split(" — ")[0]).join(" and ")} ${free.length > 1 ? "are" : "is"} free to download. No sign-up, no watermark.`);
+      if (paid.length) lines.push(...paid.map(it => `${it.title.split(" — ")[0]} is exclusive: ${it.price}, sold once, with full rights to the buyer. You buy it on WhatsApp.`));
+      if (!lines.length) lines.push("Everything marked Free costs nothing. No sign-up, no watermark.");
+      return say(lines, [{ type: "files", ids: found.slice(0, 4).map(i => i.id) }]);
+    }
+    if (has(q, KW.price)) return say(["Everything marked Free costs nothing. No sign-up, no watermark.", "Exclusive logos are the exception: they're sold once, with full rights to the buyer."], [{ type: "links", keys: ["browse"] }]);
     if (has(q, KW.qr)) return say("QR Code Studio lets you design a QR code dot by dot, add your logo, and download it. Every design is scan-checked live.", [{ type: "links", keys: ["qr"] }]);
     if (has(q, KW.palette)) {
       const pick = palettes.filter(p => q.includes(fold(p.mood)) || q.includes(fold(p.name)));
@@ -134,6 +144,7 @@ window.DSChat = function (kit) {
       <a class="ch-file" href="${itemUrl(it)}">
         <span class="ch-thumb"><img src="${esc(it.preview)}" alt="" loading="lazy"></span>
         <span class="ch-file-t"><b>${esc(it.title)}</b><small>${esc(it.category)} · ${formatsOf(it).join(", ")}</small></span>
+        <em class="ch-price${it.price ? " is-paid" : ""}">${it.price ? (it.sold ? "Sold" : esc(it.price)) : "Free"}</em>
         ${icon("chevron-right")}
       </a>`).join("")}</div>`;
     if (b.type === "icons") return `<div class="ch-icons">${b.ids.map(id => `<a href="icons.html#${id}" data-tip="${esc((DS.icons.find(i => i.id === id) || {}).name || id)}">${icon(id)}</a>`).join("")}</div>`;

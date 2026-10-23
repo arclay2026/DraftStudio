@@ -838,7 +838,8 @@
   "Anything you like…": "任意内容…",
   "Hi! I saw your QR code…": "你好！我看到了你的二维码…",
   "Write your message…": "写下你的消息…",
-  "Your message…": "你的消息…"
+  "Your message…": "你的消息…",
+  "Sold": "已售出"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",
