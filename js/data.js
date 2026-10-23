@@ -50,6 +50,9 @@ window.DS = {
     // Address of the AI chat server (see worker/README.md). Leave empty and
     // Drafty answers from the site's own data instead.
     chatEndpoint: "",
+    // Visitor stats with GoatCounter (free, no cookies). Put your GoatCounter
+    // code here, e.g. "draftstudio" for draftstudio.goatcounter.com. Empty = off.
+    goatcounter: "",
     instagram: "",                    // e.g. "https://instagram.com/draftstudio"
     license:
       "Free for personal and commercial projects. Credit is appreciated but not required. " +

@@ -2272,9 +2272,52 @@
       .catch(() => {});
   }
 
+  /* ---------- Visitor stats (GoatCounter, when DS.site.goatcounter is set) ----------
+     Counts page views and a few actions — downloads, WhatsApp and email
+     clicks, searches, shares, chat opens — without cookies or personal data.
+     Actions show in GoatCounter as paths like "download/dore-logo.svg". */
+  const statsQueue = [];
+  const track = (path, title) => {
+    if (!DS.site.goatcounter) return;
+    const ev = { path: String(path).toLowerCase().replace(/\s+/g, "-").slice(0, 120), title: title || path, event: true };
+    if (window.goatcounter && window.goatcounter.count) window.goatcounter.count(ev); else statsQueue.push(ev);
+  };
+  function stats() {
+    const code = DS.site.goatcounter;
+    if (!code || /^(localhost|127\.|0\.0\.0\.0)/.test(location.hostname)) return;
+    const s = document.createElement("script");
+    s.async = true;
+    s.src = "https://gc.zgo.at/count.js";
+    s.dataset.goatcounter = `https://${code}.goatcounter.com/count`;
+    s.onload = () => { while (statsQueue.length) window.goatcounter.count(statsQueue.shift()); };
+    document.head.appendChild(s);
+
+    const fileOf = el => {
+      const href = el.getAttribute("href") || "";
+      return el.getAttribute("download") || (href.startsWith("blob:") ? "" : href.split(/[/?#]/).filter(Boolean).pop()) || "";
+    };
+    document.addEventListener("click", e => {
+      const el = e.target.closest("a, button");
+      if (!el) return;
+      const href = el.getAttribute("href") || "";
+      const id = document.body.dataset.id || new URLSearchParams(location.search).get("id") || "";
+      if (href.includes("wa.me/")) return track("contact/whatsapp", "WhatsApp");
+      if (href.startsWith("mailto:")) return track("contact/email", "Email");
+      if (el.matches("[data-share]")) return track(`share/${id}`, "Share");
+      if (el.matches("[data-dl-svg], [data-dl-png]")) return track(`download/icon-${location.hash.slice(1) || "icon"}.${el.matches("[data-dl-svg]") ? "svg" : "png"}`, "Icon download");
+      if (el.matches("[data-qs-dl]")) return track("download/qr-code", "QR code download");
+      if (el.matches("[data-pg-png], [data-pal-png]")) return track("download/palette-png", "Palette download");
+      if (el.matches("a[download], .dlx-go, .dl-all") || href.includes("drive.google.com")) return track(`download/${fileOf(el) || id || "file"}`, "File download");
+    }, true);
+    const q = new URLSearchParams(location.search).get("q");
+    if (q) track(`search/${q.trim()}`, "Search");
+    document.addEventListener("ds-chat-open", () => track("chat/open", "Chat opened"));
+  }
+
   /* ---------- Boot ---------- */
   const page = document.body.dataset.page;
   freshness();
+  stats();
   i18n();
   header(page === "browse" ? (new URLSearchParams(location.search).get("cat") || "browse") : page);
   footer();
