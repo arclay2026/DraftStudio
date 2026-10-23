@@ -2133,6 +2133,218 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 html.ch-lock, html.ch-lock body { overflow: hidden; }
 @media print { .ch { display: none; } }
 
+
+/* =====================================================================
+   DESIGN BASICS — lesson cards and their scenes (js/academy.js)
+   Scenes loop while the card is on screen (.is-live) and sit still otherwise.
+   ===================================================================== */
+.ac-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(10px, 1.2vw, 16px); }
+.ac-card {
+  display: flex; flex-direction: column; text-align: start; border-radius: 24px; overflow: hidden;
+  background: var(--surface); border: 1px solid var(--border);
+  transition: transform .5s var(--spring, var(--ease)), box-shadow .4s var(--ease), border-color .3s;
+}
+.ac-card:hover { transform: translateY(-4px); border-color: var(--border-2); box-shadow: 0 30px 60px -36px rgba(0, 0, 0, .35); }
+.ac-card:focus-visible { outline: 2px solid var(--dl); outline-offset: 3px; }
+.ac-info { display: flex; flex-direction: column; gap: 6px; padding: 16px 18px 18px; }
+.ac-meta { display: flex; justify-content: space-between; font-size: calc(11.5px * var(--ts)); color: var(--mute); font-variant-numeric: tabular-nums; }
+.ac-meta b { font-weight: 600; color: var(--fg); }
+.ac-title-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ac-title-row strong { font: 600 calc(clamp(20px, 1.7vw, 25px) * var(--ts))/1.1 var(--font-display); letter-spacing: -.035em; }
+.ac-title-row svg { width: 18px; height: 18px; color: var(--mute); transition: transform .4s var(--spring, var(--ease)), color .2s; }
+.ac-card:hover .ac-title-row svg { transform: translateX(4px); color: var(--dl); }
+[dir="rtl"] .ac-title-row svg { transform: scaleX(-1); }
+[dir="rtl"] .ac-card:hover .ac-title-row svg { transform: scaleX(-1) translateX(4px); }
+.ac-line { font-size: calc(13px * var(--ts)); color: var(--mute); line-height: 1.45; }
+
+/* Stage: the scene area at the top of each card */
+.ac-stage {
+  position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; isolation: isolate;
+  background: var(--card); background-image: radial-gradient(var(--dot) 1px, transparent 1px); background-size: 14px 14px;
+  border-bottom: 1px solid var(--border);
+}
+.ac-stage *, .ac-stage *::before, .ac-stage *::after { animation-play-state: paused; }
+.is-live.ac-stage *, .is-live.ac-stage *::before, .is-live.ac-stage *::after,
+.is-live .ac-stage *, .is-live .ac-stage *::before, .is-live .ac-stage *::after { animation-play-state: running; }
+.ac-card:hover .ac-stage > * { --hov: 1; }
+
+/* 01 Colour: a wheel with harmony pins, swatches that change with each harmony */
+.ac-colour { display: grid; place-items: center; }
+.ac-wheel { position: absolute; left: 50%; top: 40%; width: 46%; aspect-ratio: 1; translate: -50% -50%; border-radius: 50%;
+  background: conic-gradient(from 0deg, #ff4d4d, #ff9f1c, #ffd23f, #9bd94a, #2ec4b6, #1f7aff, #7c5cff, #f72585, #ff4d4d);
+  box-shadow: 0 20px 40px -24px rgba(0, 0, 0, .45); animation: ac-spin 26s linear infinite; }
+.ac-wheel > i { position: absolute; inset: 24%; border-radius: 50%; background: var(--card); box-shadow: inset 0 2px 6px rgba(0, 0, 0, .12); }
+.ac-pin { position: absolute; inset: 0; }
+.ac-pin::after { content: ""; position: absolute; left: 50%; top: 4%; width: 13%; aspect-ratio: 1; translate: -50% 0; border-radius: 50%;
+  background: #fff; box-shadow: 0 0 0 3px rgba(255, 255, 255, .55), 0 4px 10px rgba(0, 0, 0, .3); }
+.ac-pin.b { animation: ac-harmony 9s cubic-bezier(.32, .72, 0, 1) infinite; }
+@keyframes ac-harmony { 0%, 30% { transform: rotate(180deg); } 36%, 63% { transform: rotate(35deg); } 69%, 94% { transform: rotate(120deg); } 100% { transform: rotate(180deg); } }
+@keyframes ac-spin { to { transform: rotate(360deg); } }
+.ac-swatches { position: absolute; left: 50%; bottom: 13%; translate: -50% 0; display: flex; gap: 6px; }
+.ac-swatches span { width: clamp(22px, 2.6vw, 34px); aspect-ratio: 1; border-radius: 9px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .06), 0 6px 14px -8px rgba(0, 0, 0, .4);
+  animation: ac-sw-1 9s ease-in-out infinite; animation-delay: calc(var(--i) * 60ms); }
+.ac-swatches span:nth-child(2) { animation-name: ac-sw-2; }
+.ac-swatches span:nth-child(3) { animation-name: ac-sw-3; }
+.ac-swatches span:nth-child(4) { animation-name: ac-sw-4; }
+.ac-swatches span:nth-child(5) { animation-name: ac-sw-5; }
+@keyframes ac-sw-1 { 0%, 30%, 100% { background: #ff4d4d; } 36%, 63% { background: #ff4d4d; } 69%, 94% { background: #ff4d4d; } }
+@keyframes ac-sw-2 { 0%, 30%, 100% { background: #ffb3b3; } 36%, 63% { background: #ff7a3d; } 69%, 94% { background: #ffd23f; } }
+@keyframes ac-sw-3 { 0%, 30%, 100% { background: #f4f1ea; } 36%, 63% { background: #ff9f1c; } 69%, 94% { background: #f4f1ea; } }
+@keyframes ac-sw-4 { 0%, 30%, 100% { background: #7fe3d9; } 36%, 63% { background: #ffc93c; } 69%, 94% { background: #2f6bff; } }
+@keyframes ac-sw-5 { 0%, 30%, 100% { background: #2ec4b6; } 36%, 63% { background: #fff1d6; } 69%, 94% { background: #1f3f99; } }
+.ac-tags { position: absolute; left: 50%; top: 8%; translate: -50% 0; display: grid; }
+.ac-tags em { grid-area: 1 / 1; justify-self: center; padding: 4px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border);
+  font-style: normal; font-size: 11px; font-weight: 600; color: var(--fg); opacity: 0; animation: ac-tag 9s infinite; white-space: nowrap; }
+.ac-tags em:nth-child(2) { animation-delay: 3s; }
+.ac-tags em:nth-child(3) { animation-delay: 6s; }
+@keyframes ac-tag { 0% { opacity: 0; transform: translateY(4px); } 4%, 30% { opacity: 1; transform: none; } 34%, 100% { opacity: 0; transform: translateY(-4px); } }
+
+/* 02 Typography: a specimen that cycles typefaces over type guides, plus a heading tightening up */
+.ac-specimen { position: absolute; left: 8%; right: 8%; top: 9%; height: 55%; }
+.ac-guides { position: absolute; inset: 0; }
+.ac-guides i { position: absolute; left: 0; right: 0; height: 1px; background: repeating-linear-gradient(90deg, color-mix(in srgb, var(--dl) 55%, transparent) 0 5px, transparent 5px 9px);
+  transform-origin: left; animation: ac-draw 9s ease-out infinite; }
+.ac-guides i:nth-child(1) { top: 22%; }
+.ac-guides i:nth-child(2) { top: 46%; animation-delay: .15s; }
+.ac-guides i:nth-child(3) { top: 82%; animation-delay: .3s; }
+@keyframes ac-draw { 0% { transform: scaleX(0); } 8%, 92% { transform: scaleX(1); } 100% { transform: scaleX(0); } }
+.ac-aa { position: absolute; left: 0; bottom: 18%; line-height: .82; color: var(--fg); opacity: 0; animation: ac-face 9s infinite; }
+.ac-aa.s1 { font: 400 clamp(64px, 7.4vw, 104px)/.82 Georgia, "Times New Roman", serif; }
+.ac-aa.s2 { font: 700 clamp(64px, 7.4vw, 104px)/.82 var(--font-display); letter-spacing: -.06em; animation-delay: 3s; }
+.ac-aa.s3 { font: 300 clamp(64px, 7.4vw, 104px)/.82 var(--font-display); letter-spacing: .02em; font-style: italic; animation-delay: 6s; }
+@keyframes ac-face { 0% { opacity: 0; transform: translateY(10px); filter: blur(4px); } 5%, 30% { opacity: 1; transform: none; filter: none; } 35%, 100% { opacity: 0; transform: translateY(-10px); filter: blur(4px); } }
+.ac-specimen::after { content: ""; position: absolute; right: 6%; bottom: 20%; width: 2px; height: 46%; background: var(--dl); animation: ac-caret 1.1s steps(1) infinite; }
+@keyframes ac-caret { 50% { opacity: 0; } }
+.ac-pair { position: absolute; left: 8%; right: 8%; bottom: 9%; display: flex; flex-direction: column; gap: 6px; }
+.ac-pair b { font: 650 clamp(15px, 1.4vw, 19px)/1 var(--font-display); color: var(--fg); animation: ac-track 9s ease-in-out infinite; }
+@keyframes ac-track { 0%, 100% { letter-spacing: .06em; } 40%, 70% { letter-spacing: -.035em; } }
+.ac-pair span { height: 5px; border-radius: 3px; background: var(--border-2); width: 100%; }
+.ac-pair span.short { width: 62%; }
+
+/* 03 Layout: scattered blocks snap onto a six-column grid, then let go */
+.ac-board { position: absolute; left: 13%; right: 13%; top: 10%; bottom: 10%; border-radius: 10px; background: #fff; box-shadow: 0 24px 44px -26px rgba(0, 0, 0, .45); overflow: hidden; }
+.ac-cols { position: absolute; inset: 0 7%; display: grid; grid-template-columns: repeat(6, 1fr); gap: 5%; animation: ac-cols 9s ease-in-out infinite; }
+.ac-cols i { background: rgba(31, 122, 255, .1); border-inline: 1px solid rgba(31, 122, 255, .18); }
+@keyframes ac-cols { 0%, 14% { opacity: 0; } 22%, 80% { opacity: 1; } 90%, 100% { opacity: 0; } }
+.ac-blk { position: absolute; border-radius: 5px; animation: ac-snap 9s cubic-bezier(.32, .72, 0, 1) infinite; }
+.ac-blk.img { left: 7%; top: 9%; width: 86%; height: 38%; background: linear-gradient(135deg, #1f7aff, #7c5cff); --x: -18%; --y: 12%; --r: -9deg; }
+.ac-blk.h1 { left: 7%; top: 54%; width: 70%; height: 7%; background: #0f0f0f; --x: 22%; --y: 40%; --r: 7deg; animation-delay: .06s; }
+.ac-blk.h2 { left: 7%; top: 64%; width: 44%; height: 7%; background: #0f0f0f; --x: 40%; --y: -60%; --r: -12deg; animation-delay: .12s; }
+.ac-blk.p1 { left: 7%; top: 76%; width: 86%; height: 3.5%; background: #cfcfcf; --x: -10%; --y: 90%; --r: 5deg; animation-delay: .18s; }
+.ac-blk.p2 { left: 7%; top: 82%; width: 60%; height: 3.5%; background: #cfcfcf; --x: 30%; --y: 120%; --r: -6deg; animation-delay: .24s; }
+.ac-blk.btn { right: 7%; top: 54%; width: 18%; height: 17%; border-radius: 999px; background: #1f7aff; --x: -40%; --y: 80%; --r: 18deg; animation-delay: .3s; }
+@keyframes ac-snap {
+  0%, 12% { transform: translate(var(--x), var(--y)) rotate(var(--r)); }
+  28%, 82% { transform: none; }
+  96%, 100% { transform: translate(var(--x), var(--y)) rotate(var(--r)); }
+}
+
+/* 04 Hierarchy: everything starts the same, then the title, subtitle and button take their rank */
+.ac-poster { position: absolute; left: 14%; right: 14%; top: 9%; bottom: 9%; border-radius: 10px; background: #fff; box-shadow: 0 24px 44px -26px rgba(0, 0, 0, .45); padding: 9% 9%; display: flex; flex-direction: column; gap: 6%; }
+.ac-poster > span { display: block; height: 7px; border-radius: 4px; background: #c9c9c9; transform-origin: left center; }
+.ac-kicker { width: 30%; animation: ac-kick 9s ease-in-out infinite; }
+.ac-title { width: 85%; animation: ac-rank-title 9s cubic-bezier(.32, .72, 0, 1) infinite; }
+.ac-sub { width: 66%; animation: ac-rank-sub 9s cubic-bezier(.32, .72, 0, 1) infinite; }
+.ac-body { width: 92%; animation: ac-rank-body 9s ease-in-out infinite; }
+.ac-body + .ac-body { width: 74%; }
+.ac-cta { width: 34%; margin-top: auto; animation: ac-rank-cta 9s cubic-bezier(.32, .72, 0, 1) infinite; }
+@keyframes ac-kick { 0%, 15%, 100% { background: #c9c9c9; } 25%, 85% { background: #1f7aff; transform: scaleY(.7); } }
+@keyframes ac-rank-title { 0%, 15%, 100% { background: #c9c9c9; transform: none; } 25%, 85% { background: #0f0f0f; transform: scaleY(3.2); } }
+@keyframes ac-rank-sub { 0%, 15%, 100% { background: #c9c9c9; transform: none; } 25%, 85% { background: #5a5a5a; transform: scaleY(1.7) translateY(60%); } }
+@keyframes ac-rank-body { 0%, 15%, 100% { background: #c9c9c9; } 25%, 85% { background: #e3e3e3; transform: translateY(120%); } }
+@keyframes ac-rank-cta { 0%, 15%, 100% { background: #c9c9c9; transform: none; border-radius: 4px; } 25%, 85% { background: #1f7aff; transform: scaleY(2.8); border-radius: 999px; } }
+.ac-path { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.ac-path path { fill: none; stroke: #1f7aff; stroke-width: 1.6; stroke-dasharray: 4 5; opacity: .8; stroke-dashoffset: 0;
+  clip-path: inset(0 100% 0 0); animation: ac-eye 9s ease-in-out infinite; }
+@keyframes ac-eye { 0%, 30% { clip-path: inset(0 100% 0 0); } 55%, 82% { clip-path: inset(0 0 0 0); } 90%, 100% { clip-path: inset(0 0 0 100%); } }
+.ac-n { position: absolute; display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: #0f0f0f; color: #fff; font: 700 10px/1 var(--font-body); font-style: normal;
+  opacity: 0; transform: scale(.4); animation: ac-pop 9s cubic-bezier(.34, 1.56, .64, 1) infinite; }
+.ac-n.n1 { left: 9%; top: 18%; animation-delay: .9s; }
+.ac-n.n2 { left: 52%; top: 52%; animation-delay: 1.5s; }
+.ac-n.n3 { left: 30%; top: 82%; animation-delay: 2.1s; background: #1f7aff; }
+@keyframes ac-pop { 0%, 22% { opacity: 0; transform: scale(.4); } 28%, 82% { opacity: 1; transform: none; } 90%, 100% { opacity: 0; transform: scale(.4); } }
+
+/* 05 Logos: a mark is built on a grid from circles, then the wordmark joins it */
+.ac-logo { position: absolute; inset: 8% 6%; width: 88%; height: 84%; overflow: visible; }
+.ac-lines path { fill: none; stroke: color-mix(in srgb, var(--fg) 12%, transparent); stroke-width: .6; }
+.ac-circles circle { fill: none; stroke: #1f7aff; stroke-width: 1; stroke-dasharray: 300; stroke-dashoffset: 300; animation: ac-circle 9s ease-in-out infinite; }
+.ac-circles circle:nth-child(2) { animation-delay: .25s; }
+.ac-circles circle:nth-child(3) { animation-delay: .5s; }
+@keyframes ac-circle { 0% { stroke-dashoffset: 300; opacity: 1; } 18%, 40% { stroke-dashoffset: 0; opacity: 1; } 55%, 100% { stroke-dashoffset: 0; opacity: 0; } }
+.ac-mark { fill: var(--fg); fill-opacity: 0; fill-rule: evenodd; stroke: var(--fg); stroke-width: 1.2; stroke-dasharray: 520; stroke-dashoffset: 520; animation: ac-mark 9s ease-in-out infinite; }
+@keyframes ac-mark { 0%, 18% { stroke-dashoffset: 520; fill-opacity: 0; } 38% { stroke-dashoffset: 0; fill-opacity: 0; } 50%, 90% { stroke-dashoffset: 0; fill-opacity: 1; } 100% { stroke-dashoffset: 0; fill-opacity: 0; } }
+.ac-word { font: 700 32px/1 var(--font-display); letter-spacing: -.04em; fill: var(--fg); opacity: 0; animation: ac-word 9s cubic-bezier(.32, .72, 0, 1) infinite; }
+@keyframes ac-word { 0%, 50% { opacity: 0; transform: translateX(-10px); } 60%, 90% { opacity: 1; transform: none; } 100% { opacity: 0; } }
+.ac-lines { animation: ac-gridfade 9s ease-in-out infinite; }
+@keyframes ac-gridfade { 0%, 45% { opacity: 1; } 60%, 90% { opacity: .25; } 100% { opacity: 1; } }
+
+/* 06 Mockups: a design is dragged onto a blank hoodie and the print appears, like a smart object */
+.ac-scene { position: absolute; left: 50%; top: 50%; height: 88%; aspect-ratio: 640 / 853; translate: -50% -50%; border-radius: 14px; overflow: hidden; box-shadow: 0 24px 44px -24px rgba(0, 0, 0, .5); }
+.ac-scene img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ac-scene .ac-print { position: absolute; left: 33%; top: 39%; width: 34.5%; height: 24.5%;  /* blank fabric over the chest print */
+  background: linear-gradient(90deg, #e5e5e2, #d9d9d5); filter: blur(3px); animation: ac-blank 8s ease-in-out infinite; }
+.ac-scene .ac-print b { display: none; }
+@keyframes ac-blank { 0%, 44% { opacity: 1; } 54%, 88% { opacity: 0; } 96%, 100% { opacity: 1; } }
+.ac-art { position: absolute; z-index: 2; left: 34%; top: 41%; width: 32%; aspect-ratio: 1.6; display: grid; place-items: center; border-radius: 6px;
+  background: #fff; box-shadow: 0 18px 30px -12px rgba(0, 0, 0, .45); animation: ac-drag 8s cubic-bezier(.32, .72, 0, 1) infinite; }
+.ac-art b { font: 800 clamp(13px, 1.4vw, 18px)/1 var(--font-display); letter-spacing: -.04em; color: #1f5bff; }
+@keyframes ac-drag {
+  0%, 6% { transform: translate(-130%, -120%) rotate(-8deg) scale(1.15); opacity: 0; }
+  14% { opacity: 1; }
+  38% { transform: none; opacity: 1; }
+  48%, 100% { transform: none; opacity: 0; }
+}
+.ac-cursor { position: absolute; z-index: 3; left: 56%; top: 52%; width: 14px; height: 18px;
+  background: #0f0f0f; clip-path: polygon(0 0, 100% 62%, 52% 64%, 34% 100%); filter: drop-shadow(0 1px 1px rgba(255, 255, 255, .8));
+  animation: ac-cursor 8s cubic-bezier(.32, .72, 0, 1) infinite; }
+@keyframes ac-cursor { 0%, 6% { transform: translate(-260%, -330%); opacity: 0; } 14% { opacity: 1; } 38% { transform: none; opacity: 1; } 46% { transform: translate(30%, 40%); opacity: 1; } 54%, 100% { transform: translate(120%, 160%); opacity: 0; } }
+
+/* ---------- Lesson glimpse sheet ---------- */
+.ac-sheet { position: fixed; inset: 0; z-index: 95; display: grid; place-items: center; padding: 20px; }
+.ac-backdrop { position: absolute; inset: 0; background: rgba(10, 10, 10, .45); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); opacity: 0; transition: opacity .3s; }
+.ac-sheet.is-open .ac-backdrop { opacity: 1; }
+.ac-panel {
+  position: relative; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); width: min(980px, 100%); max-height: min(640px, calc(100vh - 40px));
+  border-radius: 28px; overflow: hidden; background: var(--surface); border: 1px solid var(--border); box-shadow: 0 50px 100px -40px rgba(0, 0, 0, .5); outline: none;
+  opacity: 0; transform: translateY(18px) scale(.97); transition: opacity .25s ease, transform .55s var(--spring, var(--ease));
+}
+.ac-sheet.is-open .ac-panel { opacity: 1; transform: none; }
+.ac-big { aspect-ratio: auto; min-height: 100%; border-bottom: 0; border-inline-end: 1px solid var(--border); }
+.ac-body-col { display: flex; flex-direction: column; gap: 12px; padding: 22px clamp(20px, 2.4vw, 32px) 26px; overflow-y: auto; }
+.ac-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.ac-step { font-size: calc(12px * var(--ts)); color: var(--mute); }
+.ac-nav { display: flex; gap: 6px; }
+.ac-nav button { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); transition: background .2s, border-color .2s; }
+.ac-nav button:hover { background: var(--fill); border-color: var(--border-2); }
+.ac-nav svg { width: 15px; height: 15px; }
+[dir="rtl"] .ac-nav [data-ac-go] svg { transform: scaleX(-1); }
+.ac-body-col h2 { font-size: clamp(30px, 3vw, 44px); margin-top: 4px; }
+.ac-intro { color: var(--mute); font-size: calc(14px * var(--ts)); line-height: 1.6; }
+.ac-label { margin-top: 6px; font-size: calc(12px * var(--ts)); font-weight: 600; }
+.ac-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.ac-list li { display: flex; align-items: center; gap: 10px; font-size: calc(13.5px * var(--ts)); }
+.ac-list svg { flex: none; width: 20px; height: 20px; padding: 4px; border-radius: 50%; background: color-mix(in srgb, var(--dl) 14%, transparent); color: var(--dl); stroke-width: 3; }
+.ac-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.ac-actions .btn svg { width: 15px; height: 15px; }
+.ac-soon { display: flex; align-items: center; gap: 8px; margin-top: 2px; font-size: calc(12px * var(--ts)); color: var(--mute); }
+.ac-soon i { width: 7px; height: 7px; border-radius: 50%; background: var(--dl); box-shadow: 0 0 0 3px color-mix(in srgb, var(--dl) 18%, transparent); animation: ch-ping 2s ease-out infinite; }
+
+@media (max-width: 1100px) { .ac-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) {
+  .ac-panel { grid-template-columns: 1fr; max-height: calc(100vh - 24px); overflow-y: auto; }
+  .ac-big { aspect-ratio: 16 / 10; min-height: 0; border-inline-end: 0; border-bottom: 1px solid var(--border); }
+  .ac-body-col { overflow: visible; }
+  .ac-sheet { padding: 12px; align-items: end; }
+}
+@media (max-width: 560px) { .ac-grid { grid-template-columns: 1fr; } }
+@media (prefers-reduced-motion: reduce) {
+  .ac-stage *, .ac-stage *::before, .ac-stage *::after { animation: none !important; }
+  .ac-tags em:first-child, .ac-aa.s2, .ac-word { opacity: 1; }
+  .ac-mark { stroke-dashoffset: 0; fill-opacity: 1; }
+  .ac-circles circle { opacity: 0; }
+  .ac-art, .ac-cursor, .ac-scene .ac-print { opacity: 0; }
+}
+
 /* =====================================================================
    LANGUAGES — Arabic reads right to left; Arabic and Chinese use system
    fonts with their own glyphs and no negative letter spacing
