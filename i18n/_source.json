@@ -866,7 +866,19 @@
   "Found one for you:",
   "Hmm, I'm not sure about that one.",
   "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly.",
-  "Browse free mockups, logos & templates"
+  "Browse free mockups, logos & templates",
+  "Font",
+  "Weight",
+  "Tracking",
+  "Baseline",
+  "Cap height",
+  "x-height",
+  "Brand colour",
+  "Shadows",
+  "Hoodie",
+  "Smart Object",
+  "Clear at 16px",
+  "Shop now"
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",
@@ -893,6 +905,8 @@
   "^Surprise: (.+)$": "Surprise: $1",
   "^(#?[0-9A-Fa-f]{6}) copied$": "$1 copied",
   "^Copy (#[0-9A-Fa-f]{6})$": "Copy $1",
-  "^Right now there are (\\d+) designs, (\\d+) icons and (\\d+) palettes, and new drops land regularly\\.$": "Right now there are $1 designs, $2 icons and $3 palettes, and new drops land regularly."
+  "^Right now there are (\\d+) designs, (\\d+) icons and (\\d+) palettes, and new drops land regularly\\.$": "Right now there are $1 designs, $2 icons and $3 palettes, and new drops land regularly.",
+  "^Weight (-?\\d+)$": "Weight $1",
+  "^Tracking (-?\\d+)$": "Tracking $1"
  }
 }
