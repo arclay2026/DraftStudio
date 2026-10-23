@@ -839,7 +839,33 @@
   "Hi! I saw your QR code…": "¡Hola! Vi tu código QR…",
   "Write your message…": "Escribe tu mensaje…",
   "Your message…": "Tu mensaje…",
-  "Sold": "Vendido"
+  "Sold": "Vendido",
+  "Draft Studio is a library of free design files: PSD mockups, editable logos, vectors and templates, plus 100 free icons.": "Draft Studio es una biblioteca de archivos de diseño gratis: mockups PSD, logos editables, vectores y plantillas, además de 100 iconos gratis.",
+  "There are free tools too: a palette generator and QR Code Studio for custom QR codes. No sign-up, no watermark.": "También hay herramientas gratis: un generador de paletas y QR Code Studio para códigos QR personalizados. Sin registro ni marca de agua.",
+  "I'm Drafty, the Draft Studio assistant. I can find files, icons and palettes, tell you which app opens a file, and answer license questions.": "Soy Drafty, el asistente de Draft Studio. Puedo encontrar archivos, iconos y paletas, decirte qué app abre un archivo y responder dudas sobre la licencia.",
+  "Try asking “show me logos” or “can I use this for a client?”": "Prueba con “muéstrame logos” o “¿puedo usarlo para un cliente?”",
+  "Draft Studio is made by a small design team.": "Draft Studio lo hace un pequeño equipo de diseño.",
+  "You can reach them directly on WhatsApp or email.": "Puedes escribirles directamente por WhatsApp o email.",
+  "No account needed. Open any file and press Download. That's it.": "No necesitas cuenta. Abre cualquier archivo y pulsa Descargar. Así de fácil.",
+  "No watermarks, ever. You get the clean, full-quality file.": "Nunca hay marca de agua. Recibes el archivo limpio y en calidad completa.",
+  "Open a file, pick the format you want in the dropdown, then press the blue Download button. “Download all” gets every format at once.": "Abre un archivo, elige el formato en el menú y pulsa el botón azul Descargar. “Descargar todo” te da todos los formatos a la vez.",
+  "Big PSDs open in Google Drive: press Download there.": "Los PSD grandes se abren en Google Drive: pulsa Descargar allí.",
+  "No Photoshop? Use Photopea. It's free and runs in your browser, and it opens our PSD mockups with smart objects.": "¿No tienes Photoshop? Usa Photopea. Es gratis, funciona en el navegador y abre nuestros mockups PSD con objetos inteligentes.",
+  "Open the PSD, double-click the smart object layer, paste your design, save, and close it. The mockup updates with realistic folds and lighting.": "Abre el PSD, haz doble clic en la capa de objeto inteligente, pega tu diseño, guarda y cierra. El mockup se actualiza con pliegues y luces realistas.",
+  "Here are the latest drops:": "Esto es lo más nuevo:",
+  "Open Settings at the bottom of the side menu. You can switch the theme (Light, Dark or Device), the language and the text size there.": "Abre Ajustes al final del menú lateral. Ahí cambias el tema (Claro, Oscuro o Dispositivo), el idioma y el tamaño del texto.",
+  "Quick guide: PSD for mockups (Photoshop or Photopea), AI for editing logos, SVG for web and Canva, PDF for print, PNG for posting right away.": "Guía rápida: PSD para mockups (Photoshop o Photopea), AI para editar logos, SVG para web y Canva, PDF para imprimir, PNG para publicar ya.",
+  "Sorry about that. Tell the team what happened and they'll fix it quickly.": "Lo siento. Cuéntale al equipo qué pasó y lo arreglarán rápido.",
+  "Bye! Come back anytime, there's always something new.": "¡Hasta luego! Vuelve cuando quieras, siempre hay algo nuevo.",
+  "All good, thanks for asking! What are you designing today?": "¡Todo bien, gracias! ¿Qué estás diseñando hoy?",
+  "No vectors yet. They're on the way.": "Todavía no hay vectores. Ya vienen.",
+  "No templates yet. They're on the way.": "Todavía no hay plantillas. Ya vienen.",
+  "No mockups yet. They're on the way.": "Todavía no hay mockups. Ya vienen.",
+  "No logos yet. They're on the way.": "Todavía no hay logos. Ya vienen.",
+  "Want something specific? Ask the team and they can design it for you.": "¿Buscas algo concreto? El equipo puede diseñarlo para ti.",
+  "Found one for you:": "Encontré uno:",
+  "Hmm, I'm not sure about that one.": "Mmm, no estoy seguro de eso.",
+  "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly.": "Lo mío es encontrar archivos, iconos y paletas, explicar formatos y responder dudas de licencia. También puedes preguntar al equipo directamente."
  },
  "patterns": {
   "^(\\d+) files$": "$1 archivos",
@@ -865,6 +891,7 @@
   "^(.+) loaded in the generator$": "$1 cargada en el generador",
   "^Surprise: (.+)$": "Sorpresa: $1",
   "^(#?[0-9A-Fa-f]{6}) copied$": "$1 copiado",
-  "^Copy (#[0-9A-Fa-f]{6})$": "Copiar $1"
+  "^Copy (#[0-9A-Fa-f]{6})$": "Copiar $1",
+  "^Right now there are (\\d+) designs, (\\d+) icons and (\\d+) palettes, and new drops land regularly\\.$": "Ahora mismo hay $1 diseños, $2 iconos y $3 paletas, y llegan novedades a menudo."
  }
 }

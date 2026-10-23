@@ -839,7 +839,33 @@
   "Hi! I saw your QR code…": "مرحبًا! رأيت رمز QR الخاص بك…",
   "Write your message…": "اكتب رسالتك…",
   "Your message…": "رسالتك…",
-  "Sold": "مُباع"
+  "Sold": "مُباع",
+  "Draft Studio is a library of free design files: PSD mockups, editable logos, vectors and templates, plus 100 free icons.": "Draft Studio مكتبة ملفات تصميم مجانية: موك أب PSD وشعارات قابلة للتعديل ورسوم فيكتور وقوالب، إضافة إلى 100 أيقونة مجانية.",
+  "There are free tools too: a palette generator and QR Code Studio for custom QR codes. No sign-up, no watermark.": "وهناك أدوات مجانية أيضًا: مولّد لوحات ألوان وQR Code Studio لرموز QR مخصصة. دون تسجيل ولا علامة مائية.",
+  "I'm Drafty, the Draft Studio assistant. I can find files, icons and palettes, tell you which app opens a file, and answer license questions.": "أنا Drafty، مساعد Draft Studio. أستطيع إيجاد الملفات والأيقونات ولوحات الألوان، وإخبارك بالتطبيق الذي يفتح كل ملف، والإجابة عن أسئلة الترخيص.",
+  "Try asking “show me logos” or “can I use this for a client?”": "جرّب “أرني الشعارات” أو “هل يمكنني استخدامه لعميل؟”",
+  "Draft Studio is made by a small design team.": "يصنع Draft Studio فريق تصميم صغير.",
+  "You can reach them directly on WhatsApp or email.": "يمكنك التواصل معهم مباشرة عبر WhatsApp أو البريد الإلكتروني.",
+  "No account needed. Open any file and press Download. That's it.": "لا حاجة إلى حساب. افتح أي ملف واضغط تنزيل. هذا كل شيء.",
+  "No watermarks, ever. You get the clean, full-quality file.": "لا علامات مائية أبدًا. تحصل على الملف نظيفًا وبجودة كاملة.",
+  "Open a file, pick the format you want in the dropdown, then press the blue Download button. “Download all” gets every format at once.": "افتح ملفًا، واختر الصيغة من القائمة، ثم اضغط زر التنزيل الأزرق. “تنزيل الكل” يجلب كل الصيغ دفعة واحدة.",
+  "Big PSDs open in Google Drive: press Download there.": "ملفات PSD الكبيرة تُفتح في Google Drive: اضغط تنزيل هناك.",
+  "No Photoshop? Use Photopea. It's free and runs in your browser, and it opens our PSD mockups with smart objects.": "لا تملك Photoshop؟ استخدم Photopea. مجاني ويعمل في المتصفح، ويفتح موك أب PSD لدينا مع الكائنات الذكية.",
+  "Open the PSD, double-click the smart object layer, paste your design, save, and close it. The mockup updates with realistic folds and lighting.": "افتح ملف PSD، وانقر مرتين على طبقة الكائن الذكي، والصق تصميمك، ثم احفظ وأغلق. يتحدّث الموك أب بطيّات وإضاءة واقعية.",
+  "Here are the latest drops:": "إليك أحدث الإضافات:",
+  "Open Settings at the bottom of the side menu. You can switch the theme (Light, Dark or Device), the language and the text size there.": "افتح الإعدادات أسفل القائمة الجانبية. يمكنك هناك تغيير المظهر (فاتح أو داكن أو حسب الجهاز) واللغة وحجم النص.",
+  "Quick guide: PSD for mockups (Photoshop or Photopea), AI for editing logos, SVG for web and Canva, PDF for print, PNG for posting right away.": "دليل سريع: PSD للموك أب (Photoshop أو Photopea)، وAI لتعديل الشعارات، وSVG للويب وCanva، وPDF للطباعة، وPNG للنشر فورًا.",
+  "Sorry about that. Tell the team what happened and they'll fix it quickly.": "نعتذر عن ذلك. أخبر الفريق بما حدث وسيصلحونه بسرعة.",
+  "Bye! Come back anytime, there's always something new.": "إلى اللقاء! عُد متى شئت، هناك دائمًا جديد.",
+  "All good, thanks for asking! What are you designing today?": "بخير، شكرًا لسؤالك! ماذا تصمّم اليوم؟",
+  "No vectors yet. They're on the way.": "لا توجد رسوم فيكتور بعد. إنها في الطريق.",
+  "No templates yet. They're on the way.": "لا توجد قوالب بعد. إنها في الطريق.",
+  "No mockups yet. They're on the way.": "لا يوجد موك أب بعد. إنه في الطريق.",
+  "No logos yet. They're on the way.": "لا توجد شعارات بعد. إنها في الطريق.",
+  "Want something specific? Ask the team and they can design it for you.": "تريد شيئًا محددًا؟ اطلب من الفريق وسيصمّمه لك.",
+  "Found one for you:": "وجدت لك واحدًا:",
+  "Hmm, I'm not sure about that one.": "همم، لست متأكدًا من ذلك.",
+  "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly.": "أبرع في إيجاد الملفات والأيقونات ولوحات الألوان، وشرح الصيغ، والإجابة عن أسئلة الترخيص. ويمكنك أيضًا سؤال الفريق مباشرة."
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",
@@ -865,6 +891,7 @@
   "^(.+) loaded in the generator$": "حُمّلت $1 في المولّد",
   "^Surprise: (.+)$": "مفاجأة: $1",
   "^(#?[0-9A-Fa-f]{6}) copied$": "تم نسخ $1",
-  "^Copy (#[0-9A-Fa-f]{6})$": "نسخ $1"
+  "^Copy (#[0-9A-Fa-f]{6})$": "نسخ $1",
+  "^Right now there are (\\d+) designs, (\\d+) icons and (\\d+) palettes, and new drops land regularly\\.$": "يوجد حاليًا $1 تصميمات و$2 أيقونة و$3 لوحة ألوان، وتُضاف ملفات جديدة باستمرار."
  }
 }

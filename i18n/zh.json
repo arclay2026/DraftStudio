@@ -839,7 +839,33 @@
   "Hi! I saw your QR code…": "你好！我看到了你的二维码…",
   "Write your message…": "写下你的消息…",
   "Your message…": "你的消息…",
-  "Sold": "已售出"
+  "Sold": "已售出",
+  "Draft Studio is a library of free design files: PSD mockups, editable logos, vectors and templates, plus 100 free icons.": "Draft Studio 是一个免费设计素材库：PSD 样机、可编辑 Logo、矢量图和模板，另有 100 个免费图标。",
+  "There are free tools too: a palette generator and QR Code Studio for custom QR codes. No sign-up, no watermark.": "还有免费工具：配色生成器，以及用来定制二维码的 QR Code Studio。无需注册，没有水印。",
+  "I'm Drafty, the Draft Studio assistant. I can find files, icons and palettes, tell you which app opens a file, and answer license questions.": "我是 Drafty，Draft Studio 的助手。我可以找文件、图标和配色，告诉你用什么软件打开文件，还能解答许可问题。",
+  "Try asking “show me logos” or “can I use this for a client?”": "试试问“看看 Logo”或“可以给客户用吗？”",
+  "Draft Studio is made by a small design team.": "Draft Studio 由一个小型设计团队打造。",
+  "You can reach them directly on WhatsApp or email.": "可以直接通过 WhatsApp 或邮件联系他们。",
+  "No account needed. Open any file and press Download. That's it.": "无需账号。打开任意文件，点击下载即可。",
+  "No watermarks, ever. You get the clean, full-quality file.": "永远没有水印。你拿到的是干净的完整画质文件。",
+  "Open a file, pick the format you want in the dropdown, then press the blue Download button. “Download all” gets every format at once.": "打开文件，在下拉菜单中选择格式，然后点蓝色的下载按钮。“全部下载”可一次获取所有格式。",
+  "Big PSDs open in Google Drive: press Download there.": "大型 PSD 会在 Google Drive 中打开：在那里点击下载。",
+  "No Photoshop? Use Photopea. It's free and runs in your browser, and it opens our PSD mockups with smart objects.": "没有 Photoshop？用 Photopea。免费、在浏览器里运行，能打开我们带智能对象的 PSD 样机。",
+  "Open the PSD, double-click the smart object layer, paste your design, save, and close it. The mockup updates with realistic folds and lighting.": "打开 PSD，双击智能对象图层，粘贴你的设计，保存并关闭。样机会自动更新，带真实的褶皱和光影。",
+  "Here are the latest drops:": "最新上架：",
+  "Open Settings at the bottom of the side menu. You can switch the theme (Light, Dark or Device), the language and the text size there.": "打开侧边菜单底部的“设置”，可以切换主题（浅色、深色或跟随设备）、语言和文字大小。",
+  "Quick guide: PSD for mockups (Photoshop or Photopea), AI for editing logos, SVG for web and Canva, PDF for print, PNG for posting right away.": "速查：PSD 用于样机（Photoshop 或 Photopea），AI 用于编辑 Logo，SVG 适合网页和 Canva，PDF 用于印刷，PNG 可直接发布。",
+  "Sorry about that. Tell the team what happened and they'll fix it quickly.": "抱歉！告诉团队发生了什么，他们会尽快修复。",
+  "Bye! Come back anytime, there's always something new.": "再见！随时回来，总有新东西。",
+  "All good, thanks for asking! What are you designing today?": "挺好的，谢谢关心！今天在设计什么？",
+  "No vectors yet. They're on the way.": "矢量图还没有上线，马上就来。",
+  "No templates yet. They're on the way.": "模板还没有上线，马上就来。",
+  "No mockups yet. They're on the way.": "样机还没有上线，马上就来。",
+  "No logos yet. They're on the way.": "Logo 还没有上线，马上就来。",
+  "Want something specific? Ask the team and they can design it for you.": "想要特定的设计？可以请团队为你定制。",
+  "Found one for you:": "为你找到一个：",
+  "Hmm, I'm not sure about that one.": "嗯，这个我不太确定。",
+  "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly.": "我最擅长找文件、图标和配色，解释文件格式和解答许可问题。你也可以直接问团队。"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",
@@ -865,6 +891,7 @@
   "^(.+) loaded in the generator$": "“$1”已载入生成器",
   "^Surprise: (.+)$": "惊喜：$1",
   "^(#?[0-9A-Fa-f]{6}) copied$": "$1 已复制",
-  "^Copy (#[0-9A-Fa-f]{6})$": "复制 $1"
+  "^Copy (#[0-9A-Fa-f]{6})$": "复制 $1",
+  "^Right now there are (\\d+) designs, (\\d+) icons and (\\d+) palettes, and new drops land regularly\\.$": "目前有 $1 个设计、$2 个图标和 $3 套配色，并且会定期上新。"
  }
 }
