@@ -684,6 +684,8 @@ h2 .soft { color: var(--soft); }
 .ix-swatches button[aria-pressed="true"] { box-shadow: 0 0 0 2.5px var(--forest), 0 0 0 4.5px #fff; }
 .ix .btn-dark { background: var(--lime); color: var(--on-lime); border-color: var(--lime); }
 .ix .btn-dark .arr { background: var(--dl); color: #fff; }
+/* White buttons on dark panels: no blue glow on hover */
+.ix .btn-dark:hover, .fx-foot .btn-dark:hover, .drop-req .btn-dark:hover { box-shadow: 0 12px 24px -12px rgba(0, 0, 0, .5); }
 
 .ix-stage { display: flex; flex-direction: column; gap: 11px; min-width: 0; }
 .ix-preview {
