@@ -924,7 +924,19 @@
   "Full lesson coming soon. Free, no sign-up.": "完整课程即将推出。免费，无需注册。",
   "Previous lesson": "上一课",
   "Next lesson": "下一课",
-  "Heading": "标题"
+  "Heading": "标题",
+  "Font": "字体",
+  "Weight": "字重",
+  "Tracking": "字距",
+  "Baseline": "基线",
+  "Cap height": "大写高度",
+  "x-height": "x 字高",
+  "Brand colour": "品牌色",
+  "Shadows": "阴影",
+  "Hoodie": "连帽衫",
+  "Smart Object": "智能对象",
+  "Clear at 16px": "16px 依然清晰",
+  "Shop now": "立即选购"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",
@@ -953,6 +965,8 @@
   "^Copy (#[0-9A-Fa-f]{6})$": "复制 $1",
   "^Right now there are (\\d+) designs, (\\d+) icons and (\\d+) palettes, and new drops land regularly\\.$": "目前有 $1 个设计、$2 个图标和 $3 套配色，并且会定期上新。",
   "^Lesson (\\d+) of (\\d+)$": "第 $1 课，共 $2 课",
-  "^(\\d+) min$": "$1 分钟"
+  "^(\\d+) min$": "$1 分钟",
+  "^Weight (-?\\d+)$": "字重 $1",
+  "^Tracking (-?\\d+)$": "字距 $1"
  }
 }

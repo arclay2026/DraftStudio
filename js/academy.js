@@ -1,7 +1,7 @@
 /* =====================================================================
    DESIGN BASICS — the free beginner course on the Learn page
-   Six lesson cards, each with a small animated scene of what the lesson
-   teaches. Clicking a card opens a glimpse of the lesson: what you'll
+   Six lesson cards, each with a live scene of what the lesson teaches
+   (js/academy-scenes.js). Clicking a card opens a glimpse of the lesson: what you'll
    learn and which free tool to practise with. Full lessons come later.
    site.js calls window.DSAcademy(kit) on the Learn page.
    ===================================================================== */
@@ -55,50 +55,53 @@ window.DSAcademy = function (kit) {
     }
   ];
 
-  /* ---------- Animated scenes, one per lesson ---------- */
-  const ART = {
-    colour: () => `
-      <div class="ac-wheel"><i></i><b class="ac-pin a"></b><b class="ac-pin b"></b></div>
-      <div class="ac-swatches">${[0, 1, 2, 3, 4].map(i => `<span style="--i:${i}"></span>`).join("")}</div>
-      <div class="ac-tags"><em>Complementary</em><em>Analogous</em><em>Triadic</em></div>`,
-    type: () => `
-      <div class="ac-specimen">
-        <span class="ac-guides" aria-hidden="true"><i></i><i></i><i></i></span>
-        <b class="ac-aa s1">Aa</b><b class="ac-aa s2">Aa</b><b class="ac-aa s3">Aa</b>
-      </div>
-      <div class="ac-pair"><b>Heading</b><span></span><span></span><span class="short"></span></div>`,
-    layout: () => `
-      <div class="ac-board">
-        <span class="ac-cols">${"<i></i>".repeat(6)}</span>
-        <span class="ac-blk img"></span><span class="ac-blk h1"></span><span class="ac-blk h2"></span>
-        <span class="ac-blk p1"></span><span class="ac-blk p2"></span><span class="ac-blk btn"></span>
-      </div>`,
-    hierarchy: () => `
-      <div class="ac-poster">
-        <span class="ac-kicker"></span><span class="ac-title"></span><span class="ac-sub"></span>
-        <span class="ac-body"></span><span class="ac-body"></span><span class="ac-cta"></span>
-        <svg class="ac-path" viewBox="0 0 200 150" aria-hidden="true"><path d="M30 40 C 120 30, 170 60, 110 82 S 40 112, 70 124"/></svg>
-        <em class="ac-n n1">1</em><em class="ac-n n2">2</em><em class="ac-n n3">3</em>
-      </div>`,
-    logos: () => `
-      <svg class="ac-logo" viewBox="0 0 220 150" aria-hidden="true">
-        <g class="ac-lines"><path d="M10 30H210M10 75H210M10 120H210M40 10V140M85 10V140M130 10V140"/></g>
-        <g class="ac-circles"><circle cx="85" cy="75" r="45"/><circle cx="85" cy="75" r="26"/><circle cx="40" cy="75" r="45"/></g>
-        <path class="ac-mark" d="M40 30h45a45 45 0 0 1 0 90H40z M62 52v46h23a23 23 0 0 0 0-46z"/>
-        <text class="ac-word" x="146" y="86">Dore</text>
-      </svg>`,
-    mockups: () => `
-      <div class="ac-scene">
-        <img src="previews/sm/hoodie-mockup-one.webp" onerror="this.onerror=null;this.src='previews/hoodie-mockup-one.jpg'" alt="" loading="lazy">
-        <span class="ac-art"><b>DS</b></span>
-        <span class="ac-print"><b>DS</b></span>
-        <span class="ac-cursor"></span>
-      </div>`
+  /* ---------- Scene player ----------
+     Scenes come from js/academy-scenes.js. One frame loop drives every scene
+     that's on screen; the rest sit still. Reduced motion shows one still frame. */
+  const SCENES = window.DSScenes || {};
+  const STILL = { colour: 3.4, type: 3.2, layout: 7.6, hierarchy: 7.2, logos: 8.2, mockups: 6.6 };
+  const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const players = new Set();
+  let raf = 0, last = 0;
+  const mount = (stage, key) => {
+    stage.textContent = "";
+    if (!SCENES[key]) return null;
+    const el = document.createElement("div");
+    el.className = "ax-scene";
+    stage.appendChild(el);
+    const p = { el, scene: SCENES[key](el), t: calm ? STILL[key] : 0, W: 0, H: 0, live: false };
+    p.fit = () => {
+      p.W = el.offsetWidth; p.H = el.offsetHeight;
+      if (p.W) { p.scene.measure(p.W, p.H); p.scene.update(p.t, p.W, p.H); }
+    };
+    if ("ResizeObserver" in window) new ResizeObserver(p.fit).observe(el);
+    else requestAnimationFrame(p.fit);
+    players.add(p);
+    return p;
+  };
+  const tick = now => {
+    const dt = last ? Math.min(.05, (now - last) / 1000) : 0;
+    last = now;
+    let any = false;
+    players.forEach(p => {
+      if (!p.el.isConnected) { players.delete(p); return; }
+      if (!p.live || !p.W) return;
+      any = true;
+      p.t = (p.t + dt) % p.scene.dur;
+      p.scene.update(p.t, p.W, p.H);
+    });
+    raf = any ? requestAnimationFrame(tick) : 0;
+    if (!any) last = 0;
+  };
+  const play = (p, on) => {
+    if (!p) return;
+    p.live = on;
+    if (on && !calm && !raf) raf = requestAnimationFrame(tick);
   };
 
   const card = (l, i) => `
     <button class="ac-card reveal" type="button" data-ac="${i}" style="--d:${i}">
-      <span class="ac-stage ac-${l.key}" aria-hidden="true">${ART[l.key]()}</span>
+      <span class="ac-stage ac-${l.key}" aria-hidden="true"></span>
       <span class="ac-info">
         <span class="ac-meta"><b>${String(i + 1).padStart(2, "0")}</b><span>${l.time}</span></span>
         <span class="ac-title-row"><strong>${l.title}</strong>${icon("arrow-right")}</span>
@@ -109,10 +112,24 @@ window.DSAcademy = function (kit) {
 
   // Scenes only play while they're on screen
   const cards = $$(".ac-card", root);
+  cards.forEach(c => { c._p = mount($(".ac-stage", c), LESSONS[+c.dataset.ac].key); });
   if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver(es => es.forEach(e => e.target.classList.toggle("is-live", e.isIntersecting)), { threshold: .15 });
+    const io = new IntersectionObserver(es => es.forEach(e => play(e.target._p, e.isIntersecting)), { threshold: .15 });
     cards.forEach(c => io.observe(c));
-  } else cards.forEach(c => c.classList.add("is-live"));
+  } else cards.forEach(c => play(c._p, true));
+
+  // Pointer tilt with a soft glare (mouse and trackpad only)
+  if (!calm && matchMedia("(hover: hover) and (pointer: fine)").matches) cards.forEach(c => {
+    const stage = $(".ac-stage", c);
+    c.addEventListener("pointermove", e => {
+      const r = stage.getBoundingClientRect(), x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+      stage.style.setProperty("--ry", ((x - .5) * 7).toFixed(2) + "deg");
+      stage.style.setProperty("--rx", ((.5 - y) * 5).toFixed(2) + "deg");
+      stage.style.setProperty("--gx", (x * 100).toFixed(1) + "%");
+      stage.style.setProperty("--gy", (y * 100).toFixed(1) + "%");
+    });
+    c.addEventListener("pointerleave", () => ["--rx", "--ry"].forEach(v => stage.style.removeProperty(v)));
+  });
 
   /* ---------- Lesson glimpse ---------- */
   const sheet = document.createElement("div");
@@ -144,14 +161,16 @@ window.DSAcademy = function (kit) {
     </div>`;
   document.body.appendChild(sheet);
   const panel = $(".ac-panel", sheet);
-  let cur = 0, lastCard = null;
+  let cur = 0, lastCard = null, big = null;
 
   const fill = i => {
     cur = (i + LESSONS.length) % LESSONS.length;
     const l = LESSONS[cur];
     const stage = $("[data-ac-stage]", sheet);
     stage.className = `ac-big ac-stage ac-${l.key}`;
-    stage.innerHTML = ART[l.key]();
+    if (big) players.delete(big);
+    big = mount(stage, l.key);
+    play(big, !sheet.hidden);
     $("[data-ac-step]", sheet).textContent = `Lesson ${cur + 1} of ${LESSONS.length} · ${l.time}`;
     $("[data-ac-title]", sheet).textContent = l.title;
     $("[data-ac-intro]", sheet).textContent = l.intro;
@@ -166,24 +185,25 @@ window.DSAcademy = function (kit) {
     clearTimeout(sheet._t);
     sheet.hidden = false;
     document.documentElement.style.overflow = "hidden";
-    requestAnimationFrame(() => { sheet.classList.add("is-open"); $(".ac-big", sheet).classList.add("is-live"); });
+    play(big, true);
+    requestAnimationFrame(() => sheet.classList.add("is-open"));
     setTimeout(() => panel.focus({ preventScroll: true }), 50);
   };
   const close = () => {
     sheet.classList.remove("is-open");
     document.documentElement.style.overflow = "";
-    sheet._t = setTimeout(() => { sheet.hidden = true; }, 320);
+    sheet._t = setTimeout(() => { sheet.hidden = true; play(big, false); }, 320);
     if (lastCard) lastCard.focus({ preventScroll: true });
   };
   root.addEventListener("click", e => { const c = e.target.closest("[data-ac]"); if (c) { lastCard = c; open(+c.dataset.ac); } });
   sheet.addEventListener("click", e => {
     if (e.target.closest("[data-ac-close]")) close();
     const g = e.target.closest("[data-ac-go]");
-    if (g) { fill(cur + +g.dataset.acGo); $(".ac-big", sheet).classList.add("is-live"); }
+    if (g) fill(cur + +g.dataset.acGo);
   });
   document.addEventListener("keydown", e => {
     if (sheet.hidden) return;
     if (e.key === "Escape") close();
-    if (e.key === "ArrowRight" || e.key === "ArrowLeft") { fill(cur + (e.key === "ArrowRight" ? 1 : -1)); $(".ac-big", sheet).classList.add("is-live"); }
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") fill(cur + (e.key === "ArrowRight" ? 1 : -1));
   });
 };

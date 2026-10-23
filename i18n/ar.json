@@ -924,7 +924,19 @@
   "Full lesson coming soon. Free, no sign-up.": "الدرس الكامل قريبًا. مجاني ودون تسجيل.",
   "Previous lesson": "الدرس السابق",
   "Next lesson": "الدرس التالي",
-  "Heading": "عنوان"
+  "Heading": "عنوان",
+  "Font": "الخط",
+  "Weight": "السماكة",
+  "Tracking": "تباعد الأحرف",
+  "Baseline": "خط الأساس",
+  "Cap height": "ارتفاع الأحرف الكبيرة",
+  "x-height": "ارتفاع x",
+  "Brand colour": "لون العلامة",
+  "Shadows": "الظلال",
+  "Hoodie": "هودي",
+  "Smart Object": "كائن ذكي",
+  "Clear at 16px": "واضح بحجم 16px",
+  "Shop now": "تسوّق الآن"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",
@@ -953,6 +965,8 @@
   "^Copy (#[0-9A-Fa-f]{6})$": "نسخ $1",
   "^Right now there are (\\d+) designs, (\\d+) icons and (\\d+) palettes, and new drops land regularly\\.$": "يوجد حاليًا $1 تصميمات و$2 أيقونة و$3 لوحة ألوان، وتُضاف ملفات جديدة باستمرار.",
   "^Lesson (\\d+) of (\\d+)$": "الدرس $1 من $2",
-  "^(\\d+) min$": "$1 دقائق"
+  "^(\\d+) min$": "$1 دقائق",
+  "^Weight (-?\\d+)$": "السماكة $1",
+  "^Tracking (-?\\d+)$": "تباعد الأحرف $1"
  }
 }

@@ -924,7 +924,19 @@
   "Full lesson coming soon. Free, no sign-up.": "Leçon complète bientôt disponible. Gratuite, sans inscription.",
   "Previous lesson": "Leçon précédente",
   "Next lesson": "Leçon suivante",
-  "Heading": "Titre"
+  "Heading": "Titre",
+  "Font": "Police",
+  "Weight": "Graisse",
+  "Tracking": "Interlettrage",
+  "Baseline": "Ligne de base",
+  "Cap height": "Hauteur de capitale",
+  "x-height": "Hauteur d'x",
+  "Brand colour": "Couleur de marque",
+  "Shadows": "Ombres",
+  "Hoodie": "Sweat à capuche",
+  "Smart Object": "Objet dynamique",
+  "Clear at 16px": "Net à 16 px",
+  "Shop now": "Acheter"
  },
  "patterns": {
   "^(\\d+) files$": "$1 fichiers",
@@ -953,6 +965,8 @@
   "^Copy (#[0-9A-Fa-f]{6})$": "Copier $1",
   "^Right now there are (\\d+) designs, (\\d+) icons and (\\d+) palettes, and new drops land regularly\\.$": "Il y a actuellement $1 designs, $2 icônes et $3 palettes, et de nouveaux fichiers arrivent régulièrement.",
   "^Lesson (\\d+) of (\\d+)$": "Leçon $1 sur $2",
-  "^(\\d+) min$": "$1 min"
+  "^(\\d+) min$": "$1 min",
+  "^Weight (-?\\d+)$": "Graisse $1",
+  "^Tracking (-?\\d+)$": "Interlettrage $1"
  }
 }
