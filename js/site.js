@@ -1952,6 +1952,7 @@
 
   /* ---------- Learn ---------- */
   function learn() {
+    if (window.DSAcademy) window.DSAcademy({ $, $$, esc, icon, waLink });
     const fx = $("[data-formats]");
     if (fx) formatExplorer(fx);
   }

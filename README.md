@@ -14,7 +14,7 @@ GitHub Pages or any web host.
 | `icons.html` | The icon set: search, filter, recolour, download SVG/PNG or copy the code |
 | `palettes.html` | Colour palettes: a palette generator (harmonies, locks, base colour, shareable link) and 36 hand-picked palettes, each downloadable as PNG or copyable as CSS. Add palettes in `js/data.js` under `palettes` |
 | `qr.html` | QR Code Studio: a QR code designer (8 content types, 10 dot patterns, corner frames and centres, solid or gradient colour, icon or uploaded logo, labels, presets, Surprise me). Every design is scan-checked live with jsQR; downloads as SVG, PNG or JPG. Libraries in `js/vendor/` (qrcode-generator, MIT; jsQR, Apache-2.0) |
-| `learn.html` | Learn: the file format guide (what each format is for, which apps open it) |
+| `learn.html` | Learn: **Design Basics**, a free six-lesson beginner course (Colour, Typography, Layout, Hierarchy, Logos, Mockups) with an animated card per lesson and a glimpse of each lesson, then the file format guide. Lessons live in `js/academy.js` |
 | `license.html` | License and FAQ |
 
 Everywhere: press `/` to search (on the home page it jumps to the big search bar).
