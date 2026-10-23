@@ -2278,10 +2278,10 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 .ax-l-cols i { background: rgba(31, 122, 255, .08); border-inline: 1px solid rgba(31, 122, 255, .16); }
 .ax-l-blk { position: absolute; will-change: transform; }
 .ax-l-blk.img { left: 5%; top: 11%; width: 42%; height: 76%; border-radius: 1.4cqw; }
-.ax-l-blk.img b, .ax-h-img { overflow: hidden; background: linear-gradient(165deg, #ffd8a8 0%, #ff8f6b 42%, #8b5cf6 100%); }
-.ax-l-blk.img b { position: absolute; inset: 0; border-radius: inherit; }
-.ax-l-blk.img b::before, .ax-h-img b { content: ""; position: absolute; right: 20%; top: 18%; width: 22%; aspect-ratio: 1; border-radius: 50%; background: #fff4dc; box-shadow: 0 0 3cqw rgba(255, 244, 220, .9); }
-.ax-l-blk.img b::after, .ax-h-img i { content: ""; position: absolute; left: -5%; right: -5%; bottom: 0; height: 52%; background: #2a1d5c; opacity: .9;
+.ax-pic { overflow: hidden; background: linear-gradient(165deg, #ffd8a8 0%, #ff8f6b 42%, #8b5cf6 100%); }
+.ax-l-blk.img .ax-pic { position: absolute; inset: 0; border-radius: inherit; }
+.ax-pic b { position: absolute; right: 20%; top: 18%; width: 22%; aspect-ratio: 1; border-radius: 50%; background: #fff4dc; box-shadow: 0 0 3cqw rgba(255, 244, 220, .9); }
+.ax-pic i { position: absolute; left: -5%; right: -5%; bottom: 0; height: 52%; background: #2a1d5c; opacity: .9;
   clip-path: polygon(0 100%, 0 62%, 22% 28%, 40% 56%, 62% 18%, 100% 66%, 100% 100%); }
 .ax-l-blk.ttl { left: 52%; top: 11%; width: 42%; display: flex; flex-direction: column; gap: 1.3cqw; }
 .ax-l-blk.ttl i { height: 3.5cqw; border-radius: .8cqw; background: #0f0f0f; }
@@ -2430,7 +2430,7 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 .ac-nav button { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); transition: background .2s, border-color .2s; }
 .ac-nav button:hover { background: var(--fill); border-color: var(--border-2); }
 .ac-nav svg { width: 15px; height: 15px; }
-[dir="rtl"] .ac-nav [data-ac-go] svg { transform: scaleX(-1); }
+[dir="rtl"] .ac-nav [data-ac-go] svg, [dir="rtl"] .ac-nav [data-ac-back] svg { transform: scaleX(-1); }
 .ac-body-col h2 { font-size: clamp(30px, 3vw, 44px); margin-top: 4px; }
 .ac-intro { color: var(--mute); font-size: calc(14px * var(--ts)); line-height: 1.6; }
 .ac-label { margin-top: 6px; font-size: calc(12px * var(--ts)); font-weight: 600; }
@@ -2446,11 +2446,54 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 @media (max-width: 760px) {
   .ac-panel { grid-template-columns: 1fr; max-height: calc(100vh - 24px); overflow-y: auto; }
   .ac-big { aspect-ratio: 16 / 10; min-height: 0; border-inline-end: 0; border-bottom: 1px solid var(--border); }
+  .ac-panel.is-play .ac-big { aspect-ratio: 4 / 3; }
   .ac-body-col { overflow: visible; }
   .ac-sheet { padding: 12px; align-items: end; }
 }
 @media (max-width: 560px) { .ac-grid { grid-template-columns: 1fr; } }
 @media (prefers-reduced-motion: reduce) { .ax-scene { transition: none; } }
+
+/* ---------- Try it yourself: the scene's controls belong to the visitor ---------- */
+.ax-scene.is-play .ax-cur { display: none; }
+.is-play .ax-c-wheel { cursor: grab; }
+.is-play.is-drag .ax-c-wheel, .is-play .ax-l-blk:active { cursor: grabbing; }
+.is-play .ax-c-chips span, .is-play .ax-seg span, .is-play .ax-l-toggle, .is-play .ax-h-switch, .is-play .ax-m-sw i, .is-play .ax-m-save { cursor: pointer; outline: none; }
+.is-play .ax-c-chips span:focus-visible, .is-play .ax-seg span:focus-visible, .is-play .ax-l-toggle:focus-visible, .is-play .ax-h-switch:focus-visible,
+.is-play .ax-m-sw i:focus-visible, .is-play .ax-m-save:focus-visible { box-shadow: 0 0 0 .4cqw var(--dl); }
+.is-play .ax-c-chips span:hover:not(.is-on), .is-play .ax-seg span:hover:not(.is-on) { color: var(--fg); }
+.is-play .ax-slider { cursor: ew-resize; }
+.is-play .ax-slider b { transition: transform .2s var(--spring, var(--ease)); }
+.is-play .ax-slider:active b { transform: scale(1.18); }
+.is-play .ax-l-blk { cursor: grab; }
+.is-play .ax-g-svg { cursor: crosshair; }
+.ax-g-sizes, .ax-t-tag { pointer-events: none; }
+.ax-t-head { pointer-events: none; }
+.is-play .ax-t-head.is-front { pointer-events: auto; }
+.ax-scene .is-text { cursor: text; outline: none; border-radius: .6cqw; caret-color: var(--dl); transition: box-shadow .2s; }
+.ax-scene .is-text:hover, .ax-scene .is-text:focus { box-shadow: 0 0 0 .3cqw rgba(31, 122, 255, .35); }
+.ax-toast {
+  position: absolute; left: 50%; bottom: 3.5%; z-index: 25; translate: -50% 0; max-width: 92%; padding: 1.1cqw 2.1cqw; border-radius: 99px;
+  background: rgba(15, 15, 15, .9); color: #fff; font: 600 1.75cqw/1.25 var(--font-body); text-align: center; pointer-events: none;
+  opacity: 0; transform: translateY(1.2cqw) scale(.96); transition: opacity .3s, transform .55s var(--spring, var(--ease));
+}
+.ax-toast.is-on { opacity: 1; transform: none; }
+.ax-g-user { transform-box: view-box; transform-origin: 0 0; }
+.ax-g-user .ax-g-line { fill: none; stroke: var(--dl); stroke-width: 1.1; stroke-linejoin: round; transition: opacity .4s; }
+.ax-g-user .ax-g-fill { opacity: 0; transition: opacity .5s; }
+.ax-g-user .ax-g-rub, .ax-g-user .ax-g-hdl { transition: none; }
+.ax-g-pts rect { fill: var(--surface); stroke: var(--dl); stroke-width: 1; transition: opacity .3s; }
+.ax-g-pts rect.is-sel { fill: var(--dl); }
+.ax-g-user.is-closed .ax-g-fill { opacity: 1; }
+.ax-g-user.is-closed .ax-g-line, .ax-g-user.is-closed .ax-g-pts, .ax-g-user.is-closed .ax-g-rub { opacity: 0; }
+.ax-scene.is-edit .ax-m-layers { display: none; }
+.ax-scene.is-edit .ax-m-psb { left: 54%; right: 4%; top: 6%; width: auto; visibility: visible; opacity: 1; transform: none; }
+.ax-scene.is-edit .ax-m-sw { gap: 1cqw; }
+.ax-scene.is-edit .ax-m-sw i { width: 3cqw; height: 3cqw; }
+
+/* the lesson sheet while playing */
+.ac-play-col[hidden], .ac-panel.is-play .ac-body-col:not(.ac-play-col) { display: none; }
+.ac-task { font-size: calc(15px * var(--ts)); line-height: 1.5; font-weight: 500; }
+.ac-panel.is-play .ac-big { cursor: default; }
 
 /* =====================================================================
    LANGUAGES — Arabic reads right to left; Arabic and Chinese use system

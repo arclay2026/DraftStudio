@@ -84,6 +84,50 @@
   const appWin = (cls, title, inner, extra = "") =>
     `<div class="ax-win ${cls}"><div class="ax-bar"><i></i><i></i><i></i><span class="ax-ttl">${title}</span>${extra}</div><div class="ax-body">${inner}</div></div>`;
 
+  /* ---------- Hands-on mode ("Try it yourself") ----------
+     Each scene's play() turns off the cursor's script and hands the controls
+     to the visitor. It returns { art, render() } where art is the element the
+     PNG download draws (or snap() for scenes that draw their own). */
+  // Pointer position inside the scene, in scene px
+  const local = (e, S) => { const r = S.getBoundingClientRect(); return [(e.clientX - r.left) * S.offsetWidth / r.width, (e.clientY - r.top) * S.offsetHeight / r.height]; };
+  // Press and drag: fn(event, "down" | "move" | "up")
+  const grab = (el, fn) => {
+    el.style.touchAction = "none";
+    el.addEventListener("pointerdown", e => {
+      if (e.button > 0) return;
+      e.preventDefault();
+      try { el.setPointerCapture(e.pointerId); } catch (err) { /* not capturable */ }
+      fn(e, "down");
+      const move = ev => fn(ev, "move");
+      const up = ev => { fn(ev, "up"); el.removeEventListener("pointermove", move); el.removeEventListener("pointerup", up); el.removeEventListener("pointercancel", up); };
+      el.addEventListener("pointermove", move); el.addEventListener("pointerup", up); el.addEventListener("pointercancel", up);
+    });
+  };
+  const tween = (ms, fn, done) => {
+    const t0 = performance.now();
+    const step = now => { const k = clamp((now - t0) / ms); fn(k); if (k < 1) requestAnimationFrame(step); else if (done) done(); };
+    requestAnimationFrame(step);
+  };
+  const tap = (el, fn) => { el.setAttribute("role", "button"); el.tabIndex = 0; el.addEventListener("click", fn); el.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); fn(e); } }); };
+  function toast(S, msg) {
+    let el = S.querySelector(".ax-toast");
+    if (!el) { el = document.createElement("span"); el.className = "ax-toast"; el.setAttribute("role", "status"); S.appendChild(el); }
+    el.textContent = msg;
+    el.classList.add("is-on");
+    clearTimeout(el._t); el._t = setTimeout(() => el.classList.remove("is-on"), 2800);
+  }
+  // Text the visitor can retype; mirrors keep a copy in sync (the typeface cross-fade uses two)
+  function editable(el, mirrors = [], max = 28) {
+    el.contentEditable = "true"; el.spellcheck = false; el.classList.add("is-text");
+    let last = el.innerHTML;
+    el.addEventListener("paste", e => { e.preventDefault(); document.execCommand("insertText", false, (e.clipboardData.getData("text/plain") || "").slice(0, max)); });
+    el.addEventListener("input", () => {
+      if (el.textContent.length > max) el.innerHTML = last;
+      last = el.innerHTML;
+      mirrors.forEach(m => { m.innerHTML = last; });
+    });
+  }
+
   /* =====================================================================
      01 COLOUR — drag round the wheel, switch harmonies; the poster
      recolours live
@@ -114,20 +158,8 @@
     const HUE = [[0, 214], [1.15, 214], [3.7, 334], [5.75, 334], [7.45, 36], [8.95, 36], [10.4, 214]];
     const DRAG = [[1.15, 3.7], [5.75, 7.45], [8.95, 10.4]];
     let m = null;
-    return {
-      dur: DUR,
-      measure() {
-        const w = box(wheel, S);
-        m = { c: [w.cx, w.cy], R: w.w * .385, chips: chips.map(c => mid(box(c, S))) };
-      },
-      update(t) {
-        const hue = at(t, HUE);
-        let i = 0;
-        while (i + 1 < SWITCH.length && t >= SWITCH[i + 1][0]) i++;
-        const mode = SWITCH[i][1], from = MODES[i ? SWITCH[i - 1][1] : 0], to = MODES[mode];
-        const k = EASE.spring(clamp((t - SWITCH[i][0]) / 1.1));
-        const off = from.map((o, j) => lerp(o, to[j], k));
-        const ring = deg => [m.c[0] + m.R * Math.sin(deg * Math.PI / 180), m.c[1] - m.R * Math.cos(deg * Math.PI / 180)];
+    const ring = deg => [m.c[0] + m.R * Math.sin(deg * Math.PI / 180), m.c[1] - m.R * Math.cos(deg * Math.PI / 180)];
+    function paint(hue, off, mode, k) {
         hs.forEach((el, j) => {
           const [x, y] = ring(hue + off[j]);
           el.style.transform = `translate(${(x - m.c[0]).toFixed(1)}px, ${(y - m.c[1]).toFixed(1)}px) scale(${j ? .78 : 1})`;
@@ -149,6 +181,21 @@
         btn.style.background = c0;
         btn.style.boxShadow = `0 10px 22px -10px ${c0}`;
         S.style.setProperty("--amb", c0);
+    }
+    return {
+      dur: DUR,
+      measure() {
+        const w = box(wheel, S);
+        m = { c: [w.cx, w.cy], R: w.w * .385, chips: chips.map(c => mid(box(c, S))) };
+      },
+      update(t) {
+        const hue = at(t, HUE);
+        let i = 0;
+        while (i + 1 < SWITCH.length && t >= SWITCH[i + 1][0]) i++;
+        const mode = SWITCH[i][1], from = MODES[i ? SWITCH[i - 1][1] : 0], to = MODES[mode];
+        const k = EASE.spring(clamp((t - SWITCH[i][0]) / 1.1));
+        const off = from.map((o, j) => lerp(o, to[j], k));
+        paint(hue, off, mode, k);
         S.classList.toggle("is-drag", DRAG.some(([a, b]) => inside(t, a, b)));
         // cursor: chip → grab handle → drag round → next chip …
         const on = tt => ring(at(tt, HUE));
@@ -160,6 +207,25 @@
           [10.8, m.chips[0], "io"], [DUR, m.chips[0]]
         ];
         cur.update(t, path, [1.15, 4.7, 5.75, 8.3, 8.95, 10.95], DRAG);
+      },
+      play() {
+        let hue = 214, mode = 0, off = MODES[0].slice(), k = 1;
+        const draw = () => paint(hue, off, mode, k);
+        grab(wheel, (e, phase) => {
+          const [x, y] = local(e, S);
+          hue = (Math.atan2(x - m.c[0], m.c[1] - y) * 180 / Math.PI + 360) % 360;
+          S.classList.toggle("is-drag", phase !== "up");
+          draw();
+        });
+        chips.forEach((c, i) => tap(c, () => {
+          if (i === mode) return;
+          const from = off.slice();
+          mode = i;
+          tween(1100, kk => { k = EASE.spring(kk); off = from.map((o, j) => lerp(o, MODES[i][j], k)); draw(); });
+        }));
+        editable(title);
+        draw();
+        return { art: q(".ax-c-poster"), render: draw };
       }
     };
   }
@@ -184,24 +250,21 @@
         <div class="ax-slider s-w"><i></i><b></b></div>
         <span class="ax-lbl">Tracking <em class="ax-t-tv">0</em></span>
         <div class="ax-slider s-t"><i></i><b></b></div>
-        <span class="ax-lbl">Size <em>64</em></span>
+        <span class="ax-lbl">Size <em class="ax-t-sv">64</em></span>
+        <div class="ax-slider s-s" style="--k:.5"><i></i><b></b></div>
       </div>`;
     const q = s => S.querySelector(s), qa = s => [...S.querySelectorAll(s)];
     const sans = q(".sans"), serif = q(".serif"), wv = q(".ax-t-wv"), tv = q(".ax-t-tv"), tag = q(".ax-t-tag");
-    const sw = q(".s-w"), st = q(".s-t"), segs = qa(".ax-seg span"), spec = q(".ax-t-spec"), aa = q(".ax-t-aa");
+    const sw = q(".s-w"), st = q(".s-t"), ss = q(".s-s"), sv = q(".ax-t-sv"), segs = qa(".ax-seg span"), spec = q(".ax-t-spec"), aa = q(".ax-t-aa");
     const cur = cursor(S);
     const DUR = 11;
     const WK = [[0, 0], [1.0, 0], [3.3, 1], [8.4, 1], [10.2, 0]];
     const TK = [[0, .5], [5.4, .5], [6.3, .08], [7.1, .9], [7.6, .5]];
     const DRAG = [[1.0, 3.3], [5.4, 7.6], [8.4, 10.2]];
     let m = null;
-    return {
-      dur: DUR,
-      measure(W, H) { m = { sw: box(sw, S), st: box(st, S), segs: segs.map(s => mid(box(s, S))), rest: [W * .56, H * .93] }; },
-      update(t) {
-        const w = at(t, WK), tr = at(t, TK);
-        const weight = Math.round(400 + 300 * w), track = Math.round((tr - .5) * 100);
-        const serifOn = clamp(ramp(t, 3.9, 4.45) - ramp(t, 7.95, 8.5));
+    // w: weight 0..1, tr: tracking 0..1, serifOn: 0 Inter … 1 Georgia, sz: size 0..1
+    function paint(w, tr, serifOn, sz = .5) {
+        const weight = Math.round(400 + 300 * w), track = Math.round((tr - .5) * 100), size = Math.round(40 + 48 * sz);
         const mixing = serifOn > .01 && serifOn < .99;
         sans.style.fontWeight = weight;
         serif.style.fontWeight = weight > 550 ? 700 : 400;
@@ -216,7 +279,19 @@
         aa.classList.toggle("is-serif", serifOn >= .5);
         aa.style.fontWeight = serifOn >= .5 ? (weight > 550 ? 700 : 400) : weight;
         setText(wv, weight); setText(tv, track);
-        sw.style.setProperty("--k", w.toFixed(4)); st.style.setProperty("--k", tr.toFixed(4));
+        sw.style.setProperty("--k", w.toFixed(4)); st.style.setProperty("--k", tr.toFixed(4)); ss.style.setProperty("--k", sz.toFixed(4));
+        setText(sv, size);
+        spec.style.fontSize = (10 * size / 64).toFixed(3) + "cqw";
+        sans.classList.toggle("is-front", serifOn < .5); serif.classList.toggle("is-front", serifOn >= .5);
+        return { weight, track, size };
+    }
+    return {
+      dur: DUR,
+      measure(W, H) { m = { sw: box(sw, S), st: box(st, S), segs: segs.map(s => mid(box(s, S))), rest: [W * .56, H * .93] }; },
+      update(t) {
+        const w = at(t, WK), tr = at(t, TK);
+        const serifOn = clamp(ramp(t, 3.9, 4.45) - ramp(t, 7.95, 8.5));
+        const { weight, track } = paint(w, tr, serifOn);
         const dragging = DRAG.findIndex(([a, b]) => inside(t, a - .1, b + .5));
         spec.classList.toggle("is-guides", dragging >= 0);
         tag.classList.toggle("is-on", dragging >= 0);
@@ -229,6 +304,29 @@
           [7.85, m.segs[0], "io"], [8.0, m.segs[0]], [8.3, sx(m.sw, 1), "io"], [8.4, sx(m.sw, 1)], [10.2, sx(m.sw, 0), "io"], [DUR, m.rest, "io"]
         ];
         cur.update(t, path, [1.0, 3.95, 5.4, 7.95, 8.4], DRAG);
+      },
+      play() {
+        let w = 0, tr = .5, sz = .5, serifOn = 0;
+        const draw = () => paint(w, tr, serifOn, sz);
+        const slide = (el, set, label) => grab(el, (e, phase) => {
+          const b = box(el, S);
+          set(clamp((local(e, S)[0] - b.x) / b.w));
+          const v = draw(), held = phase !== "up";
+          spec.classList.toggle("is-guides", held);
+          tag.classList.toggle("is-on", held);
+          setText(tag, label(v));
+        });
+        slide(sw, v => { w = v; }, v => `Weight ${v.weight}`);
+        slide(st, v => { tr = v; }, v => `Tracking ${v.track}`);
+        slide(ss, v => { sz = v; }, v => `Size ${v.size}`);
+        segs.forEach((el, i) => tap(el, () => {
+          const from = serifOn;
+          if (from === i) return;
+          tween(550, k => { serifOn = lerp(from, i, EASE.io(k)); draw(); });
+        }));
+        editable(sans, [serif], 24); editable(serif, [sans], 24);
+        draw();
+        return { art: q(".ax-t-poster"), render: draw };
       }
     };
   }
@@ -240,7 +338,7 @@
   function layout(S) {
     S.innerHTML = appWin("ax-l-canvas", "page.fig", `
       <span class="ax-l-cols">${"<i></i>".repeat(6)}</span>
-      <span class="ax-l-blk img" data-size="320 × 420"><b></b></span>
+      <span class="ax-l-blk img" data-size="320 × 420"><span class="ax-pic"><b></b><i></i></span></span>
       <span class="ax-l-blk ttl"><i></i><i></i></span>
       <span class="ax-l-blk txt"><i></i><i></i><i></i></span>
       <span class="ax-l-blk cta" data-size="148 × 48">Get started</span>
@@ -278,6 +376,43 @@
           [5.95, m.tog, "io"], [6.2, m.tog], [8.6, m.tog], [8.75, m.tog], [10.1, m.rest, "io"]
         ];
         cur.update(t, path, [1.05, 3.35, 6.2, 8.95], [[1.05, 2.75], [3.35, 5.05]]);
+      },
+      play() {
+        // every block starts out of place; [x %, y %, rotate] of its own size
+        const START = [[-6, 12, -5], [8, 170, 3], [-30, 290, -3], [70, 130, 8]];
+        const blocks = [img, q(".ttl"), q(".txt"), cta].map((el, i) => ({ el, dx: START[i][0] / 100 * el.offsetWidth, dy: START[i][1] / 100 * el.offsetHeight, r: START[i][2], ok: false }));
+        const put = b => { b.el.style.transform = `translate(${b.dx.toFixed(1)}px, ${b.dy.toFixed(1)}px) rotate(${b.r.toFixed(2)}deg)`; };
+        const select = b => blocks.forEach(o => o.el.classList.toggle("is-sel", o === b));
+        [gx, gy].forEach(g => g.classList.remove("is-on"));
+        blocks.forEach(b => {
+          put(b);
+          grab(b.el, (e, phase) => {
+            const [x, y] = local(e, S);
+            if (phase === "down") { b.px = x - b.dx; b.py = y - b.dy; b.r = 0; select(b); b.el.style.zIndex = 4; }
+            const near = S.offsetWidth * .025;
+            let dx = x - b.px, dy = y - b.py;
+            const snapX = Math.abs(dx) < near, snapY = Math.abs(dy) < near;
+            if (snapX) dx = 0;
+            if (snapY) dy = 0;
+            b.dx = dx; b.dy = dy;
+            gv.style.left = b.el.offsetLeft + "px"; gh.style.top = b.el.offsetTop + "px";
+            gv.classList.toggle("is-on", snapX && phase !== "up"); gh.classList.toggle("is-on", snapY && phase !== "up");
+            put(b);
+            if (phase === "up") {
+              b.el.style.zIndex = "";
+              b.ok = snapX && snapY;
+              if (b.ok) { b.el.classList.add("is-snap"); setTimeout(() => b.el.classList.remove("is-snap"), 400); }
+              if (blocks.every(o => o.ok)) toast(S, "Everything lines up. Nice work.");
+            }
+          });
+        });
+        q(".ax-l-canvas .ax-body").addEventListener("pointerdown", e => { if (!e.target.closest(".ax-l-blk")) select(null); });
+        let grid = 0;
+        tap(tog, () => {
+          const from = grid, to = tog.classList.toggle("is-on") ? 1 : 0;
+          tween(600, k => { grid = lerp(from, to, EASE.io(k)); cols.style.setProperty("--k", grid.toFixed(4)); });
+        });
+        return { art: q(".ax-l-canvas"), render() { blocks.forEach(put); } };
       }
     };
   }
@@ -295,7 +430,7 @@
         <span class="ax-h-body"></span><span class="ax-h-body short"></span>
         <span class="ax-h-cta"><em>Get started</em></span>
       </div>
-      <span class="ax-h-img"><b></b><i></i></span>`,
+      <span class="ax-h-img ax-pic"><b></b><i></i></span>`,
       `<span class="ax-h-switch"><em>Hierarchy</em><i></i></span>`) + `
       <i class="ax-h-heat"></i><i class="ax-h-heat"></i><i class="ax-h-heat"></i>
       <svg class="ax-h-eye" aria-hidden="true"><path pathLength="1"/></svg>
@@ -339,6 +474,49 @@
           eyePath.style.opacity = 0;
         }
         cur.update(t, [[0, m.rest], [1.1, m.sw, "io"], [1.3, m.sw], [2.5, m.rest, "io"], [8.55, m.rest], [9.05, m.sw, "io"], [9.2, m.sw], [10.4, m.rest, "io"]], [1.3, 9.2]);
+      },
+      play() {
+        let on = 0, ranked = false, run = 0;
+        const set = v => { page.style.setProperty("--on", v.toFixed(4)); page.style.setProperty("--c", clamp(v).toFixed(4)); };
+        // where eyes go: ranked follows title → picture → button; flat wanders between equal blocks
+        const heatmap = quiet => {
+          const id = ++run;
+          const els = ranked ? targets : [q(".ax-h-sub"), q(".ax-h-body.short"), q(".ax-h-img")];
+          const strength = ranked ? [.95, .7, .85] : [.42, .4, .38];
+          tween(1400, k => {
+            if (id !== run) return;
+            const pts = els.map(el => mid(box(el, S)));
+            heat.forEach((e, i) => {
+              const h = clamp(k * 3 - i * .9);
+              e.style.left = pts[i][0] + "px"; e.style.top = pts[i][1] + "px";
+              e.style.opacity = (h * strength[i]).toFixed(3);
+              e.style.transform = `translate(-50%, -50%) scale(${(.55 + h * .45).toFixed(3)})`;
+            });
+            nums.forEach((e, i) => {
+              const h = ranked ? clamp(k * 3 - i * .9) : 0, b = box(targets[i], S);
+              e.style.left = b.x + "px"; e.style.top = b.y + "px";
+              e.style.opacity = h.toFixed(3);
+              e.style.transform = `translate(-40%, -40%) scale(${clamp(EASE.back(h), 0, 2).toFixed(3)})`;
+            });
+            if (ranked) {
+              const [a, b, c] = pts;
+              eyePath.setAttribute("d", `M${a[0]} ${a[1]} C ${(a[0] + b[0]) / 2} ${a[1] - 12}, ${b[0] - 24} ${b[1] - 28}, ${b[0]} ${b[1]} C ${b[0] + 18} ${b[1] + 26}, ${(b[0] + c[0]) / 2 + 30} ${c[1] + 4}, ${c[0]} ${c[1]}`);
+              eyePath.style.strokeDashoffset = (1 - EASE.io(k)).toFixed(4);
+            }
+            eyePath.style.opacity = ranked ? 1 : 0;
+          });
+          if (!quiet) toast(S, ranked ? "Title first, picture second, button third." : "No clear order, so eyes wander.");
+        };
+        tap(sw, () => {
+          const from = on;
+          ranked = sw.classList.toggle("is-on");
+          run++;
+          heat.forEach(e => { e.style.opacity = 0; }); nums.forEach(e => { e.style.opacity = 0; }); eyePath.style.opacity = 0;
+          tween(1100, k => { on = lerp(from, ranked ? 1 : 0, ranked ? EASE.spring(k) : EASE.io(k)); set(on); }, () => heatmap());
+        });
+        set(0);
+        heatmap();
+        return { art: page, render: () => heatmap(true) };
       }
     };
   }
@@ -432,6 +610,105 @@
           [3.25, u(hOut), "out"], [3.65, u([70.6, 34.6]), "io"], [3.75, u(A)], [4.7, u(rest), "io"], [DUR, u(rest)]
         ], [.7, 1.25, 1.95, 3.75], [[2.4, 3.25]]);
         cur.el.style.opacity = (1 - ramp(t, 4.3, 4.8) + ramp(t, 11.1, 11.5)).toFixed(3);
+      },
+      play() {
+        const svg = q(".ax-g-svg");
+        mark.style.display = "none";
+        keys.style.opacity = .55;
+        const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        g.setAttribute("class", "ax-g-user");
+        g.innerHTML = `<path class="ax-g-fill" fill="url(#g${id})"/><path class="ax-g-line"/><path class="ax-g-rub"/>` +
+          `<g class="ax-g-hdl"><line/><line/><circle r="2.3"/><circle r="2.3"/></g><g class="ax-g-pts"></g>`;
+        svg.appendChild(g);
+        const uFill = g.querySelector(".ax-g-fill"), uLine = g.querySelector(".ax-g-line"), uRub = g.querySelector(".ax-g-rub"), uPts = g.querySelector(".ax-g-pts");
+        const uHdl = g.querySelector(".ax-g-hdl"), [l1, l2] = uHdl.querySelectorAll("line"), [c1, c2] = uHdl.querySelectorAll("circle");
+        const pts = [];
+        let held = null, hover = null, closed = false;
+        const f = n => n.toFixed(2);
+        const seg = (a, b) => ` C${f(a.x + a.hx)} ${f(a.y + a.hy)} ${f(b.x - b.hx)} ${f(b.y - b.hy)} ${f(b.x)} ${f(b.y)}`;
+        const pathD = close => {
+          if (!pts.length) return "";
+          let d = `M${f(pts[0].x)} ${f(pts[0].y)}`;
+          for (let i = 1; i < pts.length; i++) d += seg(pts[i - 1], pts[i]);
+          return close ? d + seg(pts[pts.length - 1], pts[0]) + " Z" : d;
+        };
+        const svgPt = e => { const [x, y] = local(e, S); return { x: x / sc, y: y / sc }; };
+        const nearFirst = p => pts.length > 2 && Math.hypot(p.x - pts[0].x, p.y - pts[0].y) < 6;
+        const draw = () => {
+          uLine.setAttribute("d", pathD(closed) || "M0 0");
+          uPts.innerHTML = pts.map((p, i) => `<rect x="${f(p.x - 2.8)}" y="${f(p.y - 2.8)}" width="5.6" height="5.6"${i === 0 && hover && nearFirst(hover) ? ' class="is-sel"' : ""}/>`).join("");
+          const last = held || pts[pts.length - 1];
+          const show = last && !closed && Math.hypot(last.hx, last.hy) > 1;
+          uHdl.style.opacity = show ? 1 : 0;
+          if (show) {
+            const a = [last.x + last.hx, last.y + last.hy], b = [last.x - last.hx, last.y - last.hy];
+            [[l1, a], [l2, b]].forEach(([l, h]) => { l.setAttribute("x1", f(last.x)); l.setAttribute("y1", f(last.y)); l.setAttribute("x2", f(h[0])); l.setAttribute("y2", f(h[1])); });
+            [[c1, a], [c2, b]].forEach(([c, h]) => { c.setAttribute("cx", f(h[0])); c.setAttribute("cy", f(h[1])); });
+          }
+          const end = pts[pts.length - 1];
+          const rubber = end && hover && !held && !closed;
+          uRub.style.opacity = rubber ? 1 : 0;
+          if (rubber) uRub.setAttribute("d", `M${f(end.x)} ${f(end.y)} C${f(end.x + end.hx)} ${f(end.y + end.hy)} ${f(hover.x)} ${f(hover.y)} ${f(hover.x)} ${f(hover.y)}`);
+        };
+        const finish = () => {
+          closed = true;
+          const d = pathD(true);
+          uFill.setAttribute("d", d);
+          g.classList.add("is-closed");
+          draw();
+          // move the mark to the left and try it at icon sizes
+          const b = uFill.getBBox(), L = { x: 12, y: 22, w: 82, h: 106 };
+          const k = Math.min(L.w / b.width, L.h / b.height, 1.6);
+          const tx = L.x + (L.w - b.width * k) / 2 - b.x * k, ty = L.y + (L.h - b.height * k) / 2 - b.y * k;
+          tween(700, e => { const z = EASE.io(e); g.style.transform = `translate(${f(tx * z)}px, ${f(ty * z)}px) scale(${f(1 + (k - 1) * z)})`; });
+          const pad = Math.max(b.width, b.height) * .14, side = Math.max(b.width, b.height) + pad * 2;
+          const vb = `${f(b.x + b.width / 2 - side / 2)} ${f(b.y + b.height / 2 - side / 2)} ${f(side)} ${f(side)}`;
+          tiles.forEach((el, i) => {
+            el.querySelector("svg").setAttribute("viewBox", vb);
+            el.querySelector("path").setAttribute("d", d);
+            el.querySelector("path").removeAttribute("fill-rule");
+            tween(600, e => { const z = clamp(EASE.back(clamp(e * 1.6 - i * .25)), 0, 1.2); el.style.opacity = clamp(z * 1.5); el.style.transform = `translateY(${f((1 - z) * 18)}px) scale(${f(.7 + .3 * z)})`; });
+          });
+          tween(500, e => { note.style.opacity = e; });
+          toast(S, "Your mark, tested at 64, 32 and 16px.");
+        };
+        grab(svg, (e, phase) => {
+          if (closed) return;
+          const p = svgPt(e);
+          hover = p;
+          if (phase === "down") {
+            if (nearFirst(p)) { finish(); return; }
+            if (pts.length >= 24) return;
+            held = { x: p.x, y: p.y, hx: 0, hy: 0 };
+            pts.push(held);
+          } else if (held) {
+            held.hx = p.x - held.x; held.hy = p.y - held.y;
+            if (Math.hypot(held.hx, held.hy) < 2) held.hx = held.hy = 0;
+            if (phase === "up") held = null;
+          }
+          draw();
+        });
+        svg.addEventListener("pointermove", e => { if (!held && !closed) { hover = svgPt(e); draw(); } });
+        svg.addEventListener("pointerleave", () => { if (!held) { hover = null; draw(); } });
+        return {
+          render() {},
+          // the PNG: the visitor's mark, big and centred on white
+          snap() {
+            if (!closed) return null;
+            const b = uFill.getBBox(), c = document.createElement("canvas");
+            c.width = 1600; c.height = 1200;
+            const x = c.getContext("2d");
+            x.fillStyle = "#fff"; x.fillRect(0, 0, c.width, c.height);
+            const k = Math.min(900 / b.width, 720 / b.height);
+            x.translate(800 - (b.x + b.width / 2) * k, 600 - (b.y + b.height / 2) * k);
+            x.scale(k, k);
+            const gr = x.createLinearGradient(b.x, b.y, b.x + b.width, b.y + b.height);
+            gr.addColorStop(0, "#5b9bff"); gr.addColorStop(.55, "#1f7aff"); gr.addColorStop(1, "#1450e6");
+            x.fillStyle = gr;
+            x.fill(new Path2D(pathD(true)));
+            return c;
+          }
+        };
       }
     };
   }
@@ -502,9 +779,149 @@
           [0, m.rest], [.85, m.row, "io"], [1.25, m.row], [2.55, m.sws[pick], "io"], [2.75, m.sws[pick]],
           [3.45, m.save, "io"], [3.7, m.save], [4.6, m.rest, "io"], [DUR, m.rest]
         ], [.95, 1.18, 2.75, 3.7]);
+      },
+      play() {
+        S.classList.add("is-edit");
+        Object.assign(psb.style, { visibility: "visible", opacity: 1, transform: "none" });
+        const OPTS = [0, 150, -78, 47, 110, -40];   // blue, orange, green, violet, pink, teal
+        const box6 = q(".ax-m-sw");
+        box6.innerHTML = OPTS.map(r => `<i style="background:${col(r)}"></i>`).join("");
+        const picks = [...box6.children];
+        let rot = 0, pick = 0, busy = false;
+        l1.style.filter = "hue-rotate(0deg)"; l2.style.visibility = "hidden";
+        const show = r => { art.style.background = col(r); th.style.background = col(r); };
+        const readout = r => { hexDot.style.background = col(r); setText(hexTxt, hex(BASE + r, 78, 56)); };
+        picks.forEach((el, i) => tap(el, () => { pick = OPTS[i]; picks.forEach(o => o.classList.toggle("is-on", o === el)); show(pick); }));
+        picks[0].classList.add("is-on");
+        tap(save, () => {
+          if (busy) return;
+          if (pick === rot) { toast(S, "Pick a new colour first."); return; }
+          busy = true;
+          save.classList.add("is-down"); setTimeout(() => save.classList.remove("is-down"), 180);
+          l1.style.filter = `hue-rotate(${rot}deg)`; l2.style.filter = `hue-rotate(${pick}deg)`;
+          l2.style.visibility = "visible";
+          tween(1300, k => {
+            const w = EASE.io(k);
+            l2.style.clipPath = `inset(0 0 ${(100 - w * 100).toFixed(2)}% 0)`;
+            sweep.style.top = (w * 100).toFixed(2) + "%";
+            sweep.style.opacity = k < 1 ? 1 : 0;
+          }, () => {
+            rot = pick;
+            l1.style.filter = `hue-rotate(${rot}deg)`; l2.style.visibility = "hidden";
+            readout(rot);
+            props.classList.add("is-flash"); setTimeout(() => props.classList.remove("is-flash"), 800);
+            toast(S, "Saved. The mockup updated.");
+            busy = false;
+          });
+        });
+        show(0); readout(0);
+        return { art: q(".ax-m-photo"), render() {} };
       }
     };
   }
 
-  window.DSScenes = { colour, type, layout, hierarchy, logos, mockups };
+  /* ---------- Snapshot: draws a scene's artwork into a canvas for the PNG download ----------
+     Covers what the artwork uses: background colours and linear gradients, rounded
+     corners, overflow clipping, opacity, CSS filters, polygon and inset clip-paths,
+     masked images (object-fit: cover) and text. Pseudo-elements and SVG are skipped. */
+  async function snapshot(root, scale = 3) {
+    const R = root.getBoundingClientRect();
+    const cv = document.createElement("canvas");
+    cv.width = Math.round(R.width * scale); cv.height = Math.round(R.height * scale);
+    const ctx = cv.getContext("2d");
+    ctx.scale(scale, scale);
+    const cache = {};
+    const load = src => cache[src] || (cache[src] = new Promise(res => { const i = new Image(); i.onload = () => res(i); i.onerror = () => res(null); i.src = src; }));
+    const split = str => { const out = []; let depth = 0, cur = ""; for (const ch of str) { if (ch === "(") depth++; if (ch === ")") depth--; if (ch === "," && !depth) { out.push(cur.trim()); cur = ""; } else cur += ch; } if (cur.trim()) out.push(cur.trim()); return out; };
+    const len = (v, ref) => (String(v).endsWith("%") ? parseFloat(v) / 100 * ref : parseFloat(v) || 0);
+    const filterOf = f => (!f || f === "none" ? "none" : f.replace(/blur\(([\d.]+)px\)/g, (_, n) => `blur(${n * scale}px)`));
+    const gradient = (css, x, y, w, h) => {
+      const m = /^linear-gradient\((.*)\)$/.exec(css);
+      if (!m) return null;
+      const parts = split(m[1]);
+      let ang = 180;
+      if (/deg$/.test(parts[0])) ang = parseFloat(parts.shift());
+      else if (/^to /.test(parts[0])) ang = { "to top": 0, "to right": 90, "to bottom": 180, "to left": 270 }[parts.shift()] ?? 180;
+      const a = ang * Math.PI / 180, dx = Math.sin(a), dy = -Math.cos(a), L = Math.abs(w * dx) + Math.abs(h * dy), cx = x + w / 2, cy = y + h / 2;
+      const g = ctx.createLinearGradient(cx - dx * L / 2, cy - dy * L / 2, cx + dx * L / 2, cy + dy * L / 2);
+      parts.forEach((p, i) => {
+        const mm = /^(.*\)|\S+)\s*([\d.]+%)?$/.exec(p);
+        const pos = mm && mm[2] ? parseFloat(mm[2]) / 100 : i / Math.max(1, parts.length - 1);
+        try { g.addColorStop(clamp(pos), mm ? mm[1] : p); } catch (e) { /* colour the canvas can't read */ }
+      });
+      return g;
+    };
+    function text(node, cs) {
+      const str = node.textContent;
+      if (!str.trim()) return;
+      ctx.font = `${cs.fontStyle} ${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
+      ctx.fillStyle = cs.color;
+      if ("letterSpacing" in ctx) ctx.letterSpacing = cs.letterSpacing === "normal" ? "0px" : cs.letterSpacing;
+      ctx.textBaseline = "middle";
+      const range = document.createRange(), re = /\S+/g;
+      let m;
+      while ((m = re.exec(str))) {
+        range.setStart(node, m.index); range.setEnd(node, m.index + m[0].length);
+        const r = range.getClientRects()[0];
+        if (r) ctx.fillText(m[0], r.left - R.left, r.top - R.top + r.height / 2);
+      }
+    }
+    async function image(el, cs, x, y, w, h) {
+      const img = await load(el.currentSrc || el.src);
+      if (!img) return;
+      const k = Math.max(w / img.naturalWidth, h / img.naturalHeight), iw = img.naturalWidth * k, ih = img.naturalHeight * k;
+      const ox = (w - iw) / 2, oy = (h - ih) / 2;
+      const mask = /url\("?(.*?)"?\)/.exec(cs.maskImage || cs.webkitMaskImage || "");
+      if (!mask) { ctx.drawImage(img, x + ox, y + oy, iw, ih); return; }
+      const mimg = await load(mask[1]);
+      if (!mimg) return;
+      const off = document.createElement("canvas");
+      off.width = Math.round(w * scale); off.height = Math.round(h * scale);
+      const o = off.getContext("2d");
+      o.scale(scale, scale);
+      o.filter = filterOf(cs.filter);
+      o.drawImage(img, ox, oy, iw, ih);
+      o.filter = "none";
+      o.globalCompositeOperation = "destination-in";
+      o.drawImage(mimg, 0, 0, w, h);
+      const f = ctx.filter;
+      ctx.filter = "none"; ctx.drawImage(off, x, y, w, h); ctx.filter = f;
+    }
+    async function draw(el, alpha) {
+      if (el.nodeType !== 1 || el instanceof SVGElement) return;
+      const cs = getComputedStyle(el);
+      if (cs.display === "none" || cs.visibility === "hidden") return;
+      const a = alpha * parseFloat(cs.opacity);
+      if (a < .01) return;
+      const r = el.getBoundingClientRect(), x = r.left - R.left, y = r.top - R.top, w = r.width, h = r.height;
+      const rv = cs.borderTopLeftRadius, rad = rv.endsWith("%") ? Math.min(w, h) * parseFloat(rv) / 100 : Math.min(parseFloat(rv) || 0, w / 2, h / 2);
+      const shape = () => { ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, y, w, h, rad); else ctx.rect(x, y, w, h); };
+      ctx.save();
+      ctx.globalAlpha = a;
+      const clip = /^(polygon|inset)\((.*)\)$/.exec(cs.clipPath || "");
+      if (clip) {
+        ctx.beginPath();
+        if (clip[1] === "polygon") split(clip[2]).forEach((p, i) => { const [px, py] = p.split(/\s+/); ctx[i ? "lineTo" : "moveTo"](x + len(px, w), y + len(py, h)); });
+        else { const v = clip[2].split(/\s+/), t = v[0], rr = v[1] ?? t, b = v[2] ?? t, l = v[3] ?? rr; ctx.rect(x + len(l, w), y + len(t, h), w - len(l, w) - len(rr, w), h - len(t, h) - len(b, h)); }
+        ctx.clip();
+      }
+      if (el.tagName !== "IMG") ctx.filter = filterOf(cs.filter);
+      const bg = cs.backgroundColor;
+      if (bg && bg !== "transparent" && !/,\s*0\)$/.test(bg)) { shape(); ctx.fillStyle = bg; ctx.fill(); }
+      const g = gradient(cs.backgroundImage, x, y, w, h);
+      if (g) { shape(); ctx.fillStyle = g; ctx.fill(); }
+      if (el.tagName === "IMG") { ctx.filter = cs.maskImage === "none" && !cs.webkitMaskImage?.startsWith("url") ? filterOf(cs.filter) : "none"; await image(el, cs, x, y, w, h); }
+      if (cs.overflow !== "visible") { shape(); ctx.clip(); }
+      for (const n of el.childNodes) {
+        if (n.nodeType === 3) text(n, cs);
+        else await draw(n, a);
+      }
+      ctx.restore();
+    }
+    if (document.fonts && document.fonts.ready) await document.fonts.ready;
+    await draw(root, 1);
+    return cv;
+  }
+
+  window.DSScenes = { colour, type, layout, hierarchy, logos, mockups, snapshot };
 })();
