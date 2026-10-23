@@ -49,7 +49,7 @@
       return out == null ? null : raw.replace(s, out);
     };
     const ATTRS = ["placeholder", "aria-label", "title", "data-tip", "data-label", "alt"];
-    const SKIP = "script, style, code, pre, textarea, [data-no-i18n], .qs-preview, .qs-look, .qt-stage svg";
+    const SKIP = "script, style, code, pre, [data-no-i18n], .qs-preview, .qs-look, .qt-stage svg";
     const attrs = el => ATTRS.forEach(a => {
       const v = el.getAttribute(a);
       if (!v) return;
@@ -59,7 +59,7 @@
     const walk = node => {
       if (node.nodeType === 3) {
         const p = node.parentElement;
-        if (!p || p.closest(SKIP)) return;
+        if (!p || p.closest(SKIP) || p.tagName === "TEXTAREA") return;  // a text box's content is the visitor's own text
         const o = tr(node.nodeValue);
         if (o != null && o !== node.nodeValue) node.nodeValue = o;
         return;
@@ -138,7 +138,7 @@
     const tip = document.createElement("div");
     tip.className = "tip"; tip.setAttribute("role", "tooltip"); tip.hidden = true;
     document.body.appendChild(tip);
-    const SKIP = ".logo, [data-slides] *, .sel-toggle, .dd-toggle, .sel-menu *, .dd-menu *";
+    const SKIP = ".logo, [data-slides] *, .sel-toggle, .dd-toggle, .sel-menu *, .dd-menu *, .ch-fab, .ch-send";
     let cur = null, timer = 0;
     const textOf = el => {
       if (el.hasAttribute("title")) { el.dataset.tip = el.getAttribute("title"); el.removeAttribute("title"); }
@@ -2262,4 +2262,5 @@
   quickView();
   pressFX();
   reveal();
+  if (window.DSChat) window.DSChat({ $, $$, esc, icon, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG });
 })();

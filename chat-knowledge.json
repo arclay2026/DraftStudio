@@ -1,0 +1,294 @@
+{
+ "name": "Draft Studio",
+ "license": "Free for personal and commercial projects. Credit is appreciated but not required. You may not resell or redistribute the files as-is.",
+ "contact": {
+  "whatsapp": "+27736684875",
+  "email": "thedraftstudio.design@gmail.com"
+ },
+ "files": [
+  {
+   "id": "hoodie-mockup-one",
+   "title": "Hoodie Mockup — Flat Lay",
+   "category": "Mockups",
+   "formats": [
+    "PSD"
+   ],
+   "description": "A two-tone hoodie laid flat on concrete, styled with a branded coffee cup and burger wrapper on a tray. Drop your artwork into the smart object layers.",
+   "specs": "3456 × 4608 px · portrait",
+   "tags": [
+    "hoodie",
+    "sweatshirt",
+    "apparel",
+    "merch",
+    "flat lay",
+    "cup",
+    "packaging",
+    "smart object"
+   ],
+   "price": "free",
+   "sold": false,
+   "requires": "Adobe Photoshop"
+  },
+  {
+   "id": "t-shirt-mockup-one",
+   "title": "T-Shirt Mockup — Held Up",
+   "category": "Mockups",
+   "formats": [
+    "PSD"
+   ],
+   "description": "A ringer T-shirt held up against a clear blue sky. Place your artwork on the chest through the smart object layer.",
+   "specs": "3328 × 4864 px · portrait",
+   "tags": [
+    "t-shirt",
+    "tee",
+    "apparel",
+    "merch",
+    "sky",
+    "smart object"
+   ],
+   "price": "free",
+   "sold": false,
+   "requires": "Adobe Photoshop"
+  },
+  {
+   "id": "dore-logo",
+   "title": "Dore — Letter D Logo",
+   "category": "Logos",
+   "formats": [
+    "AI",
+    "SVG",
+    "PDF",
+    "PNG",
+    "JPG"
+   ],
+   "description": "A letter D built from nested arcs in deep red, paired with a clean geometric DORE wordmark. Fully editable vector.",
+   "specs": "Vector · any size (raster 2250 × 2250 px)",
+   "tags": [
+    "letter d",
+    "lettermark",
+    "monogram",
+    "wordmark",
+    "red",
+    "arcs"
+   ],
+   "price": "free",
+   "sold": false,
+   "requires": ""
+  },
+  {
+   "id": "mato-logo",
+   "title": "Mato — Letter M Logo",
+   "category": "Logos",
+   "formats": [],
+   "description": "A bold geometric M in coral red, paired with a crisp Mato wordmark whose t is capped with a matching red square. Exclusive: sold once.",
+   "specs": "Vector · any size (raster 2250 × 2250 px)",
+   "tags": [
+    "letter m",
+    "lettermark",
+    "monogram",
+    "wordmark",
+    "geometric",
+    "red"
+   ],
+   "price": "R350",
+   "sold": false,
+   "requires": ""
+  }
+ ],
+ "icons": [
+  "home",
+  "search",
+  "menu",
+  "close",
+  "plus",
+  "check",
+  "arrow-right",
+  "arrow-left",
+  "arrow-up",
+  "arrow-down",
+  "chevron-right",
+  "settings",
+  "user",
+  "bell",
+  "filter",
+  "more",
+  "external-link",
+  "refresh",
+  "download",
+  "upload",
+  "share",
+  "link",
+  "edit",
+  "trash",
+  "copy",
+  "folder",
+  "file",
+  "image",
+  "lock",
+  "eye",
+  "mail",
+  "phone",
+  "chat",
+  "send",
+  "heart",
+  "star",
+  "bookmark",
+  "thumbs-up",
+  "at",
+  "globe",
+  "camera",
+  "video",
+  "pen-tool",
+  "brush",
+  "pencil",
+  "palette",
+  "ruler",
+  "crop",
+  "layers",
+  "grid",
+  "type",
+  "eyedropper",
+  "vector",
+  "artboard",
+  "align-center",
+  "magic",
+  "t-shirt",
+  "cart",
+  "bag",
+  "tag",
+  "wallet",
+  "credit-card",
+  "receipt",
+  "bar-chart",
+  "line-chart",
+  "briefcase",
+  "store",
+  "gift",
+  "calendar",
+  "play",
+  "pause",
+  "music",
+  "mic",
+  "volume",
+  "headphones",
+  "film",
+  "monitor",
+  "smartphone",
+  "sun",
+  "moon",
+  "cloud",
+  "rain",
+  "bolt",
+  "snow",
+  "wind",
+  "leaf",
+  "tree",
+  "flame",
+  "map-pin",
+  "map",
+  "compass",
+  "car",
+  "plane",
+  "building",
+  "coffee",
+  "clock",
+  "lightbulb",
+  "rocket",
+  "trophy",
+  "smile"
+ ],
+ "palettes": [
+  "Sunset Boulevard (Warm)",
+  "Desert Clay (Earthy)",
+  "Nordic Frost (Cool)",
+  "Matcha Latte (Earthy)",
+  "Midnight Neon (Dark)",
+  "Cotton Candy (Pastel)",
+  "Ocean Depths (Cool)",
+  "Vintage Poster (Retro)",
+  "Citrus Pop (Bold)",
+  "Berry Smoothie (Bold)",
+  "Monochrome Studio (Neutral)",
+  "Sage & Stone (Earthy)",
+  "Peach Fuzz (Pastel)",
+  "Forest Floor (Earthy)",
+  "Black & Amber (Dark)",
+  "Ultra Violet (Bold)",
+  "Lavender Haze (Pastel)",
+  "Miami Vice (Retro)",
+  "Coffee House (Earthy)",
+  "Arctic Mint (Cool)",
+  "Royal Ink (Dark)",
+  "Playground (Bold)",
+  "Coral Reef (Warm)",
+  "Deep Tech (Dark)",
+  "Paper & Ink (Neutral)",
+  "Tokyo Night (Dark)",
+  "Golden Hour (Warm)",
+  "Seventies Lounge (Retro)",
+  "Dusty Rose (Neutral)",
+  "Glacier (Cool)",
+  "Chilli Market (Warm)",
+  "Olive Grove (Earthy)",
+  "Bubblegum (Pastel)",
+  "Brutalist (Bold)",
+  "Aurora (Dark)",
+  "Retro Diner (Retro)"
+ ],
+ "formats": [
+  {
+   "ext": "PSD",
+   "what": "Layered files with smart objects. Double-click the smart object, paste your design, save, and the mockup updates with realistic lighting and folds.",
+   "opensIn": [
+    "Photoshop",
+    "Photopea (free)",
+    "Affinity"
+   ]
+  },
+  {
+   "ext": "AI",
+   "what": "The master file. Every shape, colour and letter stays fully editable, so you can rename a logo, recolour it or pull it apart.",
+   "opensIn": [
+    "Illustrator",
+    "Affinity",
+    "Inkscape (free)"
+   ]
+  },
+  {
+   "ext": "SVG",
+   "what": "Lightweight vectors that stay razor sharp at any size. Drop them into websites, Figma, Canva or a Cricut and they just work.",
+   "opensIn": [
+    "Figma (free)",
+    "Canva (free)",
+    "Inkscape (free)"
+   ]
+  },
+  {
+   "ext": "EPS",
+   "what": "The classic vector format for print shops, sign makers and embroidery. Send it as is and it prints crisp at any size.",
+   "opensIn": [
+    "Illustrator",
+    "Affinity",
+    "Inkscape (free)"
+   ]
+  },
+  {
+   "ext": "PDF",
+   "what": "Opens on any device. Vector PDFs keep their sharp edges, so they're perfect for client previews and sending straight to print.",
+   "opensIn": [
+    "Illustrator",
+    "Affinity",
+    "Canva (free)"
+   ]
+  },
+  {
+   "ext": "PNG",
+   "what": "High-resolution images with transparent backgrounds. No design app needed: post it, place it, or drop it into a slide.",
+   "opensIn": [
+    "Canva (free)",
+    "Figma (free)",
+    "Photopea (free)"
+   ]
+  }
+ ]
+}
