@@ -89,3 +89,10 @@ The site speaks English, French, Spanish, Portuguese, Arabic (right to left) and
   `sitemap.xml` under **Sitemaps**.
 - The site's address lives in `js/data.js` as `site.url`; change it there if the site moves.
 
+## Images
+
+`tools/build-images.py` (run by `tools/bump.sh`, needs Python with Pillow) makes lighter WebP copies of
+everything in `previews/`: `previews/sm/` (640px, for cards and thumbnails) and `previews/md/` (1400px,
+for big previews), plus `js/preview-sizes.js` so pages reserve the right space before pictures load.
+Just upload the original JPG/PNG to `previews/`; until the copies exist the site uses the original.
+
