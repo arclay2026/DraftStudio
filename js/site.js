@@ -1345,7 +1345,8 @@
     downloadPicker(root);
     $("[data-zoom]", root).addEventListener("click", () => zoom(it));
     $("[data-share]", root).addEventListener("click", () => {
-      const url = new URL(itemUrl(it), location.href).href;
+      // The d/ page has the design's own preview card for WhatsApp, X and others
+      const url = (DS.site.url || new URL(".", location.href).href) + `d/${encodeURIComponent(it.id)}.html`;
       const data = { title: it.title + " · Draft Studio", text: isPaid(it) ? it.title : `Free ${fmts.join("/")} download: ${it.title}`, url };
       if (navigator.share) navigator.share(data).catch(() => {});
       else copy(url, "Link copied");
@@ -1377,7 +1378,8 @@
   }
 
   function item() {
-    const id = new URLSearchParams(location.search).get("id");
+    // d/<id>.html pages carry their id; item.html?id=… reads it from the address
+    const id = document.body.dataset.id || new URLSearchParams(location.search).get("id");
     const it = items.find(i => i.id === id);
     const main = $("[data-item]");
     if (!it) {
@@ -1385,6 +1387,9 @@
       return;
     }
     document.title = `${it.title} · Draft Studio`;
+    // item.html?id=… is the same page as d/<id>.html; point search engines there
+    const canon = $('link[rel="canonical"]');
+    if (canon && !document.body.dataset.id && DS.site.url) canon.href = DS.site.url + `d/${encodeURIComponent(it.id)}.html`;
     const cat = catOf(it.category);
     const related = items.filter(i => i !== it && i.category === it.category).concat(items.filter(i => i !== it && i.category !== it.category)).slice(0, 4);
 

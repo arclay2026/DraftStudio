@@ -865,7 +865,8 @@
   "Want something specific? Ask the team and they can design it for you.": "تريد شيئًا محددًا؟ اطلب من الفريق وسيصمّمه لك.",
   "Found one for you:": "وجدت لك واحدًا:",
   "Hmm, I'm not sure about that one.": "همم، لست متأكدًا من ذلك.",
-  "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly.": "أبرع في إيجاد الملفات والأيقونات ولوحات الألوان، وشرح الصيغ، والإجابة عن أسئلة الترخيص. ويمكنك أيضًا سؤال الفريق مباشرة."
+  "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly.": "أبرع في إيجاد الملفات والأيقونات ولوحات الألوان، وشرح الصيغ، والإجابة عن أسئلة الترخيص. ويمكنك أيضًا سؤال الفريق مباشرة.",
+  "Browse free mockups, logos & templates": "موك أب وشعارات وقوالب مجانية"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",

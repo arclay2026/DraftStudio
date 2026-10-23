@@ -74,3 +74,18 @@ The site speaks English, French, Spanish, Portuguese, Arabic (right to left) and
 - `i18n/_source.json` is the list of English strings to translate.
 - After editing a translation, run `node tools/build-i18n.js` to rebuild `js/i18n/<code>.js`, then `tools/bump.sh`.
 - New English text shows in English until it's added to every `i18n/<code>.json`.
+
+## Google and share previews
+
+`tools/build-seo.js` (run by `tools/bump.sh`) keeps the site findable and good-looking when shared:
+
+- Every page gets a canonical address, language links (`?lang=fr` opens a page in French) and a
+  preview card for WhatsApp, X, Facebook and LinkedIn using `assets/og.jpg` (source: `tools/og/`).
+- Every design gets its own page, `d/<id>.html`, with its title, description and picture, so shared
+  links show that design. The Share button on a file uses this address. Don't edit `d/` by hand.
+- `sitemap.xml` lists every page and design. To get on Google faster, add the site in
+  **Google Search Console** (search.google.com/search-console, "URL prefix"
+  `https://arclay2026.github.io/DraftStudio/`, verify with the HTML-tag method), then submit
+  `sitemap.xml` under **Sitemaps**.
+- The site's address lives in `js/data.js` as `site.url`; change it there if the site moves.
+

@@ -865,7 +865,8 @@
   "Want something specific? Ask the team and they can design it for you.": "想要特定的设计？可以请团队为你定制。",
   "Found one for you:": "为你找到一个：",
   "Hmm, I'm not sure about that one.": "嗯，这个我不太确定。",
-  "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly.": "我最擅长找文件、图标和配色，解释文件格式和解答许可问题。你也可以直接问团队。"
+  "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly.": "我最擅长找文件、图标和配色，解释文件格式和解答许可问题。你也可以直接问团队。",
+  "Browse free mockups, logos & templates": "免费样机、Logo 与模板"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",

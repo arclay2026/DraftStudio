@@ -43,6 +43,8 @@ window.DS = {
   site: {
     name: "Draft Studio",
     tagline: "Free mockups, vectors, logos and templates for people who make things.",
+    // The site's public address, used for share previews and Google (tools/build-seo.js)
+    url: "https://arclay2026.github.io/DraftStudio/",
     email: "thedraftstudio.design@gmail.com",
     whatsapp: "27736684875",          // country code + number, no spaces or +
     // Address of the AI chat server (see worker/README.md). Leave empty and

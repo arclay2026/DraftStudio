@@ -865,7 +865,8 @@
   "Want something specific? Ask the team and they can design it for you.": "Quer algo específico? A equipe pode criar para você.",
   "Found one for you:": "Encontrei um:",
   "Hmm, I'm not sure about that one.": "Hmm, não tenho certeza sobre isso.",
-  "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly.": "Sou melhor em encontrar arquivos, ícones e paletas, explicar formatos e tirar dúvidas de licença. Você também pode perguntar direto para a equipe."
+  "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly.": "Sou melhor em encontrar arquivos, ícones e paletas, explicar formatos e tirar dúvidas de licença. Você também pode perguntar direto para a equipe.",
+  "Browse free mockups, logos & templates": "Mockups, logos e templates grátis"
  },
  "patterns": {
   "^(\\d+) files$": "$1 arquivos",
