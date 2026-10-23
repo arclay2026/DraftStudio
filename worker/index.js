@@ -1,17 +1,23 @@
 /* =====================================================================
    Drafty's AI server — a Cloudflare Worker
-   The site's chat (js/chat.js) posts { lang, messages } here; this asks
-   Cloudflare Workers AI (free daily allowance) and sends back { reply }.
+   The site's chat (js/chat.js) posts { lang, messages } here and gets back
+   { reply }. Answers come from, in order:
+     1. Groq (free tier, Llama 3.3 70B) when GROQ_API_KEY is set
+     2. Cloudflare Workers AI (free daily allowance) when the AI binding is set
+   If both are unavailable the site uses its built-in answers.
    What it knows comes from the site's own chat-knowledge.json, so new
    designs show up without touching this file. See worker/README.md.
 
    Settings (Cloudflare dashboard → the Worker → Settings):
-     Binding   AI          Workers AI
-     Variable  SITE_URL    https://arclay2026.github.io/DraftStudio/
-     Variable  MODEL       (optional) a Workers AI text model id
+     Variable  SITE_URL      https://arclay2026.github.io/DraftStudio/
+     Secret    GROQ_API_KEY  your key from console.groq.com
+     Variable  GROQ_MODEL    (optional) a Groq model id
+     Binding   AI            (optional backup) Workers AI
+     Variable  MODEL         (optional) a Workers AI text model id
    ===================================================================== */
 
 const DEFAULT_MODEL = "@cf/meta/llama-3.1-8b-instruct-fast";
+const DEFAULT_GROQ_MODEL = "llama-3.3-70b-versatile";
 const LANGS = { en: "English", fr: "French", es: "Spanish", pt: "Portuguese", ar: "Arabic", zh: "Simplified Chinese" };
 const LIMIT = { perMinute: 8, perDay: 40 };   // per visitor (rough: kept per server instance)
 
@@ -57,20 +63,40 @@ export default {
         const r = await fetch(site + "chat-knowledge.json", { cf: { cacheTtl: 600 } });
         if (r.ok) { knowledge = await r.json(); loadedAt = now; }
       }
-      const result = await env.AI.run(env.MODEL || DEFAULT_MODEL, {
-        messages: [{ role: "system", content: systemPrompt(knowledge, LANGS[body.lang] || "the visitor's language") }, ...messages],
-        max_tokens: 450,
-        temperature: 0.4
-      });
-      const reply = String((result && (result.response ?? result.result?.response)) || "").trim();
-      if (!reply) return json({ error: "empty" }, 502);
+      const convo = [{ role: "system", content: systemPrompt(knowledge, LANGS[body.lang] || "the visitor's language") }, ...messages];
+      const reply = (await askGroq(env, convo)) || (await askWorkersAI(env, convo));
+      if (!reply) return json({ error: "ai" }, 503);
       return json({ reply });
     } catch (e) {
-      // Usually the free daily allowance is used up; the site falls back to its built-in answers
+      // The site falls back to its built-in answers
       return json({ error: "ai" }, 503);
     }
   }
 };
+
+// Groq: free tier, OpenAI-style API. Returns "" when it's off, busy or out of quota.
+async function askGroq(env, messages) {
+  if (!env.GROQ_API_KEY) return "";
+  try {
+    const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${env.GROQ_API_KEY}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ model: env.GROQ_MODEL || DEFAULT_GROQ_MODEL, messages, max_tokens: 450, temperature: 0.6 })
+    });
+    if (!r.ok) return "";
+    const j = await r.json();
+    return String(j.choices?.[0]?.message?.content || "").trim();
+  } catch (e) { return ""; }
+}
+
+// Cloudflare Workers AI: the backup when Groq is unavailable
+async function askWorkersAI(env, messages) {
+  if (!env.AI) return "";
+  try {
+    const result = await env.AI.run(env.MODEL || DEFAULT_MODEL, { messages, max_tokens: 450, temperature: 0.5 });
+    return String((result && (result.response ?? result.result?.response)) || "").trim();
+  } catch (e) { return ""; }
+}
 
 function systemPrompt(k, lang) {
   const files = k ? k.files.map(f => `- ${f.id}: ${f.title} · ${f.category} · ${f.formats.join("/")} · ${f.price === "free" ? "free" : (f.sold ? "sold" : "exclusive, " + f.price)}${f.requires ? " · needs " + f.requires : ""} — ${f.description}`).join("\n") : "(file list unavailable)";
@@ -78,7 +104,8 @@ function systemPrompt(k, lang) {
   return `You are Drafty, the friendly assistant on Draft Studio, a website of free design files (PSD mockups, vector logos, templates), a free icon set, colour palettes and a QR code designer called QR Code Studio.
 
 Rules:
-- Reply in ${lang}. Keep answers short: 1 to 3 short sentences, plain text, no headings or lists unless asked.
+- Reply in ${lang}. Sound like a friendly, upbeat designer chatting with a friend: warm, natural and a little playful, never robotic. React to what the visitor says (their project, their business) before answering.
+- Keep answers short: 1 to 3 short sentences, plain text, no headings or lists unless asked. An emoji now and then is fine, never more than one.
 - Only talk about Draft Studio, its files and tools, and general design help (file formats, which app to use, colours, logos, mockups). Politely decline anything else.
 - Never invent files, prices or features. If something isn't listed below, say it isn't on the site yet and suggest asking the team on WhatsApp for a custom design.
 - To show cards in the chat, add tokens on their own line at the end of your reply (the site turns them into visuals; never explain them):
