@@ -96,3 +96,16 @@ everything in `previews/`: `previews/sm/` (640px, for cards and thumbnails) and 
 for big previews), plus `js/preview-sizes.js` so pages reserve the right space before pictures load.
 Just upload the original JPG/PNG to `previews/`; until the copies exist the site uses the original.
 
+## Visitor stats (GoatCounter)
+
+Free, no cookies and no personal data, so no cookie banner is needed. To switch it on:
+
+1. Sign up at **goatcounter.com** (free) and pick a code, e.g. `draftstudio` (your dashboard is then
+   `draftstudio.goatcounter.com`).
+2. In `js/data.js` set `goatcounter: "draftstudio"`, run `tools/bump.sh` and publish.
+
+The dashboard shows visits per page, countries, devices and where visitors came from, plus these
+actions: `download/<file>` (every file, icon, palette and QR download), `search/<words>`,
+`share/<design>`, `contact/whatsapp`, `contact/email` and `chat/open`. Nothing is counted when the
+site runs on your own computer (localhost).
+

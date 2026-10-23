@@ -283,6 +283,7 @@ window.DSChat = function (kit) {
       draw();
       try { localStorage.setItem("ds-chat-seen", "1"); } catch (e) {}
       el.classList.add("is-seen");
+      document.dispatchEvent(new Event("ds-chat-open"));
       setTimeout(() => input.focus({ preventScroll: true }), 200);
     } else {
       el.classList.remove("is-open");
