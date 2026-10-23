@@ -10,7 +10,7 @@
    site.js calls window.DSChat(kit) with the shared helpers.
    ===================================================================== */
 window.DSChat = function (kit) {
-  const { $, $$, esc, icon, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG } = kit;
+  const { $, $$, esc, icon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG } = kit;
   const KEY = "ds-chat";
   const NAME = "Drafty";
   const endpoint = (DS.site && DS.site.chatEndpoint) || "";
@@ -184,7 +184,7 @@ window.DSChat = function (kit) {
   const block = b => {
     if (b.type === "files") return `<div class="ch-files">${b.ids.map(id => items.find(i => i.id === id)).filter(Boolean).map(it => `
       <a class="ch-file" href="${itemUrl(it)}">
-        <span class="ch-thumb"><img src="${esc(it.preview)}" alt="" loading="lazy"></span>
+        <span class="ch-thumb"><img ${imgSrc(it.preview, "sm")} alt="" loading="lazy"></span>
         <span class="ch-file-t"><b>${esc(it.title)}</b><small>${esc(it.category)} · ${formatsOf(it).join(", ")}</small></span>
         <em class="ch-price${it.price ? " is-paid" : ""}">${it.price ? (it.sold ? "Sold" : esc(it.price)) : "Free"}</em>
         ${icon("chevron-right")}

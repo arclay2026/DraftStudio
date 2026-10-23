@@ -107,6 +107,21 @@
   const DRIVE = `<img class="gd" src="assets/google-drive.svg" alt="" width="14" height="14">`;
   const fmtBadge = (f, extra = "") => `<span class="fmt ${extra}" data-f="${esc(f)}">${esc(f)}</span>`;
   const itemUrl = it => `item.html?id=${encodeURIComponent(it.id)}`;
+  // Lighter WebP copies of previews (tools/build-images.py): "sm" for thumbnails,
+  // "md" for big previews. Falls back to the original if a copy isn't there yet.
+  // width/height from js/preview-sizes.js let the page keep the space before the picture arrives
+  const dims = src => { const d = (window.DS_SIZES || {})[src]; return d ? ` width="${d[0]}" height="${d[1]}"` : ""; };
+  const imgSrc = (src, size) => {
+    const m = /^previews\/([^/]+)\.(jpe?g|png)$/i.exec(src || "");
+    const lite = m ? `previews/${size}/${m[1]}.webp` : src;
+    return `src="${esc(lite)}"${dims(src)}${lite !== src ? ` onerror="this.onerror=null;this.src='${esc(src)}'"` : ""}`;
+  };
+  // Big previews: phones take the 640px copy, larger screens the 1400px one
+  const imgSet = (src, sizes) => {
+    const m = /^previews\/([^/]+)\.(jpe?g|png)$/i.exec(src || "");
+    if (!m) return `src="${esc(src)}"${dims(src)}`;
+    return `src="previews/md/${m[1]}.webp"${dims(src)} srcset="previews/sm/${m[1]}.webp 640w, previews/md/${m[1]}.webp 1400w" sizes="${sizes}" onerror="this.onerror=null;this.removeAttribute('srcset');this.src='${esc(src)}'"`;
+  };
   const waLink = text => `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(text)}`;
   const mailLink = (subject, body = "") => `mailto:${DS.site.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
 
@@ -313,12 +328,14 @@
     toast(on ? "Saved" : "Removed from saved");
   });
 
+  let cardN = 0;
   function card(it) {
     const on = isSaved(it.id);
+    const early = cardN++ < 3;
     return `
       <article class="card${slug(it.category) === "logos" ? " is-logo" : ""} reveal">
         <div class="card-media">
-          <img src="${esc(it.preview)}" alt="" loading="lazy">
+          <img ${imgSrc(it.preview, "sm")} alt=""${early ? ' fetchpriority="high"' : ' loading="lazy"'} decoding="async">
           <button class="card-save glass-btn" type="button" data-save="${esc(it.id)}" aria-pressed="${on}" aria-label="${on ? "Remove from saved" : "Save"}">${icon("bookmark")}</button>
           <span class="card-cta glass-btn" aria-hidden="true">${ARR}</span>
         </div>
@@ -393,11 +410,11 @@
               <p>${esc(s.tagline)}</p>
             </div>
             <nav class="f-links" aria-label="Files">
-              <h4>Files</h4>
+              <h2>Files</h2>
               <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="icons.html">Icons</a></li><li><a href="palettes.html">Palettes</a></li><li><a href="qr.html">QR Code Studio</a></li></ul>
             </nav>
             <nav class="f-links" aria-label="Studio">
-              <h4>Studio</h4>
+              <h2>Studio</h2>
               <ul>
                 <li><a href="learn.html">Learn</a></li>
                 <li><a href="license.html">License</a></li>
@@ -406,7 +423,7 @@
               </ul>
             </nav>
             <div class="f-links">
-              <h4>Contact</h4>
+              <h2>Contact</h2>
               <ul>
                 <li><a href="mailto:${esc(s.email)}">${esc(s.email)}</a></li>
                 ${wa ? `<li><a href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">${esc(waPretty)}</a></li>` : ""}
@@ -433,7 +450,7 @@
     const cats = CATS.filter(c => !q || hit(c.name + " " + c.formats.join(" ")));
     let html = "";
     if (its.length) html += `<div class="group">Files</div>` + its.map(it => `
-      <a href="${itemUrl(it)}"><span class="thumb"><img src="${esc(it.preview)}" alt=""></span>
+      <a href="${itemUrl(it)}"><span class="thumb"><img ${imgSrc(it.preview, "sm")} alt="" loading="lazy"></span>
         <span><span class="t">${esc(it.title)}</span><br><span class="s">${esc(it.category)} · ${formatsOf(it).join(", ")}</span></span></a>`).join("");
     if (ics.length) html += `<div class="group">Icons</div>` + ics.map(i => `
       <a href="icons.html#${i.id}"><span class="thumb">${icon(i.id)}</span>
@@ -747,7 +764,7 @@
       const slides = items.filter(i => slug(i.category) === "mockups").slice(0, 5);
       if (!slides.length) slides.push(...items.slice(0, 3));
       const pos = { "t-shirt-mockup-one": "30%", "hoodie-mockup-one": "42%" };
-      box.insertAdjacentHTML("afterbegin", slides.map((it, n) => `<figure class="slide${n === 0 ? " is-on" : ""}" style="--pos:${pos[it.id] || "40%"}"><img src="${esc(it.preview)}" alt="${esc(it.title)}"${n ? ' loading="lazy"' : ""}></figure>`).join(""));
+      box.insertAdjacentHTML("afterbegin", slides.map((it, n) => `<figure class="slide${n === 0 ? " is-on" : ""}" style="--pos:${pos[it.id] || "40%"}"><img ${imgSet(it.preview, "(max-width: 900px) 92vw, 60vw")} alt="${esc(it.title)}"${n ? ' loading="lazy"' : ' fetchpriority="high"'} decoding="async"></figure>`).join(""));
       const figs = $$(".slide", box), bars = $(".slides-bars", box), link = $(".slides-link", box), title = $("[data-slide-title]", box);
       bars.innerHTML = slides.length > 1 ? slides.map(() => "<i></i>").join("") : "";
       let n = 0, t = null;
@@ -1091,7 +1108,7 @@
     const a = dropAction(it);
     return `
       <article class="drop drop-feat reveal">
-        <img src="${esc(it.preview)}" alt="" loading="lazy">
+        <img ${imgSet(it.preview, "(max-width: 900px) 92vw, 55vw")} alt="" loading="lazy" decoding="async">
         <div class="drop-top">
           <span class="drop-new"><i></i>Latest drop</span>
         </div>
@@ -1110,7 +1127,7 @@
   function dropCard(it) {
     return `
       <article class="drop drop-card reveal">
-        <img src="${esc(it.preview)}" alt="" loading="lazy">
+        <img ${imgSrc(it.preview, "sm")} alt="" loading="lazy" decoding="async">
         <div class="drop-info">
           <span><b><a href="${itemUrl(it)}">${esc(it.title)}</a></b><small>${esc(it.category)} · ${ago(it.date)}</small></span>
           <span class="go" aria-hidden="true">${ARR}</span>
@@ -1277,8 +1294,8 @@
     const picker = !singles.length ? "" : `
       <div class="dlx" data-dlx>
         <div class="dlx-pick">
-          <button class="dlx-btn" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="Choose a format" data-dlx-toggle${singles.length < 2 ? " disabled" : ""}>
-            <span class="dlx-cur" data-dlx-cur>${fileLine(singles[start])}</span>${singles.length < 2 ? "" : `<span class="dlx-toggle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>`}
+          <button class="dlx-btn" type="button" aria-haspopup="listbox" aria-expanded="false" data-dlx-toggle${singles.length < 2 ? " disabled" : ""}>
+            <span class="sr-only">Choose a format:</span><span class="dlx-cur" data-dlx-cur>${fileLine(singles[start])}</span>${singles.length < 2 ? "" : `<span class="dlx-toggle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>`}
           </button>
           <div class="dlx-menu" role="listbox" aria-label="Formats">
             ${singles.map((f, i) => `<button type="button" role="option" aria-selected="${i === start}" data-dlx-opt="${i}"
@@ -1300,8 +1317,8 @@
       ${picker}`;
     return `
           <div class="item-media">
-            <button class="frame" type="button" data-zoom aria-label="Enlarge preview">
-              <img src="${esc(it.preview)}" alt="${esc(it.title)} preview">
+            <button class="frame" type="button" data-zoom aria-label="Zoom preview">
+              <img ${imgSet(it.preview, "(max-width: 900px) 92vw, 50vw")} alt="${esc(it.title)} preview" fetchpriority="high">
               <span class="zoom-hint">${icon("search")} Zoom</span>
             </button>
           </div>
@@ -1429,7 +1446,7 @@
           <div class="qv-tools">
             <button class="qv-btn" type="button" data-qv-step="-1" aria-label="Previous file">${icon("arrow-left")}</button>
             <button class="qv-btn" type="button" data-qv-step="1" aria-label="Next file">${icon("arrow-right")}</button>
-            <a class="qv-btn" data-qv-full aria-label="Open full page">${icon("external-link")}</a>
+            <a class="qv-btn" href="browse.html" data-qv-full aria-label="Open full page">${icon("external-link")}</a>
             <button class="qv-btn is-dark" type="button" data-qv-close aria-label="Close">${icon("close")}</button>
           </div>
         </div>
@@ -2270,5 +2287,5 @@
   quickView();
   pressFX();
   reveal();
-  if (window.DSChat) window.DSChat({ $, $$, esc, icon, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG });
+  if (window.DSChat) window.DSChat({ $, $$, esc, icon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG });
 })();

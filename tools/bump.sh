@@ -10,6 +10,8 @@ sed -i -E "s#\?v=[0-9]{12}#?v=$V#g; s#(name=\"ds-version\" content=\")[0-9]{12}#
 printf '{ "v": "%s" }\n' "$V" > version.json
 # Refresh what the chat assistant's AI server knows about the site
 command -v node >/dev/null 2>&1 && node tools/build-chat.js
+# Lighter WebP copies of the preview images (needs Python with Pillow)
+command -v python3 >/dev/null 2>&1 && python3 tools/build-images.py
 # Rebuild share previews, the d/ design pages and sitemap.xml
 command -v node >/dev/null 2>&1 && node tools/build-seo.js
 echo "Stamped $V"
