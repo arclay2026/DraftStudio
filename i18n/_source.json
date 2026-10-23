@@ -839,7 +839,33 @@
   "Hi! I saw your QR code…",
   "Write your message…",
   "Your message…",
-  "Sold"
+  "Sold",
+  "Draft Studio is a library of free design files: PSD mockups, editable logos, vectors and templates, plus 100 free icons.",
+  "There are free tools too: a palette generator and QR Code Studio for custom QR codes. No sign-up, no watermark.",
+  "I'm Drafty, the Draft Studio assistant. I can find files, icons and palettes, tell you which app opens a file, and answer license questions.",
+  "Try asking “show me logos” or “can I use this for a client?”",
+  "Draft Studio is made by a small design team.",
+  "You can reach them directly on WhatsApp or email.",
+  "No account needed. Open any file and press Download. That's it.",
+  "No watermarks, ever. You get the clean, full-quality file.",
+  "Open a file, pick the format you want in the dropdown, then press the blue Download button. “Download all” gets every format at once.",
+  "Big PSDs open in Google Drive: press Download there.",
+  "No Photoshop? Use Photopea. It's free and runs in your browser, and it opens our PSD mockups with smart objects.",
+  "Open the PSD, double-click the smart object layer, paste your design, save, and close it. The mockup updates with realistic folds and lighting.",
+  "Here are the latest drops:",
+  "Open Settings at the bottom of the side menu. You can switch the theme (Light, Dark or Device), the language and the text size there.",
+  "Quick guide: PSD for mockups (Photoshop or Photopea), AI for editing logos, SVG for web and Canva, PDF for print, PNG for posting right away.",
+  "Sorry about that. Tell the team what happened and they'll fix it quickly.",
+  "Bye! Come back anytime, there's always something new.",
+  "All good, thanks for asking! What are you designing today?",
+  "No vectors yet. They're on the way.",
+  "No templates yet. They're on the way.",
+  "No mockups yet. They're on the way.",
+  "No logos yet. They're on the way.",
+  "Want something specific? Ask the team and they can design it for you.",
+  "Found one for you:",
+  "Hmm, I'm not sure about that one.",
+  "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly."
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",
@@ -865,6 +891,7 @@
   "^(.+) loaded in the generator$": "$1 loaded in the generator",
   "^Surprise: (.+)$": "Surprise: $1",
   "^(#?[0-9A-Fa-f]{6}) copied$": "$1 copied",
-  "^Copy (#[0-9A-Fa-f]{6})$": "Copy $1"
+  "^Copy (#[0-9A-Fa-f]{6})$": "Copy $1",
+  "^Right now there are (\\d+) designs, (\\d+) icons and (\\d+) palettes, and new drops land regularly\\.$": "Right now there are $1 designs, $2 icons and $3 palettes, and new drops land regularly."
  }
 }

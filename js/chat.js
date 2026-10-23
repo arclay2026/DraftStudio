@@ -54,15 +54,55 @@ window.DSChat = function (kit) {
     return hits.length || !cats.length ? hits : pool;
   };
 
+  // Everyday questions about the site. Each topic: trigger phrases, then the reply.
+  const TOPICS = [
+    { k: ["site about", "this site", "this website", "what is draft studio", "what's draft studio", "whats draft studio", "what is this", "what's this", "whats this", "what do you do", "what do you offer", "what do you have", "tell me about", "about you", "about the site", "about draft studio",
+          "propos", "ce site", "quoi ce", "que es", "de que trata", "este sitio", "esta web", "este site", "esse site", "o que e", "sobre o site", "عن الموقع", "ما هو", "这个网站", "是什么网站", "关于"],
+      a: () => ({ text: ["Draft Studio is a library of free design files: PSD mockups, editable logos, vectors and templates, plus 100 free icons.", "There are free tools too: a palette generator and QR Code Studio for custom QR codes. No sign-up, no watermark."],
+        blocks: [{ type: "links", keys: ["browse", "icons", "palettes", "qr"] }] }) },
+    { weak: true, k: ["what can you do", "how can you help", "who are you", "what are you", "help me", "can you help", "que peux-tu", "que puedes", "o que voce faz", "ماذا تستطيع", "你能做什么", "你是谁"],
+      a: () => ({ text: [`I'm ${NAME}, the Draft Studio assistant. I can find files, icons and palettes, tell you which app opens a file, and answer license questions.`, "Try asking “show me logos” or “can I use this for a client?”"], blocks: [] }) },
+    { k: ["who made", "who owns", "who runs", "who created", "who is behind", "who are the", "qui a cree", "quien hizo", "quem fez", "من صنع", "谁做的"],
+      a: () => ({ text: ["Draft Studio is made by a small design team.", "You can reach them directly on WhatsApp or email."], blocks: [{ type: "contact" }] }) },
+    { k: ["sign up", "signup", "account", "register", "login", "log in", "inscription", "cuenta", "registr", "conta", "cadastro", "حساب", "تسجيل", "注册", "账号", "登录"],
+      a: () => ({ text: ["No account needed. Open any file and press Download. That's it."], blocks: [] }) },
+    { k: ["watermark", "filigrane", "marca de agua", "marca d", "علامة مائية", "水印"],
+      a: () => ({ text: ["No watermarks, ever. You get the clean, full-quality file."], blocks: [] }) },
+    { k: ["how do i download", "how to download", "how can i download", "where do i download", "can't download", "cant download", "download not", "telecharger", "descargar", "baixar", "تنزيل", "下载"],
+      a: () => ({ text: ["Open a file, pick the format you want in the dropdown, then press the blue Download button. “Download all” gets every format at once.", "Big PSDs open in Google Drive: press Download there."], blocks: [{ type: "links", keys: ["browse"] }] }) },
+    { k: ["no photoshop", "without photoshop", "don't have photoshop", "dont have photoshop", "free photoshop", "photopea", "sans photoshop", "pas photoshop", "pas de photoshop", "sin photoshop", "no tengo photoshop", "sem photoshop", "nao tenho photoshop", "بدون فوتوشوب", "没有 photoshop", "没有photoshop"],
+      a: () => ({ text: ["No Photoshop? Use Photopea. It's free and runs in your browser, and it opens our PSD mockups with smart objects."], blocks: [{ type: "links", keys: ["learn"] }] }) },
+    { k: ["smart object", "use a mockup", "use the mockup", "use mockup", "how do mockups", "how does a mockup", "put my design", "add my logo", "utiliser un mockup", "usar un mockup", "usar o mockup", "استخدام الموك", "怎么用样机", "如何使用样机"],
+      a: () => ({ text: ["Open the PSD, double-click the smart object layer, paste your design, save, and close it. The mockup updates with realistic folds and lighting."], blocks: [{ type: "apps", ext: "PSD" }, { type: "links", keys: ["mockups"] }] }) },
+    { weak: true, k: ["new", "latest", "recent", "nouveau", "nuevo", "novo", "جديد", "最新"],
+      a: () => ({ text: ["Here are the latest drops:"], blocks: [{ type: "files", ids: items.slice(0, 4).map(i => i.id) }, { type: "links", keys: ["browse"] }] }) },
+    { k: ["how many", "combien", "cuantos", "quantos", "كم عدد", "多少个"],
+      a: () => ({ text: [`Right now there are ${items.length} designs, ${DS.icons.length} icons and ${palettes.length} palettes, and new drops land regularly.`], blocks: [{ type: "links", keys: ["browse"] }] }) },
+    { k: ["dark mode", "light mode", "language", "text size", "setting", "mode sombre", "modo oscuro", "modo escuro", "idioma", "langue", "الوضع الداكن", "اللغة", "深色", "语言", "设置"],
+      a: () => ({ text: ["Open Settings at the bottom of the side menu. You can switch the theme (Light, Dark or Device), the language and the text size there."], blocks: [] }) },
+    { weak: true, k: ["format", "file type", "which file", "difference between", "formats", "tipo de archivo", "صيغ", "格式"],
+      a: () => ({ text: ["Quick guide: PSD for mockups (Photoshop or Photopea), AI for editing logos, SVG for web and Canva, PDF for print, PNG for posting right away."], blocks: [{ type: "links", keys: ["learn"] }] }) },
+    { k: ["bug", "broken", "not working", "doesn't work", "doesnt work", "error", "problem", "issue", "ne marche", "no funciona", "nao funciona", "لا يعمل", "不能用", "坏了"],
+      a: () => ({ text: ["Sorry about that. Tell the team what happened and they'll fix it quickly."], blocks: [{ type: "contact" }] }) },
+    { k: ["bye", "goodbye", "see you", "later", "au revoir", "adios", "tchau", "مع السلامة", "再见"],
+      a: () => ({ text: ["Bye! Come back anytime, there's always something new."], blocks: [] }) },
+    { k: ["how are you", "how's it going", "hows it going", "ca va", "que tal", "tudo bem", "كيف حالك", "你好吗"],
+      a: () => ({ text: ["All good, thanks for asking! What are you designing today?"], blocks: [] }) }
+  ];
+  const topic = q => TOPICS.find(t => t.k.some(k => k.length <= 3 && /^[a-z]+$/.test(k) ? new RegExp(`(^|[^\\p{L}])${k}([^\\p{L}]|$)`, "u").test(q) : q.includes(k)));
+
   function localAnswer(raw) {
     const q = fold(raw).trim();
     const say = (text, blocks = []) => ({ text: [].concat(text), blocks });
     if (!q) return greeting();
     const short = q.split(/\s+/).length <= 3;
-    if (short && has(q, KW.hello) && !has(q, KW.qr)) return greeting();
+    const words = q.split(/[^\p{L}\p{N}]+/u);
+    if (short && KW.hello.some(h => words.includes(h) || (!/[a-z]/.test(h) && q.includes(h))) && !topic(q)) return greeting();
     if (short && has(q, KW.thanks)) return say("You're welcome. Anything else I can help with?");
     if (has(q, KW.human)) return say("Happy to connect you with a person. We usually reply within a few hours.", [{ type: "contact" }]);
     if (has(q, KW.request)) return say("We make custom designs too. Tell us what you need on WhatsApp.", [{ type: "contact" }]);
+    const t = topic(q);
+    if (t && !(t.weak && searchItems(q).length)) return t.a();
 
     // Formats: "what opens a PSD?", "what is an EPS file"
     const f = FORMATS.find(x => new RegExp(`(^|[^a-z])\\.?${x.ext.toLowerCase()}([^a-z]|$)`).test(q));
@@ -92,9 +132,11 @@ window.DSChat = function (kit) {
       if (!ics.length) ics = DS.icons.slice(0, 12);
       return say("Here are some icons. Open one to recolour it and download SVG or PNG:", [{ type: "icons", ids: ics.slice(0, 12).map(i => i.id) }, { type: "links", keys: ["icons"] }]);
     }
+    const empty = Object.keys(CAT_WORDS).find(c => has(q, CAT_WORDS[c]) && !items.some(it => it.category === c));
+    if (empty) return say([`No ${empty.toLowerCase()} yet. They're on the way.`, "Want something specific? Ask the team and they can design it for you."], [{ type: "links", keys: ["browse"] }, { type: "contact" }]);
     const found = searchItems(q);
-    if (found.length) return say("Here's what I found:", [{ type: "files", ids: found.slice(0, 4).map(i => i.id) }, ...(found.length > 4 ? [{ type: "links", keys: ["browse"] }] : [])]);
-    return say(["Nothing matched that yet.", "Try other words, browse everything, or ask us to make it."], [{ type: "links", keys: ["browse"] }, { type: "contact" }]);
+    if (found.length) return say(found.length === 1 ? "Found one for you:" : "Here's what I found:", [{ type: "files", ids: found.slice(0, 4).map(i => i.id) }, ...(found.length > 4 ? [{ type: "links", keys: ["browse"] }] : [])]);
+    return say(["Hmm, I'm not sure about that one.", "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly."], [{ type: "links", keys: ["browse"] }, { type: "contact" }]);
   }
   const greeting = () => ({ text: [`Hi, I'm ${NAME}.`, "I can find files, explain file formats and answer license questions. What are you working on?"], blocks: [] });
 
