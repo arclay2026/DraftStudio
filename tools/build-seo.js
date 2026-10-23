@@ -54,7 +54,7 @@ const putSeo = (html, block) => {
 };
 
 // ---- Pages
-const PAGES = ["index.html", "browse.html", "icons.html", "palettes.html", "qr.html", "learn.html", "license.html", "item.html"];
+const PAGES = ["index.html", "browse.html", "icons.html", "palettes.html", "qr.html", "canvas.html", "learn.html", "license.html", "item.html"];
 for (const f of PAGES) {
   const html = read(f);
   const url = SITE + (f === "index.html" ? "" : f);

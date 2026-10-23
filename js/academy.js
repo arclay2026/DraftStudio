@@ -36,7 +36,7 @@ window.DSAcademy = function (kit) {
       learn: ["Columns and grids", "One spacing scale for everything", "Aligning to edges, not eyeballing", "White space is not wasted space"],
       task: "Drag every block back until the whole page lines up.",
       tips: ["Red guides appear when an edge lines up", "Blocks snap into place when you're close", "Turn on Grid to see the six columns"],
-      tool: ["browse.html?cat=templates", "Study a template's grid"]
+      tool: ["canvas.html", "Practise in Canvas"]
     },
     {
       key: "hierarchy", title: "Hierarchy", time: "4 min",
@@ -45,7 +45,7 @@ window.DSAcademy = function (kit) {
       learn: ["What the eye notices first", "Size and weight to rank information", "Colour and contrast for emphasis", "Leading the eye through a design"],
       task: "Flip Hierarchy on and off, and watch where eyes go.",
       tips: ["The heatmap shows where people look", "Numbers show what they see first, second and third", "Big, dark and colourful things win attention"],
-      tool: ["qr.html", "Practise with QR Code Studio labels"]
+      tool: ["canvas.html", "Practise in Canvas"]
     },
     {
       key: "logos", title: "Logos", time: "6 min",

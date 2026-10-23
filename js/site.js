@@ -363,7 +363,7 @@
       { items: [["index.html", "Home", "home", "home"], ["browse.html", "Browse all", "browse", "grid"]] },
       { title: "Files", items: [["browse.html?cat=mockups", "Mockups", "mockups", "t-shirt"], ["browse.html?cat=vectors", "Vectors", "vectors", "vector"],
         ["browse.html?cat=logos", "Logos", "logos", "pen-tool"], ["browse.html?cat=templates", "Templates", "templates", "layers"], ["icons.html", "Icons", "icons", "smile"]] },
-      { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR Code Studio", "qr", "ui-qr"]] },
+      { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR Code Studio", "qr", "ui-qr"], ["canvas.html", "Canvas", "canvas", "brush"]] },
       { title: "Help", items: [["learn.html", "Learn", "learn", "lightbulb"], ["license.html", "License", "license", "file"]] }
     ];
     const link = ([href, label, key, ic]) =>
@@ -411,7 +411,7 @@
             </div>
             <nav class="f-links" aria-label="Files">
               <h2>Files</h2>
-              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="icons.html">Icons</a></li><li><a href="palettes.html">Palettes</a></li><li><a href="qr.html">QR Code Studio</a></li></ul>
+              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="icons.html">Icons</a></li><li><a href="palettes.html">Palettes</a></li><li><a href="qr.html">QR Code Studio</a></li><li><a href="canvas.html">Canvas</a></li></ul>
             </nav>
             <nav class="f-links" aria-label="Studio">
               <h2>Studio</h2>
@@ -1951,6 +1951,10 @@
   }
 
   /* ---------- Learn ---------- */
+  function canvas() {
+    if (window.DSCanvas) window.DSCanvas({ $, $$, esc, icon, DS });
+  }
+
   function learn() {
     if (window.DSAcademy) window.DSAcademy({ $, $$, esc, icon, waLink });
     const fx = $("[data-formats]");
@@ -2324,7 +2328,7 @@
   footer();
   chrome();
   settings();
-  ({ home, browse, item, icons, palettes, qr, learn, license }[page] || (() => {}))();
+  ({ home, browse, item, icons, palettes, qr, learn, license, canvas }[page] || (() => {}))();
   enhanceSelects();
   tooltips();
   colorPicker();
