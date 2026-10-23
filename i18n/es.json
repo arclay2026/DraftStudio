@@ -838,7 +838,8 @@
   "Anything you like…": "Lo que quieras…",
   "Hi! I saw your QR code…": "¡Hola! Vi tu código QR…",
   "Write your message…": "Escribe tu mensaje…",
-  "Your message…": "Tu mensaje…"
+  "Your message…": "Tu mensaje…",
+  "Sold": "Vendido"
  },
  "patterns": {
   "^(\\d+) files$": "$1 archivos",

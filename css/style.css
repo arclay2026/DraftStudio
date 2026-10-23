@@ -2063,6 +2063,8 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 .ch-file-t b { font-size: calc(13px * var(--ts)); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ch-file-t small { font-size: calc(11.5px * var(--ts)); color: var(--mute); }
 .ch-file > svg { flex: none; width: 15px; height: 15px; color: var(--mute); }
+.ch-price { flex: none; font-style: normal; font-size: calc(11px * var(--ts)); font-weight: 600; padding: 3px 8px; border-radius: 999px; background: var(--fill); color: var(--mute); }
+.ch-price.is-paid { background: var(--fg); color: var(--on-fg); }
 [dir="rtl"] .ch-file > svg { transform: scaleX(-1); }
 .ch-icons { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; margin-top: 10px; }
 .ch-icons a { aspect-ratio: 1; display: grid; place-items: center; border-radius: 11px; border: 1px solid var(--border); background: var(--bg); color: var(--fg); transition: background .2s, color .2s, border-color .2s; }
@@ -2092,8 +2094,9 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 
 .ch-form { display: flex; align-items: flex-end; gap: 8px; margin: 0 12px; padding: 6px 6px 6px 14px; border-radius: 20px; border: 1px solid var(--border); background: var(--bg); transition: border-color .2s, box-shadow .2s; }
 .ch-form:focus-within { border-color: var(--dl); box-shadow: 0 0 0 3px color-mix(in srgb, var(--dl) 15%, transparent); }
-.ch-form textarea { flex: 1; min-width: 0; min-height: 34px; max-height: 120px; padding: 7px 0; border: 0; outline: none; resize: none; background: none; color: var(--fg); font: 400 calc(14px * var(--ts)) / 1.45 var(--font-body); }
+.ch-form textarea { scrollbar-width: none; flex: 1; min-width: 0; min-height: 34px; max-height: 120px; padding: 7px 0; border: 0; outline: none; resize: none; background: none; color: var(--fg); font: 400 calc(14px * var(--ts)) / 1.45 var(--font-body); }
 .ch-form textarea::placeholder { color: var(--mute); }
+.ch-form textarea::-webkit-scrollbar { display: none; }
 .ch-send { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--dl); color: #fff; transition: transform .3s var(--spring, var(--ease)), background .2s; }
 .ch-send:hover { background: #0f6ef5; transform: scale(1.06); }
 .ch-send svg { width: 15px; height: 15px; }

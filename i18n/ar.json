@@ -838,7 +838,8 @@
   "Anything you like…": "أي شيء تريده…",
   "Hi! I saw your QR code…": "مرحبًا! رأيت رمز QR الخاص بك…",
   "Write your message…": "اكتب رسالتك…",
-  "Your message…": "رسالتك…"
+  "Your message…": "رسالتك…",
+  "Sold": "مُباع"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",
