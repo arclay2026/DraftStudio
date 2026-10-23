@@ -17,7 +17,9 @@ GitHub Pages or any web host.
 | `learn.html` | Learn: the file format guide (what each format is for, which apps open it) |
 | `license.html` | License and FAQ |
 
-Everywhere: press `/` to search (also under **More** in the nav).
+Everywhere: press `/` to search (on the home page it jumps to the big search bar).
+
+**Drafty**, the chat bubble in the corner of every page (`js/chat.js`), finds files, icons and palettes, explains formats and answers license questions. On its own it answers from the site's data; connect the free AI server in `worker/` (see `worker/README.md`) and it becomes a real AI assistant.
 
 ## Adding a design
 
@@ -62,7 +64,7 @@ Every change to `main` goes live within a minute or two.
 
 ## Publishing changes
 
-The pages load `css/style.css` and `js/*.js` with a `?v=` stamp so browsers fetch fresh copies after a change. After editing CSS or JS, run `tools/bump.sh`: it stamps a new version on every `.html` file and writes `version.json`. GitHub Pages lets browsers keep a page for up to 10 minutes, so each page also checks `version.json` when it opens and reloads itself once if a newer version is live.
+The pages load `css/style.css` and `js/*.js` with a `?v=` stamp so browsers fetch fresh copies after a change. After editing CSS or JS, run `tools/bump.sh`: it stamps a new version on every `.html` file, writes `version.json` and rebuilds `chat-knowledge.json` (what Drafty's AI knows). GitHub Pages lets browsers keep a page for up to 10 minutes, so each page also checks `version.json` when it opens and reloads itself once if a newer version is live.
 
 ## Languages
 

@@ -45,6 +45,9 @@ window.DS = {
     tagline: "Free mockups, vectors, logos and templates for people who make things.",
     email: "thedraftstudio.design@gmail.com",
     whatsapp: "27736684875",          // country code + number, no spaces or +
+    // Address of the AI chat server (see worker/README.md). Leave empty and
+    // Drafty answers from the site's own data instead.
+    chatEndpoint: "",
     instagram: "",                    // e.g. "https://instagram.com/draftstudio"
     license:
       "Free for personal and commercial projects. Credit is appreciated but not required. " +
