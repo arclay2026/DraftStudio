@@ -937,6 +937,8 @@ h2 .soft { color: var(--soft); }
 .dlx-btn:disabled { cursor: default; padding-right: 12px; }
 .dlx-cur { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
 .dlx .fmt { height: 30px; min-width: 40px; justify-content: center; font-size: calc(10.5px * var(--ts)); border-radius: 8px; }
+.dlx-app { flex: none; display: grid; place-items: center; width: 40px; height: 30px; }
+.dlx-app img { width: 28px; height: 28px; }
 .dlx .name { flex: 1; min-width: 0; line-height: 1.25; }
 .dlx .name b { display: block; font-size: calc(13px * var(--ts)); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dlx .name small { display: block; color: var(--mute); font-size: calc(11px * var(--ts)); }

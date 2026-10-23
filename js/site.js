@@ -1269,7 +1269,10 @@
     const singles = (it.files || []).filter(f => f !== zip);
     const want = pref("format").toUpperCase();
     const start = Math.max(0, singles.findIndex(f => f.format.toUpperCase() === want));
-    const fileLine = f => `${fmtBadge(f.format.toUpperCase())}
+    // Formats with an app logo show it instead of the text badge
+    const APP_ICON = { PSD: "photoshop" };
+    const fileBadge = ext => APP_ICON[ext] ? `<span class="dlx-app"><img src="assets/apps/${APP_ICON[ext]}.svg" alt="${ext}" width="28" height="28"></span>` : fmtBadge(ext);
+    const fileLine = f => `${fileBadge(f.format.toUpperCase())}
         <span class="name"><b>${esc(fileName(f))}</b><small>${isExternal(f.path) ? `${DRIVE}Google Drive` : esc(f.size || "")}</small></span>`;
     const picker = !singles.length ? "" : `
       <div class="dlx" data-dlx>
