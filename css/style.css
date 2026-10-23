@@ -343,7 +343,7 @@ h2 .soft { color: var(--soft); }
 .shelf.is-open .shelf-vtitle { opacity: 0; transform: rotate(180deg) translateY(-16px); transition: opacity .2s, transform .4s var(--ease); }
 .shelf:not(.is-open) .shelf-count { opacity: 0; }
 .btn-light, .btn-light:hover { background: #fff; color: #0f0f0f; border-color: #fff; }
-.btn-light .arr { background: #0f0f0f; color: #fff; }
+.btn-light .arr { background: var(--dl); color: #fff; }
 
 /* 01 Mockups: photo */
 .s-mockups { background: #2f7fc0; }
@@ -561,7 +561,7 @@ h2 .soft { color: var(--soft); }
 .drop-req h3 { font-size: clamp(19.5px, 1.8vw, 26px); margin-bottom: 7px; }
 .drop-req p { color: rgba(255, 255, 255, .62); font-size: calc(12px * var(--ts)); }
 .drop-req .btn-dark { align-self: flex-start; background: #fff; color: #0f0f0f; border-color: #fff; }
-.drop-req .btn-dark .arr { background: #0f0f0f; color: #fff; }
+.drop-req .btn-dark .arr { background: var(--dl); color: #fff; }
 
 /* Fill the 2×2 beside the featured drop whatever the count */
 .drops.n0 .drop-req { grid-column: span 2; grid-row: span 2; }
@@ -644,7 +644,7 @@ h2 .soft { color: var(--soft); }
 .fx-best span { padding: 6.5px 11px; border-radius: 791px; border: 1px solid rgba(255, 255, 255, .16); font-size: calc(11px * var(--ts)); color: rgba(255, 255, 255, .85); }
 .fx-foot { margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12.5px; padding-top: 7px; }
 .fx-foot .btn-dark { background: var(--lime); color: var(--on-lime); border-color: var(--lime); }
-.fx-foot .btn-dark .arr { background: var(--on-lime); color: var(--lime); }
+.fx-foot .btn-dark .arr { background: var(--dl); color: #fff; }
 .fx-foot .count { font-size: calc(11px * var(--ts)); color: rgba(255, 255, 255, .55); }
 .fx-swap { display: contents; }
 .fx-panel.is-swapping .fx-anim { animation: fx-in .55s var(--ease) both; }
@@ -683,7 +683,7 @@ h2 .soft { color: var(--soft); }
 .ix-swatches button:hover { transform: scale(1.1); }
 .ix-swatches button[aria-pressed="true"] { box-shadow: 0 0 0 2.5px var(--forest), 0 0 0 4.5px #fff; }
 .ix .btn-dark { background: var(--lime); color: var(--on-lime); border-color: var(--lime); }
-.ix .btn-dark .arr { background: var(--on-lime); color: var(--lime); }
+.ix .btn-dark .arr { background: var(--dl); color: #fff; }
 
 .ix-stage { display: flex; flex-direction: column; gap: 11px; min-width: 0; }
 .ix-preview {
