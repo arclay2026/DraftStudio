@@ -865,7 +865,8 @@
   "Want something specific? Ask the team and they can design it for you.",
   "Found one for you:",
   "Hmm, I'm not sure about that one.",
-  "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly."
+  "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly.",
+  "Browse free mockups, logos & templates"
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",
