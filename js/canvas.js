@@ -1635,7 +1635,27 @@ window.DSCanvas = function (kit) {
      ===================================================================== */
   const num = (k, v, o = {}) => `<label class="cx-num${o.wide ? " is-wide" : ""}"${o.tip ? ` data-tip="${o.tip}"` : ""}>${o.label ? `<span>${o.label}</span>` : ""}<input type="number" inputmode="decimal" data-k="${k}" value="${v === "" ? "" : round(+v, o.d ?? 1)}" step="${o.step || 1}"${o.min != null ? ` min="${o.min}"` : ""}${o.max != null ? ` max="${o.max}"` : ""}>${o.unit ? `<em>${o.unit}</em>` : ""}</label>`;
   const swatchIn = (k, c, big = false) => `<label class="cx-sw${big ? " is-big" : ""}${!c ? " is-none" : ""}" style="--c:${paintCss(c)}"><input type="color" data-k="${k}" value="${toHex(isGrad(c) ? c.colorStops[0].color : c) || "#000000"}" aria-label="Colour"></label>`;
-  const sel = (k, val, opts, label = "") => `<select class="cx-select" data-k="${k}" aria-label="${label}">${opts.map(([v, t]) => `<option value="${v}"${String(v) === String(val) ? " selected" : ""}>${t}</option>`).join("")}</select>`;
+  // A dropdown: the hidden select keeps the value (panels read it and listen for "change"), the button opens a designed list
+  const sel = (k, val, opts, label = "") => {
+    const cur = opts.find(([v]) => String(v) === String(val)) || opts[0];
+    return `<span class="cx-dd"><select class="cx-select" data-k="${k}" aria-label="${label}" tabindex="-1">${opts.map(([v, t]) => `<option value="${v}"${String(v) === String(val) ? " selected" : ""}>${t}</option>`).join("")}</select><button type="button" class="cx-dd-btn" data-act="dd" aria-haspopup="listbox" aria-expanded="false" aria-label="${label}"><span>${cur ? cur[1] : ""}</span>${ui("chev")}</button></span>`;
+  };
+  function openDropdown(btn) {
+    const select = btn.parentNode.querySelector("select");
+    const p = openPop(btn, `<div class="cx-ddlist" role="listbox">${[...select.options].map((o, i) => `<button type="button" role="option" data-ddi="${i}" aria-selected="${o.selected}"><i>${o.selected ? ui("check") : ""}</i><span>${esc(o.text)}</span></button>`).join("")}</div>`, "is-dd");
+    p.style.minWidth = btn.offsetWidth + "px";
+    p.__select = select; p.__btn = btn;
+    btn.setAttribute("aria-expanded", "true");
+    const on = p.querySelector('[aria-selected="true"]') || p.querySelector("button");
+    if (on) { on.focus({ preventScroll: true }); on.scrollIntoView({ block: "nearest" }); }
+    p.addEventListener("keydown", e => {
+      const list = [...p.querySelectorAll("[data-ddi]")], i = list.indexOf(document.activeElement);
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") { e.preventDefault(); e.stopPropagation(); const n = list[clamp(i + (e.key === "ArrowDown" ? 1 : -1), 0, list.length - 1)]; if (n) n.focus(); }
+      else if (e.key === "Escape") { e.preventDefault(); e.stopPropagation(); closePop(); btn.focus(); }
+      else if (e.key === "Tab") { closePop(); }
+      else if (e.key === "Enter" || e.key === " ") e.stopPropagation(); // picks the option, not the dialog's main button
+    });
+  }
   const segBtns = (k, v, opts) => `<div class="cx-seg">${opts.map(([val, ic, label]) => `<button type="button" data-set="${k}" data-v="${val}" class="${String(v) === String(val) ? "is-on" : ""}" aria-label="${label}" data-tip="${label}">${ui(ic)}</button>`).join("")}</div>`;
   const ALIGN6 = [["left", "al-left", "Align Left"], ["center", "al-center", "Align Horizontal Centres"], ["right", "al-right", "Align Right"],
     ["top", "al-top", "Align Top"], ["middle", "al-middle", "Align Vertical Centres"], ["bottom", "al-bottom", "Align Bottom"]];
@@ -1820,7 +1840,7 @@ window.DSCanvas = function (kit) {
         <div class="cx-g2">${num("sh-blur", target.shadow.blur, { label: "Blur", min: 0, d: 0 })}<div class="cx-row"><span class="cx-lbl">Colour</span>${swatchIn("sh-color", target.shadow.color)}</div></div>` : ""}`);
     if (k === "image") {
       const fl = o.filters || [], val = (T, key) => { const x = fl.find(t => t && t.type === T); return x ? round(x[key] * 100) : 0; };
-      const rng = (key, l, v) => `<label class="cx-range"><span>${l}</span><input type="range" data-k="${key}" min="-100" max="100" value="${v}"><output>${v}</output></label>`;
+      const rng = (key, l, v) => `<label class="cx-range"><span>${l}</span><input type="range" data-k="${key}" min="-100" max="100" value="${v}" style="--p:${(+v + 100) / 2}%"><output>${v}</output></label>`;
       h += sec("image", "Image", `${num("imgRadius", o.kindRadius || 0, { label: "Corner radius", unit: "px", min: 0, wide: true, d: 0 })}
         ${rng("brightness", tr("Brightness"), val("Brightness", "brightness"))}${rng("contrast", tr("Contrast"), val("Contrast", "contrast"))}${rng("saturation", tr("Saturation"), val("Saturation", "saturation"))}
         <div class="cx-chips is-fx">${[["gray", "Black and White"], ["sepia", "Sepia"], ["invert", "Invert"], ["blur", "Blur"]].map(([f, l]) => `<button type="button" data-act="fx:${f}">${l}</button>`).join("")}</div>
@@ -2044,7 +2064,7 @@ window.DSCanvas = function (kit) {
 
   /* ---------- Popovers, main menu, context menu ---------- */
   let pop = null;
-  function closePop() { if (pop) { pop.remove(); pop = null; } }
+  function closePop() { if (pop) { if (pop.__btn) pop.__btn.setAttribute("aria-expanded", "false"); pop.remove(); pop = null; } }
   function openPop(anchor, html, cls = "", above = false) {
     closePop();
     const R = root.getBoundingClientRect(), r = anchor.getBoundingClientRect();
@@ -2053,7 +2073,7 @@ window.DSCanvas = function (kit) {
     pop.innerHTML = html;
     root.appendChild(pop);
     const w = pop.offsetWidth, h = pop.offsetHeight;
-    let x = r.left - R.left + r.width / 2 - w / 2, y = above ? r.top - R.top - h - 8 : r.bottom - R.top + 8;
+    let x = cls.includes("is-dd") ? r.left - R.left : r.left - R.left + r.width / 2 - w / 2, y = above ? r.top - R.top - h - 8 : r.bottom - R.top + 8;
     x = clamp(x, 8, R.width - w - 8);
     if (y + h > R.height - 8) y = Math.max(8, r.top - R.top - h - 8);
     if (y < 8) y = r.bottom - R.top + 8;
@@ -2063,6 +2083,13 @@ window.DSCanvas = function (kit) {
     pop.addEventListener("click", e => {
       const t = e.target.closest("button");
       if (!t) return;
+      if (t.dataset.ddi != null) {
+        const s2 = pop.__select, b2 = pop.__btn, o2 = s2.options[+t.dataset.ddi];
+        closePop();
+        if (o2 && !o2.selected) { s2.value = o2.value; b2.querySelector("span").textContent = o2.text; s2.dispatchEvent(new Event("change", { bubbles: true })); }
+        if (b2.isConnected) b2.focus({ preventScroll: true });
+        return;
+      }
       if (t.dataset.swatch) { setPaint(paint.focus, t.dataset.swatch === "none" ? null : t.dataset.swatch); refreshUI(); closePop(); }
       else if (t.dataset.gradient != null) { if (active().length) setGradient(GRADIENTS[+t.dataset.gradient]); closePop(); }
       else if (t.dataset.font) { setFont(t.dataset.font); closePop(); }
@@ -2138,7 +2165,7 @@ window.DSCanvas = function (kit) {
   menuPop.addEventListener("contextmenu", e => e.preventDefault());
   document.addEventListener("pointerdown", e => {
     if (e.button === 2 && stage.contains(e.target)) return;
-    if (pop && !pop.contains(e.target) && !e.target.closest("[data-act^='swatch-pop'], [data-act='font-menu'], [data-act='zoom-menu'], [data-act='ab-menu'], [data-act='align-pop']")) closePop();
+    if (pop && !pop.contains(e.target) && !e.target.closest("[data-act^='swatch-pop'], [data-act='font-menu'], [data-act='zoom-menu'], [data-act='ab-menu'], [data-act='align-pop'], [data-act='dd']")) closePop();
     if (!menuPop.hidden && !menuPop.contains(e.target) && !e.target.closest("[data-act='main-menu'], [data-act='more'], [data-more]")) closeMenus();
   });
 
@@ -2817,6 +2844,7 @@ window.DSCanvas = function (kit) {
         if (collapsed.has(arg)) collapsed.delete(arg); else collapsed.add(arg);
         try { localStorage.setItem("ds-canvas-collapsed", JSON.stringify([...collapsed])); } catch (er) { /* private mode */ }
         renderRight(); break;
+      case "dd": if (pop && pop.__btn === el) closePop(); else openDropdown(el); break;
       case "swatch-pop": paint.focus = arg; syncPaint(); openPop(el, swatchPopHtml(), "is-swatches"); break;
       case "font-menu": openPop(el, `<div class="cx-poplist is-fonts">${Object.keys(FONTS).map(f => `<button type="button" data-font="${esc(f)}" style="font-family:'${esc(f)}'" data-no-i18n><b>${esc(f)}</b></button>`).join("")}</div>`); break;
       case "paint-none": setPaint(arg || paint.focus, null); refreshUI(); break;

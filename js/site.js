@@ -2029,6 +2029,23 @@
 
   window.DSEnhanceSelects = scope => enhanceSelects(scope);
 
+  /* ---------- Sliders fill blue up to the handle ---------- */
+  // CSS reads --p; it follows typing, dragging, code that sets .value, and sliders added later
+  function sliders() {
+    const fill = el => {
+      if (el.type !== "range") return;
+      const min = el.min === "" ? 0 : +el.min, max = el.max === "" ? 100 : +el.max;
+      el.style.setProperty("--p", (max > min ? (+el.value - min) / (max - min) * 100 : 0) + "%");
+    };
+    const all = node => { if (node.matches && node.matches('input[type="range"]')) fill(node); if (node.querySelectorAll) node.querySelectorAll('input[type="range"]').forEach(fill); };
+    document.addEventListener("input", e => fill(e.target), true);
+    document.addEventListener("change", e => fill(e.target), true);
+    const d = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
+    if (d && d.set) Object.defineProperty(HTMLInputElement.prototype, "value", { get: d.get, set(v) { d.set.call(this, v); if (this.type === "range") fill(this); }, configurable: true, enumerable: d.enumerable });
+    new MutationObserver(list => list.forEach(m => m.addedNodes.forEach(all))).observe(document.body, { childList: true, subtree: true });
+    all(document.body);
+  }
+
   /* ---------- QR Studio (qr.html) ---------- */
   // The studio lives in js/qr-studio.js; it gets the shared helpers from here.
   function qr() {
@@ -2330,6 +2347,7 @@
   settings();
   ({ home, browse, item, icons, palettes, qr, learn, license, canvas }[page] || (() => {}))();
   enhanceSelects();
+  sliders();
   tooltips();
   colorPicker();
   quickView();
