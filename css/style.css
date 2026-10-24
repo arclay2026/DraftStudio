@@ -71,8 +71,8 @@
 }
 
 /* ---------- Base ---------- */
-/* Scrollbars: a slim rounded thumb floating on a clear track, no arrow buttons */
-:root { --sb: color-mix(in srgb, var(--fg) 22%, transparent); --sb-hover: color-mix(in srgb, var(--fg) 40%, transparent); }
+/* Scrollbars: a slim rounded blue thumb floating on a clear track, no arrow buttons */
+:root { --sb: #1f7aff; --sb-hover: #0062d6; }
 ::-webkit-scrollbar { width: 12px; height: 12px; }
 ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
 ::-webkit-scrollbar-thumb { min-height: 44px; min-width: 44px; border: 3px solid transparent; border-radius: 99px; background: var(--sb) padding-box; }
@@ -2553,7 +2553,6 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
   --x-shadow: 0 22px 50px -20px rgba(0, 0, 0, .25), 0 0 0 1px rgba(0, 0, 0, .06);
   color-scheme: light;
 }
-.cx { --sb: color-mix(in srgb, var(--x-txt) 24%, transparent); --sb-hover: color-mix(in srgb, var(--x-txt) 42%, transparent); }
 .cx [hidden] { display: none !important; }
 :where(.cx) button { margin: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; letter-spacing: inherit; cursor: pointer; }
 :where(.cx) button:disabled { cursor: default; }
