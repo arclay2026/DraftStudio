@@ -1,8 +1,11 @@
 /* =====================================================================
-   CANVAS — a free vector design app in the browser (canvas.html)
-   Laid out like a desktop design app: menu bar, control bar, toolbox,
-   rulers with guides, a pasteboard with artboards, panels and a status
-   bar. Built on Fabric.js 5 (js/vendor/fabric.min.js, MIT licence).
+   CANVAS — Draft Studio's free design studio (canvas.html)
+   An infinite pasteboard with artboards, floating glass panels, a tool
+   dock, a toolbar that follows the selection, a ⌘K command palette and
+   a minimap. Vector paths with editable anchors, shape combining
+   (paper.js, loaded on demand), clipping masks, recolouring, repeat
+   grids, QR codes, blend modes, history and full-screen preview.
+   Built on Fabric.js 5 (js/vendor/fabric.min.js, MIT licence).
    Everything stays in the browser: designs autosave to this device
    (IndexedDB) and export as PNG, JPG, SVG or a project file.
    site.js calls window.DSCanvas(kit) on the Canvas page.
@@ -19,6 +22,7 @@ window.DSCanvas = function (kit) {
   const mac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
   const keyLabel = k => (k || "").replace("mod+", mac ? "⌘" : "Ctrl+").replace("shift+", mac ? "⇧" : "Shift+").replace("alt+", mac ? "⌥" : "Alt+");
   const isTyping = t => t && t.closest && t.closest("input, textarea, select, [contenteditable]");
+  const loadScript = src => new Promise((res, rej) => { const s = document.createElement("script"); s.src = src; s.onload = res; s.onerror = rej; document.head.appendChild(s); });
 
   /* =====================================================================
      Icons
@@ -31,22 +35,21 @@ window.DSCanvas = function (kit) {
     brush: '<path d="M20 4 11 13"/><path d="M11 13c-2.6-.6-4.6.6-5 3.2-.3 1.9-1 2.8-2 3.3 3.3.9 7 .2 7.9-2.6.4-1.3.1-2.8-.9-3.9z"/>',
     type: '<path d="M5 5.5h14M12 5.5v13M9 18.5h6"/>',
     line: '<path d="M5 19 19 5"/>',
-    rect: '<rect x="4" y="5.5" width="16" height="13"/>',
-    rounded: '<rect x="4" y="5.5" width="16" height="13" rx="3.5"/>',
+    rect: '<rect x="4" y="5.5" width="16" height="13" rx="1"/>',
+    rounded: '<rect x="4" y="5.5" width="16" height="13" rx="4"/>',
     ellipse: '<ellipse cx="12" cy="12" rx="8" ry="6.8"/>',
     polygon: '<path d="M12 3.5 19.5 8v8L12 20.5 4.5 16V8z"/>',
     star: '<path d="m12 3.6 2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 17l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/>',
     rotate: '<path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.8 4.2v4.6h-4.6"/>',
-    scale: '<rect x="3.5" y="11" width="9.5" height="9.5"/><path d="M9 3.5h11.5V15M20.5 3.5 12 12"/>',
+    scale: '<rect x="3.5" y="11" width="9.5" height="9.5" rx="1"/><path d="M9 3.5h11.5V15M20.5 3.5 12 12"/>',
     eyedropper: '<path d="M14.5 4.5a2.5 2.5 0 0 1 3.5 0l1.5 1.5a2.5 2.5 0 0 1 0 3.5L17 12l-5-5z"/><path d="m12.5 7.5-8 8V19h3.5l8-8"/>',
-    gradient: '<rect x="4" y="4" width="16" height="16" rx="1"/><path d="M8 4v16" opacity=".85"/><path d="M12 4v16" opacity=".55"/><path d="M16 4v16" opacity=".25"/>',
+    gradient: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 4v16" opacity=".85"/><path d="M12 4v16" opacity=".55"/><path d="M16 4v16" opacity=".25"/>',
     artboard: '<path d="M7.5 3v18M16.5 3v18M3 7.5h18M3 16.5h18"/>',
     hand: '<path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V11M11 11V4.8a1.5 1.5 0 0 1 3 0V11M14 11V6.5a1.5 1.5 0 0 1 3 0V14c0 4-2.6 6.8-6.2 6.8-2.3 0-3.9-1-5.3-3L3.7 15a1.5 1.5 0 0 1 2.4-1.8L8 15.2"/>',
     zoom: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.7-4.7M8 10.5h5M10.5 8v5"/>',
     undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
     redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/>',
-    swap: '<path d="M7 4h8a3 3 0 0 1 3 3v8"/><path d="m15 13 3 3 3-3M9 1.5 6.5 4 9 6.5"/>',
-    none: '<path d="M5 19 19 5" stroke="#ff3b30" stroke-width="2.2"/>',
+    none: '<path d="M5 19 19 5" stroke="#ff453a" stroke-width="2.2"/>',
     "eye-off": '<path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6 0 9.5 7 9.5 7a17 17 0 0 1-2.9 3.7M6.2 6.2C3.8 8 2.5 12 2.5 12s3.5 7 9.5 7a9.7 9.7 0 0 0 5.1-1.4"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
     unlock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.2"/>',
     front: '<rect x="8" y="8" width="12" height="12" rx="1.5"/><path d="M4 16V5.5A1.5 1.5 0 0 1 5.5 4H16"/>',
@@ -63,43 +66,65 @@ window.DSCanvas = function (kit) {
     "t-right": '<path d="M4 6h16M10 12h10M7 18h13"/>', "t-justify": '<path d="M4 6h16M4 12h16M4 18h16"/>',
     "flip-h": '<path d="M12 3v18"/><path d="M9 7 3 17h6zM15 7l6 10h-6z"/>',
     "flip-v": '<path d="M3 12h18"/><path d="M7 9 17 3v6zM7 15l10 6v-6z"/>',
-    group: '<rect x="3" y="3" width="18" height="18" rx="2" stroke-dasharray="3 3"/><rect x="7" y="7" width="5" height="5" rx="1"/><rect x="12" y="12" width="5" height="5" rx="1"/>',
+    group: '<rect x="3" y="3" width="18" height="18" rx="3" stroke-dasharray="3 3"/><rect x="7" y="7" width="5" height="5" rx="1"/><rect x="12" y="12" width="5" height="5" rx="1"/>',
     ungroup: '<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/>',
+    union: '<path d="M4 4h10v6h6v10H10v-6H4z" fill="currentColor" fill-opacity=".35"/>',
+    subtract: '<path d="M4 4h10v6h-4v4H4z" fill="currentColor" fill-opacity=".35"/><rect x="10" y="10" width="10" height="10" rx="1" stroke-dasharray="2.5 2"/>',
+    intersect: '<rect x="4" y="4" width="10" height="10" rx="1" stroke-dasharray="2.5 2"/><rect x="10" y="10" width="10" height="10" rx="1" stroke-dasharray="2.5 2"/><rect x="10" y="10" width="4" height="4" fill="currentColor" fill-opacity=".6" stroke="none"/>',
+    exclude: '<path d="M4 4h10v6h-4v4H4zM14 10h6v10H10v-6h4z" fill="currentColor" fill-opacity=".35"/>',
+    mask: '<rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="5" fill="currentColor" fill-opacity=".35"/>',
+    recolor: '<circle cx="8" cy="9" r="4.5"/><circle cx="16" cy="9" r="4.5"/><circle cx="12" cy="15.5" r="4.5"/>',
+    repeat: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" stroke-dasharray="2 2"/>',
     expand: '<path d="M4 4h16v16H4z" stroke-dasharray="2 2"/><circle cx="4" cy="4" r="1.6" fill="currentColor"/><circle cx="20" cy="4" r="1.6" fill="currentColor"/><circle cx="20" cy="20" r="1.6" fill="currentColor"/><circle cx="4" cy="20" r="1.6" fill="currentColor"/>',
     rulers: '<path d="M3 3h18v6H9v12H3z"/><path d="M7 3v3M11 3v3M15 3v3M3 13h3M3 17h3"/>',
     grid: '<path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/>',
     guides: '<path d="M8 3v18M3 15h18" stroke-dasharray="3 2"/>',
-    smart: '<path d="M4 12h16M12 4v16" stroke="#ff2fa4"/><rect x="8" y="8" width="8" height="8"/>',
-    snapgrid: '<path d="M3 9h18M9 3v18" opacity=".5"/><rect x="9" y="9" width="8" height="8" fill="currentColor"/>',
-    chev: '<path d="m7 10 5 5 5-5"/>', right: '<path d="m10 7 5 5-5 5"/>', left: '<path d="m14 7-5 5 5 5"/>',
-    first: '<path d="m13 7-5 5 5 5M6 6v12"/>', last: '<path d="m11 7 5 5-5 5M18 6v12"/>',
-    panels: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M15 4v16"/>',
-    swatches: '<rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/>',
+    smart: '<path d="M4 12h16M12 4v16" stroke="#ff3fa4"/><rect x="8" y="8" width="8" height="8" rx="1"/>',
+    snapgrid: '<path d="M3 9h18M9 3v18" opacity=".5"/><rect x="9" y="9" width="8" height="8" rx="1" fill="currentColor"/>',
+    pixel: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9.3h16M4 14.7h16M9.3 4v16M14.7 4v16" opacity=".5"/>',
+    chev: '<path d="m7 10 5 5 5-5"/>', up: '<path d="m7 14 5-5 5 5"/>', right: '<path d="m10 7 5 5-5 5"/>', left: '<path d="m14 7-5 5 5 5"/>',
+    panels: '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 4v16"/>',
+    swatches: '<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>',
     target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
     shuffle: '<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
     italic: '<path d="M19 4h-9M14 20H5M15 4 9 20"/>', underline: '<path d="M6 4v6a6 6 0 0 0 12 0V4M4 20h16"/>',
     check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
     export: '<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>',
-    fonts: '<path d="M4 19 9.5 5h1L16 19M6.2 14h7.6"/><path d="M17 19v-6.5a2.5 2.5 0 0 1 5 0V19M17 15.5h5"/>'
+    fonts: '<path d="M4 19 9.5 5h1L16 19M6.2 14h7.6"/><path d="M17 19v-6.5a2.5 2.5 0 0 1 5 0V19M17 15.5h5"/>',
+    command: '<path d="M9 6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3z"/>',
+    play: '<path d="M7 4.5v15l12-7.5z"/>',
+    more: '<circle cx="5" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="19" cy="12" r="1.4" fill="currentColor"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+    sidebar: '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>', minus: '<path d="M5 12h14"/>',
+    fit: '<path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/>',
+    replace: '<path d="M4 7h11l-3-3M20 17H9l3 3"/>',
+    qr: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><path d="M13.5 13.5h3v3h-3zM20.5 13.5v.01M13.5 20.5h.01M17 17h3.5v3.5H17"/>',
+    copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>'
   };
   const ui = (id, cls = "") => (UI[id]
     ? `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${UI[id]}</svg>`
     : icon(id, cls));
+  const MARK_SVG = `<svg class="cx-mark" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="cxg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6aa8ff"/><stop offset="1" stop-color="#1f5bff"/></linearGradient></defs><rect width="24" height="24" rx="7" fill="url(#cxg)"/><path d="M7 17.5 12.6 6.5h.8L17 17.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="17.5" r="1.7" fill="#fff"/></svg>`;
 
   /* =====================================================================
-     Data: tools, sizes, fonts, briefs, swatches
+     Data: tools, sizes, fonts, briefs, swatches, shapes
      ===================================================================== */
-  // Toolbox groups: the first tool shows; the rest open from a flyout (long-press or right-click)
+  // Dock groups: the first tool shows; the rest open from the little arrow
   const TOOL_GROUPS = [
-    [["select", "Selection Tool", "V"]], [["direct", "Direct Selection Tool", "A"]],
-    [["pen", "Pen Tool", "P"]], [["pencil", "Pencil Tool", "N"], ["brush", "Paintbrush Tool", "B"]],
-    [["type", "Type Tool", "T"]], [["line", "Line Segment Tool", "\\"]],
-    [["rect", "Rectangle Tool", "M"], ["rounded", "Rounded Rectangle Tool", ""], ["ellipse", "Ellipse Tool", "L"], ["polygon", "Polygon Tool", ""], ["star", "Star Tool", ""]],
-    [["rotate", "Rotate Tool", "R"]], [["scale", "Scale Tool", "S"]], [["eyedropper", "Eyedropper Tool", "I"]],
-    [["gradient", "Gradient Tool", "G"]], [["artboard", "Artboard Tool", "shift+O"]],
-    [["hand", "Hand Tool", "H"]], [["zoom", "Zoom Tool", "Z"]]
+    [["select", "Move", "V"], ["direct", "Edit Points", "A"]],
+    [["artboard", "Artboard", "shift+O"]],
+    "|",
+    [["rect", "Rectangle", "M"], ["rounded", "Rounded Rectangle", ""], ["ellipse", "Ellipse", "L"], ["polygon", "Polygon", ""], ["star", "Star", ""], ["line", "Line", "\\"]],
+    [["pen", "Pen", "P"], ["pencil", "Pencil", "N"], ["brush", "Brush", "B"]],
+    [["type", "Text", "T"]],
+    "|",
+    [["eyedropper", "Eyedropper", "I"], ["gradient", "Gradient", "G"]],
+    [["rotate", "Rotate", "R"], ["scale", "Scale", "S"]],
+    [["hand", "Hand", "H"], ["zoom", "Zoom", "Z"]]
   ];
-  const TOOL_INFO = Object.fromEntries(TOOL_GROUPS.flat().map(([id, name, key]) => [id, { name, key }]));
+  const TOOL_INFO = Object.fromEntries(TOOL_GROUPS.filter(g => g !== "|").flat().map(([id, name, key]) => [id, { name, key }]));
   const TOOL_HINT = {
     select: "Click to select. Drag to move. Shift-drag a corner keeps proportions, Alt-drag copies.",
     direct: "Click a path to edit its anchor points. Drag points and handles. Alt-click a point to make it smooth or a corner.",
@@ -135,9 +160,11 @@ window.DSCanvas = function (kit) {
   const PAIRS = [["Bebas Neue", 400, "Inter", 400], ["Playfair Display", 700, "Lora", 400], ["Archivo Black", 400, "Inter", 400],
     ["Syne", 800, "Space Grotesk", 400], ["DM Serif Display", 400, "Inter", 400], ["Caveat", 700, "Poppins", 400]];
   const pal = name => ((DS.palettes || []).find(p => p.name === name) || { colors: ["#0f0f0f", "#1f7aff", "#ffffff"] }).colors;
-  const BASIC = ["#ffffff", "#d9d9d9", "#a6a6a6", "#737373", "#404040", "#000000", "#ff3b30", "#ff9500", "#ffcc00", "#34c759", "#00c7be",
-    "#1f7aff", "#5856d6", "#af52de", "#ff2d55", "#a2845e"];
-  const GRADIENTS = [["#1f7aff", "#7c5cff"], ["#ff6b35", "#ee4266"], ["#ffd23f", "#ff6b35"], ["#00c7be", "#1f7aff"], ["#ffffff", "#000000"]];
+  const BASIC = ["#ffffff", "#e5e5ea", "#aeaeb2", "#636366", "#2c2c2e", "#000000", "#ff453a", "#ff9f0a", "#ffd60a", "#32d74b", "#64d2ff",
+    "#1f7aff", "#5e5ce6", "#bf5af2", "#ff375f", "#ac8e68"];
+  const GRADIENTS = [["#1f7aff", "#7c5cff"], ["#ff6b35", "#ee4266"], ["#ffd23f", "#ff6b35"], ["#00c7be", "#1f7aff"], ["#ffffff", "#000000"], ["#f72585", "#4361ee"]];
+  const BLENDS = [["source-over", "Normal"], ["multiply", "Multiply"], ["screen", "Screen"], ["overlay", "Overlay"], ["darken", "Darken"], ["lighten", "Lighten"],
+    ["color-dodge", "Colour Dodge"], ["color-burn", "Colour Burn"], ["difference", "Difference"], ["hue", "Hue"], ["saturation", "Saturation"], ["color", "Colour"], ["luminosity", "Luminosity"]];
   const BRIEFS = [
     { title: "Coffee shop opening", client: "Bean There", size: 0, palette: "Coffee House",
       task: "An Instagram post announcing the grand opening of Bean There, a small neighbourhood coffee shop. Saturday, 8 AM.",
@@ -178,117 +205,121 @@ window.DSCanvas = function (kit) {
   ];
 
   /* =====================================================================
-     Menus
+     Main menu (behind the logo) and its shortcuts
      ===================================================================== */
   // [label, shortcut, action, check?] · "-" separator · [label, [submenu]]
   const MENUS = [
-    ["File", [["New", "mod+N", "new"], ["Open…", "mod+O", "open"], "-", ["Save", "mod+S", "save"], ["Save a Copy (project file)…", "mod+shift+S", "save-file"], "-",
-      ["Place Image…", "mod+shift+P", "place"], "-",
-      ["Export", [["Export as PNG…", "", "export:png"], ["Export as JPG…", "", "export:jpg"], ["Export as SVG…", "", "export:svg"], "-", ["Export All Artboards (PNG)", "", "export-all"]]],
-      ["Export As…", "mod+shift+E", "export"], "-", ["Document Setup…", "mod+alt+P", "doc-setup"]]],
+    ["File", [["New Design", "mod+N", "new"], ["Open Project…", "mod+O", "open"], "-", ["Save", "mod+S", "save"], ["Save Project File…", "mod+shift+S", "save-file"], "-",
+      ["Place Image…", "mod+shift+P", "place"], ["Insert QR Code…", "", "qr"], "-",
+      ["Export…", "mod+shift+E", "export"], ["Export All Artboards (PNG)", "", "export-all"], ["Copy as PNG", "mod+shift+C", "copy-png"], ["Copy SVG Code", "", "copy-svg"], "-",
+      ["Document Setup…", "mod+alt+P", "doc-setup"]]],
     ["Edit", [["Undo", "mod+Z", "undo"], ["Redo", "mod+shift+Z", "redo"], "-", ["Cut", "mod+X", "cut"], ["Copy", "mod+C", "copy"], ["Paste", "mod+V", "paste"],
-      ["Paste in Place", "mod+shift+V", "paste-in-place"], ["Duplicate", "mod+D", "duplicate"], ["Clear", "Del", "delete"], "-",
-      ["Preferences…", "mod+K", "prefs"], ["Keyboard Shortcuts…", "mod+alt+shift+K", "shortcuts"]]],
-    ["Object", [["Transform", [["Flip Horizontal", "", "flip-h"], ["Flip Vertical", "", "flip-v"], ["Reset Rotation", "", "reset-rot"], ["Reset Size", "", "reset-scale"]]],
+      ["Paste in Place", "mod+shift+V", "paste-in-place"], ["Duplicate", "mod+D", "duplicate"], ["Delete", "Del", "delete"], "-",
+      ["Select All", "mod+A", "select-all"], ["Deselect", "mod+shift+A", "deselect"], ["Select Inverse", "", "select-inverse"],
+      ["Select Same", [["Fill Colour", "", "same:fill"], ["Stroke Colour", "", "same:stroke"], ["Font", "", "same:font"]]], "-",
+      ["Preferences…", "mod+,", "prefs"]]],
+    ["Object", [["Transform", [["Flip Horizontal", "shift+H", "flip-h"], ["Flip Vertical", "shift+V", "flip-v"], ["Reset Rotation", "", "reset-rot"], ["Reset Size", "", "reset-scale"]]],
       ["Arrange", [["Bring to Front", "mod+shift+]", "front"], ["Bring Forward", "mod+]", "forward"], ["Send Backward", "mod+[", "backward"], ["Send to Back", "mod+shift+[", "back"]]],
       ["Align", [["Left", "", "align:left"], ["Horizontal Centre", "", "align:center"], ["Right", "", "align:right"], ["Top", "", "align:top"], ["Vertical Centre", "", "align:middle"], ["Bottom", "", "align:bottom"], "-", ["Distribute Horizontally", "", "dist:h"], ["Distribute Vertically", "", "dist:v"]]],
-      "-", ["Group", "mod+G", "group"], ["Ungroup", "mod+shift+G", "ungroup"], "-",
+      ["Combine Shapes", [["Union", "", "bool:unite"], ["Subtract", "", "bool:subtract"], ["Intersect", "", "bool:intersect"], ["Exclude", "", "bool:exclude"]]],
+      "-", ["Group", "mod+G", "group"], ["Ungroup", "mod+shift+G", "ungroup"], ["Make Clipping Mask", "mod+7", "mask"], ["Release Clipping Mask", "mod+alt+7", "unmask"], "-",
+      ["Repeat Grid…", "", "repeat"], ["Recolour Artwork…", "", "recolor"], ["Expand to Editable Path", "", "expand"], "-",
       ["Lock Selection", "mod+2", "lock"], ["Unlock All", "mod+alt+2", "unlock-all"], ["Hide Selection", "mod+3", "hide"], ["Show All", "mod+alt+3", "show-all"], "-",
-      ["Expand to Editable Path", "", "expand"],
       ["Artboards", [["New Artboard", "", "ab-new"], ["Duplicate Artboard", "", "ab-dup"], ["Fit to Artwork Bounds", "", "ab-fit"], ["Delete Artboard", "", "ab-delete"]]]]],
-    ["Type", [["Font Pairs…", "", "panel:text"], "-",
-      ["Change Case", [["UPPERCASE", "", "case:upper"], ["lowercase", "", "case:lower"], ["Title Case", "", "case:title"], ["Sentence case", "", "case:sentence"]]],
+    ["Text", [["Change Case", [["UPPERCASE", "", "case:upper"], ["lowercase", "", "case:lower"], ["Title Case", "", "case:title"], ["Sentence case", "", "case:sentence"]]],
       ["Paragraph", [["Align Left", "", "talign:left"], ["Align Centre", "", "talign:center"], ["Align Right", "", "talign:right"], ["Justify", "", "talign:justify"]]], "-",
-      ["Fill With Placeholder Text", "", "lorem"]]],
-    ["Select", [["All", "mod+A", "select-all"], ["All on Active Artboard", "mod+alt+A", "select-artboard"], ["Deselect", "mod+shift+A", "deselect"], ["Inverse", "", "select-inverse"], "-",
-      ["Same", [["Fill Colour", "", "same:fill"], ["Stroke Colour", "", "same:stroke"], ["Font", "", "same:font"]]]]],
+      ["Fill With Placeholder Text", "", "lorem"], ["Font Pairs", "", "assets:text"]]],
     ["Effect", [["Drop Shadow", "", "fx:shadow"], ["Remove Drop Shadow", "", "fx:noshadow"], "-",
       ["Image", [["Black and White", "", "fx:gray"], ["Sepia", "", "fx:sepia"], ["Invert", "", "fx:invert"], ["Blur", "", "fx:blur"], ["Clear Image Effects", "", "fx:clear"]]]]],
-    ["View", [["Zoom In", "mod+=", "zoom-in"], ["Zoom Out", "mod+-", "zoom-out"], ["Fit Artboard in Window", "mod+0", "fit"], ["Fit All in Window", "mod+alt+0", "fit-all"], ["Actual Size", "mod+1", "actual"], "-",
-      ["Rulers", "mod+R", "toggle:rulers", "rulers"], ["Smart Guides", "mod+U", "toggle:smart", "smart"], ["Guides", "mod+;", "toggle:guides", "guides"],
-      ["Lock Guides", "mod+alt+;", "toggle:lockGuides", "lockGuides"], ["Clear Guides", "", "clear-guides"], "-",
-      ["Grid", "mod+'", "toggle:grid", "grid"], ["Snap to Grid", "mod+shift+'", "toggle:snapGrid", "snapGrid"], ["Artboard Names", "", "toggle:names", "names"]]],
-    ["Window", [["Properties", "", "panel:properties", "panel:properties"], ["Layers", "F7", "panel:layers", "panel:layers"], ["Artboards", "", "panel:artboards", "panel:artboards"],
-      ["Swatches", "", "panel:swatches", "panel:swatches"], ["Libraries", "", "panel:libraries", "panel:libraries"], ["Brief", "", "panel:brief", "panel:brief"], "-",
-      ["Control Bar", "", "toggle:control", "control"], ["Tools", "", "toggle:tools", "tools"], "-", ["Reset Workspace", "", "reset-ws"]]],
-    ["Help", [["Canvas Help", "F1", "shortcuts"], ["Keyboard Shortcuts…", "", "shortcuts"], "-", ["Design Basics course", "", "learn"], ["About Canvas", "", "about"]]]
+    ["View", [["Zoom In", "mod+=", "zoom-in"], ["Zoom Out", "mod+-", "zoom-out"], ["Zoom to Fit", "shift+1", "fit-all"], ["Zoom to Artboard", "shift+2", "fit"], ["Zoom to Selection", "shift+3", "fit-sel"], ["Actual Size", "mod+1", "actual"], "-",
+      ["Preview", "mod+enter", "present"], ["Hide Interface", "mod+\\", "toggle:ui", "hideUI"], "-",
+      ["Rulers", "shift+R", "toggle:rulers", "rulers"], ["Guides", "mod+;", "toggle:guides", "guides"], ["Lock Guides", "mod+alt+;", "toggle:lockGuides", "lockGuides"], ["Clear Guides", "", "clear-guides"], "-",
+      ["Grid", "mod+'", "toggle:grid", "grid"], ["Snap to Grid", "mod+shift+'", "toggle:snapGrid", "snapGrid"], ["Smart Guides", "mod+U", "toggle:smart", "smart"], ["Snap to Whole Pixels", "", "toggle:pixel", "pixel"], "-",
+      ["Minimap", "", "toggle:mini", "mini"], ["Artboard Names", "", "toggle:names", "names"], ["Light Interface", "", "toggle:light", "light"]]],
+    ["Help", [["Command Palette", "mod+K", "palette"], ["Keyboard Shortcuts", "mod+/", "shortcuts"], "-", ["Design Basics course", "", "learn"], ["About Canvas", "", "about"]]]
   ];
 
   /* =====================================================================
      Markup
      ===================================================================== */
-  const toolBtn = g => {
+  const dockBtn = g => {
     const [id, name, key] = g[0];
-    return `<button type="button" class="ai-tool${g.length > 1 ? " has-more" : ""}" data-tool="${id}" data-group='${JSON.stringify(g.map(t => t[0]))}' aria-label="${name}" data-tip="${name}${key ? ` (${keyLabel(key.toLowerCase().startsWith("shift+") ? key : key)})` : ""}">${ui(id)}</button>`;
+    return `<span class="cx-tool-wrap"><button type="button" class="cx-tool" data-tool="${id}" data-group='${JSON.stringify(g.map(t => t[0]))}' aria-label="${name}" data-tip="${name}${key ? ` · ${keyLabel(key)}` : ""}">${ui(id)}</button>${g.length > 1 ? `<button type="button" class="cx-tool-more" data-more aria-label="More tools">${ui("up")}</button>` : ""}</span>`;
   };
-  const RIGHT_STRIP = [["swatches", "swatches", "Swatches"], ["artboards", "artboard", "Artboards"], ["brief", "target", "Brief"], ["templates", "grid", "Templates"],
-    ["text", "fonts", "Font Pairs"], ["icons", "smile", "Icons"], ["images", "image", "Images"], ["layers", "layers", "Layers"]];
   root.innerHTML = `
-    <div class="ai-menubar" role="menubar">
-      <span class="ai-logo" aria-hidden="true">Ds</span>
-      <span class="ai-menus">${MENUS.map(([m], i) => `<button type="button" class="ai-menu-btn" data-menu="${i}" role="menuitem" aria-haspopup="true">${m}</button>`).join("")}</span>
-      <span class="ai-saved" data-saved></span>
-      <button type="button" class="ai-icon-btn ai-mob-panels" data-act="toggle-dock" aria-label="Panels">${ui("panels")}</button>
-      <button type="button" class="ai-share" data-act="export">${ui("export")}<span>Export</span></button>
-    </div>
-    <div class="ai-control" data-control></div>
-    <div class="ai-main">
-      <div class="ai-tools" data-tools>
-        <div class="ai-toolgrid">${TOOL_GROUPS.map(toolBtn).join("")}</div>
-        <div class="ai-paint" data-paint>
-          <label class="ai-fillsw" data-tip="Fill (X switches)"><input type="color" data-paintin="fill" aria-label="Fill colour"><i></i></label>
-          <label class="ai-strokesw" data-tip="Stroke (X switches)"><input type="color" data-paintin="stroke" aria-label="Stroke colour"><i></i></label>
-          <button type="button" class="ai-swap" data-act="swap-paint" aria-label="Swap fill and stroke" data-tip="Swap Fill and Stroke (Shift+X)">${ui("swap")}</button>
-          <button type="button" class="ai-default" data-act="default-paint" aria-label="Default fill and stroke" data-tip="Default Fill and Stroke (D)"><i></i><i></i></button>
-        </div>
-        <div class="ai-paintmode">
-          <button type="button" data-act="paint-colour" aria-label="Colour" data-tip="Colour"><i class="pm-colour"></i></button>
-          <button type="button" data-act="paint-gradient" aria-label="Gradient" data-tip="Gradient"><i class="pm-grad"></i></button>
-          <button type="button" data-act="paint-none" aria-label="None" data-tip="None"><i class="pm-none"></i></button>
-        </div>
+    <header class="cx-top">
+      <div class="cx-top-l">
+        <button type="button" class="cx-brand" data-act="main-menu" aria-haspopup="true" aria-label="Main menu">${MARK_SVG}<span>Canvas</span>${ui("chev")}</button>
+        <span class="cx-vr"></span>
+        <input class="cx-docname" data-name value="" aria-label="Design name" spellcheck="false" maxlength="60">
+        <span class="cx-saved" data-saved><i></i><em></em></span>
       </div>
-      <div class="ai-center">
-        <div class="ai-tabs"><div class="ai-doctab is-on"><span data-doctab></span><button type="button" data-act="new" aria-label="Close and start a new document">${ui("close")}</button></div></div>
-        <div class="ai-viewport" data-viewport>
-          <span class="ai-corner" data-act="toggle:rulers" aria-hidden="true"></span>
-          <canvas class="ai-ruler h" data-ruler="h" aria-hidden="true"></canvas>
-          <canvas class="ai-ruler v" data-ruler="v" aria-hidden="true"></canvas>
-          <div class="ai-stage" data-stage><canvas></canvas></div>
-          <div class="ai-measure" data-measure hidden></div>
-          <div class="ai-drop" data-drop><span>${ui("upload")}Drop images to place them</span></div>
-          <div class="ai-toast" data-toast role="status"></div>
-        </div>
-        <div class="ai-status">
-          <label class="ai-zoomsel"><input data-zoomin value="100%" aria-label="Zoom" spellcheck="false"><button type="button" data-act="zoom-menu" aria-label="Zoom presets">${ui("chev")}</button></label>
-          <span class="ai-abnav">
-            <button type="button" data-act="ab-first" aria-label="First artboard">${ui("first")}</button>
-            <button type="button" data-act="ab-prev" aria-label="Previous artboard">${ui("left")}</button>
-            <select data-absel aria-label="Artboard"></select>
-            <button type="button" data-act="ab-next" aria-label="Next artboard">${ui("right")}</button>
-            <button type="button" data-act="ab-last" aria-label="Last artboard">${ui("last")}</button>
-          </span>
-          <span class="ai-hint" data-hint></span>
-        </div>
+      <div class="cx-top-c"><button type="button" class="cx-abchip" data-act="ab-menu" aria-haspopup="true"><span data-abchip></span>${ui("chev")}</button></div>
+      <div class="cx-top-r">
+        <button type="button" class="cx-search" data-act="palette" aria-label="Command palette">${ui("command")}<span>Search actions</span><kbd>${keyLabel("mod+K")}</kbd></button>
+        <span class="cx-pair2"><button type="button" class="cx-ico" data-act="undo" aria-label="Undo" data-tip="Undo · ${keyLabel("mod+Z")}">${ui("undo")}</button><button type="button" class="cx-ico" data-act="redo" aria-label="Redo" data-tip="Redo · ${keyLabel("mod+shift+Z")}">${ui("redo")}</button></span>
+        <button type="button" class="cx-ico" data-act="toggle:light" aria-label="Light or dark interface" data-tip="Light or dark interface" data-themebtn></button>
+        <button type="button" class="cx-ghost" data-act="present" data-tip="Preview · ${keyLabel("mod+enter")}">${ui("play")}<span>Preview</span></button>
+        <button type="button" class="cx-primary" data-act="export">${ui("export")}<span>Export</span></button>
       </div>
-      <div class="ai-strip" aria-label="Panels">
-        ${RIGHT_STRIP.map(([k, ic, label]) => `<button type="button" data-panel="${k}" aria-label="${label}" data-tip="${label}">${ui(ic)}</button>`).join("")}
-      </div>
-      <aside class="ai-dock" data-dock>
-        <div class="ai-docktabs" data-docktabs></div>
-        <div class="ai-dockbody" data-dockbody></div>
+    </header>
+    <div class="cx-body" data-body>
+      <div class="cx-stage" data-stage><canvas></canvas></div>
+      <canvas class="cx-ruler h" data-ruler="h" aria-hidden="true"></canvas>
+      <canvas class="cx-ruler v" data-ruler="v" aria-hidden="true"></canvas>
+      <span class="cx-corner" aria-hidden="true"></span>
+      <aside class="cx-panel cx-left" data-left>
+        <div class="cx-tabs" data-ltabs></div>
+        <div class="cx-panel-body" data-lbody></div>
       </aside>
+      <aside class="cx-panel cx-right" data-right>
+        <div class="cx-insp-head" data-ihead></div>
+        <div class="cx-panel-body" data-rbody></div>
+      </aside>
+      <nav class="cx-dock" data-dock aria-label="Tools">
+        ${TOOL_GROUPS.map(g => (g === "|" ? `<span class="cx-dock-sep"></span>` : dockBtn(g))).join("")}
+        <span class="cx-dock-sep"></span>
+        <div class="cx-paint" data-paint data-tip="Fill and stroke for new shapes · X switches">
+          <label class="cx-paint-s"><input type="color" data-paintin="stroke" aria-label="Stroke colour"></label>
+          <label class="cx-paint-f"><input type="color" data-paintin="fill" aria-label="Fill colour"></label>
+        </div>
+        <button type="button" class="cx-tool" data-act="place" aria-label="Place image" data-tip="Place image · ${keyLabel("mod+shift+P")}">${ui("image")}</button>
+        <span class="cx-dock-sep"></span>
+        <div class="cx-navcard" data-navcard>
+          <div class="cx-miniwrap"><canvas class="cx-minimap" data-mini aria-label="Minimap"></canvas></div>
+          <div class="cx-zoomrow">
+            <button type="button" data-act="zoom-out" aria-label="Zoom out">${ui("minus")}</button>
+            <button type="button" class="cx-zoomval" data-act="zoom-menu" data-zoomval aria-label="Zoom presets">100%</button>
+            <button type="button" data-act="zoom-in" aria-label="Zoom in">${ui("plus")}</button>
+            <button type="button" data-act="fit" aria-label="Zoom to artboard" data-tip="Zoom to artboard · ${keyLabel("shift+2")}">${ui("fit")}</button>
+          </div>
+        </div>
+      </nav>
+      <div class="cx-selbar" data-selbar hidden></div>
+      <div class="cx-hint" data-hint></div>
+      <div class="cx-measure" data-measure data-no-i18n hidden></div>
+      <div class="cx-drop" data-drop><span>${ui("upload")}Drop images to place them</span></div>
+      <div class="cx-toast" data-toast role="status"></div>
+      <div class="cx-present-bar" data-presentbar><button type="button" data-act="ab-prev" aria-label="Previous artboard">${ui("left")}</button><span data-presentlabel data-no-i18n></span><button type="button" data-act="ab-next" aria-label="Next artboard">${ui("right")}</button><button type="button" data-act="present" aria-label="Close preview">${ui("close")}</button></div>
+      <button type="button" class="cx-mobpanel" data-act="toggle-sheet" aria-label="Panels" data-tip="Panels">${ui("panels")}</button>
     </div>
-    <div class="ai-menu" data-menupop hidden role="menu"></div>
-    <div class="ai-flyout" data-flyout hidden></div>
-    <div class="ai-modal" data-modal hidden><div class="ai-dialog" role="dialog" aria-modal="true" data-dialog></div></div>
+    <div class="cx-menu" data-menupop hidden role="menu"></div>
+    <div class="cx-modal" data-modal hidden><div class="cx-dialog" role="dialog" aria-modal="true" data-dialog></div></div>
+    <div class="cx-palette" data-palette hidden><div class="cx-palette-box" role="dialog" aria-label="Command palette">
+      <label class="cx-palette-in">${ui("command")}<input data-pq placeholder="Type a command, tool, icon, font or template…" aria-label="Search" spellcheck="false" autocomplete="off"><kbd>Esc</kbd></label>
+      <div class="cx-palette-list" data-plist role="listbox"></div>
+    </div></div>
     <input type="file" accept="image/*" multiple hidden data-file-img>
+    <input type="file" accept="image/*" hidden data-file-replace>
     <input type="file" accept=".json,application/json" hidden data-file-json>`;
 
-  const stage = $("[data-stage]", root), viewport = $("[data-viewport]", root), control = $("[data-control]", root);
-  const dockBody = $("[data-dockbody]", root), dockTabs = $("[data-docktabs]", root), menuPop = $("[data-menupop]", root);
-  const flyout = $("[data-flyout]", root), modal = $("[data-modal]", root), dialog = $("[data-dialog]", root);
+  const stage = $("[data-stage]", root), body = $("[data-body]", root);
+  const leftP = $("[data-left]", root), rightP = $("[data-right]", root), lBody = $("[data-lbody]", root), rBody = $("[data-rbody]", root);
+  const lTabs = $("[data-ltabs]", root), iHead = $("[data-ihead]", root), dock = $("[data-dock]", root), selbar = $("[data-selbar]", root);
+  const menuPop = $("[data-menupop]", root), modal = $("[data-modal]", root), dialog = $("[data-dialog]", root);
+  const paletteEl = $("[data-palette]", root), pq = $("[data-pq]", root), plist = $("[data-plist]", root);
   const measureEl = $("[data-measure]", root), toastEl = $("[data-toast]", root), hintEl = $("[data-hint]", root);
-  const zoomIn = $("[data-zoomin]", root), abSel = $("[data-absel]", root), savedEl = $("[data-saved]", root);
+  const nameIn = $("[data-name]", root), savedEl = $("[data-saved]", root), mini = $("[data-mini]", root);
   const rulerH = $("[data-ruler=h]", root), rulerV = $("[data-ruler=v]", root);
 
   /* =====================================================================
@@ -296,32 +327,41 @@ window.DSCanvas = function (kit) {
      ===================================================================== */
   F.Object.prototype.set({
     transparentCorners: false, cornerColor: "#ffffff", cornerStrokeColor: "#1f7aff", borderColor: "#1f7aff",
-    cornerSize: 8, cornerStyle: "rect", borderScaleFactor: 1, padding: 0, borderOpacityWhenMoving: .6
+    cornerSize: 9, cornerStyle: "circle", borderScaleFactor: 1.4, padding: 0, borderOpacityWhenMoving: .6
   });
   F.IText.prototype.set({ editingBorderColor: "#1f7aff", cursorColor: "#1f7aff", selectionColor: "rgba(31, 122, 255, .3)" });
   if (F.Canvas2dFilterBackend) F.filterBackend = new F.Canvas2dFilterBackend();
-  const PROPS = ["name", "locked", "kind", "kindRadius", "anchors", "closed", "hasControls", "lockMovementX", "lockMovementY", "lockScalingX", "lockScalingY", "lockRotation"];
+  const PROPS = ["name", "locked", "kind", "kindRadius", "anchors", "closed", "hasControls", "lockMovementX", "lockMovementY", "lockScalingX", "lockScalingY", "lockRotation", "maskShape"];
   const cv = new F.Canvas($("canvas", stage), {
     preserveObjectStacking: true, stopContextMenu: true, fireRightClick: true, uniformScaling: false, uniScaleKey: "shiftKey",
-    selectionColor: "rgba(31, 122, 255, .06)", selectionBorderColor: "#1f7aff", selectionLineWidth: 1, targetFindTolerance: 4
+    selectionColor: "rgba(31, 122, 255, .07)", selectionBorderColor: "#1f7aff", selectionLineWidth: 1, targetFindTolerance: 4
   });
 
   /* ---------- Document state ---------- */
-  const PASTE = "#3c3c3c", GUIDE = "#24c1ff", SMART = "#ff2fa4";
+  const GUIDE = "#24c1ff", SMART = "#ff3fa4";
   const doc = { name: tr("Untitled design"), artboards: [], active: 0, guides: { v: [], h: [] } };
-  const view = { rulers: true, smart: true, guides: true, lockGuides: false, grid: false, snapGrid: false, names: true, control: true, tools: true };
+  const view = { rulers: false, smart: true, guides: true, lockGuides: false, grid: false, snapGrid: false, pixel: true, names: true, mini: true, light: false, hideUI: false };
   const prefs = { nudge: 1, scaleStrokes: false, gridSize: 20 };
-  const paint = { fill: "#ffffff", stroke: "#000000", strokeWidth: 1, focus: "fill" };
-  const charState = { family: "Inter", weight: 400, size: 48 };
-  let tool = "select", brief = null, abSelected = -1;
+  const DEFAULT_PAINT = { fill: "#1f7aff", stroke: null, strokeWidth: 2 };
+  const paint = Object.assign({ focus: "fill" }, DEFAULT_PAINT);
+  const charState = { family: "Inter", weight: 600, size: 64 };
+  let tool = "select", brief = null, abSelected = -1, present = false;
   const ab = () => doc.artboards[doc.active] || doc.artboards[0];
   const newArtboard = (w, h, x = 0, y = 0, bg = "#ffffff") => ({ name: `${tr("Artboard")} ${doc.artboards.length + 1}`, x, y, w, h, bg });
   const unit = () => { const a = ab(); return a ? Math.min(a.w, a.h) / 1080 : 1; };
-  try { Object.assign(view, JSON.parse(localStorage.getItem("ds-canvas-view") || "{}")); Object.assign(prefs, JSON.parse(localStorage.getItem("ds-canvas-prefs") || "{}")); } catch (e) { /* defaults */ }
-  const saveView = () => { try { localStorage.setItem("ds-canvas-view", JSON.stringify(view)); localStorage.setItem("ds-canvas-prefs", JSON.stringify(prefs)); } catch (e) { /* private mode */ } };
-  root.classList.toggle("no-rulers", !view.rulers);
-  root.classList.toggle("no-control", !view.control);
-  root.classList.toggle("no-tools", !view.tools);
+  try { Object.assign(view, JSON.parse(localStorage.getItem("ds-canvas-view2") || "{}")); Object.assign(prefs, JSON.parse(localStorage.getItem("ds-canvas-prefs") || "{}")); } catch (e) { /* defaults */ }
+  view.hideUI = false;
+  const saveView = () => { try { localStorage.setItem("ds-canvas-view2", JSON.stringify(Object.assign({}, view, { hideUI: false }))); localStorage.setItem("ds-canvas-prefs", JSON.stringify(prefs)); } catch (e) { /* private mode */ } };
+  const applyViewClasses = () => {
+    root.classList.toggle("has-rulers", !!view.rulers);
+    root.classList.toggle("is-light", !!view.light);
+    root.classList.toggle("no-mini", !view.mini);
+    root.classList.toggle("hide-ui", !!view.hideUI);
+    root.classList.toggle("is-present", present);
+    $("[data-themebtn]", root).innerHTML = ui(view.light ? "moon" : "sun");
+  };
+  applyViewClasses();
+  const pasteColour = () => (view.light ? "#e9e9ee" : "#111113");
 
   /* =====================================================================
      Pasteboard, artboards, grid (drawn under the artwork)
@@ -331,46 +371,68 @@ window.DSCanvas = function (kit) {
   cv._renderBackground = function (ctx) {
     const v = this.viewportTransform;
     if (!exporting()) {
-      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = PASTE; ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height); ctx.restore();
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = present ? "#000000" : pasteColour(); ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+      // a faint dot grid on the pasteboard
+      const step = 24;
+      if (!present) {
+        const d = window.devicePixelRatio || 1;
+        ctx.fillStyle = view.light ? "rgba(0,0,0,.10)" : "rgba(255,255,255,.06)";
+        const ox = ((v[4] % step) + step) % step, oy = ((v[5] % step) + step) % step;
+        for (let x = ox; x < ctx.canvas.width / d; x += step) for (let y = oy; y < ctx.canvas.height / d; y += step) ctx.fillRect(x * d, y * d, d * 1.25, d * 1.25);
+      }
+      ctx.restore();
     }
     ctx.save();
     ctx.transform(v[0], v[1], v[2], v[3], v[4], v[5]);
-    doc.artboards.forEach(a => {
+    doc.artboards.forEach((a, i) => {
       if (exporting() && !exportBg) return;
-      if (!exporting()) { ctx.shadowColor = "rgba(0,0,0,.35)"; ctx.shadowBlur = 18; ctx.shadowOffsetY = 2; }
+      if (present && i !== doc.active) return;
+      if (!exporting()) { ctx.shadowColor = view.light ? "rgba(0,0,0,.14)" : "rgba(0,0,0,.5)"; ctx.shadowBlur = 36 * (window.devicePixelRatio || 1); ctx.shadowOffsetY = 6 * (window.devicePixelRatio || 1); }
       ctx.fillStyle = a.bg || "#ffffff";
       ctx.fillRect(a.x, a.y, a.w, a.h);
       ctx.shadowColor = "transparent";
     });
-    if (view.grid && !exporting()) {
+    if (view.grid && !exporting() && !present) {
       const g = prefs.gridSize, z = v[0];
       if (g * z >= 5) {
         ctx.lineWidth = 1 / z;
         doc.artboards.forEach(a => {
           ctx.save(); ctx.beginPath(); ctx.rect(a.x, a.y, a.w, a.h); ctx.clip();
-          for (let x = a.x, i = 0; x <= a.x + a.w; x += g, i++) { ctx.strokeStyle = i % 5 ? "rgba(0,0,0,.06)" : "rgba(0,0,0,.13)"; ctx.beginPath(); ctx.moveTo(x, a.y); ctx.lineTo(x, a.y + a.h); ctx.stroke(); }
-          for (let y = a.y, i = 0; y <= a.y + a.h; y += g, i++) { ctx.strokeStyle = i % 5 ? "rgba(0,0,0,.06)" : "rgba(0,0,0,.13)"; ctx.beginPath(); ctx.moveTo(a.x, y); ctx.lineTo(a.x + a.w, y); ctx.stroke(); }
+          for (let x = a.x, i = 0; x <= a.x + a.w; x += g, i++) { ctx.strokeStyle = i % 5 ? "rgba(31,122,255,.08)" : "rgba(31,122,255,.18)"; ctx.beginPath(); ctx.moveTo(x, a.y); ctx.lineTo(x, a.y + a.h); ctx.stroke(); }
+          for (let y = a.y, i = 0; y <= a.y + a.h; y += g, i++) { ctx.strokeStyle = i % 5 ? "rgba(31,122,255,.08)" : "rgba(31,122,255,.18)"; ctx.beginPath(); ctx.moveTo(a.x, y); ctx.lineTo(a.x + a.w, y); ctx.stroke(); }
           ctx.restore();
         });
       }
     }
     ctx.restore();
   };
-  // Over the artwork: artboard frames and names, ruler guides, anchor handles
+  // Artboard names, guides and point handles over the artwork (main layer only)
   cv.on("after:render", ({ ctx }) => {
-    if (exporting()) return;
+    if (exporting() || ctx !== cv.contextContainer) return;
     const v = cv.viewportTransform, z = v[0];
+    if (present) {
+      // in preview, hide whatever sits outside the artboard
+      const a = ab();
+      ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+      const d = window.devicePixelRatio || 1, x = (v[4] + a.x * z) * d, y = (v[5] + a.y * z) * d, w = a.w * z * d, h = a.h * z * d;
+      ctx.fillStyle = "#000000";
+      ctx.fillRect(0, 0, ctx.canvas.width, y); ctx.fillRect(0, y + h, ctx.canvas.width, ctx.canvas.height); ctx.fillRect(0, y, x, h); ctx.fillRect(x + w, y, ctx.canvas.width, h);
+      ctx.restore();
+      return;
+    }
     ctx.save();
     ctx.transform(v[0], v[1], v[2], v[3], v[4], v[5]);
     doc.artboards.forEach((a, i) => {
       const on = i === doc.active, sel = tool === "artboard" && i === abSelected;
-      ctx.lineWidth = (sel ? 2 : 1) / z;
-      ctx.strokeStyle = sel ? "#1f7aff" : on ? "rgba(0,0,0,.55)" : "rgba(0,0,0,.25)";
-      ctx.strokeRect(a.x, a.y, a.w, a.h);
+      if (sel) { ctx.lineWidth = 2 / z; ctx.strokeStyle = "#1f7aff"; ctx.strokeRect(a.x, a.y, a.w, a.h); }
       if (view.names) {
-        ctx.font = `${11 / z}px Inter, system-ui, sans-serif`;
-        ctx.fillStyle = on ? "#e6e6e6" : "#a8a8a8";
-        ctx.fillText(`${String(i + 1).padStart(2, "0")} - ${a.name}`, a.x, a.y - 6 / z);
+        ctx.font = `${on ? 600 : 500} ${11.5 / z}px Inter, system-ui, sans-serif`;
+        ctx.fillStyle = sel ? "#1f7aff" : on ? (view.light ? "#1d1d1f" : "#f2f2f7") : "#8e8e93";
+        ctx.fillText(a.name, a.x, a.y - 8 / z);
+        const nameW = ctx.measureText(a.name).width;
+        ctx.fillStyle = view.light ? "#aeaeb2" : "#636366";
+        ctx.font = `500 ${11 / z}px Inter, system-ui, sans-serif`;
+        ctx.fillText(`${a.w} × ${a.h}`, a.x + nameW + 8 / z, a.y - 8 / z);
       }
     });
     if (view.guides) {
@@ -379,48 +441,56 @@ window.DSCanvas = function (kit) {
       doc.guides.v.forEach(x => { ctx.beginPath(); ctx.moveTo(x, tl.y); ctx.lineTo(x, br.y); ctx.stroke(); });
       doc.guides.h.forEach(y => { ctx.beginPath(); ctx.moveTo(tl.x, y); ctx.lineTo(br.x, y); ctx.stroke(); });
     }
-    // anchor handles of the path being edited
     const o = cv.getActiveObject();
     if (tool === "direct" && o && o.kind === "vector" && o.anchors) {
-      const m = o.calcTransformMatrix();
       ctx.strokeStyle = "#1f7aff"; ctx.lineWidth = 1 / z;
-      o.anchors.forEach(a => {
-        const p = toScene(o, a.x, a.y);
-        [[a.ix, a.iy], [a.ox, a.oy]].forEach(([hx, hy]) => {
+      o.anchors.forEach(an => {
+        const p = toScene(o, an.x, an.y);
+        [[an.ix, an.iy], [an.ox, an.oy]].forEach(([hx, hy]) => {
           if (!hx && !hy) return;
-          const q = toScene(o, a.x + hx, a.y + hy);
+          const q = toScene(o, an.x + hx, an.y + hy);
           ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke();
         });
       });
-      void m;
     }
     ctx.restore();
     drawRulers();
+    scheduleOverlay();
   });
 
   /* ---------- View: zoom and pan ---------- */
   const zoom = () => cv.getZoom();
-  function fitRect(r, pad = 60) {
+  // the part of the stage not covered by floating panels
+  function insets() {
+    const phone = innerWidth < 900;
+    if (present || view.hideUI || phone) return { l: 16, r: 16, t: present ? 24 : 24, b: present ? 80 : (phone ? 96 : 24) };
+    const S = stage.getBoundingClientRect(), L = leftP.getBoundingClientRect(), R = rightP.getBoundingClientRect();
+    return { l: Math.max(16, L.right - S.left + 24), r: Math.max(16, S.right - R.left + 24), t: (view.rulers ? 18 : 0) + 40, b: 100 };
+  }
+  function fitRect(r) {
     const W = cv.width, H = cv.height;
-    if (!W || !H || !r) return;
-    const z = clamp(Math.min((W - pad * 2) / r.w, (H - pad * 2) / r.h), .02, 64);
-    cv.setViewportTransform([z, 0, 0, z, (W - r.w * z) / 2 - r.x * z, (H - r.h * z) / 2 - r.y * z]);
+    if (!W || !H || !r || !r.w || !r.h) return;
+    const p = insets(), aw = Math.max(80, W - p.l - p.r), ah = Math.max(80, H - p.t - p.b);
+    const z = clamp(Math.min(aw / r.w, ah / r.h), .02, 64);
+    cv.setViewportTransform([z, 0, 0, z, p.l + (aw - r.w * z) / 2 - r.x * z, p.t + (ah - r.h * z) / 2 - r.y * z]);
     afterView();
   }
-  const fitArtboard = () => fitRect(ab(), innerWidth < 900 ? 24 : 60);
+  const fitArtboard = () => fitRect(ab());
   const allBounds = () => {
     const rs = doc.artboards.map(a => ({ l: a.x, t: a.y, r: a.x + a.w, b: a.y + a.h }));
     cv.getObjects().forEach(o => { const b = o.getBoundingRect(true, true); rs.push({ l: b.left, t: b.top, r: b.left + b.width, b: b.top + b.height }); });
     const l = Math.min(...rs.map(r => r.l)), t = Math.min(...rs.map(r => r.t));
     return { x: l, y: t, w: Math.max(...rs.map(r => r.r)) - l, h: Math.max(...rs.map(r => r.b)) - t };
   };
-  const zoomAt = (pt, z) => { cv.zoomToPoint(new F.Point(pt.x, pt.y), clamp(z, .02, 64)); afterView(); };
-  const zoomCenter = z => zoomAt({ x: cv.width / 2, y: cv.height / 2 }, z);
+  let navT = 0;
+  // the minimap shows while the view moves, then fades away
+  const pingNav = () => { if (!view.mini) return; root.classList.add("is-nav"); clearTimeout(navT); navT = setTimeout(() => root.classList.remove("is-nav"), 1400); };
+  const zoomAt = (pt, z) => { cv.zoomToPoint(new F.Point(pt.x, pt.y), clamp(z, .02, 64)); pingNav(); afterView(); };
+  const zoomCenter = z => { const p = insets(); zoomAt({ x: p.l + (cv.width - p.l - p.r) / 2, y: p.t + (cv.height - p.t - p.b) / 2 }, z); };
   function afterView() {
     cv.getObjects().forEach(o => o.setCoords());
     const a = cv.getActiveObject(); if (a) a.setCoords();
-    if (document.activeElement !== zoomIn) zoomIn.value = round(zoom() * 100, zoom() < .1 ? 1 : 0) + "%";
-    $("[data-doctab]", root).textContent = `${doc.name} @ ${round(zoom() * 100, 1)}% (RGB/Preview)`;
+    $("[data-zoomval]", root).textContent = round(zoom() * 100, zoom() < .1 ? 1 : 0) + "%";
     cv.requestRenderAll();
   }
   const resize = () => {
@@ -439,37 +509,36 @@ window.DSCanvas = function (kit) {
       zoomAt({ x: e.clientX - r.left, y: e.clientY - r.top }, zoom() * Math.pow(1.0018, -e.deltaY * (e.ctrlKey && !e.metaKey && Math.abs(e.deltaY) < 50 ? 4 : 1)));
     } else {
       cv.relativePan(new F.Point(-(e.shiftKey ? e.deltaY : e.deltaX), -(e.shiftKey ? 0 : e.deltaY)));
-      afterView();
+      pingNav(); afterView();
     }
   }, { passive: false });
-  zoomIn.addEventListener("change", () => { const v = parseFloat(zoomIn.value); if (v > 0) zoomCenter(v / 100); else afterView(); zoomIn.blur(); });
-  zoomIn.addEventListener("keydown", e => { if (e.key === "Enter") zoomIn.blur(); });
 
   /* ---------- Rulers ---------- */
   const DPR = () => window.devicePixelRatio || 1;
   function sizeRulers() {
-    [[rulerH, "h"], [rulerV, "v"]].forEach(([c]) => { const r = c.getBoundingClientRect(); c.width = Math.round(r.width * DPR()); c.height = Math.round(r.height * DPR()); });
+    [rulerH, rulerV].forEach(c => { const r = c.getBoundingClientRect(); c.width = Math.round(r.width * DPR()); c.height = Math.round(r.height * DPR()); });
     drawRulers();
   }
   let mouseScreen = null;
   function drawRulers() {
-    if (!view.rulers) return;
+    if (!view.rulers || present || !rulerH.width) return;
     const v = cv.viewportTransform, z = v[0], a = ab() || { x: 0, y: 0 };
     const steps = [1, 2, 5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 5000];
-    const major = steps.find(s => s * z >= 64) || 10000, minor = major / (major % 5 === 0 && major >= 5 ? 5 : 2);
-    const sel = cv.getActiveObject(), sb = sel ? sel.getBoundingRect() : null;
+    const major = steps.find(s => s * z >= 70) || 10000, minor = major / (major % 5 === 0 && major >= 5 ? 5 : 2);
+    const selO = cv.getActiveObject(), sb = selO ? selO.getBoundingRect() : null;
+    const bg = view.light ? "#f5f5f7" : "#18181b", fg = view.light ? "#8e8e93" : "#6e6e73", tick = view.light ? "#c7c7cc" : "#3a3a3c";
     [[rulerH, true], [rulerV, false]].forEach(([c, horiz]) => {
       const x = c.getContext("2d"), d = DPR(), W = c.width / d, H = c.height / d;
       x.setTransform(d, 0, 0, d, 0, 0);
-      x.fillStyle = "#2b2b2b"; x.fillRect(0, 0, W, H);
-      const len = horiz ? W : H, off = horiz ? v[4] + a.x * z : v[5] + a.y * z;   // screen position of the artboard's 0
-      if (sb) { x.fillStyle = "rgba(31,122,255,.28)"; if (horiz) x.fillRect(sb.left, 0, sb.width, H); else x.fillRect(0, sb.top, W, sb.height); }
-      x.strokeStyle = "#7a7a7a"; x.fillStyle = "#a3a3a3"; x.lineWidth = 1; x.font = "9px Inter, system-ui, sans-serif";
+      x.fillStyle = bg; x.fillRect(0, 0, W, H);
+      const len = horiz ? W : H, off = horiz ? v[4] + a.x * z : v[5] + a.y * z;
+      if (sb) { x.fillStyle = "rgba(31,122,255,.22)"; if (horiz) x.fillRect(sb.left, 0, sb.width, H); else x.fillRect(0, sb.top, W, sb.height); }
+      x.strokeStyle = tick; x.fillStyle = fg; x.lineWidth = 1; x.font = "500 9px Inter, system-ui, sans-serif";
       const start = Math.floor(-off / z / minor) * minor, end = (len - off) / z;
       x.beginPath();
       for (let u = start; u <= end; u += minor) {
         const s = Math.round(off + u * z) + .5, isMajor = Math.abs(u / major - Math.round(u / major)) < 1e-6;
-        const t = isMajor ? (horiz ? H : W) : (horiz ? H : W) * .3;
+        const t = isMajor ? (horiz ? H : W) * .6 : (horiz ? H : W) * .25;
         if (horiz) { x.moveTo(s, H); x.lineTo(s, H - t); } else { x.moveTo(W, s); x.lineTo(W - t, s); }
         if (isMajor) {
           const label = String(round(u, 2));
@@ -479,31 +548,29 @@ window.DSCanvas = function (kit) {
       }
       x.stroke();
       if (mouseScreen) { x.strokeStyle = "#1f7aff"; x.beginPath(); const m = (horiz ? mouseScreen.x : mouseScreen.y) + .5; if (horiz) { x.moveTo(m, 0); x.lineTo(m, H); } else { x.moveTo(0, m); x.lineTo(W, m); } x.stroke(); }
-      x.fillStyle = "#3d3d3d"; if (horiz) x.fillRect(0, H - 1, W, 1); else x.fillRect(W - 1, 0, 1, H);
     });
   }
   // Drag from a ruler to make a guide; drag a guide back onto a ruler to remove it
   let guideDrag = null;
-  const stagePt = e => { const r = stage.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, inside: e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom }; };
+  const stagePt = e => { const r = stage.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top, inside: e.clientX >= r.left + (view.rulers ? 18 : 0) && e.clientX <= r.right && e.clientY >= r.top + (view.rulers ? 18 : 0) && e.clientY <= r.bottom }; };
   const sceneOf = sp => F.util.transformPoint(new F.Point(sp.x, sp.y), F.util.invertTransform(cv.viewportTransform));
   [[rulerH, "h"], [rulerV, "v"]].forEach(([c, axis]) => c.addEventListener("pointerdown", e => {
     if (view.lockGuides) return;
     e.preventDefault();
-    guideDrag = { axis, index: doc.guides[axis].push(-1e9) - 1 };
+    guideDrag = { axis, index: doc.guides[axis].push(-1e9) - 1, ruler: true };
     view.guides = true;
   }));
   window.addEventListener("pointermove", e => {
-    if (!guideDrag) return;
-    const sp = stagePt(e), p = sceneOf(sp);
+    if (!guideDrag || !guideDrag.ruler) return;
+    const p = sceneOf(stagePt(e));
     doc.guides[guideDrag.axis][guideDrag.index] = guideDrag.axis === "h" ? round(p.y) : round(p.x);
-    showMeasure(e, guideDrag.axis === "h" ? `Y: ${round(p.y - ab().y)} px` : `X: ${round(p.x - ab().x)} px`);
+    showMeasure(e, guideDrag.axis === "h" ? `Y  ${round(p.y - ab().y)}` : `X  ${round(p.x - ab().x)}`);
     cv.requestRenderAll();
   });
   window.addEventListener("pointerup", e => {
-    if (!guideDrag) return;
-    const sp = stagePt(e);
-    if (!sp.inside) doc.guides[guideDrag.axis].splice(guideDrag.index, 1);
-    guideDrag = null; hideMeasure(); cv.requestRenderAll(); changed();
+    if (!guideDrag || !guideDrag.ruler) return;
+    if (!stagePt(e).inside) doc.guides[guideDrag.axis].splice(guideDrag.index, 1);
+    guideDrag = null; hideMeasure(); cv.requestRenderAll(); note("Guide"); changed();
   });
 
   /* =====================================================================
@@ -522,7 +589,7 @@ window.DSCanvas = function (kit) {
   const refreshText = () => { flat(cv.getObjects()).forEach(o => { if (o.initDimensions) { o.initDimensions(); o.setCoords(); } }); cv.requestRenderAll(); };
 
   /* =====================================================================
-     Vector paths: anchors with handles, editable with Direct Selection
+     Vector paths: anchors with handles, editable with Edit Points
      anchor = { x, y, ix, iy, ox, oy } in the path's own coordinates
      ===================================================================== */
   const f2 = n => (Math.round(n * 100) / 100).toString();
@@ -538,10 +605,8 @@ window.DSCanvas = function (kit) {
     return d;
   };
   const vector = (pts, closed, opts = {}) => new F.Path(pathFrom(pts, closed), Object.assign({ anchors: pts, closed, kind: "vector", objectCaching: false }, opts));
-  // path coordinates ↔ scene
   const toScene = (o, x, y) => F.util.transformPoint(new F.Point(x - o.pathOffset.x, y - o.pathOffset.y), o.calcTransformMatrix());
   const toLocal = (o, x, y) => { const p = F.util.transformPoint(new F.Point(x, y), F.util.invertTransform(o.calcTransformMatrix())); return { x: p.x + o.pathOffset.x, y: p.y + o.pathOffset.y }; };
-  // Rebuild the path from its anchors without moving the parts that didn't change
   function rebuild(o) {
     const M = o.calcTransformMatrix(), po = { x: o.pathOffset.x, y: o.pathOffset.y };
     o._setPath(pathFrom(o.anchors, o.closed));
@@ -569,18 +634,24 @@ window.DSCanvas = function (kit) {
       default: return null;
     }
   }
-  // Turn a live shape into an editable path (Object › Expand)
-  function expand(o) {
-    if (!o || o.kind === "vector") return o;
+  // A live shape as an editable path (detached; the caller decides whether to swap it in)
+  function asVector(o) {
+    if (o.kind === "vector") return o;
     const pts = shapeAnchors(o);
-    if (!pts) return o;
+    if (!pts) return null;
     const closed = !(o.type === "line" || o.type === "polyline");
     const p = vector(pts, closed, {
       fill: o.type === "line" ? null : o.fill, stroke: o.stroke, strokeWidth: o.strokeWidth, strokeUniform: o.strokeUniform, strokeDashArray: o.strokeDashArray,
-      strokeLineCap: o.strokeLineCap, strokeLineJoin: o.strokeLineJoin, opacity: o.opacity, shadow: o.shadow, name: o.name,
+      strokeLineCap: o.strokeLineCap, strokeLineJoin: o.strokeLineJoin, opacity: o.opacity, shadow: o.shadow, name: o.name, globalCompositeOperation: o.globalCompositeOperation,
       angle: o.angle, scaleX: o.scaleX, scaleY: o.scaleY, flipX: o.flipX, flipY: o.flipY, skewX: o.skewX, skewY: o.skewY
     });
     p.setPositionByOrigin(o.getCenterPoint(), "center", "center");
+    return p;
+  }
+  function expand(o) {
+    if (!o || o.kind === "vector") return o;
+    const p = asVector(o);
+    if (!p) return o;
     const i = cv.getObjects().indexOf(o);
     hist.busy++;
     cv.remove(o); cv.insertAt(p, i);
@@ -589,7 +660,6 @@ window.DSCanvas = function (kit) {
     p.setCoords();
     return p;
   }
-  // Direct Selection: one control per anchor and per handle
   let anchorSel = -1;
   function vectorControls(o) {
     const controls = {};
@@ -602,13 +672,9 @@ window.DSCanvas = function (kit) {
     o.anchors.forEach((a, i) => {
       controls["a" + i] = new F.Control({
         positionHandler: pos(i, "a"), cursorStyle: "pointer", actionName: "modifyPath",
-        mouseDownHandler: (e) => {
-          anchorSel = i;
-          if (e.altKey) { toggleSmooth(o, i); return true; }
-          return false;
-        },
-        actionHandler: (e, t, x, y) => { const l = toLocal(o, x, y), an = o.anchors[i]; an.x = l.x; an.y = l.y; rebuild(o); showMeasure(e, `X: ${round(x - ab().x)}  Y: ${round(y - ab().y)}`); return true; },
-        render: (ctx, left, top) => { ctx.save(); ctx.fillStyle = i === anchorSel ? "#1f7aff" : "#ffffff"; ctx.strokeStyle = "#1f7aff"; ctx.lineWidth = 1; ctx.fillRect(left - 3.5, top - 3.5, 7, 7); ctx.strokeRect(left - 3.5, top - 3.5, 7, 7); ctx.restore(); }
+        mouseDownHandler: e => { anchorSel = i; if (e.altKey) { toggleSmooth(o, i); return true; } return false; },
+        actionHandler: (e, t, x, y) => { const l = toLocal(o, x, y), an = o.anchors[i]; an.x = l.x; an.y = l.y; rebuild(o); showMeasure(e, `X  ${round(x - ab().x)}   Y  ${round(y - ab().y)}`); return true; },
+        render: (ctx, left, top) => { ctx.save(); ctx.fillStyle = i === anchorSel ? "#1f7aff" : "#ffffff"; ctx.strokeStyle = "#1f7aff"; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.rect(left - 3.5, top - 3.5, 7, 7); ctx.fill(); ctx.stroke(); ctx.restore(); }
       });
       ["i", "o"].forEach(w => {
         controls[w + i] = new F.Control({
@@ -637,7 +703,7 @@ window.DSCanvas = function (kit) {
       const dx = (q.x - p.x) / 6, dy = (q.y - p.y) / 6;
       a.ix = -dx; a.iy = -dy; a.ox = dx; a.oy = dy;
     }
-    rebuild(o); cv.requestRenderAll(); changed();
+    rebuild(o); cv.requestRenderAll(); note("Edit Points"); changed();
   }
   function setDirectControls() {
     cv.getObjects().forEach(o => { if (o.__direct && (tool !== "direct" || o !== cv.getActiveObject())) { delete o.controls; o.hasBorders = true; o.__direct = false; } });
@@ -645,7 +711,7 @@ window.DSCanvas = function (kit) {
     if (tool === "direct" && o && o.type !== "activeSelection") {
       const v = o.kind === "vector" ? o : expand(o);
       if (v && v.kind === "vector") {
-        if (v !== o) { cv.setActiveObject(v); changed(); }
+        if (v !== o) { cv.setActiveObject(v); note("Expand"); changed(); }
         v.controls = vectorControls(v); v.hasBorders = false; v.__direct = true; anchorSel = -1;
       }
     }
@@ -653,7 +719,7 @@ window.DSCanvas = function (kit) {
   }
 
   /* =====================================================================
-     History and autosave
+     History (with labels) and autosave
      ===================================================================== */
   const store = (() => {
     let dbp = null;
@@ -668,7 +734,10 @@ window.DSCanvas = function (kit) {
     }));
     return { get: k => run("readonly", s => s.get(k)), set: (k, v) => run("readwrite", s => s.put(v, k)) };
   })();
-  const hist = { stack: [], i: -1, busy: 0 };
+  const hist = { stack: [], meta: [], i: -1, busy: 0 };
+  let pending = "";
+  // the label the next history step gets (the first one set wins)
+  const note = l => { if (!pending && !hist.busy) pending = l; };
   const snapshot = () => JSON.stringify({
     app: "draft-studio-canvas", v: 2, name: doc.name, artboards: doc.artboards, active: doc.active, guides: doc.guides,
     brief: brief ? BRIEFS.indexOf(brief) : -1, canvas: cv.toJSON(PROPS)
@@ -677,19 +746,21 @@ window.DSCanvas = function (kit) {
   const changed = () => { if (hist.busy) return; clearTimeout(commitT); commitT = setTimeout(commit, 180); };
   function commit() {
     const s = snapshot();
+    const label = pending || "Change"; pending = "";
     if (s === hist.stack[hist.i]) return;
-    hist.stack = hist.stack.slice(0, hist.i + 1);
-    hist.stack.push(s);
-    if (hist.stack.length > 100) hist.stack.shift();
+    hist.stack = hist.stack.slice(0, hist.i + 1); hist.meta = hist.meta.slice(0, hist.i + 1);
+    hist.stack.push(s); hist.meta.push({ label, time: Date.now() });
+    if (hist.stack.length > 100) { hist.stack.shift(); hist.meta.shift(); }
     hist.i = hist.stack.length - 1;
     persist(s);
     refreshUI();
   }
+  const setSaved = (state, text) => { savedEl.dataset.state = state; $("em", savedEl).textContent = tr(text); };
   const persist = s => {
     clearTimeout(saveT);
-    savedEl.textContent = tr("Saving…");
-    saveT = setTimeout(() => store.set("current", s).then(() => { savedEl.textContent = tr("Saved on this device"); })
-      .catch(() => { savedEl.textContent = tr("Not saved: download a project file"); }), 450);
+    setSaved("busy", "Saving…");
+    saveT = setTimeout(() => store.set("current", s).then(() => setSaved("ok", "Saved"))
+      .catch(() => setSaved("err", "Not saved: download a project file")), 450);
   };
   function restore(s, { keepHistory = true, refit = false } = {}) {
     let d;
@@ -697,7 +768,7 @@ window.DSCanvas = function (kit) {
     if (!d || !d.canvas) return Promise.reject(new Error("not a design"));
     hist.busy++;
     doc.name = d.name || tr("Untitled design");
-    // version 1 files had one page and its colour on the canvas
+    nameIn.value = doc.name;
     doc.artboards = d.artboards && d.artboards.length ? d.artboards : [{ name: `${tr("Artboard")} 1`, x: 0, y: 0, w: d.W || 1080, h: d.H || 1080, bg: d.canvas.background || "#ffffff" }];
     doc.active = clamp(d.active || 0, 0, doc.artboards.length - 1);
     doc.guides = d.guides || { v: [], h: [] };
@@ -712,30 +783,37 @@ window.DSCanvas = function (kit) {
         if (refit) fitArtboard();
         cv.renderAll();
         hist.busy--;
-        if (!keepHistory) { hist.stack = [snapshot()]; hist.i = 0; }
+        if (!keepHistory) { hist.stack = [snapshot()]; hist.meta = [{ label: "Open", time: Date.now() }]; hist.i = 0; }
         refreshUI();
         res();
       });
     });
   }
-  const step = d => {
-    const i = hist.i + d;
-    if (i < 0 || i >= hist.stack.length) return;
+  const jump = i => {
+    if (i < 0 || i >= hist.stack.length || i === hist.i) return;
     hist.i = i;
     restore(hist.stack[i]).then(() => persist(hist.stack[i]));
   };
-  cv.on({ "object:added": changed, "object:removed": changed, "object:modified": changed });
+  const step = d => jump(hist.i + d);
+  cv.on({
+    "object:added": e => { note(tr("Add") + " " + tr(e.target.name || typeName(e.target))); changed(); },
+    "object:removed": () => { note("Delete"); changed(); },
+    "object:modified": e => { note(tr("Edit") + " " + tr((e.target && (e.target.name || typeName(e.target))) || "")); changed(); }
+  });
+  nameIn.addEventListener("change", () => { doc.name = nameIn.value.trim() || tr("Untitled design"); note("Rename"); changed(); });
+  nameIn.addEventListener("keydown", e => { if (e.key === "Enter" || e.key === "Escape") nameIn.blur(); });
 
   /* =====================================================================
      Selection helpers and object actions
      ===================================================================== */
   const active = () => cv.getActiveObjects();
   const kindOf = o => (!o ? "none" : o.type === "activeSelection" ? "multi" : o.kind === "icon" ? "icon" : isText(o) ? "text" : o.type === "image" ? "image"
-    : o.type === "group" ? "group" : o.kind === "vector" ? "path" : o.type === "path" ? "path" : "shape");
+    : o.type === "group" ? (o.clipPath ? "masked" : "group") : o.kind === "vector" || o.type === "path" ? "path" : "shape");
   const typeName = o => {
     if (!o) return "No Selection";
     if (o.type === "activeSelection") return "Mixed Objects";
-    return { rect: "Rectangle", ellipse: "Ellipse", circle: "Ellipse", triangle: "Path", line: "Line", polygon: "Path", path: "Path", textbox: "Type", "i-text": "Type", image: "Image", group: o.kind === "icon" ? "Icon" : "Group" }[o.type] || "Object";
+    if (o.type === "group" && o.clipPath) return "Clipping Group";
+    return { rect: "Rectangle", ellipse: "Ellipse", circle: "Ellipse", triangle: "Path", line: "Line", polygon: "Path", path: "Path", textbox: "Text", "i-text": "Text", image: "Image", group: o.kind === "icon" ? "Icon" : "Group" }[o.type] || "Object";
   };
   const reselect = list => {
     cv.discardActiveObject();
@@ -746,8 +824,8 @@ window.DSCanvas = function (kit) {
   const lockState = (o, on) => o.set({ locked: on, hasControls: !on, lockMovementX: on, lockMovementY: on, lockScalingX: on, lockScalingY: on, lockRotation: on });
   const iconParts = o => (o.kind === "icon" && o.type === "group" ? o.getObjects() : [o]);
   function applyToolState(o) {
-    const sel = tool === "select" || tool === "direct";
-    o.selectable = sel;
+    const s = tool === "select" || tool === "direct";
+    o.selectable = s;
     o.evented = !(tool === "pen" || tool === "hand" || tool === "zoom" || tool === "artboard");
     if (o.strokeUniform === undefined || o.__new) o.strokeUniform = !prefs.scaleStrokes;
   }
@@ -770,6 +848,7 @@ window.DSCanvas = function (kit) {
     const list = active().filter(o => !o.locked);
     if (!list.length) return;
     cv.discardActiveObject();
+    note("Delete");
     list.forEach(o => cv.remove(o));
     cv.requestRenderAll();
   }
@@ -781,6 +860,7 @@ window.DSCanvas = function (kit) {
       cv.discardActiveObject();
       const off = inPlace ? 0 : 20 / zoom();
       c.set({ left: c.left + off, top: c.top + off, evented: true });
+      note("Paste");
       if (c.type === "activeSelection") { c.canvas = cv; c.forEachObject(o => { applyToolState(o); cv.add(o); }); c.setCoords(); }
       else { applyToolState(c); cv.add(c); }
       if (!inPlace) clip.set({ left: clip.left + off, top: clip.top + off });
@@ -788,7 +868,7 @@ window.DSCanvas = function (kit) {
       cv.requestRenderAll();
     }, PROPS);
   }
-  const duplicate = () => { const o = cv.getActiveObject(); if (!o) return; o.clone(c => { clip = c; paste(); }, PROPS); };
+  const duplicate = () => { const o = cv.getActiveObject(); if (!o) return; o.clone(c => { clip = c; note("Duplicate"); paste(); }, PROPS); };
   const cut = () => { copy(); removeSel(); };
   function align(dir) {
     const list = active();
@@ -808,7 +888,7 @@ window.DSCanvas = function (kit) {
       o.set({ left: o.left + dx, top: o.top + dy }); o.setCoords();
     });
     reselect(list);
-    changed();
+    note("Align"); changed();
   }
   function distribute(axis) {
     const list = active();
@@ -825,16 +905,111 @@ window.DSCanvas = function (kit) {
       o.setCoords();
     });
     reselect(list.slice());
-    changed();
+    note("Distribute"); changed();
   }
   const arrange = how => {
     const o = cv.getActiveObject();
     if (!o) return;
     ({ front: () => cv.bringToFront(o), back: () => cv.sendToBack(o), forward: () => cv.bringForward(o), backward: () => cv.sendBackwards(o) })[how]();
-    cv.requestRenderAll(); changed();
+    cv.requestRenderAll(); note("Arrange"); changed();
   };
-  const group = () => { const o = cv.getActiveObject(); if (o && o.type === "activeSelection") { const g = o.toGroup(); g.set({ name: "Group" }); applyToolState(g); cv.requestRenderAll(); changed(); } };
-  const ungroup = () => { const o = cv.getActiveObject(); if (o && o.type === "group") { o.toActiveSelection(); cv.getActiveObjects().forEach(applyToolState); cv.requestRenderAll(); changed(); } };
+  const group = () => { const o = cv.getActiveObject(); if (o && o.type === "activeSelection") { const g = o.toGroup(); g.set({ name: "Group" }); applyToolState(g); cv.requestRenderAll(); note("Group"); changed(); } };
+  const ungroup = () => {
+    const o = cv.getActiveObject();
+    if (!o || o.type !== "group") return;
+    if (o.clipPath) { unmask(); return; }
+    o.toActiveSelection(); cv.getActiveObjects().forEach(applyToolState); cv.requestRenderAll(); note("Ungroup"); changed();
+  };
+
+  /* ---------- Clipping masks: the top object shapes what's under it ---------- */
+  function mask() {
+    const list = active();
+    if (list.length < 2) { toast(tr("Select a shape on top of what it should mask.")); return; }
+    const objs = cv.getObjects().filter(o => list.includes(o));
+    const shape = objs[objs.length - 1], rest = objs.slice(0, -1);
+    if (isText(shape) || shape.type === "image" || shape.type === "group") { toast(tr("The top object must be a shape.")); return; }
+    cv.discardActiveObject();
+    const index = cv.getObjects().indexOf(rest[0]);
+    hist.busy++;
+    objs.forEach(o => cv.remove(o));
+    hist.busy--;
+    const g = new F.Group(rest, { name: "Clipping Group" });
+    shape.clone(c => {
+      const gc = g.getCenterPoint(), sc = shape.getCenterPoint();
+      c.set({ left: sc.x - gc.x, top: sc.y - gc.y, originX: "center", originY: "center", absolutePositioned: false, fill: "#000", stroke: null, opacity: 1, shadow: null });
+      g.clipPath = c;
+      g.maskShape = shape.toObject(PROPS);
+      applyToolState(g);
+      note("Make Clipping Mask");
+      cv.insertAt(g, Math.max(0, index));
+      cv.setActiveObject(g);
+      cv.requestRenderAll(); changed();
+    }, PROPS);
+  }
+  function unmask() {
+    const g = cv.getActiveObject();
+    if (!g || g.type !== "group" || !g.clipPath) return;
+    const data = g.maskShape;
+    g.clipPath = null; delete g.maskShape;
+    note("Release Clipping Mask");
+    g.toActiveSelection();
+    cv.getActiveObjects().forEach(applyToolState);
+    if (data) F.util.enlivenObjects([data], ([shape]) => { if (shape) { applyToolState(shape); cv.add(shape); } cv.requestRenderAll(); changed(); });
+    else { cv.requestRenderAll(); changed(); }
+  }
+
+  /* ---------- Combine shapes (paper.js boolean operations) ---------- */
+  let paperReady = null;
+  const ensurePaper = () => paperReady || (paperReady = (window.paper ? Promise.resolve() : loadScript("js/vendor/paper-core.min.js"))
+    .then(() => { window.paper.setup(document.createElement("canvas")); }));
+  // Outline of an object as SVG path data in scene coordinates
+  function sceneData(o) {
+    if (o.type === "path" && !o.anchors) {
+      // fabric keeps paths as absolute M, L, C, Q and Z commands
+      return o.path.map(c => {
+        const [cmd, ...n] = c, pts = [];
+        for (let i = 0; i < n.length; i += 2) { const p = toScene(o, n[i], n[i + 1]); pts.push(f2(p.x), f2(p.y)); }
+        return cmd + " " + pts.join(" ");
+      }).join(" ");
+    }
+    const v = asVector(o);
+    if (!v) return null;
+    const P = (x, y) => toScene(v, x, y), an = v.anchors;
+    const pt = an.map(a => ({ p: P(a.x, a.y), i: P(a.x + a.ix, a.y + a.iy), o: P(a.x + a.ox, a.y + a.oy) }));
+    const seg = (j, k) => ((an[j].ox || an[j].oy || an[k].ix || an[k].iy)
+      ? ` C ${f2(pt[j].o.x)} ${f2(pt[j].o.y)} ${f2(pt[k].i.x)} ${f2(pt[k].i.y)} ${f2(pt[k].p.x)} ${f2(pt[k].p.y)}`
+      : ` L ${f2(pt[k].p.x)} ${f2(pt[k].p.y)}`);
+    let d = `M ${f2(pt[0].p.x)} ${f2(pt[0].p.y)}`;
+    for (let i = 1; i < an.length; i++) d += seg(i - 1, i);
+    return d + seg(an.length - 1, 0) + " Z";
+  }
+  const combinable = () => cv.getObjects().filter(o => active().includes(o)).filter(o => !isText(o) && o.type !== "image" && o.type !== "group");
+  async function combine(op) {
+    const list = combinable();
+    if (list.length < 2) { toast(tr("Select two or more shapes to combine.")); return; }
+    cv.discardActiveObject();
+    try { await ensurePaper(); } catch (e) { paperReady = null; toast(tr("Couldn't load the shape tools. Check your connection.")); return; }
+    const P = window.paper;
+    const items = list.map(o => P.PathItem.create(sceneData(o)));
+    let res = items[0];
+    for (let i = 1; i < items.length; i++) res = res[op](items[i]);
+    const d = res.pathData;
+    P.project.clear();
+    if (!d) { reselect(list); toast(tr("Nothing left after combining.")); return; }
+    const base = list[0], label = { unite: "Union", subtract: "Subtract", intersect: "Intersect", exclude: "Exclude" }[op];
+    const out = new F.Path(d, { fill: base.fill || "#1f7aff", stroke: base.stroke, strokeWidth: base.strokeWidth, opacity: base.opacity, shadow: base.shadow,
+      fillRule: op === "exclude" ? "evenodd" : "nonzero", name: label, kind: "shape", strokeUniform: !prefs.scaleStrokes });
+    const index = cv.getObjects().indexOf(base);
+    hist.busy++;
+    list.forEach(o => cv.remove(o));
+    hist.busy--;
+    applyToolState(out);
+    note(label);
+    cv.insertAt(out, index);
+    cv.setActiveObject(out);
+    cv.requestRenderAll();
+    changed(); refreshUI();
+  }
 
   /* =====================================================================
      Paint: fill and stroke
@@ -849,46 +1024,45 @@ window.DSCanvas = function (kit) {
     if (!o) return paint[k];
     const t = o.type === "activeSelection" ? o.getObjects()[0] : o;
     const p = iconParts(t)[0];
-    return t.kind === "icon" && k === "fill" ? p.stroke : p[k];
+    if (t.type === "group" && t.kind !== "icon") { const f = flat([t])[0]; return f ? f[k] : null; }
+    return t.kind === "icon" && k === "fill" ? p.stroke : t.kind === "icon" ? null : p[k];
   };
-  // Apply fill or stroke to the selection (or to new objects when nothing is selected)
   function setPaint(k, v, commitNow = true) {
     const list = active();
-    if (!list.length) { paint[k] = v; if (k === "stroke" && v && !paint.strokeWidth) paint.strokeWidth = 1; syncPaint(); return; }
+    if (!list.length) { paint[k] = v; if (k === "stroke" && v && !paint.strokeWidth) paint.strokeWidth = 2; syncPaint(); return; }
     list.forEach(o => {
-      if (o.kind === "icon") { iconParts(o).forEach(p => p.set("stroke", v)); o.dirty = true; return; }
-      if (o.type === "group") { o.getObjects().forEach(p => { if (k === "fill" ? p.fill : true) p.set(k, v); }); o.dirty = true; return; }
+      if (o.kind === "icon") { if (k === "fill") iconParts(o).forEach(p => p.set("stroke", v)); o.dirty = true; return; }
+      if (o.type === "group") { flat([o]).forEach(p => { if (k === "fill" ? p.fill : p.stroke) p.set(k, v); }); o.dirty = true; return; }
       if (k === "fill" && o.type === "line") { o.set("stroke", v); return; }
       o.set(k, v);
-      if (k === "stroke" && v && !o.strokeWidth) o.set("strokeWidth", 1);
+      if (k === "stroke" && v && !o.strokeWidth) o.set("strokeWidth", 2);
     });
     cv.requestRenderAll();
     syncPaint();
-    if (commitNow) changed();
+    if (commitNow) { note(k === "fill" ? "Fill" : "Stroke"); changed(); }
   }
   function syncPaint() {
-    const fill = firstOf("fill"), stroke = firstOf("stroke");
-    const fsw = $(".ai-fillsw", root), ssw = $(".ai-strokesw", root);
-    fsw.style.setProperty("--c", paintCss(fill)); fsw.classList.toggle("is-none", !fill);
-    ssw.style.setProperty("--c", paintCss(stroke)); ssw.classList.toggle("is-none", !stroke);
-    $("[data-paintin=fill]", root).value = toHex(isGrad(fill) ? fill.colorStops[0].color : fill) || "#ffffff";
-    $("[data-paintin=stroke]", root).value = toHex(isGrad(stroke) ? stroke.colorStops[0].color : stroke) || "#000000";
+    const f = $(".cx-paint-f", root), s = $(".cx-paint-s", root);
+    f.style.setProperty("--c", paintCss(paint.fill)); f.classList.toggle("is-none", !paint.fill);
+    s.style.setProperty("--c", paintCss(paint.stroke)); s.classList.toggle("is-none", !paint.stroke);
+    $("[data-paintin=fill]", root).value = toHex(isGrad(paint.fill) ? paint.fill.colorStops[0].color : paint.fill) || "#ffffff";
+    $("[data-paintin=stroke]", root).value = toHex(isGrad(paint.stroke) ? paint.stroke.colorStops[0].color : paint.stroke) || "#000000";
     $("[data-paint]", root).dataset.focus = paint.focus;
   }
-  $("[data-paint]", root).addEventListener("pointerdown", e => {
-    const sw = e.target.closest(".ai-fillsw, .ai-strokesw");
-    if (sw) { paint.focus = sw.classList.contains("ai-fillsw") ? "fill" : "stroke"; syncPaint(); }
+  $("[data-paint]", root).addEventListener("input", e => {
+    const k = e.target.dataset.paintin;
+    if (!k) return;
+    paint[k] = e.target.value; paint.focus = k;
+    if (k === "stroke" && !paint.strokeWidth) paint.strokeWidth = 2;
+    syncPaint();
   });
-  $("[data-paint]", root).addEventListener("input", e => { if (e.target.dataset.paintin) setPaint(e.target.dataset.paintin, e.target.value, false); });
-  $("[data-paint]", root).addEventListener("change", e => { if (e.target.dataset.paintin) { changed(); refreshUI(); } });
   const swapPaint = () => {
     const f = firstOf("fill"), s = firstOf("stroke");
     if (!active().length) { paint.fill = s; paint.stroke = f; syncPaint(); return; }
-    active().forEach(o => { if (o.type !== "group" && o.kind !== "icon") o.set({ fill: s, stroke: f, strokeWidth: f && !o.strokeWidth ? 1 : o.strokeWidth }); });
-    cv.requestRenderAll(); syncPaint(); changed(); refreshUI();
+    active().forEach(o => { if (o.type !== "group" && o.kind !== "icon") o.set({ fill: s, stroke: f, strokeWidth: f && !o.strokeWidth ? 2 : o.strokeWidth }); });
+    cv.requestRenderAll(); syncPaint(); note("Swap Fill and Stroke"); changed(); refreshUI();
   };
-  const defaultPaint = () => { paint.fill = "#ffffff"; paint.stroke = "#000000"; paint.strokeWidth = 1; if (active().length) { setPaint("fill", "#ffffff"); setPaint("stroke", "#000000"); } syncPaint(); refreshUI(); };
-  // Gradients: linear at an angle across the object's box, or radial from its centre
+  const defaultPaint = () => { Object.assign(paint, DEFAULT_PAINT); if (active().length) { setPaint("fill", DEFAULT_PAINT.fill); setPaint("stroke", null); } syncPaint(); refreshUI(); };
   function gradientFor(o, stops, type = "linear", angle = 0) {
     const w = o.width || 100, h = o.height || 100;
     const r = angle * Math.PI / 180, dx = Math.cos(r), dy = Math.sin(r), L = (Math.abs(w * dx) + Math.abs(h * dy)) / 2;
@@ -902,9 +1076,9 @@ window.DSCanvas = function (kit) {
   }
   function setGradient(stops, type = "linear", angle = 0) {
     active().forEach(o => { if (o.type !== "group" && o.kind !== "icon" && o.type !== "line") { o.set("fill", gradientFor(o, stops, type, angle)); o.dirty = true; } });
-    cv.requestRenderAll(); changed(); refreshUI();
+    cv.requestRenderAll(); note("Gradient"); changed(); refreshUI();
   }
-  const gradStops = c => (isGrad(c) ? c.colorStops.map(s => toHex(s.color) || "#000000") : [toHex(c) || "#1f7aff", "#000000"]);
+  const gradStops = c => (isGrad(c) ? c.colorStops.map(s => toHex(s.color) || "#000000") : [toHex(c) || "#1f7aff", "#7c5cff"]);
 
   /* =====================================================================
      Tools
@@ -915,18 +1089,18 @@ window.DSCanvas = function (kit) {
     if (pen && id !== "pen") finishPen(false);
     if (cv.getActiveObject() && cv.getActiveObject().isEditing) cv.getActiveObject().exitEditing();
     tool = id;
-    if (!temp) TOOL_GROUPS.forEach(g => { if (g.some(t => t[0] === id)) groupTool[g[0][0]] = id; });
-    $$(".ai-tool", root).forEach(b => {
+    if (!temp) TOOL_GROUPS.forEach(g => { if (g !== "|" && g.some(t => t[0] === id)) groupTool[g[0][0]] = id; });
+    $$(".cx-tool[data-group]", root).forEach(b => {
       const g = JSON.parse(b.dataset.group), cur = g.includes(id) ? id : (groupTool[g[0]] || g[0]);
-      if (b.dataset.tool !== cur) { b.dataset.tool = cur; b.innerHTML = ui(cur); const info = TOOL_INFO[cur]; b.setAttribute("aria-label", info.name); b.dataset.tip = info.name + (info.key ? ` (${keyLabel(info.key)})` : ""); }
+      if (b.dataset.tool !== cur) { b.dataset.tool = cur; b.innerHTML = ui(cur); const info = TOOL_INFO[cur]; b.setAttribute("aria-label", tr(info.name)); b.dataset.tip = tr(info.name) + (info.key ? ` · ${keyLabel(info.key)}` : ""); }
       b.classList.toggle("is-on", g.includes(id));
     });
     const drawing = id === "pencil" || id === "brush";
     cv.isDrawingMode = drawing;
     if (drawing) {
       const b = new F.PencilBrush(cv);
-      b.color = toHex(paint.stroke) || (toHex(paint.fill) !== "#ffffff" && toHex(paint.fill)) || "#000000";
-      b.width = id === "brush" ? Math.max(6, paint.strokeWidth * 6) : Math.max(1, paint.strokeWidth);
+      b.color = toHex(paint.stroke) || toHex(paint.fill) || "#000000";
+      b.width = id === "brush" ? Math.max(8, (paint.strokeWidth || 2) * 5) : Math.max(2, paint.strokeWidth || 2);
       b.strokeLineCap = "round"; b.strokeLineJoin = "round"; b.decimate = id === "brush" ? 2.5 : 1.5;
       cv.freeDrawingBrush = b;
     }
@@ -939,42 +1113,43 @@ window.DSCanvas = function (kit) {
     cv.hoverCursor = id === "select" || id === "direct" ? "move" : cv.defaultCursor;
     if (id === "artboard") { abSelected = doc.active; cv.discardActiveObject(); }
     setDirectControls();
-    hintEl.textContent = tr(TOOL_INFO[id].name) + " · " + tr(TOOL_HINT[id]);
+    if (!temp) showHint();
     cv.requestRenderAll();
     if (!temp) refreshUI();
   }
-  $("[data-tools]", root).addEventListener("click", e => {
-    const b = e.target.closest(".ai-tool");
-    if (b && !b.__long) setTool(b.dataset.tool);
-    if (b) b.__long = false;
-    const a = e.target.closest("[data-act]");
-    if (a) act(a.dataset.act);
-  });
-  // Flyouts for grouped tools
-  let pressT = 0;
-  const openFlyout = b => {
-    const g = JSON.parse(b.dataset.group);
-    if (g.length < 2) return;
-    const r = b.getBoundingClientRect(), R = root.getBoundingClientRect();
-    flyout.innerHTML = g.map(id => `<button type="button" data-fly="${id}" class="${id === tool ? "is-on" : ""}">${ui(id)}<span>${tr(TOOL_INFO[id].name)}</span><kbd>${keyLabel(TOOL_INFO[id].key)}</kbd></button>`).join("");
-    flyout.style.left = (r.right - R.left + 4) + "px"; flyout.style.top = (r.top - R.top) + "px";
-    flyout.hidden = false;
+  let hintT = 0, hintFirst = true;
+  const showHint = () => {
+    if (hintFirst) { hintFirst = false; return; }
+    hintEl.innerHTML = `<b>${tr(TOOL_INFO[tool].name)}</b><span>${tr(TOOL_HINT[tool])}</span>`;
+    hintEl.classList.add("is-on");
+    clearTimeout(hintT); hintT = setTimeout(() => hintEl.classList.remove("is-on"), tool === "select" ? 1800 : 4200);
   };
-  $("[data-tools]", root).addEventListener("pointerdown", e => {
-    const b = e.target.closest(".ai-tool.has-more");
-    if (!b) return;
-    clearTimeout(pressT);
-    pressT = setTimeout(() => { b.__long = true; openFlyout(b); }, 380);
+  dock.addEventListener("click", e => {
+    const more = e.target.closest("[data-more]");
+    if (more) { openFlyout(more.previousElementSibling); return; }
+    const b = e.target.closest(".cx-tool[data-group]");
+    if (b) { setTool(b.dataset.tool); return; }
+    const a = e.target.closest("[data-act]");
+    if (a) { act(a.dataset.act, a, e); return; }
+    const p = e.target.closest("[data-paint] label");
+    if (p) { paint.focus = p.classList.contains("cx-paint-f") ? "fill" : "stroke"; syncPaint(); }
   });
-  $("[data-tools]", root).addEventListener("pointerup", () => clearTimeout(pressT));
-  $("[data-tools]", root).addEventListener("contextmenu", e => { const b = e.target.closest(".ai-tool.has-more"); if (b) { e.preventDefault(); openFlyout(b); } });
-  flyout.addEventListener("click", e => { const b = e.target.closest("[data-fly]"); if (b) { setTool(b.dataset.fly); flyout.hidden = true; } });
+  dock.addEventListener("contextmenu", e => { const b = e.target.closest(".cx-tool[data-group]"); if (b && JSON.parse(b.dataset.group).length > 1) { e.preventDefault(); openFlyout(b); } });
+  function openFlyout(b) {
+    const g = JSON.parse(b.dataset.group);
+    menuPop.innerHTML = g.map(id => `<button type="button" data-fly="${id}" class="${id === tool ? "is-checked" : ""}"><i>${ui(id)}</i><span>${tr(TOOL_INFO[id].name)}</span><kbd>${keyLabel(TOOL_INFO[id].key)}</kbd></button>`).join("");
+    menuPop.dataset.mode = "fly";
+    menuPop.hidden = false;
+    const R = root.getBoundingClientRect(), r = b.getBoundingClientRect();
+    menuPop.style.left = clamp(r.left - R.left - 8, 8, R.width - menuPop.offsetWidth - 8) + "px";
+    menuPop.style.top = (r.top - R.top - menuPop.offsetHeight - 12) + "px";
+  }
 
-  /* ---------- Measurement tip (like the grey label next to the cursor) ---------- */
+  /* ---------- Measurement tip ---------- */
   function showMeasure(e, text) {
-    const R = viewport.getBoundingClientRect();
+    const R = body.getBoundingClientRect();
     measureEl.textContent = text; measureEl.hidden = false;
-    measureEl.style.left = (e.clientX - R.left + 14) + "px"; measureEl.style.top = (e.clientY - R.top + 16) + "px";
+    measureEl.style.transform = `translate(${Math.round(e.clientX - R.left + 14)}px, ${Math.round(e.clientY - R.top + 18)}px)`;
   }
   const hideMeasure = () => { measureEl.hidden = true; };
 
@@ -999,6 +1174,7 @@ window.DSCanvas = function (kit) {
   };
   function snapPoint(p, exclude = () => false) {
     if (view.snapGrid) { const g = prefs.gridSize, a = ab(); p.x = a.x + Math.round((p.x - a.x) / g) * g; p.y = a.y + Math.round((p.y - a.y) / g) * g; }
+    else if (view.pixel) { p.x = Math.round(p.x); p.y = Math.round(p.y); }
     if (!view.smart) return p;
     const { xs, ys } = snapTargets(exclude), th = 6 / zoom();
     const bx = nearest(xs, [p.x], th), by = nearest(ys, [p.y], th);
@@ -1012,7 +1188,7 @@ window.DSCanvas = function (kit) {
     if (view.snapGrid) {
       const g = prefs.gridSize, a = ab(), b = o.getBoundingRect(true, true);
       o.left += a.x + Math.round((b.left - a.x) / g) * g - b.left; o.top += a.y + Math.round((b.top - a.y) / g) * g - b.top;
-    }
+    } else if (view.pixel) { o.left = Math.round(o.left); o.top = Math.round(o.top); }
     smart = [];
     if (view.smart) {
       const b = o.getBoundingRect(true, true);
@@ -1023,17 +1199,16 @@ window.DSCanvas = function (kit) {
       if (by) { o.top += by.d; smart.push({ y: by.v }); }
     }
     o.setCoords();
-    if (o.__start) showMeasure(e.e, `dX: ${round(o.left - o.__start.left)} px\ndY: ${round(o.top - o.__start.top)} px`);
+    if (o.__start) showMeasure(e.e, `Δx  ${round(o.left - o.__start.left)}\nΔy  ${round(o.top - o.__start.top)}`);
   });
-  cv.on("object:scaling", e => { const o = e.target; showMeasure(e.e, `W: ${round(o.getScaledWidth())} px\nH: ${round(o.getScaledHeight())} px`); });
+  cv.on("object:scaling", e => { const o = e.target; showMeasure(e.e, `W  ${round(o.getScaledWidth())}\nH  ${round(o.getScaledHeight())}`); });
   cv.on("object:rotating", e => { showMeasure(e.e, `${round(e.target.angle, 1)}°`); });
-  cv.on("before:transform", e => { const o = e.transform.target; o.__start = { left: o.left, top: o.top }; });
-  // transient overlays (smart guides, pen preview) live on the top layer
-  cv.on("before:render", () => { if (cv.contextTop) cv.clearContext(cv.contextTop); });
+  cv.on("before:transform", e => { const o = e.transform.target; o.__start = { left: o.left, top: o.top }; selbar.classList.add("is-busy"); });
+  cv.on("before:render", () => { if (cv.contextTop && !cv.isDrawingMode) cv.clearContext(cv.contextTop); });
   cv.on("after:render", () => drawTop());
   function drawTop() {
     const c = cv.contextTop;
-    if (!c || exporting()) return;
+    if (!c || exporting() || cv.isDrawingMode) return;
     const v = cv.viewportTransform;
     c.save();
     c.transform(v[0], v[1], v[2], v[3], v[4], v[5]);
@@ -1044,10 +1219,8 @@ window.DSCanvas = function (kit) {
       smart.forEach(g => { c.beginPath(); if (g.x != null) { c.moveTo(g.x, tl.y); c.lineTo(g.x, br.y); } else { c.moveTo(tl.x, g.y); c.lineTo(br.x, g.y); } c.stroke(); });
     }
     if (pen && pen.pts.length) {
-      c.strokeStyle = "#1f7aff"; c.lineWidth = 1 / z;
-      c.beginPath();
-      const d = new Path2D(pathFrom(pen.pts, false).replace(/ /g, " "));
-      c.stroke(d);
+      c.strokeStyle = "#1f7aff"; c.lineWidth = 1.5 / z;
+      c.stroke(new Path2D(pathFrom(pen.pts, false)));
       const last = pen.pts[pen.pts.length - 1];
       if (pen.hover && !pen.down) {
         c.setLineDash([4 / z, 3 / z]);
@@ -1057,13 +1230,16 @@ window.DSCanvas = function (kit) {
       }
       pen.pts.forEach((p, i) => {
         if (p === last) [[p.ix, p.iy], [p.ox, p.oy]].forEach(([hx, hy]) => { if (hx || hy) { c.beginPath(); c.moveTo(p.x, p.y); c.lineTo(p.x + hx, p.y + hy); c.stroke(); c.beginPath(); c.arc(p.x + hx, p.y + hy, 3 / z, 0, Math.PI * 2); c.fillStyle = "#1f7aff"; c.fill(); } });
-        const s = (i === 0 && pen.closeHover ? 9 : 7) / z;
+        const s = (i === 0 && pen.closeHover ? 10 : 7) / z;
         c.fillStyle = i === pen.pts.length - 1 ? "#1f7aff" : "#ffffff"; c.fillRect(p.x - s / 2, p.y - s / 2, s, s); c.strokeRect(p.x - s / 2, p.y - s / 2, s, s);
       });
     }
     if (drag && drag.abNew) {
       c.strokeStyle = "#1f7aff"; c.lineWidth = 1 / z; c.setLineDash([5 / z, 4 / z]);
       c.strokeRect(drag.abNew.x, drag.abNew.y, drag.abNew.w, drag.abNew.h); c.setLineDash([]);
+    }
+    if (drag && drag.box && drag.kind === "type") {
+      c.strokeStyle = "#1f7aff"; c.lineWidth = 1 / z; c.strokeRect(drag.box.x, drag.box.y, drag.box.w, drag.box.h);
     }
     c.restore();
   }
@@ -1076,16 +1252,15 @@ window.DSCanvas = function (kit) {
   const shapePaint = () => ({ fill: paint.fill, stroke: paint.stroke, strokeWidth: paint.stroke ? paint.strokeWidth : 0, strokeUniform: !prefs.scaleStrokes });
   function shapeBox(p0, p, e) {
     let w = p.x - p0.x, h = p.y - p0.y;
-    if (e.shiftKey) { const m = Math.max(Math.abs(w), Math.abs(h)); w = Math.sign(w || 1) * m; h = Math.sign(h || 1) * m; }
-    let x = Math.min(p0.x, p0.x + w), y = Math.min(p0.y, p0.y + h);
-    if (e.altKey) { x = p0.x - Math.abs(w); y = p0.y - Math.abs(h); return { x, y, w: Math.abs(w) * 2, h: Math.abs(h) * 2 }; }
-    return { x, y, w: Math.abs(w), h: Math.abs(h) };
+    if (e && e.shiftKey) { const m = Math.max(Math.abs(w), Math.abs(h)); w = Math.sign(w || 1) * m; h = Math.sign(h || 1) * m; }
+    if (e && e.altKey) return { x: p0.x - Math.abs(w), y: p0.y - Math.abs(h), w: Math.abs(w) * 2, h: Math.abs(h) * 2 };
+    return { x: Math.min(p0.x, p0.x + w), y: Math.min(p0.y, p0.y + h), w: Math.abs(w), h: Math.abs(h) };
   }
   function makeShape(kind, b, p0, p1, e) {
     const st = shapePaint();
     switch (kind) {
       case "rect": return new F.Rect(Object.assign({ left: b.x, top: b.y, width: b.w, height: b.h, name: "Rectangle", kind: "shape" }, st));
-      case "rounded": return new F.Rect(Object.assign({ left: b.x, top: b.y, width: b.w, height: b.h, rx: Math.min(24, b.w / 4, b.h / 4), ry: Math.min(24, b.w / 4, b.h / 4), name: "Rounded Rectangle", kind: "shape" }, st));
+      case "rounded": { const r = Math.min(24, b.w / 4, b.h / 4); return new F.Rect(Object.assign({ left: b.x, top: b.y, width: b.w, height: b.h, rx: r, ry: r, name: "Rounded Rectangle", kind: "shape" }, st)); }
       case "ellipse": return new F.Ellipse(Object.assign({ left: b.x, top: b.y, rx: b.w / 2, ry: b.h / 2, name: "Ellipse", kind: "shape" }, st));
       case "polygon": case "star": {
         const unitPts = kind === "star" ? STAR(5) : POLY(6);
@@ -1094,7 +1269,7 @@ window.DSCanvas = function (kit) {
       case "line": {
         let x2 = p1.x, y2 = p1.y;
         if (e && e.shiftKey) { const ang = Math.round(Math.atan2(y2 - p0.y, x2 - p0.x) / (Math.PI / 4)) * Math.PI / 4, len = Math.hypot(x2 - p0.x, y2 - p0.y); x2 = p0.x + Math.cos(ang) * len; y2 = p0.y + Math.sin(ang) * len; }
-        return new F.Line([p0.x, p0.y, x2, y2], { stroke: toHex(paint.stroke) || "#000000", strokeWidth: Math.max(1, paint.strokeWidth), strokeLineCap: "round", strokeUniform: !prefs.scaleStrokes, name: "Line", kind: "shape" });
+        return new F.Line([p0.x, p0.y, x2, y2], { stroke: toHex(paint.stroke) || toHex(paint.fill) || "#000000", strokeWidth: Math.max(1, paint.strokeWidth || 2), strokeLineCap: "round", strokeUniform: !prefs.scaleStrokes, name: "Line", kind: "shape" });
       }
       default: return null;
     }
@@ -1106,30 +1281,28 @@ window.DSCanvas = function (kit) {
     const pts = pen.pts;
     pen = null;
     if (pts.length >= 2) {
-      // anchors are in scene coordinates, which become the path's own coordinates
       const o = vector(pts.map(p => Object.assign({}, p)), closed, {
-        fill: closed ? paint.fill : null, stroke: paint.stroke || "#000000", strokeWidth: Math.max(1, paint.strokeWidth), strokeUniform: !prefs.scaleStrokes, name: "Path"
+        fill: closed ? paint.fill : null, stroke: paint.stroke || (closed ? null : "#000000"), strokeWidth: Math.max(1, paint.strokeWidth || 2), strokeUniform: !prefs.scaleStrokes, name: "Path"
       });
+      if (!o.stroke && !o.fill) o.set({ stroke: "#000000" });
       addObject(o);
     }
     topRender();
-    hintEl.textContent = tr(TOOL_INFO[tool].name) + " · " + tr(TOOL_HINT[tool]);
   }
 
   /* ---------- Mouse ---------- */
   let panning = null;
   cv.on("mouse:down", opt => {
     const e = opt.e;
+    closeMenus();
     if (e.button === 2) { openContext(e, opt.target); return; }
     const sp = cv.getPointer(e, true), p = cv.getPointer(e);
-    if (tool === "hand" || spaceHeld || e.button === 1) { panning = { x: e.clientX, y: e.clientY }; cv.setCursor("grabbing"); return; }
-    // drag a ruler guide with the selection tools
+    if (tool === "hand" || spaceHeld || e.button === 1 || present) { panning = { x: e.clientX, y: e.clientY }; cv.setCursor("grabbing"); return; }
     if ((tool === "select" || tool === "direct") && !opt.target && view.guides && !view.lockGuides) {
       const tol = 4 / zoom();
       const vi = doc.guides.v.findIndex(x => Math.abs(x - p.x) < tol), hi = doc.guides.h.findIndex(y => Math.abs(y - p.y) < tol);
       if (vi > -1 || hi > -1) { cv.selection = false; guideDrag = vi > -1 ? { axis: "v", index: vi } : { axis: "h", index: hi }; return; }
     }
-    // Alt-drag copies
     if (tool === "select" && e.altKey && opt.target && !opt.target.locked) {
       const t = opt.target;
       t.clone(c => { applyToolState(c); hist.busy++; cv.insertAt(c, cv.getObjects().indexOf(t)); hist.busy--; }, PROPS);
@@ -1138,7 +1311,7 @@ window.DSCanvas = function (kit) {
     if (tool === "pen") {
       if (!pen) pen = { pts: [] };
       const first = pen.pts[0];
-      if (first && pen.pts.length > 2 && Math.hypot(p.x - first.x, p.y - first.y) * zoom() < 8) { finishPen(true); return; }
+      if (first && pen.pts.length > 2 && Math.hypot(p.x - first.x, p.y - first.y) * zoom() < 9) { finishPen(true); return; }
       const q = snapPoint({ x: p.x, y: p.y });
       pen.pts.push(A(q.x, q.y)); pen.down = true;
       topRender();
@@ -1146,7 +1319,7 @@ window.DSCanvas = function (kit) {
     }
     if (SHAPE_TOOLS.includes(tool)) { const q = snapPoint({ x: p.x, y: p.y }); drag = { kind: tool, p0: q, obj: null }; return; }
     if (tool === "type") {
-      if (opt.target && isText(opt.target)) { const t = opt.target; t.selectable = true; cv.setActiveObject(t); t.enterEditing(); t.setCursorByClick(e); setTool("select"); return; }
+      if (opt.target && isText(opt.target)) { const t = opt.target; setTool("select"); cv.setActiveObject(t); t.enterEditing(); t.setCursorByClick(e); return; }
       drag = { kind: "type", p0: { x: p.x, y: p.y } }; return;
     }
     const o = cv.getActiveObject();
@@ -1176,18 +1349,21 @@ window.DSCanvas = function (kit) {
     const e = opt.e, sp = cv.getPointer(e, true), p = cv.getPointer(e);
     mouseScreen = sp;
     if (view.rulers) drawRulers();
-    if (panning) { cv.relativePan(new F.Point(e.clientX - panning.x, e.clientY - panning.y)); panning = { x: e.clientX, y: e.clientY }; afterView(); return; }
-    if (guideDrag) return;
+    if (panning) { cv.relativePan(new F.Point(e.clientX - panning.x, e.clientY - panning.y)); panning = { x: e.clientX, y: e.clientY }; pingNav(); afterView(); return; }
+    if (guideDrag) {
+      if (!guideDrag.ruler) { doc.guides[guideDrag.axis][guideDrag.index] = guideDrag.axis === "h" ? round(p.y) : round(p.x); cv.requestRenderAll(); }
+      return;
+    }
     if (tool === "pen" && pen) {
       const last = pen.pts[pen.pts.length - 1];
       if (pen.down && last) {
         last.ox = p.x - last.x; last.oy = p.y - last.y;
         if (Math.hypot(last.ox, last.oy) * zoom() < 3) { last.ox = last.oy = 0; }
         last.ix = -last.ox; last.iy = -last.oy;
-        showMeasure(e, `${round(Math.hypot(last.ox, last.oy))} px`);
+        if (last.ox || last.oy) showMeasure(e, `${round(Math.hypot(last.ox, last.oy))} px`);
       } else {
         const first = pen.pts[0];
-        pen.closeHover = first && pen.pts.length > 2 && Math.hypot(p.x - first.x, p.y - first.y) * zoom() < 8;
+        pen.closeHover = first && pen.pts.length > 2 && Math.hypot(p.x - first.x, p.y - first.y) * zoom() < 9;
         pen.hover = pen.closeHover ? { x: first.x, y: first.y } : snapPoint({ x: p.x, y: p.y });
       }
       topRender();
@@ -1195,7 +1371,7 @@ window.DSCanvas = function (kit) {
     }
     if (!drag) return;
     if (SHAPE_TOOLS.includes(drag.kind)) {
-      const q = drag.kind === "line" ? snapPoint({ x: p.x, y: p.y }) : snapPoint({ x: p.x, y: p.y });
+      const q = snapPoint({ x: p.x, y: p.y });
       const b = shapeBox(drag.p0, q, e);
       if (!drag.obj && b.w + b.h < 3 / zoom()) return;
       if (drag.obj) { hist.busy++; cv.remove(drag.obj); hist.busy--; }
@@ -1203,10 +1379,9 @@ window.DSCanvas = function (kit) {
       applyToolState(drag.obj);
       hist.busy++; cv.add(drag.obj); hist.busy--;
       cv.requestRenderAll();
-      showMeasure(e, drag.kind === "line" ? `${round(Math.hypot(q.x - drag.p0.x, q.y - drag.p0.y))} px` : `W: ${round(b.w)} px\nH: ${round(b.h)} px`);
+      showMeasure(e, drag.kind === "line" ? `${round(Math.hypot(q.x - drag.p0.x, q.y - drag.p0.y))} px` : `W  ${round(b.w)}\nH  ${round(b.h)}`);
     } else if (drag.kind === "type") {
-      drag.box = shapeBox(drag.p0, p, e);
-      if (cv.contextTop) { topRender(); const c = cv.contextTop, v = cv.viewportTransform; c.save(); c.transform(...v); c.strokeStyle = "#1f7aff"; c.lineWidth = 1 / v[0]; c.strokeRect(drag.box.x, drag.box.y, drag.box.w, drag.box.h); c.restore(); }
+      drag.box = shapeBox(drag.p0, p, e); topRender();
     } else if (drag.kind === "rotate") {
       let ang = drag.angle0 + (Math.atan2(p.y - drag.c.y, p.x - drag.c.x) - drag.a0) * 180 / Math.PI;
       if (e.shiftKey) ang = Math.round(ang / 15) * 15;
@@ -1217,26 +1392,30 @@ window.DSCanvas = function (kit) {
       drag.o.set({ scaleX: drag.sx * k, scaleY: drag.sy * k }); drag.o.setPositionByOrigin(drag.c, "center", "center"); drag.o.setCoords();
       cv.requestRenderAll(); showMeasure(e, `${round(k * 100)}%`);
     } else if (drag.kind === "gradient") {
-      const ang = Math.atan2(p.y - drag.p0.y, p.x - drag.p0.x) * 180 / Math.PI - (drag.o.angle || 0);
       if (Math.hypot(p.x - drag.p0.x, p.y - drag.p0.y) * zoom() < 4) return;
+      const ang = Math.atan2(p.y - drag.p0.y, p.x - drag.p0.x) * 180 / Math.PI - (drag.o.angle || 0);
       drag.o.set("fill", gradientFor(drag.o, drag.stops, drag.type, round(ang))); drag.o.dirty = true;
       cv.requestRenderAll(); showMeasure(e, `${round(ang)}°`);
     } else if (drag.kind === "abmove") {
       const a = doc.artboards[drag.i], dx = p.x - drag.p0.x, dy = p.y - drag.p0.y;
       a.x = round(drag.start.x + dx); a.y = round(drag.start.y + dy);
       drag.objs.forEach(it => { it.o.set({ left: it.left + (a.x - drag.start.x), top: it.top + (a.y - drag.start.y) }); it.o.setCoords(); });
-      cv.requestRenderAll(); showMeasure(e, `X: ${a.x}  Y: ${a.y}`);
+      cv.requestRenderAll(); showMeasure(e, `X  ${a.x}   Y  ${a.y}`);
     } else if (drag.kind === "abnew") {
       const b = shapeBox(drag.p0, p, e);
       drag.abNew = { x: round(b.x), y: round(b.y), w: round(b.w), h: round(b.h) };
-      topRender(); showMeasure(e, `W: ${drag.abNew.w} px\nH: ${drag.abNew.h} px`);
+      topRender(); showMeasure(e, `W  ${drag.abNew.w}\nH  ${drag.abNew.h}`);
     }
   });
   cv.on("mouse:up", opt => {
     const e = opt.e;
     hideMeasure();
+    selbar.classList.remove("is-busy");
     if (panning) { panning = null; cv.setCursor(cv.defaultCursor); return; }
-    if (guideDrag) { const sp = stagePt(e); if (!sp.inside) doc.guides[guideDrag.axis].splice(guideDrag.index, 1); guideDrag = null; cv.selection = tool === "select" || tool === "direct"; changed(); cv.requestRenderAll(); return; }
+    if (guideDrag && !guideDrag.ruler) {
+      if (!stagePt(e).inside) doc.guides[guideDrag.axis].splice(guideDrag.index, 1);
+      guideDrag = null; cv.selection = tool === "select" || tool === "direct"; note("Guide"); changed(); cv.requestRenderAll(); return;
+    }
     if (tool === "pen" && pen) { pen.down = false; topRender(); return; }
     if (smart.length) { smart = []; cv.requestRenderAll(); }
     if (!drag) return;
@@ -1244,7 +1423,8 @@ window.DSCanvas = function (kit) {
     drag = null;
     if (SHAPE_TOOLS.includes(d.kind)) {
       let o = d.obj;
-      if (!o) {   // a click makes a 100 px shape
+      note(tr("Draw") + " " + tr((o && o.name) || TOOL_INFO[d.kind].name));
+      if (!o) {
         const s = 100;
         o = makeShape(d.kind, { x: d.p0.x - s / 2, y: d.p0.y - s / 2, w: s, h: s }, d.p0, { x: d.p0.x + s, y: d.p0.y }, null);
         applyToolState(o); cv.add(o);
@@ -1255,10 +1435,10 @@ window.DSCanvas = function (kit) {
       refreshUI();
     } else if (d.kind === "type") {
       const b = d.box && d.box.w > 8 / zoom() ? d.box : null;
-      const fill = (toHex(paint.fill) && toHex(paint.fill) !== "#ffffff") ? paint.fill : "#000000";
-      const str = tr("Type here");
-      const opts = { left: d.p0.x, top: d.p0.y, fontFamily: charState.family, fontWeight: charState.weight, fontSize: charState.size * unit(), fill, name: "Type", kind: "text" };
-      const t = b ? new F.Textbox(str, Object.assign(opts, { left: b.x, top: b.y, width: b.w })) : new F.IText(str, opts);
+      // text starts dark unless a colour other than the defaults was picked
+      const fill = toHex(paint.fill) && !["#ffffff", DEFAULT_PAINT.fill].includes(toHex(paint.fill)) ? paint.fill : "#0f0f0f";
+      const opts = { left: d.p0.x, top: d.p0.y, fontFamily: charState.family, fontWeight: charState.weight, fontSize: charState.size * unit(), fill, name: "Text", kind: "text", charSpacing: -10, lineHeight: 1.1 };
+      const t = b ? new F.Textbox(tr("Type here"), Object.assign(opts, { left: b.x, top: b.y, width: b.w })) : new F.IText(tr("Type here"), opts);
       rtlFix(t);
       loadFont(charState.family, charState.weight).then(() => {
         setTool("select");
@@ -1266,27 +1446,28 @@ window.DSCanvas = function (kit) {
         t.enterEditing(); t.selectAll();
         refreshUI();
       });
+      topRender();
     } else if (d.kind === "rotate" || d.kind === "scale" || d.kind === "gradient") {
       cv.fire("object:modified", { target: d.o }); refreshUI();
     } else if (d.kind === "abmove") {
-      changed(); refreshUI();
+      note("Move Artboard"); changed(); refreshUI();
     } else if (d.kind === "abnew" && d.abNew && d.abNew.w > 10 && d.abNew.h > 10) {
-      doc.artboards.push(Object.assign(newArtboard(d.abNew.w, d.abNew.h, d.abNew.x, d.abNew.y), {}));
+      doc.artboards.push(newArtboard(d.abNew.w, d.abNew.h, d.abNew.x, d.abNew.y));
       doc.active = abSelected = doc.artboards.length - 1;
-      changed(); refreshUI(); topRender(); cv.requestRenderAll();
+      note("New Artboard"); changed(); refreshUI(); topRender(); cv.requestRenderAll();
     } else topRender();
   });
   cv.on("mouse:dblclick", opt => {
     if (tool === "pen" && pen) { finishPen(false); return; }
     const t = opt.target;
-    if (tool === "select" && t && t.type === "group" && t.kind !== "icon") toast(tr("Ungroup (Shift+Ctrl+G) to edit what's inside."));
+    if (tool === "select" && t && t.type === "group" && t.kind !== "icon") toast(tr(t.clipPath ? "Release the mask to edit what's inside." : "Ungroup to edit what's inside."));
     if (tool === "select" && t && t.kind === "vector") setTool("direct");
   });
   stage.addEventListener("pointerleave", () => { mouseScreen = null; drawRulers(); });
   cv.on("path:created", ({ path }) => {
     path.set({ name: tool === "brush" ? "Brush Stroke" : "Pencil Line", kind: "drawing", fill: null, strokeUniform: !prefs.scaleStrokes });
     applyToolState(path);
-    changed();
+    pending = tr("Draw") + " " + tr(path.name); changed();
   });
 
   function eyedrop(t) {
@@ -1294,24 +1475,22 @@ window.DSCanvas = function (kit) {
     const src = t.kind === "icon" ? iconParts(t)[0] : t;
     const style = { fill: t.kind === "icon" ? src.stroke : src.fill, stroke: t.kind === "icon" ? null : src.stroke, strokeWidth: src.strokeWidth };
     const list = active().filter(o => o !== t);
-    if (!list.length) { paint.fill = style.fill; paint.stroke = style.stroke; paint.strokeWidth = style.strokeWidth || 1; syncPaint(); toast(tr("Colours picked up")); return; }
+    if (!list.length) { paint.fill = style.fill; paint.stroke = style.stroke; paint.strokeWidth = style.strokeWidth || 2; syncPaint(); toast(tr("Colours picked up")); return; }
     list.forEach(o => {
       if (o.kind === "icon") iconParts(o).forEach(p => p.set("stroke", style.fill));
-      else { o.set({ fill: isGrad(style.fill) ? gradientFor(o, gradStops(style.fill), style.fill.type, style.fill.angle || 0) : style.fill, stroke: style.stroke, strokeWidth: style.strokeWidth }); }
+      else o.set({ fill: isGrad(style.fill) ? gradientFor(o, gradStops(style.fill), style.fill.type, style.fill.angle || 0) : style.fill, stroke: style.stroke, strokeWidth: style.strokeWidth });
       if (isText(o) && isText(t)) o.set({ fontFamily: t.fontFamily, fontWeight: t.fontWeight, fontSize: t.fontSize, charSpacing: t.charSpacing, lineHeight: t.lineHeight, fontStyle: t.fontStyle });
       if (o.initDimensions) o.initDimensions();
       o.dirty = true;
     });
-    cv.requestRenderAll(); changed(); refreshUI();
+    cv.requestRenderAll(); note("Eyedropper"); changed(); refreshUI();
   }
 
-  /* ---------- Selection events keep the panels in step ---------- */
   cv.on({
-    "selection:created": () => { if (tool === "direct") setDirectControls(); refreshUI(); openDockOnPhone(); },
+    "selection:created": () => { if (tool === "direct") setDirectControls(); refreshUI(); },
     "selection:updated": () => { if (tool === "direct") setDirectControls(); refreshUI(); },
-    "selection:cleared": () => { anchorSel = -1; setDirectControls(); refreshUI(); root.classList.remove("show-dock"); }
+    "selection:cleared": () => { anchorSel = -1; setDirectControls(); refreshUI(); }
   });
-  // Text and rectangles keep true sizes instead of a stretch factor
   cv.on("object:modified", e => {
     const o = e.target;
     if (!o) return;
@@ -1326,21 +1505,24 @@ window.DSCanvas = function (kit) {
     const o = cv.getActiveObject();
     if (!o) return;
     const b = o.getBoundingRect(true, true), a = ab();
-    const put = (k, v) => $$(`[data-k="${k}"]`, root).forEach(el => { if (document.activeElement !== el) el.value = round(v, 2); });
+    const put = (k, v) => $$(`[data-k="${k}"]`, rightP).forEach(el => { if (document.activeElement !== el) el.value = round(v, 1); });
     put("x", b.left - a.x); put("y", b.top - a.y); put("w", o.getScaledWidth()); put("h", o.getScaledHeight()); put("angle", o.angle);
   };
   cv.on({ "object:moving": liveTransform, "object:scaling": liveTransform, "object:rotating": liveTransform });
 
   /* =====================================================================
-     Property editing (control bar and Properties panel share these)
+     Property editing (inspector and selection toolbar share these)
      ===================================================================== */
+  const PROP_LABEL = { x: "Move", y: "Move", w: "Resize", h: "Resize", angle: "Rotate", opacity: "Opacity", blend: "Blend Mode", strokeWidth: "Stroke Weight", rx: "Corner Radius",
+    fontSize: "Font Size", fontWeight: "Font Weight", leading: "Leading", charSpacing: "Tracking", textAlign: "Text Alignment", shadow: "Drop Shadow", imgRadius: "Corner Radius" };
+  const targetAb = () => doc.artboards[abSelected > -1 && tool === "artboard" ? abSelected : doc.active];
   function apply(k, v, done = true) {
     const list = active(), o = cv.getActiveObject(), a = ab();
     if (k.startsWith("ab-")) {
-      const t = doc.artboards[abSelected > -1 ? abSelected : doc.active];
+      const t = targetAb();
       if (!t) return;
       if (k === "ab-name") t.name = v; else if (k === "ab-bg") t.bg = v; else t[k.slice(3)] = Math.max(k === "ab-x" || k === "ab-y" ? -1e6 : 1, round(+v));
-      cv.requestRenderAll(); if (done) changed(); return;
+      cv.requestRenderAll(); if (done) { note("Artboard"); changed(); } return;
     }
     if (k === "pref-nudge") { prefs.nudge = Math.max(.1, +v); saveView(); return; }
     if (k === "pref-strokes") { prefs.scaleStrokes = !!v; saveView(); cv.getObjects().forEach(x => x.set("strokeUniform", !prefs.scaleStrokes)); cv.requestRenderAll(); return; }
@@ -1356,7 +1538,8 @@ window.DSCanvas = function (kit) {
       switch (k) {
         case "strokeWidth": if (t.kind === "icon") iconParts(t).forEach(p => p.set("strokeWidth", +v)); else { t.set("strokeWidth", +v); if (+v && !t.stroke) t.set("stroke", "#000000"); } break;
         case "opacity": t.set("opacity", clamp(+v, 0, 100) / 100); break;
-        case "dash": t.set("strokeDashArray", v === "dashed" ? [Math.max(4, t.strokeWidth * 3), Math.max(3, t.strokeWidth * 2)] : v === "dotted" ? [0.01, Math.max(3, t.strokeWidth * 2)] : null); t.set("strokeLineCap", v === "dotted" ? "round" : t.strokeLineCap); break;
+        case "blend": t.set("globalCompositeOperation", v); break;
+        case "dash": t.set("strokeDashArray", v === "dashed" ? [Math.max(4, t.strokeWidth * 3), Math.max(3, t.strokeWidth * 2)] : v === "dotted" ? [0.01, Math.max(3, t.strokeWidth * 2)] : null); if (v === "dotted") t.set("strokeLineCap", "round"); break;
         case "cap": t.set("strokeLineCap", v); break;
         case "join": t.set("strokeLineJoin", v); break;
         case "rx": if (t.type === "rect") t.set({ rx: +v, ry: +v }); break;
@@ -1367,7 +1550,7 @@ window.DSCanvas = function (kit) {
         case "textAlign": if (isText(t)) t.set("textAlign", v); break;
         case "fontStyle": if (isText(t)) t.set("fontStyle", t.fontStyle === "italic" ? "normal" : "italic"); break;
         case "underline": if (isText(t)) t.set("underline", !t.underline); break;
-        case "shadow": t.set("shadow", v ? new F.Shadow({ color: "rgba(0,0,0,0.35)", blur: 24, offsetX: 6, offsetY: 10 }) : null); break;
+        case "shadow": t.set("shadow", v ? new F.Shadow({ color: "rgba(0,0,0,0.3)", blur: 30, offsetX: 0, offsetY: 14 }) : null); break;
         case "sh-x": case "sh-y": case "sh-blur": case "sh-color": {
           if (!t.shadow) break;
           const map = { "sh-x": "offsetX", "sh-y": "offsetY", "sh-blur": "blur", "sh-color": "color" };
@@ -1390,7 +1573,8 @@ window.DSCanvas = function (kit) {
         case "grad-type": case "grad-angle": case "grad-0": case "grad-1": {
           if (!isGrad(t.fill)) break;
           const stops = gradStops(t.fill), type = k === "grad-type" ? v : t.fill.type, ang = k === "grad-angle" ? +v : (t.fill.angle || 0);
-          if (k === "grad-0") stops[0] = v; if (k === "grad-1") stops[stops.length - 1] = v;
+          if (k === "grad-0") stops[0] = v;
+          if (k === "grad-1") stops[stops.length - 1] = v;
           t.set("fill", gradientFor(t, stops, type, ang)); break;
         }
         default: break;
@@ -1412,7 +1596,7 @@ window.DSCanvas = function (kit) {
       o.setCoords();
     }
     cv.requestRenderAll();
-    if (done) changed();
+    if (done) { note(PROP_LABEL[k] || "Change"); changed(); }
   }
   async function setFont(family) {
     charState.family = family;
@@ -1424,7 +1608,7 @@ window.DSCanvas = function (kit) {
       return loadFont(family, w);
     }));
     list.forEach(o => { o.set("fontFamily", family); o.initDimensions(); o.setCoords(); });
-    cv.requestRenderAll(); changed(); refreshUI();
+    cv.requestRenderAll(); note("Font"); changed(); refreshUI();
   }
   function changeCase(how) {
     flat(active()).filter(isText).forEach(o => {
@@ -1434,7 +1618,7 @@ window.DSCanvas = function (kit) {
           : s.toLowerCase().replace(/(^|[.!?]\s+|\n)(\S)/g, (m, p, c) => p + c.toUpperCase()));
       o.initDimensions();
     });
-    cv.requestRenderAll(); changed();
+    cv.requestRenderAll(); note("Change Case"); changed();
   }
   function imageFx(kind) {
     active().filter(o => o.type === "image").forEach(o => {
@@ -1443,443 +1627,585 @@ window.DSCanvas = function (kit) {
       else { o.filters = (o.filters || []).filter(f => f && f.type !== T); o.filters.push(kind === "blur" ? new F.Image.filters.Blur({ blur: .12 }) : new F.Image.filters[T]()); }
       o.applyFilters();
     });
-    cv.requestRenderAll(); changed();
+    cv.requestRenderAll(); note("Image Effect"); changed(); refreshUI();
   }
 
   /* =====================================================================
      UI builders
      ===================================================================== */
-  const num = (k, v, o = {}) => `<label class="ai-num${o.wide ? " is-wide" : ""}"${o.tip ? ` data-tip="${o.tip}"` : ""}>${o.label ? `<span>${o.label}</span>` : ""}<input type="number" inputmode="decimal" data-k="${k}" value="${v === "" ? "" : round(+v, o.d ?? 2)}" step="${o.step || 1}"${o.min != null ? ` min="${o.min}"` : ""}${o.max != null ? ` max="${o.max}"` : ""}>${o.unit ? `<em>${o.unit}</em>` : ""}</label>`;
-  const swatchIn = (k, c) => `<label class="ai-sw${!c ? " is-none" : ""}" style="--c:${paintCss(c)}"><input type="color" data-k="${k}" value="${toHex(isGrad(c) ? c.colorStops[0].color : c) || "#000000"}" aria-label="Colour"></label>`;
-  const sel = (k, val, opts, label = "") => `<select class="ai-select" data-k="${k}" aria-label="${label}">${opts.map(([v, t]) => `<option value="${v}"${String(v) === String(val) ? " selected" : ""}>${t}</option>`).join("")}</select>`;
-  const segBtns = (k, v, opts) => `<div class="ai-seg">${opts.map(([val, ic, label]) => `<button type="button" data-set="${k}" data-v="${val}" class="${String(v) === String(val) ? "is-on" : ""}" aria-label="${label}" data-tip="${label}">${ui(ic)}</button>`).join("")}</div>`;
-  const ALIGN6 = [["left", "al-left", "Horizontal Align Left"], ["center", "al-center", "Horizontal Align Centre"], ["right", "al-right", "Horizontal Align Right"],
-    ["top", "al-top", "Vertical Align Top"], ["middle", "al-middle", "Vertical Align Centre"], ["bottom", "al-bottom", "Vertical Align Bottom"]];
-  const fontBtn = o => `<button type="button" class="ai-fontbtn" data-act="font-menu" style="font-family:'${esc(o.fontFamily)}'">${esc(o.fontFamily)}${ui("chev")}</button>`;
+  const num = (k, v, o = {}) => `<label class="cx-num${o.wide ? " is-wide" : ""}"${o.tip ? ` data-tip="${o.tip}"` : ""}>${o.label ? `<span>${o.label}</span>` : ""}<input type="number" inputmode="decimal" data-k="${k}" value="${v === "" ? "" : round(+v, o.d ?? 1)}" step="${o.step || 1}"${o.min != null ? ` min="${o.min}"` : ""}${o.max != null ? ` max="${o.max}"` : ""}>${o.unit ? `<em>${o.unit}</em>` : ""}</label>`;
+  const swatchIn = (k, c, big = false) => `<label class="cx-sw${big ? " is-big" : ""}${!c ? " is-none" : ""}" style="--c:${paintCss(c)}"><input type="color" data-k="${k}" value="${toHex(isGrad(c) ? c.colorStops[0].color : c) || "#000000"}" aria-label="Colour"></label>`;
+  const sel = (k, val, opts, label = "") => `<select class="cx-select" data-k="${k}" aria-label="${label}">${opts.map(([v, t]) => `<option value="${v}"${String(v) === String(val) ? " selected" : ""}>${t}</option>`).join("")}</select>`;
+  const segBtns = (k, v, opts) => `<div class="cx-seg">${opts.map(([val, ic, label]) => `<button type="button" data-set="${k}" data-v="${val}" class="${String(v) === String(val) ? "is-on" : ""}" aria-label="${label}" data-tip="${label}">${ui(ic)}</button>`).join("")}</div>`;
+  const ALIGN6 = [["left", "al-left", "Align Left"], ["center", "al-center", "Align Horizontal Centres"], ["right", "al-right", "Align Right"],
+    ["top", "al-top", "Align Top"], ["middle", "al-middle", "Align Vertical Centres"], ["bottom", "al-bottom", "Align Bottom"]];
+  const alignRow = () => `<div class="cx-iconrow">${ALIGN6.map(([v, ic, l]) => `<button type="button" class="cx-ib" data-set="align" data-v="${v}" aria-label="${l}" data-tip="${l}">${ui(ic)}</button>`).join("")}</div>`;
+  const BOOLS = [["unite", "union", "Union"], ["subtract", "subtract", "Subtract"], ["intersect", "intersect", "Intersect"], ["exclude", "exclude", "Exclude"]];
+  const boolRow = () => BOOLS.map(([op, ic, l]) => `<button type="button" class="cx-ib" data-act="bool:${op}" aria-label="${l}" data-tip="${l}">${ui(ic)}</button>`).join("");
+  const fontBtn = o => `<button type="button" class="cx-fontbtn" data-act="font-menu" style="font-family:'${esc(o.fontFamily)}'"><span>${esc(o.fontFamily)}</span>${ui("chev")}</button>`;
   const paintRow = (label, k, c) => `
-    <div class="ai-paintrow" data-paintrow="${k}">
-      ${swatchIn(k, c)}
-      <span class="ai-paintname">${label}</span>
-      <button type="button" class="ai-mini" data-act="swatch-pop:${k}" aria-label="Swatches">${ui("swatches")}</button>
-      <button type="button" class="ai-mini${!c ? " is-on" : ""}" data-act="paint-none:${k}" aria-label="None" data-tip="None">${ui("none")}</button>
-      <button type="button" class="ai-mini${isGrad(c) ? " is-on" : ""}" data-act="paint-gradient:${k}" aria-label="Gradient" data-tip="Gradient"><i class="pm-grad"></i></button>
+    <div class="cx-paintrow">
+      ${swatchIn(k, c, true)}
+      <div class="cx-paintinfo"><b>${label}</b><span>${!c ? tr("None") : isGrad(c) ? tr("Gradient") : (toHex(c) || "").toUpperCase()}</span></div>
+      <button type="button" class="cx-tiny" data-act="swatch-pop:${k}" aria-label="Swatches" data-tip="Swatches">${ui("swatches")}</button>
+      ${k === "fill" ? `<button type="button" class="cx-tiny${isGrad(c) ? " is-on" : ""}" data-act="paint-gradient" aria-label="Gradient" data-tip="Gradient">${ui("gradient")}</button>` : ""}
+      <button type="button" class="cx-tiny${!c ? " is-on" : ""}" data-act="paint-none:${k}" aria-label="None" data-tip="None">${ui("none")}</button>
     </div>`;
+  const collapsed = new Set((() => { try { return JSON.parse(localStorage.getItem("ds-canvas-collapsed") || "[]"); } catch (e) { return []; } })());
+  const sec = (id, title, bodyHtml) => `<section class="cx-sec${collapsed.has(id) ? " is-closed" : ""}" data-sec="${id}"><button type="button" class="cx-sec-head" data-act="sec:${id}" aria-expanded="${!collapsed.has(id)}"><span>${title}</span>${ui("chev")}</button><div class="cx-sec-body">${bodyHtml}</div></section>`;
 
-  /* ---------- Control bar ---------- */
-  function renderControl() {
-    const o = cv.getActiveObject(), k = kindOf(o), a = ab();
-    let h = `<span class="ai-ctl-label">${typeName(o)}</span>`;
-    if (tool === "artboard") {
-      const t = doc.artboards[abSelected > -1 ? abSelected : doc.active];
-      h = `<span class="ai-ctl-label">Artboard</span>
-        <span class="ai-ctl-grp">${sel("ab-preset", SIZES.findIndex(([, w, hh]) => w === t.w && hh === t.h), [[-1, "Custom"], ...SIZES.map(([n, w, hh], i) => [i, `${n} · ${w} × ${hh}`])], "Preset")}</span>
-        <span class="ai-ctl-grp">${num("ab-w", t.w, { label: "W", min: 1 })}${num("ab-h", t.h, { label: "H", min: 1 })}</span>
-        <span class="ai-ctl-grp">${num("ab-x", t.x, { label: "X" })}${num("ab-y", t.y, { label: "Y" })}</span>
-        <span class="ai-ctl-grp"><label class="ai-ctl-txt">Name</label><input class="ai-text" data-k="ab-name" value="${esc(t.name)}"></span>
-        <button type="button" class="ai-btn" data-act="ab-new">New Artboard</button>
-        <button type="button" class="ai-btn" data-act="ab-delete">Delete</button>`;
-      control.innerHTML = h;
-      return;
-    }
-    const fill = firstOf("fill"), stroke = firstOf("stroke"), sw = o ? (o.kind === "icon" ? iconParts(o)[0].strokeWidth : (o.type === "activeSelection" ? o.getObjects()[0].strokeWidth : o.strokeWidth)) : paint.strokeWidth;
-    h += `<span class="ai-ctl-grp">${swatchIn("ctl-fill", fill)}<button type="button" class="ai-drop-btn" data-act="swatch-pop:fill" aria-label="Fill swatches">${ui("chev")}</button>
-      ${swatchIn("ctl-stroke", stroke)}<button type="button" class="ai-drop-btn" data-act="swatch-pop:stroke" aria-label="Stroke swatches">${ui("chev")}</button></span>
-      <span class="ai-ctl-grp"><label class="ai-ctl-txt">Stroke:</label>${num("strokeWidth", sw || 0, { min: 0, step: .5, unit: "px", d: 2 })}</span>`;
-    if (o) h += `<span class="ai-ctl-grp"><label class="ai-ctl-txt">Opacity:</label>${num("opacity", round((o.opacity ?? 1) * 100), { min: 0, max: 100, unit: "%" })}</span>`;
-    if (k === "text") {
-      h += `<span class="ai-ctl-grp"><label class="ai-ctl-txt">Character:</label>${fontBtn(o)}
-        ${sel("fontWeight", o.fontWeight, (FONTS[o.fontFamily] || [400, 700]).map(w => [w, WEIGHT_NAMES[w]]), "Font style")}
-        ${num("fontSize", o.fontSize, { unit: "px", min: 1, d: 1 })}</span>
-        <span class="ai-ctl-grp">${segBtns("textAlign", o.textAlign, [["left", "t-left", "Align Left"], ["center", "t-center", "Align Centre"], ["right", "t-right", "Align Right"]])}</span>`;
-    }
-    if (o) {
-      const b = o.getBoundingRect(true, true);
-      h += `<span class="ai-ctl-grp ai-ctl-align">${ALIGN6.map(([v, ic, l]) => `<button type="button" class="ai-ib" data-set="align" data-v="${v}" aria-label="${l}" data-tip="${l}">${ui(ic)}</button>`).join("")}</span>
-        <span class="ai-ctl-grp">${num("x", b.left - a.x, { label: "X:", unit: "px" })}${num("y", b.top - a.y, { label: "Y:", unit: "px" })}${k !== "multi" ? num("w", o.getScaledWidth(), { label: "W:", unit: "px", min: 1 }) + num("h", o.getScaledHeight(), { label: "H:", unit: "px", min: 1 }) : ""}</span>`;
-    } else {
-      h += `<button type="button" class="ai-btn" data-act="doc-setup">Document Setup</button><button type="button" class="ai-btn" data-act="prefs">Preferences</button>`;
-    }
-    control.innerHTML = h;
+  /* ---------- Left panel: Layers, Assets, History ---------- */
+  let ltab = "layers", assetTab = "brief", leftKey = "";
+  const ASSET_TABS = [["brief", "Brief"], ["templates", "Templates"], ["text", "Text"], ["shapes", "Shapes"], ["icons", "Icons"], ["images", "Images"], ["colours", "Colours"]];
+  function renderLeft() {
+    lTabs.innerHTML = `<div class="cx-seg is-wide">${[["layers", "Layers"], ["assets", "Assets"], ["history", "History"]].map(([k, l]) => `<button type="button" data-ltab="${k}" class="${ltab === k ? "is-on" : ""}">${l}</button>`).join("")}</div>`
+      + `<button type="button" class="cx-ib cx-panel-x" data-act="toggle:ui" aria-label="Hide panels" data-tip="Hide panels · ${keyLabel("mod+\\")}">${ui("sidebar")}</button>`;
+    const keep = lBody.scrollTop;
+    lBody.innerHTML = ltab === "layers" ? layersPanel() : ltab === "history" ? historyPanel() : assetsPanel();
+    lBody.scrollTop = keep;
+    leftKey = ltab + ":" + assetTab;
+    if (ltab === "assets" && assetTab === "templates") thumbs();
+    if (ltab === "assets" && assetTab === "text") PAIRS.forEach(([x, xw, y, yw]) => { loadFont(x, xw); loadFont(y, yw); });
   }
-
-  /* ---------- Right dock: tabs and panels ---------- */
-  let panel = "properties";
-  const PANEL_TITLES = { properties: "Properties", layers: "Layers", libraries: "Libraries", swatches: "Swatches", artboards: "Artboards", brief: "Brief", templates: "Templates", text: "Font Pairs", icons: "Icons", images: "Images" };
-  const collapsed = new Set();
-  const sec = (id, title, body) => `<section class="ai-sec${collapsed.has(id) ? " is-closed" : ""}" data-sec="${id}"><button type="button" class="ai-sec-head" data-act="sec:${id}">${ui("chev")}<span>${title}</span></button><div class="ai-sec-body">${body}</div></section>`;
-  function renderDock() {
-    const main = ["properties", "layers", "libraries"];
-    const tabs = main.includes(panel) ? main : [...main, panel];
-    dockTabs.innerHTML = tabs.map(t => `<button type="button" data-panel="${t}" class="${t === panel ? "is-on" : ""}">${PANEL_TITLES[t]}</button>`).join("");
-    $$(".ai-strip [data-panel]", root).forEach(b => b.classList.toggle("is-on", b.dataset.panel === panel));
-    const r = { properties: propsPanel, layers: layersPanel, libraries: librariesPanel, swatches: swatchesPanel, artboards: artboardsPanel, brief: briefPanel, templates: templatesPanel, text: textPanel, icons: iconsPanel, images: imagesPanel }[panel];
-    dockBody.innerHTML = r();
-    if (panel === "templates" || panel === "libraries") thumbs();
-    if (panel === "text") PAIRS.forEach(([x, xw, y, yw]) => { loadFont(x, xw); loadFont(y, yw); });
-  }
-  function propsPanel() {
-    const o = cv.getActiveObject(), k = kindOf(o), a = ab();
-    if (tool === "artboard") {
-      const i = abSelected > -1 ? abSelected : doc.active, t = doc.artboards[i];
-      return sec("ab", "Artboard", `
-        <input class="ai-text is-full" data-k="ab-name" value="${esc(t.name)}" aria-label="Artboard name">
-        ${sel("ab-preset", SIZES.findIndex(([, w, h]) => w === t.w && h === t.h), [[-1, "Custom"], ...SIZES.map(([n, w, h], j) => [j, `${n} · ${w} × ${h}`])], "Preset")}
-        <div class="ai-g2">${num("ab-w", t.w, { label: "W", min: 1 })}${num("ab-h", t.h, { label: "H", min: 1 })}</div>
-        <div class="ai-g2">${num("ab-x", t.x, { label: "X" })}${num("ab-y", t.y, { label: "Y" })}</div>
-        <div class="ai-row"><span class="ai-lbl">Background</span>${swatchIn("ab-bg", t.bg)}</div>
-        <div class="ai-g2"><button type="button" class="ai-btn" data-act="ab-fit">Fit to Artwork</button><button type="button" class="ai-btn" data-act="ab-dup">Duplicate</button></div>
-        <div class="ai-g2"><button type="button" class="ai-btn" data-act="ab-new">New Artboard</button><button type="button" class="ai-btn is-danger" data-act="ab-delete">Delete</button></div>
-        <button type="button" class="ai-btn is-blue" data-act="tool:select">Exit Artboard Edit Mode</button>`);
-    }
-    if (!o) {
-      return `<p class="ai-note">No Selection</p>` +
-        sec("doc", "Document", `
-          <div class="ai-row"><span class="ai-lbl">Units:</span><span class="ai-val">Pixels</span></div>
-          <div class="ai-row"><span class="ai-lbl">Artboard:</span>${sel("active-ab", doc.active, doc.artboards.map((x, i) => [i, `${i + 1} · ${x.name}`]), "Artboard")}</div>
-          <button type="button" class="ai-btn is-full" data-act="tool:artboard">Edit Artboards</button>
-          <div class="ai-row"><span class="ai-lbl">Background</span>${swatchIn("ab-bg", a.bg)}</div>`) +
-        sec("rulers", "Ruler & Grids", `<div class="ai-icons">
-          <button type="button" class="ai-ib${view.rulers ? " is-on" : ""}" data-act="toggle:rulers" aria-label="Rulers" data-tip="Rulers">${ui("rulers")}</button>
-          <button type="button" class="ai-ib${view.grid ? " is-on" : ""}" data-act="toggle:grid" aria-label="Grid" data-tip="Grid">${ui("grid")}</button>
-          <button type="button" class="ai-ib${view.snapGrid ? " is-on" : ""}" data-act="toggle:snapGrid" aria-label="Snap to Grid" data-tip="Snap to Grid">${ui("snapgrid")}</button></div>
-          ${num("pref-grid", prefs.gridSize, { label: "Grid", unit: "px", min: 2 })}`) +
-        sec("guides", "Guides", `<div class="ai-icons">
-          <button type="button" class="ai-ib${view.guides ? " is-on" : ""}" data-act="toggle:guides" aria-label="Show Guides" data-tip="Show Guides">${ui("guides")}</button>
-          <button type="button" class="ai-ib${view.lockGuides ? " is-on" : ""}" data-act="toggle:lockGuides" aria-label="Lock Guides" data-tip="Lock Guides">${ui("lock")}</button>
-          <button type="button" class="ai-ib" data-act="clear-guides" aria-label="Clear Guides" data-tip="Clear Guides">${ui("trash")}</button></div>
-          <p class="ai-note">Drag from a ruler to make a guide.</p>`) +
-        sec("snap", "Snap Options", `<div class="ai-icons">
-          <button type="button" class="ai-ib${view.smart ? " is-on" : ""}" data-act="toggle:smart" aria-label="Smart Guides" data-tip="Smart Guides">${ui("smart")}</button></div>`) +
-        sec("prefs", "Preferences", `${num("pref-nudge", prefs.nudge, { label: "Keyboard Increment:", unit: "px", min: .1, wide: true })}
-          <label class="ai-check"><input type="checkbox" data-k="pref-strokes"${prefs.scaleStrokes ? " checked" : ""}><span>Scale Strokes & Effects</span></label>`) +
-        sec("quick", "Quick Actions", `<div class="ai-g2"><button type="button" class="ai-btn" data-act="doc-setup">Document Setup</button><button type="button" class="ai-btn" data-act="prefs">Preferences</button></div>
-          <button type="button" class="ai-btn is-full" data-act="export">Export</button>`);
-    }
-    const b = o.getBoundingRect(true, true);
-    const fill = firstOf("fill"), stroke = firstOf("stroke"), target = o.type === "activeSelection" ? o.getObjects()[0] : o;
-    let h = `<p class="ai-note is-strong">${typeName(o)}</p>`;
-    h += sec("transform", "Transform", `
-      <div class="ai-g2">${num("x", b.left - a.x, { label: "X", unit: "px" })}${num("y", b.top - a.y, { label: "Y", unit: "px" })}</div>
-      ${k !== "multi" ? `<div class="ai-g2">${num("w", o.getScaledWidth(), { label: "W", unit: "px", min: 1 })}${num("h", o.getScaledHeight(), { label: "H", unit: "px", min: 1 })}</div>
-      <div class="ai-g2">${num("angle", o.angle, { label: "∠", unit: "°" })}<div class="ai-seg"><button type="button" data-act="flip-h" aria-label="Flip Horizontal" data-tip="Flip Horizontal">${ui("flip-h")}</button><button type="button" data-act="flip-v" aria-label="Flip Vertical" data-tip="Flip Vertical">${ui("flip-v")}</button></div></div>` : ""}
-      ${o.type === "rect" ? num("rx", o.rx || 0, { label: "Corner", unit: "px", min: 0, wide: true }) : ""}`);
-    if (k === "text") {
-      h += sec("char", "Character", `${fontBtn(o)}
-        <div class="ai-g2">${sel("fontWeight", o.fontWeight, (FONTS[o.fontFamily] || [400, 700]).map(w => [w, WEIGHT_NAMES[w]]), "Font style")}${num("fontSize", o.fontSize, { label: "T", unit: "px", min: 1, d: 1, tip: "Font size" })}</div>
-        <div class="ai-g2">${num("leading", o.fontSize * o.lineHeight, { label: "A", unit: "px", d: 1, tip: "Leading" })}${num("charSpacing", o.charSpacing, { label: "VA", step: 10, tip: "Tracking" })}</div>
-        <div class="ai-g2"><div class="ai-seg"><button type="button" data-set="fontStyle" data-v="1" class="${o.fontStyle === "italic" ? "is-on" : ""}" aria-label="Italic" data-tip="Italic">${ui("italic")}</button><button type="button" data-set="underline" data-v="1" class="${o.underline ? "is-on" : ""}" aria-label="Underline" data-tip="Underline">${ui("underline")}</button></div>
-        <button type="button" class="ai-btn" data-act="case:upper">AA</button></div>`) +
-        sec("para", "Paragraph", segBtns("textAlign", o.textAlign, [["left", "t-left", "Align Left"], ["center", "t-center", "Align Centre"], ["right", "t-right", "Align Right"], ["justify", "t-justify", "Justify"]]));
-    }
-    h += sec("appearance", "Appearance", `
-      ${paintRow("Fill", "fill", fill)}
-      ${paintRow("Stroke", "stroke", stroke)}
-      <div class="ai-g2">${num("strokeWidth", (target.kind === "icon" ? iconParts(target)[0].strokeWidth : target.strokeWidth) || 0, { label: "Weight", unit: "px", min: 0, step: .5 })}
-        ${sel("dash", target.strokeDashArray ? (target.strokeDashArray[0] < .1 ? "dotted" : "dashed") : "solid", [["solid", "Solid"], ["dashed", "Dashed"], ["dotted", "Dotted"]], "Dash")}</div>
-      ${o.type !== "activeSelection" && (target.stroke) ? `<div class="ai-g2">${sel("cap", target.strokeLineCap || "butt", [["butt", "Butt cap"], ["round", "Round cap"], ["square", "Square cap"]], "Cap")}${sel("join", target.strokeLineJoin || "miter", [["miter", "Miter join"], ["round", "Round join"], ["bevel", "Bevel join"]], "Join")}</div>` : ""}
-      ${isGrad(target.fill) ? `<div class="ai-grad"><span class="ai-lbl">Gradient</span>
-        <div class="ai-gradbar" style="background:${paintCss(target.fill)}"></div>
-        <div class="ai-g2">${swatchIn("grad-0", gradStops(target.fill)[0])}${swatchIn("grad-1", gradStops(target.fill).slice(-1)[0])}</div>
-        <div class="ai-g2">${sel("grad-type", target.fill.type, [["linear", "Linear"], ["radial", "Radial"]], "Type")}${num("grad-angle", target.fill.angle || 0, { label: "∠", unit: "°" })}</div></div>` : ""}
-      ${num("opacity", round((o.opacity ?? 1) * 100), { label: "Opacity", unit: "%", min: 0, max: 100, wide: true })}
-      <label class="ai-check"><input type="checkbox" data-k="shadow"${target.shadow ? " checked" : ""}><span>Drop Shadow</span></label>
-      ${target.shadow && k !== "multi" ? `<div class="ai-g2">${num("sh-x", target.shadow.offsetX, { label: "X", unit: "px" })}${num("sh-y", target.shadow.offsetY, { label: "Y", unit: "px" })}</div>
-        <div class="ai-g2">${num("sh-blur", target.shadow.blur, { label: "Blur", unit: "px", min: 0 })}${swatchIn("sh-color", target.shadow.color)}</div>` : ""}`);
-    if (k === "image") {
-      const fl = o.filters || [], val = (T, key) => { const x = fl.find(t => t && t.type === T); return x ? round(x[key] * 100) : 0; };
-      h += sec("image", "Image", `${num("imgRadius", o.kindRadius || 0, { label: "Corner", unit: "px", min: 0, wide: true })}
-        ${num("brightness", val("Brightness", "brightness"), { label: "Brightness", min: -100, max: 100, wide: true })}
-        ${num("contrast", val("Contrast", "contrast"), { label: "Contrast", min: -100, max: 100, wide: true })}
-        ${num("saturation", val("Saturation", "saturation"), { label: "Saturation", min: -100, max: 100, wide: true })}
-        <div class="ai-g2"><button type="button" class="ai-btn" data-act="fx:gray">B&amp;W</button><button type="button" class="ai-btn" data-act="fx:clear">Reset</button></div>`);
-    }
-    h += sec("align", "Align", `<div class="ai-icons">${ALIGN6.map(([v, ic, l]) => `<button type="button" class="ai-ib" data-set="align" data-v="${v}" aria-label="${l}" data-tip="${l}">${ui(ic)}</button>`).join("")}</div>
-      ${k === "multi" ? `<div class="ai-icons"><button type="button" class="ai-ib" data-act="dist:h" aria-label="Distribute Horizontally" data-tip="Distribute Horizontally">${ui("dist-h")}</button><button type="button" class="ai-ib" data-act="dist:v" aria-label="Distribute Vertically" data-tip="Distribute Vertically">${ui("dist-v")}</button></div><p class="ai-note">Aligns to the selection.</p>` : `<p class="ai-note">Aligns to the artboard.</p>`}`);
-    h += sec("quick", "Quick Actions", `<div class="ai-g2">
-      ${k === "multi" ? `<button type="button" class="ai-btn" data-act="group">Group</button>` : k === "group" ? `<button type="button" class="ai-btn" data-act="ungroup">Ungroup</button>` : `<button type="button" class="ai-btn" data-act="duplicate">Duplicate</button>`}
-      <button type="button" class="ai-btn" data-act="lock">${o.locked ? "Unlock" : "Lock"}</button>
-      <button type="button" class="ai-btn" data-act="front">Bring to Front</button><button type="button" class="ai-btn" data-act="back">Send to Back</button>
-      ${k === "shape" ? `<button type="button" class="ai-btn" data-act="expand">Expand</button>` : ""}${k === "path" || k === "shape" ? `<button type="button" class="ai-btn" data-act="tool:direct">Edit Points</button>` : ""}
-      <button type="button" class="ai-btn is-danger" data-act="delete">Delete</button></div>`);
-    return h;
-  }
-  const KIND_ICON = { text: "type", image: "image", icon: "smile", group: "layers", shape: "rect", path: "pen", multi: "layers" };
+  const KIND_ICON = { text: "type", image: "image", icon: "smile", group: "group", masked: "mask", shape: "rect", path: "pen", multi: "group" };
+  const SHAPE_ICON = { Rectangle: "rect", Ellipse: "ellipse", Circle: "ellipse", Line: "line", Star: "star", Polygon: "polygon", Badge: "star", "Rounded Rectangle": "rounded", "Brush Stroke": "brush", "Pencil Line": "pencil", "QR Code": "qr" };
+  const layerIcon = o => SHAPE_ICON[o.name] || (o.type === "ellipse" || o.type === "circle" ? "ellipse" : o.type === "line" ? "line" : KIND_ICON[kindOf(o)] || "rect");
   function layersPanel() {
     const objs = cv.getObjects(), selList = active();
-    const allHidden = objs.length && objs.every(o => o.visible === false), allLocked = objs.length && objs.every(o => o.locked);
-    return `<div class="ai-layers">
-      <div class="ai-layer-top"><button type="button" data-ly-all="eye" aria-label="Show or hide all">${ui(allHidden ? "eye-off" : "eye")}</button><button type="button" data-ly-all="lock" aria-label="Lock or unlock all">${ui(allLocked ? "lock" : "unlock")}</button><span class="ai-ly-sw" style="--c:#1f7aff"></span><strong>Layer 1</strong><em>${objs.length}</em></div>
-      <ul data-layers>${objs.map((o, i) => [o, i]).reverse().map(([o, i]) => `
-        <li draggable="true" data-ly="${i}" class="${selList.includes(o) ? "is-on" : ""}${o.visible === false ? " is-hidden" : ""}">
-          <button type="button" data-ly-eye aria-label="${o.visible === false ? "Show" : "Hide"}">${ui(o.visible === false ? "eye-off" : "eye")}</button>
-          <button type="button" data-ly-lock aria-label="${o.locked ? "Unlock" : "Lock"}" class="${o.locked ? "is-on" : ""}">${ui(o.locked ? "lock" : "unlock")}</button>
-          <span class="ai-ly-thumb" style="--c:${paintCss(o.kind === "icon" ? iconParts(o)[0].stroke : o.fill || o.stroke)}">${ui(KIND_ICON[kindOf(o)] || "rect")}</span>
-          <span class="ai-ly-name"${isText(o) ? " data-no-i18n" : ""}>${esc(isText(o) ? (o.text || "").slice(0, 32) || o.name : o.name || typeName(o))}</span>
-          <i class="ai-ly-sel"></i>
-        </li>`).join("") || `<li class="ai-empty">Nothing on the page yet.</li>`}</ul></div>`;
+    if (!objs.length) return `<div class="cx-empty">${ui("layers")}<b>No layers yet</b><span>Draw with the tools below, or open Assets for templates, text and icons.</span><button type="button" class="cx-btn" data-ltab="assets">Open Assets</button></div>`;
+    return `<ul class="cx-layers" data-layers>${objs.map((o, i) => [o, i]).reverse().map(([o, i]) => `
+      <li draggable="true" data-ly="${i}" class="${selList.includes(o) ? "is-on" : ""}${o.visible === false ? " is-hidden" : ""}${o.locked ? " is-locked" : ""}">
+        <span class="cx-ly-ic" style="--c:${paintCss(o.kind === "icon" ? iconParts(o)[0].stroke : o.fill || o.stroke)}">${ui(layerIcon(o))}</span>
+        <span class="cx-ly-name"${isText(o) ? " data-no-i18n" : ""}>${esc(isText(o) ? (o.text || "").slice(0, 32) || o.name : o.name || typeName(o))}</span>
+        <button type="button" data-ly-lock aria-label="${o.locked ? "Unlock" : "Lock"}" class="${o.locked ? "is-on" : ""}">${ui(o.locked ? "lock" : "unlock")}</button>
+        <button type="button" data-ly-eye aria-label="${o.visible === false ? "Show" : "Hide"}" class="${o.visible === false ? "is-on" : ""}">${ui(o.visible === false ? "eye-off" : "eye")}</button>
+      </li>`).join("")}</ul>
+      <p class="cx-foot">${objs.length} ${objs.length === 1 ? tr("layer") : tr("layers")} · ${doc.artboards.length} ${doc.artboards.length === 1 ? tr("artboard") : tr("artboards")}</p>`;
   }
-  function artboardsPanel() {
-    return `<ul class="ai-abs">${doc.artboards.map((a, i) => `<li data-ab="${i}" class="${i === doc.active ? "is-on" : ""}"><b>${i + 1}</b><span>${esc(a.name)}</span><em>${a.w} × ${a.h}</em></li>`).join("")}</ul>
-      <div class="ai-g2"><button type="button" class="ai-btn" data-act="ab-new">New Artboard</button><button type="button" class="ai-btn" data-act="tool:artboard">Edit Artboards</button></div>`;
+  const ago = t => { const s = Math.round((Date.now() - t) / 1000); return s < 10 ? tr("just now") : s < 60 ? `${s}s` : s < 3600 ? `${Math.round(s / 60)} min` : new Date(t).toTimeString().slice(0, 5); };
+  function historyPanel() {
+    return `<ol class="cx-history">${hist.meta.map((m, i) => [m, i]).reverse().map(([m, i]) => `<li><button type="button" data-hist="${i}" class="${i === hist.i ? "is-on" : ""}${i > hist.i ? " is-future" : ""}"><i></i><span>${esc(tr(m.label))}</span><em>${ago(m.time)}</em></button></li>`).join("")}</ol>
+      <p class="cx-foot">Click a step to go back to it. The last 100 steps are kept.</p>`;
   }
-  function swatchesPanel() {
-    const docCols = [...new Set(flat(cv.getObjects()).flatMap(o => [o.fill, o.stroke]).map(c => toHex(c)).filter(Boolean))].slice(0, 24);
-    const row = cols => `<div class="ai-swatches">${cols.map(c => `<button type="button" style="--c:${c}" data-swatch="${c}" aria-label="${c}" title="${c}"></button>`).join("")}</div>`;
-    return `<div class="ai-swatch-target">${["fill", "stroke"].map(t => `<button type="button" data-focus="${t}" class="${paint.focus === t ? "is-on" : ""}">${t === "fill" ? "Fill" : "Stroke"}</button>`).join("")}</div>
-      <div class="ai-swatches"><button type="button" class="is-none" data-swatch="none" aria-label="None" title="None"></button>${BASIC.map(c => `<button type="button" style="--c:${c}" data-swatch="${c}" aria-label="${c}" title="${c}"></button>`).join("")}</div>
-      <h4 class="ai-h4">Gradients</h4><div class="ai-swatches">${GRADIENTS.map((g, i) => `<button type="button" style="--c:linear-gradient(135deg, ${g[0]}, ${g[1]})" data-gradient="${i}" aria-label="Gradient"></button>`).join("")}</div>
-      ${brief ? `<h4 class="ai-h4">${esc(brief.title)}</h4>${row(pal(brief.palette))}` : ""}
-      ${docCols.length ? `<h4 class="ai-h4">Document colours</h4>${row(docCols)}` : ""}
-      ${(DS.palettes || []).map(p => `<h4 class="ai-h4">${esc(p.name)}</h4>${row(p.colors)}`).join("")}`;
-  }
-  function librariesPanel() {
-    return `<p class="ai-note">Ready-made pieces for your design.</p>
-      <div class="ai-libgrid">
-        ${[["brief", "target", "Practice briefs"], ["templates", "grid", "Templates"], ["text", "fonts", "Font pairs"], ["icons", "smile", "Icons"], ["images", "image", "Your images"], ["swatches", "swatches", "Swatches"]]
-          .map(([p, ic, l]) => `<button type="button" class="ai-lib" data-panel="${p}">${ui(ic)}<span>${l}</span></button>`).join("")}
-      </div>
-      <h4 class="ai-h4">Templates</h4>${tplGrid()}`;
+  function assetsPanel() {
+    const nav = `<div class="cx-chips">${ASSET_TABS.map(([k, l]) => `<button type="button" data-atab="${k}" class="${assetTab === k ? "is-on" : ""}">${l}</button>`).join("")}</div>`;
+    return nav + ({ brief: briefPanel, templates: templatesPanel, text: textPanel, shapes: shapesPanel, icons: iconsPanel, images: imagesPanel, colours: coloursPanel }[assetTab])();
   }
   let briefPick = Math.floor(Math.random() * BRIEFS.length);
   function briefPanel() {
     const b = BRIEFS[briefPick], [sn, sw, sh] = SIZES[b.size], on = brief === b;
-    return `<p class="ai-note">Practise like a real designer: take a brief, design it, then download it for your portfolio.</p>
-      <article class="ai-brief${on ? " is-on" : ""}">
-        <span class="ai-brief-client">${esc(b.client)}</span>
+    return `<article class="cx-brief${on ? " is-on" : ""}">
+        <span class="cx-brief-client">${esc(b.client)}</span>
         <h4>${esc(b.title)}</h4>
         <p>${esc(b.task)}</p>
-        <dl><dt>Format</dt><dd>${sn} · ${sw} × ${sh}</dd><dt>Palette</dt><dd><span class="ai-brief-pal">${pal(b.palette).map(c => `<i style="--c:${c}"></i>`).join("")}</span></dd></dl>
-        <p class="ai-brief-tip">${icon("lightbulb")}<span>${esc(b.tip)}</span></p>
+        <dl><dt>Format</dt><dd>${sn} · ${sw} × ${sh}</dd><dt>Palette</dt><dd><span class="cx-brief-pal">${pal(b.palette).map(c => `<i style="--c:${c}"></i>`).join("")}</span></dd></dl>
+        <p class="cx-brief-tip">${icon("lightbulb")}<span>${esc(b.tip)}</span></p>
       </article>
-      <div class="ai-g2"><button type="button" class="ai-btn is-blue" data-act="brief-start">${on ? "Restart brief" : "Start this brief"}</button><button type="button" class="ai-btn" data-act="brief-next">${ui("shuffle")}<span>Another</span></button></div>
-      ${brief && !on ? `<p class="ai-note">Working on: <b>${esc(brief.title)}</b></p>` : ""}`;
+      <div class="cx-g2"><button type="button" class="cx-btn is-blue" data-act="brief-start">${on ? "Restart brief" : "Start this brief"}</button><button type="button" class="cx-btn" data-act="brief-next">${ui("shuffle")}<span>Another</span></button></div>
+      <p class="cx-note">Practise like a real designer: take a brief, design it, then download it for your portfolio.</p>`;
   }
-  const tplGrid = () => `<div class="ai-tpls">${TEMPLATES.map((t, i) => `<button type="button" class="ai-tpl" data-tpl="${i}"><img alt="" data-tpl-img="${i}" width="${t.w}" height="${t.h}"><span>${t.name}</span></button>`).join("")}</div>`;
-  const templatesPanel = () => `<p class="ai-note">Start from a layout, then make it yours.</p>${tplGrid()}`;
+  const templatesPanel = () => `<p class="cx-note">Start from a layout, then make it yours.</p><div class="cx-tpls">${TEMPLATES.map((t, i) => `<button type="button" class="cx-tpl" data-tpl="${i}"><span class="cx-tpl-img" style="aspect-ratio:${t.w} / ${t.h}"><img alt="" data-tpl-img="${i}"></span><span>${t.name}</span></button>`).join("")}</div>`;
   function textPanel() {
-    return `<button type="button" class="ai-addtext h" data-text="heading">Add a heading</button>
-      <button type="button" class="ai-addtext s" data-text="sub">Add a subheading</button>
-      <button type="button" class="ai-addtext b" data-text="body">Add body text</button>
-      <h4 class="ai-h4">Font pairs</h4>
-      ${PAIRS.map(([x, xw, y, yw], i) => `<button type="button" class="ai-pair" data-pair="${i}"><b style="font-family:'${x}';font-weight:${xw}">${x}</b><span style="font-family:'${y}';font-weight:${yw}">with ${y}</span></button>`).join("")}`;
+    return `<button type="button" class="cx-addtext h" data-text="heading">Add a heading</button>
+      <button type="button" class="cx-addtext s" data-text="sub">Add a subheading</button>
+      <button type="button" class="cx-addtext b" data-text="body">Add body text</button>
+      <h4 class="cx-h4">Font pairs</h4>
+      ${PAIRS.map(([x, xw, y, yw], i) => `<button type="button" class="cx-fpair" data-pair="${i}"><b style="font-family:'${x}';font-weight:${xw}">${x}</b><span style="font-family:'${y}';font-weight:${yw}">with ${y}</span></button>`).join("")}`;
   }
-  const iconsPanel = () => `<label class="ai-search">${icon("search")}<input type="search" data-icon-q placeholder="Search icons" aria-label="Search icons"></label>
-    <div class="ai-iconsgrid">${Object.keys(window.DS_ICONS || {}).map(n => `<button type="button" data-icon="${n}" aria-label="${n}" title="${n}">${icon(n)}</button>`).join("")}</div>`;
+  const LIB_SHAPES = {
+    rect: ["Rectangle", '<rect x="5" y="7" width="30" height="26" rx="2"/>'], rounded: ["Rounded Rectangle", '<rect x="5" y="7" width="30" height="26" rx="8"/>'],
+    ellipse: ["Ellipse", '<circle cx="20" cy="20" r="15"/>'], triangle: ["Triangle", '<path d="M20 5 36 34H4z"/>'],
+    star: ["Star", '<path d="m20 4 4.4 10.2 11 .9-8.4 7.2 2.6 10.8L20 27.4l-9.6 5.7 2.6-10.8-8.4-7.2 11-.9z"/>'], polygon: ["Polygon", '<path d="m20 4 14 8v16l-14 8-14-8V12z"/>'],
+    arrow: ["Arrow", '<path d="M4 16h18V9l14 11-14 11v-7H4z"/>'], heart: ["Heart", '<path d="M20 34C9 26 4 20 4 13.5 4 8.8 7.6 5 12.2 5c3.4 0 6 1.8 7.8 4.6C21.8 6.8 24.4 5 27.8 5 32.4 5 36 8.8 36 13.5 36 20 31 26 20 34z"/>'],
+    bubble: ["Speech Bubble", '<path d="M8 6h24a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4H18l-8 7v-7H8a4 4 0 0 1-4-4V10a4 4 0 0 1 4-4z"/>'],
+    badge: ["Badge", '<path d="m20 3 4 4.4 5.9-.6 1.2 5.8 5 3.2-2.4 5.2 2.4 5.2-5 3.2-1.2 5.8-5.9-.6L20 37l-4-4.4-5.9.6-1.2-5.8-5-3.2L6.3 19 3.9 13.8l5-3.2 1.2-5.8 5.9.6z"/>'],
+    blob: ["Blob", '<path d="M24 5c7 1.4 12.6 6.5 13 14 .5 8-4.6 15.4-12 17.2C17.6 38 9 35.6 6 29 2.6 21.6 4.4 12.8 10 8.4 14.2 5 18.8 4 24 5z"/>'],
+    line: ["Line", '<path d="M5 20h30" stroke-width="3.5" stroke-linecap="round" stroke="currentColor" fill="none"/>']
+  };
+  const shapesPanel = () => `<div class="cx-shapes">${Object.entries(LIB_SHAPES).map(([k, [n, svg]]) => `<button type="button" data-libshape="${k}" aria-label="${n}" data-tip="${n}"><svg viewBox="0 0 40 40" fill="currentColor">${svg}</svg></button>`).join("")}</div>
+    <p class="cx-note">Tip: select two shapes and use Combine to make new ones.</p>
+    <button type="button" class="cx-btn" data-act="qr">${ui("qr")}<span>Insert QR Code…</span></button>`;
+  const iconsPanel = () => `<label class="cx-searchbox">${icon("search")}<input type="search" data-icon-q placeholder="Search icons" aria-label="Search icons"></label>
+    <div class="cx-iconsgrid">${Object.keys(window.DS_ICONS || {}).map(n => `<button type="button" data-icon="${n}" aria-label="${n}" title="${n}">${icon(n)}</button>`).join("")}</div>`;
   const uploads = [];
-  const imagesPanel = () => `<button type="button" class="ai-btn is-blue is-full" data-act="place">${ui("upload")}<span>Place images</span></button>
-    <p class="ai-note">Or drag images onto the canvas, or paste one. They stay on your device.</p>
-    <div class="ai-uploads">${uploads.map((u, i) => `<button type="button" data-up="${i}" aria-label="Place again"><img src="${u}" alt=""></button>`).join("")}</div>`;
+  const imagesPanel = () => `<button type="button" class="cx-dropzone" data-act="place">${ui("upload")}<b>Place images</b><span>Or drop them on the canvas, or paste one. They stay on your device.</span></button>
+    <div class="cx-uploads">${uploads.map((u, i) => `<button type="button" data-up="${i}" aria-label="Place again"><img src="${u}" alt=""></button>`).join("")}</div>`;
+  function coloursPanel() {
+    const docCols = [...new Set(flat(cv.getObjects()).flatMap(o => [o.fill, o.stroke]).map(c => toHex(c)).filter(Boolean))].slice(0, 24);
+    const row = cols => `<div class="cx-swatches">${cols.map(c => `<button type="button" style="--c:${c}" data-swatch="${c}" aria-label="${c}" title="${c}"></button>`).join("")}</div>`;
+    return `<div class="cx-seg is-wide"><button type="button" data-focus="fill" class="${paint.focus === "fill" ? "is-on" : ""}">Fill</button><button type="button" data-focus="stroke" class="${paint.focus === "stroke" ? "is-on" : ""}">Stroke</button></div>
+      <div class="cx-swatches"><button type="button" class="is-none" data-swatch="none" aria-label="None" title="None"></button>${BASIC.map(c => `<button type="button" style="--c:${c}" data-swatch="${c}" aria-label="${c}" title="${c}"></button>`).join("")}</div>
+      <h4 class="cx-h4">Gradients</h4><div class="cx-swatches">${GRADIENTS.map((g, i) => `<button type="button" style="--c:linear-gradient(135deg, ${g[0]}, ${g[1]})" data-gradient="${i}" aria-label="Gradient"></button>`).join("")}</div>
+      ${brief ? `<h4 class="cx-h4">${esc(brief.title)}</h4>${row(pal(brief.palette))}` : ""}
+      ${docCols.length ? `<h4 class="cx-h4">Document colours</h4>${row(docCols)}` : ""}
+      ${(DS.palettes || []).map(p => `<h4 class="cx-h4">${esc(p.name)}</h4>${row(p.colors)}`).join("")}`;
+  }
 
-  /* ---------- Status bar, refresh ---------- */
+  /* ---------- Right panel: the inspector ---------- */
+  function renderRight() {
+    const o = cv.getActiveObject(), k = kindOf(o);
+    iHead.innerHTML = tool === "artboard" ? `<span class="cx-kind">${ui("artboard")}</span><div><b>${esc(targetAb().name)}</b><em>${tr("Artboard")}</em></div>`
+      : o ? `<span class="cx-kind">${ui(k === "multi" ? "group" : layerIcon(o))}</span><div><b${isText(o) ? " data-no-i18n" : ""}>${esc(o.type === "activeSelection" ? `${o.getObjects().length} ${tr("selected")}` : isText(o) ? ((o.text || "").slice(0, 24) || tr("Text")) : (o.name || typeName(o)))}</b><em>${typeName(o)}</em></div>`
+        : `<span class="cx-kind">${ui("artboard")}</span><div><b>${esc(ab().name)}</b><em>${ab().w} × ${ab().h}</em></div>`;
+    const keep = rBody.scrollTop;
+    rBody.innerHTML = inspector();
+    rBody.scrollTop = keep;
+  }
+  const presetSel = t => sel("ab-preset", SIZES.findIndex(([, w, h]) => w === t.w && h === t.h), [[-1, "Custom size"], ...SIZES.map(([n, w, h], j) => [j, `${n} · ${w} × ${h}`])], "Preset");
+  function inspector() {
+    const o = cv.getActiveObject(), k = kindOf(o), a = ab();
+    if (tool === "artboard") {
+      const t = targetAb();
+      return sec("ab", "Artboard", `
+        <input class="cx-text" data-k="ab-name" value="${esc(t.name)}" aria-label="Artboard name">
+        ${presetSel(t)}
+        <div class="cx-g2">${num("ab-w", t.w, { label: "W", min: 1, d: 0 })}${num("ab-h", t.h, { label: "H", min: 1, d: 0 })}</div>
+        <div class="cx-g2">${num("ab-x", t.x, { label: "X", d: 0 })}${num("ab-y", t.y, { label: "Y", d: 0 })}</div>
+        <div class="cx-row"><span class="cx-lbl">Background</span>${swatchIn("ab-bg", t.bg)}</div>`) +
+        sec("abact", "Actions", `<div class="cx-g2"><button type="button" class="cx-btn" data-act="ab-new">${ui("plus")}<span>New</span></button><button type="button" class="cx-btn" data-act="ab-dup">${ui("copy")}<span>Duplicate</span></button></div>
+          <div class="cx-g2"><button type="button" class="cx-btn" data-act="ab-fit">${ui("fit")}<span>Fit to Artwork</span></button><button type="button" class="cx-btn is-danger" data-act="ab-delete">${icon("trash")}<span>Delete</span></button></div>
+          <button type="button" class="cx-btn is-blue" data-act="tool:select">Done</button>`);
+    }
+    if (!o) {
+      return sec("doc", "Artboard", `
+          ${presetSel(a)}
+          <div class="cx-g2">${num("ab-w", a.w, { label: "W", min: 1, d: 0 })}${num("ab-h", a.h, { label: "H", min: 1, d: 0 })}</div>
+          <div class="cx-row"><span class="cx-lbl">Background</span>${swatchIn("ab-bg", a.bg)}</div>
+          <button type="button" class="cx-btn" data-act="tool:artboard">${ui("artboard")}<span>Edit Artboards</span></button>`) +
+        sec("canvas", "Canvas", `<div class="cx-toggles">
+          ${[["rulers", "rulers", "Rulers"], ["grid", "grid", "Grid"], ["snapGrid", "snapgrid", "Snap to Grid"], ["smart", "smart", "Smart Guides"], ["guides", "guides", "Guides"], ["pixel", "pixel", "Whole Pixels"]]
+            .map(([f, ic, l]) => `<button type="button" class="cx-toggle${view[f] ? " is-on" : ""}" data-act="toggle:${f}" aria-pressed="${!!view[f]}">${ui(ic)}<span>${l}</span></button>`).join("")}</div>
+          <div class="cx-g2">${num("pref-grid", prefs.gridSize, { label: "Grid", unit: "px", min: 2, d: 0 })}${num("pref-nudge", prefs.nudge, { label: "Nudge", unit: "px", min: .1 })}</div>`) +
+        sec("start", "Get started", `<div class="cx-quick">
+          <button type="button" data-act="assets:brief">${ui("target")}<b>Practice brief</b><span>A real client task</span></button>
+          <button type="button" data-act="assets:templates">${ui("grid")}<b>Templates</b><span>Start from a layout</span></button>
+          <button type="button" data-act="palette">${ui("command")}<b>Command palette</b><span>${keyLabel("mod+K")} finds everything</span></button>
+          <button type="button" data-act="shortcuts">${ui("fonts")}<b>Shortcuts</b><span>Work faster</span></button></div>`);
+    }
+    const b = o.getBoundingRect(true, true);
+    const fill = firstOf("fill"), stroke = firstOf("stroke"), target = o.type === "activeSelection" ? o.getObjects()[0] : o;
+    const shapes = combinable();
+    let h = "";
+    if (k === "multi") h += sec("multi", "Selection", `<span class="cx-lbl">Align to each other</span>${alignRow()}
+      <div class="cx-iconrow"><button type="button" class="cx-ib" data-act="dist:h" aria-label="Distribute Horizontally" data-tip="Distribute Horizontally">${ui("dist-h")}</button><button type="button" class="cx-ib" data-act="dist:v" aria-label="Distribute Vertically" data-tip="Distribute Vertically">${ui("dist-v")}</button></div>
+      ${shapes.length > 1 ? `<span class="cx-lbl">Combine</span><div class="cx-iconrow is-big">${boolRow()}</div>` : ""}
+      <div class="cx-g2"><button type="button" class="cx-btn" data-act="group">${ui("group")}<span>Group</span></button><button type="button" class="cx-btn" data-act="mask">${ui("mask")}<span>Mask</span></button></div>`);
+    h += sec("layout", "Layout", `
+      <div class="cx-g2">${num("x", b.left - a.x, { label: "X" })}${num("y", b.top - a.y, { label: "Y" })}</div>
+      ${k !== "multi" ? `<div class="cx-g2">${num("w", o.getScaledWidth(), { label: "W", min: 1 })}${num("h", o.getScaledHeight(), { label: "H", min: 1 })}</div>
+      <div class="cx-g2">${num("angle", o.angle, { label: "↻", unit: "°" })}<div class="cx-seg"><button type="button" data-act="flip-h" aria-label="Flip Horizontal" data-tip="Flip Horizontal">${ui("flip-h")}</button><button type="button" data-act="flip-v" aria-label="Flip Vertical" data-tip="Flip Vertical">${ui("flip-v")}</button></div></div>` : ""}
+      ${o.type === "rect" ? num("rx", o.rx || 0, { label: "Corner radius", unit: "px", min: 0, wide: true }) : ""}
+      ${k !== "multi" ? `<span class="cx-lbl">Align to artboard</span>${alignRow()}` : ""}`);
+    if (k === "text") {
+      h += sec("text", "Text", `${fontBtn(o)}
+        <div class="cx-g2">${sel("fontWeight", o.fontWeight, (FONTS[o.fontFamily] || [400, 700]).map(w => [w, WEIGHT_NAMES[w]]), "Font style")}${num("fontSize", o.fontSize, { label: "Size", min: 1 })}</div>
+        <div class="cx-g2">${num("leading", o.fontSize * o.lineHeight, { label: "Leading", tip: "Line height" })}${num("charSpacing", o.charSpacing, { label: "Tracking", step: 10, d: 0, tip: "Letter spacing" })}</div>
+        ${segBtns("textAlign", o.textAlign, [["left", "t-left", "Align Left"], ["center", "t-center", "Align Centre"], ["right", "t-right", "Align Right"], ["justify", "t-justify", "Justify"]])}
+        <div class="cx-seg"><button type="button" data-set="fontStyle" data-v="1" class="${o.fontStyle === "italic" ? "is-on" : ""}" aria-label="Italic" data-tip="Italic">${ui("italic")}</button><button type="button" data-set="underline" data-v="1" class="${o.underline ? "is-on" : ""}" aria-label="Underline" data-tip="Underline">${ui("underline")}</button><button type="button" data-act="case:upper" aria-label="UPPERCASE" data-tip="UPPERCASE"><b class="cx-aa">AA</b></button><button type="button" data-act="case:title" aria-label="Title Case" data-tip="Title Case"><b class="cx-aa">Aa</b></button></div>`);
+    }
+    if (k !== "image" && k !== "masked") {
+      h += sec("fill", "Fill & Stroke", `
+        ${paintRow(tr("Fill"), "fill", fill)}
+        ${isGrad(target.fill) ? `<div class="cx-grad"><div class="cx-gradbar" style="--c:${paintCss(target.fill)}">${swatchIn("grad-0", gradStops(target.fill)[0])}${swatchIn("grad-1", gradStops(target.fill).slice(-1)[0])}</div>
+          <div class="cx-g2">${sel("grad-type", target.fill.type, [["linear", "Linear"], ["radial", "Radial"]], "Type")}${num("grad-angle", target.fill.angle || 0, { label: "∠", unit: "°", d: 0 })}</div></div>` : ""}
+        ${k !== "icon" ? paintRow(tr("Stroke"), "stroke", stroke) : ""}
+        ${stroke || k === "icon" ? `<div class="cx-g2">${num("strokeWidth", (target.kind === "icon" ? iconParts(target)[0].strokeWidth : target.strokeWidth) || 0, { label: "Weight", unit: "px", min: 0, step: .5 })}
+          ${k !== "icon" ? sel("dash", target.strokeDashArray ? (target.strokeDashArray[0] < .1 ? "dotted" : "dashed") : "solid", [["solid", "Solid"], ["dashed", "Dashed"], ["dotted", "Dotted"]], "Dash") : ""}</div>
+          ${k !== "icon" && k !== "multi" ? `<div class="cx-g2">${sel("cap", target.strokeLineCap || "butt", [["butt", "Butt cap"], ["round", "Round cap"], ["square", "Square cap"]], "Cap")}${sel("join", target.strokeLineJoin || "miter", [["miter", "Miter join"], ["round", "Round join"], ["bevel", "Bevel join"]], "Join")}</div>` : ""}` : ""}`);
+    }
+    h += sec("effects", "Effects", `
+      <div class="cx-g2">${num("opacity", round((o.opacity ?? 1) * 100), { label: "Opacity", unit: "%", min: 0, max: 100, d: 0 })}${sel("blend", target.globalCompositeOperation || "source-over", BLENDS, "Blend mode")}</div>
+      <label class="cx-switch"><input type="checkbox" data-k="shadow"${target.shadow ? " checked" : ""}><i></i><span>Drop shadow</span></label>
+      ${target.shadow && k !== "multi" ? `<div class="cx-g2">${num("sh-x", target.shadow.offsetX, { label: "X", d: 0 })}${num("sh-y", target.shadow.offsetY, { label: "Y", d: 0 })}</div>
+        <div class="cx-g2">${num("sh-blur", target.shadow.blur, { label: "Blur", min: 0, d: 0 })}<div class="cx-row"><span class="cx-lbl">Colour</span>${swatchIn("sh-color", target.shadow.color)}</div></div>` : ""}`);
+    if (k === "image") {
+      const fl = o.filters || [], val = (T, key) => { const x = fl.find(t => t && t.type === T); return x ? round(x[key] * 100) : 0; };
+      const rng = (key, l, v) => `<label class="cx-range"><span>${l}</span><input type="range" data-k="${key}" min="-100" max="100" value="${v}"><output>${v}</output></label>`;
+      h += sec("image", "Image", `${num("imgRadius", o.kindRadius || 0, { label: "Corner radius", unit: "px", min: 0, wide: true, d: 0 })}
+        ${rng("brightness", tr("Brightness"), val("Brightness", "brightness"))}${rng("contrast", tr("Contrast"), val("Contrast", "contrast"))}${rng("saturation", tr("Saturation"), val("Saturation", "saturation"))}
+        <div class="cx-chips is-fx">${[["gray", "Black and White"], ["sepia", "Sepia"], ["invert", "Invert"], ["blur", "Blur"]].map(([f, l]) => `<button type="button" data-act="fx:${f}">${l}</button>`).join("")}</div>
+        <div class="cx-g2"><button type="button" class="cx-btn" data-act="replace-image">${ui("replace")}<span>Replace</span></button><button type="button" class="cx-btn" data-act="fx:clear">Reset</button></div>`);
+    }
+    h += sec("actions", "Actions", `<div class="cx-actgrid">
+      ${k === "group" ? `<button type="button" data-act="ungroup">${ui("ungroup")}<span>Ungroup</span></button>` : ""}
+      ${k === "masked" ? `<button type="button" data-act="unmask">${ui("mask")}<span>Release Mask</span></button>` : ""}
+      ${k === "shape" ? `<button type="button" data-act="expand">${ui("expand")}<span>Expand</span></button>` : ""}
+      ${k === "path" || k === "shape" ? `<button type="button" data-act="tool:direct">${ui("direct")}<span>Edit Points</span></button>` : ""}
+      ${k !== "multi" ? `<button type="button" data-act="repeat">${ui("repeat")}<span>Repeat Grid</span></button>` : ""}
+      <button type="button" data-act="recolor">${ui("recolor")}<span>Recolour</span></button>
+      <button type="button" data-act="duplicate">${ui("copy")}<span>Duplicate</span></button>
+      <button type="button" data-act="front">${ui("front")}<span>To Front</span></button>
+      <button type="button" data-act="back">${ui("back")}<span>To Back</span></button>
+      <button type="button" data-act="lock">${ui(o.locked ? "unlock" : "lock")}<span>${o.locked ? "Unlock" : "Lock"}</span></button>
+      <button type="button" data-act="delete" class="is-danger">${icon("trash")}<span>Delete</span></button></div>`);
+    return h;
+  }
+
+  /* ---------- Selection toolbar (floats over the selection) ---------- */
+  function renderSelbar() {
+    const o = cv.getActiveObject();
+    if (!o || o.isEditing || present || view.hideUI || !(tool === "select" || tool === "direct") || innerWidth < 900) { selbar.hidden = true; return; }
+    const k = kindOf(o), fill = firstOf("fill"), stroke = firstOf("stroke");
+    let h = "";
+    if (k !== "image" && k !== "masked") h += `<span class="cx-sb-chips">${swatchIn("fill", fill)}${k !== "text" && k !== "icon" ? `<span class="cx-sb-stroke">${swatchIn("stroke", stroke)}</span>` : ""}</span><span class="cx-sb-sep"></span>`;
+    if (k === "text") h += `${fontBtn(o)}${num("fontSize", o.fontSize, { min: 1, d: 0 })}<span class="cx-sb-sep"></span>`;
+    if (k === "multi" && combinable().length > 1) h += boolRow() + `<span class="cx-sb-sep"></span>`;
+    if (k === "multi") h += `<button type="button" class="cx-ib" data-act="group" aria-label="Group" data-tip="Group · ${keyLabel("mod+G")}">${ui("group")}</button><button type="button" class="cx-ib" data-act="mask" aria-label="Make Clipping Mask" data-tip="Mask · ${keyLabel("mod+7")}">${ui("mask")}</button>`;
+    if (k === "group") h += `<button type="button" class="cx-ib" data-act="ungroup" aria-label="Ungroup" data-tip="Ungroup · ${keyLabel("mod+shift+G")}">${ui("ungroup")}</button>`;
+    if (k === "masked") h += `<button type="button" class="cx-ib" data-act="unmask" aria-label="Release Clipping Mask" data-tip="Release Mask · ${keyLabel("mod+alt+7")}">${ui("mask")}</button>`;
+    h += `<button type="button" class="cx-ib" data-act="align-pop" aria-label="Align" data-tip="Align">${ui("al-center")}</button>
+      <button type="button" class="cx-ib" data-act="duplicate" aria-label="Duplicate" data-tip="Duplicate · ${keyLabel("mod+D")}">${ui("copy")}</button>
+      <button type="button" class="cx-ib" data-act="lock" aria-label="Lock" data-tip="Lock · ${keyLabel("mod+2")}">${ui(o.locked ? "lock" : "unlock")}</button>
+      <button type="button" class="cx-ib" data-act="delete" aria-label="Delete" data-tip="Delete">${icon("trash")}</button>
+      <button type="button" class="cx-ib" data-act="more" aria-label="More" data-tip="More">${ui("more")}</button>`;
+    selbar.innerHTML = h;
+    selbar.hidden = false;
+    positionSelbar();
+  }
+  function positionSelbar() {
+    const o = cv.getActiveObject();
+    if (!o || selbar.hidden) return;
+    if (o.isEditing) { selbar.hidden = true; return; }
+    const r = o.getBoundingRect(), p = insets(), W = selbar.offsetWidth, H = selbar.offsetHeight;
+    let x = r.left + r.width / 2 - W / 2, y = r.top - H - 16;
+    if (y < p.t - 20) y = r.top + r.height + 16;
+    if (y + H > cv.height - p.b + 20) y = Math.max(p.t - 20, r.top + 16);
+    x = clamp(x, p.l - 8, Math.max(p.l - 8, cv.width - p.r + 8 - W));
+    selbar.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+  }
+
+  /* ---------- Minimap ---------- */
+  let miniT = 0;
+  function drawMini() {
+    if (!view.mini || present || view.hideUI) return;
+    const d = DPR(), Wc = mini.clientWidth, Hc = mini.clientHeight;
+    if (!Wc) return;
+    if (mini.width !== Math.round(Wc * d)) { mini.width = Math.round(Wc * d); mini.height = Math.round(Hc * d); }
+    const x = mini.getContext("2d");
+    x.setTransform(d, 0, 0, d, 0, 0);
+    x.clearRect(0, 0, Wc, Hc);
+    const inv = F.util.invertTransform(cv.viewportTransform);
+    const tl = F.util.transformPoint(new F.Point(0, 0), inv), br = F.util.transformPoint(new F.Point(cv.width, cv.height), inv);
+    const b = allBounds();
+    const L = Math.min(b.x, tl.x), T = Math.min(b.y, tl.y), R = Math.max(b.x + b.w, br.x), B = Math.max(b.y + b.h, br.y);
+    const pad = 10, s = Math.min((Wc - pad * 2) / (R - L), (Hc - pad * 2) / (B - T));
+    const ox = pad + ((Wc - pad * 2) - (R - L) * s) / 2 - L * s, oy = pad + ((Hc - pad * 2) - (B - T) * s) / 2 - T * s;
+    mini.__map = { s, ox, oy };
+    doc.artboards.forEach((a, i) => { x.fillStyle = a.bg || "#fff"; x.globalAlpha = i === doc.active ? 1 : .65; x.fillRect(ox + a.x * s, oy + a.y * s, a.w * s, a.h * s); });
+    x.globalAlpha = .9;
+    cv.getObjects().forEach(o => {
+      if (o.visible === false) return;
+      const r = o.getBoundingRect(true, true);
+      const c = o.kind === "icon" ? iconParts(o)[0].stroke : (isGrad(o.fill) ? o.fill.colorStops[0].color : o.fill) || o.stroke || "#888";
+      x.fillStyle = toHex(c) || "#888";
+      x.fillRect(ox + r.left * s, oy + r.top * s, Math.max(1, r.width * s), Math.max(1, r.height * s));
+    });
+    x.globalAlpha = 1;
+    x.strokeStyle = "#1f7aff"; x.lineWidth = 1.5;
+    x.fillStyle = "rgba(31,122,255,.1)";
+    x.fillRect(ox + tl.x * s, oy + tl.y * s, (br.x - tl.x) * s, (br.y - tl.y) * s);
+    x.strokeRect(ox + tl.x * s, oy + tl.y * s, (br.x - tl.x) * s, (br.y - tl.y) * s);
+  }
+  const miniGo = e => {
+    const m = mini.__map; if (!m) return;
+    const r = mini.getBoundingClientRect(), sx = (e.clientX - r.left - m.ox) / m.s, sy = (e.clientY - r.top - m.oy) / m.s, z = zoom();
+    cv.setViewportTransform([z, 0, 0, z, cv.width / 2 - sx * z, cv.height / 2 - sy * z]);
+    pingNav(); afterView();
+  };
+  mini.addEventListener("pointerdown", e => {
+    e.preventDefault(); mini.setPointerCapture(e.pointerId); miniGo(e);
+    const mv = ev => miniGo(ev);
+    mini.addEventListener("pointermove", mv);
+    mini.addEventListener("pointerup", () => mini.removeEventListener("pointermove", mv), { once: true });
+  });
+  let overlayRaf = 0;
+  function scheduleOverlay() {
+    if (overlayRaf) return;
+    overlayRaf = requestAnimationFrame(() => {
+      overlayRaf = 0;
+      positionSelbar();
+      const now = performance.now();
+      if (now - miniT > 80) { miniT = now; drawMini(); }
+    });
+  }
+
+  /* ---------- Top bar ---------- */
+  const renderTop = () => {
+    const a = ab();
+    $("[data-abchip]", root).innerHTML = `<b>${esc(a.name)}</b><em>${a.w} × ${a.h}</em>`;
+    if (document.activeElement !== nameIn) nameIn.value = doc.name;
+    $("[data-act=undo]", root).disabled = hist.i <= 0;
+    $("[data-act=redo]", root).disabled = hist.i >= hist.stack.length - 1;
+    $("[data-presentlabel]", root).textContent = `${doc.active + 1} / ${doc.artboards.length} · ${a.name}`;
+  };
+
+  /* ---------- Refresh everything (batched to one frame) ---------- */
   let uiRaf = 0;
   function refreshUI() {
     cancelAnimationFrame(uiRaf);
     uiRaf = requestAnimationFrame(() => {
-      const keepScroll = dockBody.scrollTop;
-      renderControl(); renderDock(); syncPaint();
-      dockBody.scrollTop = keepScroll;
-      abSel.innerHTML = doc.artboards.map((a, i) => `<option value="${i}"${i === doc.active ? " selected" : ""}>${i + 1}</option>`).join("");
+      renderTop();
+      // asset lists don't change with the selection, so they keep their scroll and search
+      if (ltab !== "assets" || assetTab === "colours" || leftKey !== ltab + ":" + assetTab) renderLeft();
+      renderRight(); renderSelbar(); syncPaint();
       afterView();
-      $$("[data-act=undo]", root).forEach(b => { b.disabled = hist.i <= 0; });
     });
   }
 
   /* =====================================================================
-     Dock, control bar and dialog events
+     Panel and toolbar events
      ===================================================================== */
   const onInput = (e, done) => {
     const el = e.target;
     if (!el.dataset.k) return;
     const k = el.dataset.k;
+    if (/^(rc|rp|qr|ex)-/.test(k)) return;
     if (el.type === "number" && el.value === "") return;
-    let v = el.type === "checkbox" ? el.checked : el.value;
-    if (el.type === "color") { const lab = el.closest(".ai-sw"); if (lab) { lab.style.setProperty("--c", v); lab.classList.remove("is-none"); } }
-    if (k === "ctl-fill" || k === "ctl-stroke" || k === "fill" || k === "stroke") { setPaint(k.replace("ctl-", ""), v, done); if (done) refreshUI(); return; }
-    if (k === "ab-preset") { if (+v > -1) { const [, w, h] = SIZES[+v], t = doc.artboards[abSelected > -1 ? abSelected : doc.active]; t.w = w; t.h = h; cv.requestRenderAll(); changed(); refreshUI(); } return; }
-    if (k === "active-ab") { doc.active = +v; fitArtboard(); refreshUI(); return; }
+    const v = el.type === "checkbox" ? el.checked : el.value;
+    if (el.type === "color") { const lab = el.closest(".cx-sw"); if (lab) { lab.style.setProperty("--c", v); lab.classList.remove("is-none"); } }
+    if (el.type === "range") { const out = el.nextElementSibling; if (out) out.textContent = v; }
+    if (k === "fill" || k === "stroke") { setPaint(k, v, done); if (done) refreshUI(); return; }
+    if (k === "ab-preset") { if (+v > -1) { const [, w, h] = SIZES[+v], t = targetAb(); t.w = w; t.h = h; cv.requestRenderAll(); note("Resize Artboard"); changed(); fitArtboard(); refreshUI(); } return; }
     if (el.type === "checkbox") { apply(k, v, true); refreshUI(); return; }
     apply(k, el.type === "number" ? +v : v, done);
-    if (done && (el.tagName === "SELECT" || k === "grad-type")) refreshUI();
+    if (done && (el.tagName === "SELECT" || k.startsWith("ab-") || k === "strokeWidth")) refreshUI();
   };
-  [control, dockBody, dialog].forEach(box => {
+  const clickHandler = e => {
+    const t = e.target.closest("button, li[data-ly]");
+    if (!t) return;
+    if (t.dataset.set) { if (t.dataset.set === "align") align(t.dataset.v); else { apply(t.dataset.set, t.dataset.v); refreshUI(); } return; }
+    if (t.dataset.ltab) { ltab = t.dataset.ltab; renderLeft(); return; }
+    if (t.dataset.atab) { assetTab = t.dataset.atab; ltab = "assets"; renderLeft(); return; }
+    if (t.dataset.hist != null) { jump(+t.dataset.hist); return; }
+    if (t.dataset.swatch) { setPaint(paint.focus, t.dataset.swatch === "none" ? null : t.dataset.swatch); refreshUI(); return; }
+    if (t.dataset.gradient != null) { if (active().length) setGradient(GRADIENTS[+t.dataset.gradient]); else toast(tr("Select an object first.")); return; }
+    if (t.dataset.focus) { paint.focus = t.dataset.focus; syncPaint(); renderLeft(); return; }
+    if (t.dataset.tpl != null) { useTemplate(+t.dataset.tpl); return; }
+    if (t.dataset.text) { addText(t.dataset.text); return; }
+    if (t.dataset.pair != null) { addPair(+t.dataset.pair); return; }
+    if (t.dataset.icon) { addIcon(t.dataset.icon); return; }
+    if (t.dataset.libshape) { addLibShape(t.dataset.libshape); return; }
+    if (t.dataset.up != null) { addImage(uploads[+t.dataset.up]); return; }
+    const li = t.closest("li[data-ly]");
+    if (li) {
+      const o = cv.getObjects()[+li.dataset.ly];
+      if (!o) return;
+      if (e.target.closest("[data-ly-eye]")) { o.set("visible", o.visible === false); if (!o.visible) cv.discardActiveObject(); cv.requestRenderAll(); note(o.visible ? "Show" : "Hide"); changed(); renderLeft(); return; }
+      if (e.target.closest("[data-ly-lock]")) { lockState(o, !o.locked); cv.requestRenderAll(); note(o.locked ? "Lock" : "Unlock"); changed(); renderLeft(); return; }
+      if (o.visible !== false) {
+        if (tool !== "select" && tool !== "direct") setTool("select");
+        if ((e.shiftKey || e.metaKey || e.ctrlKey) && cv.getActiveObject()) reselect([...new Set([...active(), o])]); else cv.setActiveObject(o);
+        cv.requestRenderAll(); refreshUI();
+      }
+      return;
+    }
+    if (t.dataset.act) act(t.dataset.act, t, e);
+  };
+  [leftP, rightP, selbar, dialog].forEach(box => {
     box.addEventListener("input", e => onInput(e, false));
-    box.addEventListener("change", e => { onInput(e, true); });
+    box.addEventListener("change", e => onInput(e, true));
     box.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches("input")) e.target.blur(); });
-    box.addEventListener("click", e => {
-      const t = e.target.closest("button, li[data-ly], li[data-ab]");
-      if (!t) return;
-      if (t.dataset.set) {
-        if (t.dataset.set === "align") align(t.dataset.v);
-        else { apply(t.dataset.set, t.dataset.v); refreshUI(); }
-        return;
-      }
-      if (t.dataset.panel) { setPanel(t.dataset.panel); return; }
-      if (t.dataset.swatch) { const v = t.dataset.swatch === "none" ? null : t.dataset.swatch; setPaint(paint.focus, v); refreshUI(); closePop(); return; }
-      if (t.dataset.gradient != null) { const g = GRADIENTS[+t.dataset.gradient]; if (active().length) setGradient(g); closePop(); return; }
-      if (t.dataset.focus) { paint.focus = t.dataset.focus; syncPaint(); renderDock(); return; }
-      if (t.dataset.font) { setFont(t.dataset.font); closePop(); return; }
-      if (t.dataset.tpl != null) { useTemplate(+t.dataset.tpl); return; }
-      if (t.dataset.text) { addText(t.dataset.text); return; }
-      if (t.dataset.pair != null) { addPair(+t.dataset.pair); return; }
-      if (t.dataset.icon) { addIcon(t.dataset.icon); return; }
-      if (t.dataset.up != null) { addImage(uploads[+t.dataset.up]); return; }
-      if (t.dataset.ab != null) { doc.active = +t.dataset.ab; abSelected = doc.active; fitArtboard(); refreshUI(); return; }
-      if (t.dataset.lyAll) {
-        const objs = cv.getObjects();
-        if (t.dataset.lyAll === "eye") { const show = objs.every(o => o.visible === false); objs.forEach(o => o.set("visible", show)); }
-        else { const lock = !objs.every(o => o.locked); objs.forEach(o => lockState(o, lock)); }
-        cv.discardActiveObject(); cv.requestRenderAll(); changed(); return;
-      }
-      const li = t.closest("li[data-ly]");
-      if (li) {
-        const o = cv.getObjects()[+li.dataset.ly];
-        if (!o) return;
-        if (e.target.closest("[data-ly-eye]")) { o.set("visible", o.visible === false); if (!o.visible) cv.discardActiveObject(); cv.requestRenderAll(); changed(); return; }
-        if (e.target.closest("[data-ly-lock]")) { lockState(o, !o.locked); cv.requestRenderAll(); changed(); return; }
-        if (o.visible !== false) {
-          if (tool !== "select" && tool !== "direct") setTool("select");
-          if (e.shiftKey && cv.getActiveObject()) reselect([...new Set([...active(), o])]); else cv.setActiveObject(o);
-          cv.requestRenderAll(); refreshUI();
-        }
-        return;
-      }
-      if (t.dataset.act) act(t.dataset.act, t, e);
-    });
+    box.addEventListener("click", clickHandler);
   });
-  dockTabs.addEventListener("click", e => { const b = e.target.closest("[data-panel]"); if (b) setPanel(b.dataset.panel); });
-  $(".ai-strip", root).addEventListener("click", e => { const b = e.target.closest("[data-panel]"); if (b) setPanel(b.dataset.panel); });
-  dockBody.addEventListener("input", e => {
+  // the top bar, navigator, preview bar and panels button
+  [$(".cx-top", root), body].forEach(box => box.addEventListener("click", e => {
+    if (e.target.closest(".cx-dock, .cx-panel, .cx-selbar")) return;
+    const b = e.target.closest("[data-act]");
+    if (b) act(b.dataset.act, b, e);
+  }));
+  leftP.addEventListener("input", e => {
     if (!e.target.matches("[data-icon-q]")) return;
     const q = e.target.value.trim().toLowerCase();
-    $$("[data-icon]", dockBody).forEach(b => { b.hidden = q && !b.dataset.icon.includes(q); });
+    $$("[data-icon]", leftP).forEach(b => { b.hidden = !!q && !b.dataset.icon.includes(q); });
   });
-  dockBody.addEventListener("dblclick", e => {
-    const li = e.target.closest("li[data-ly]"), abLi = e.target.closest("li[data-ab]");
-    if (li) {
-      const o = cv.getObjects()[+li.dataset.ly], nm = li.querySelector(".ai-ly-name");
-      if (!o || isText(o)) return;
-      const input = document.createElement("input");
-      input.className = "ai-text"; input.value = o.name || "";
-      nm.replaceWith(input); input.focus(); input.select();
-      const done = () => { o.name = input.value.trim() || o.name; changed(); refreshUI(); };
-      input.addEventListener("blur", done); input.addEventListener("keydown", ev => { if (ev.key === "Enter") input.blur(); if (ev.key === "Escape") { input.value = o.name; input.blur(); } });
-    } else if (abLi) { doc.active = abSelected = +abLi.dataset.ab; setTool("artboard"); }
+  leftP.addEventListener("dblclick", e => {
+    const li = e.target.closest("li[data-ly]");
+    if (!li) return;
+    const o = cv.getObjects()[+li.dataset.ly], nm = li.querySelector(".cx-ly-name");
+    if (!o || isText(o) || !nm) return;
+    const input = document.createElement("input");
+    input.className = "cx-text"; input.value = o.name || "";
+    nm.replaceWith(input); input.focus(); input.select();
+    const done = () => { o.name = input.value.trim() || o.name; note("Rename Layer"); changed(); renderLeft(); };
+    input.addEventListener("blur", done);
+    input.addEventListener("keydown", ev => { ev.stopPropagation(); if (ev.key === "Enter") input.blur(); if (ev.key === "Escape") { input.value = o.name; input.blur(); } });
   });
   let dragLy = null;
-  dockBody.addEventListener("dragstart", e => { const li = e.target.closest("[data-ly]"); if (li) { dragLy = +li.dataset.ly; e.dataTransfer.effectAllowed = "move"; } });
-  dockBody.addEventListener("dragover", e => { if (dragLy != null && e.target.closest("[data-ly]")) e.preventDefault(); });
-  dockBody.addEventListener("drop", e => {
+  leftP.addEventListener("dragstart", e => { const li = e.target.closest("[data-ly]"); if (li) { dragLy = +li.dataset.ly; e.dataTransfer.effectAllowed = "move"; li.classList.add("is-dragging"); } });
+  leftP.addEventListener("dragover", e => { const li = e.target.closest("[data-ly]"); if (dragLy != null && li) { e.preventDefault(); $$(".is-over", leftP).forEach(x => x.classList.remove("is-over")); li.classList.add("is-over"); } });
+  leftP.addEventListener("drop", e => {
     const li = e.target.closest("[data-ly]");
     if (dragLy == null || !li) return;
     e.preventDefault();
     cv.moveTo(cv.getObjects()[dragLy], +li.dataset.ly);
-    dragLy = null; cv.requestRenderAll(); changed();
+    dragLy = null; cv.requestRenderAll(); note("Reorder Layers"); changed(); renderLeft();
   });
-  const setPanel = p => { if (p === "properties" && panel === "properties" && innerWidth < 900) { root.classList.toggle("show-dock"); return; } panel = p; root.classList.add("show-dock-ok"); if (innerWidth < 900) root.classList.add("show-dock"); renderDock(); };
-  const openDockOnPhone = () => { if (innerWidth < 900 && panel === "properties") root.classList.add("show-dock"); };
+  leftP.addEventListener("dragend", () => { dragLy = null; $$(".is-over, .is-dragging", leftP).forEach(x => x.classList.remove("is-over", "is-dragging")); });
 
-  /* ---------- Popovers: swatches, fonts, zoom presets, context menu ---------- */
+  /* ---------- Popovers, main menu, context menu ---------- */
   let pop = null;
   function closePop() { if (pop) { pop.remove(); pop = null; } }
-  function openPop(anchor, html, cls = "") {
+  function openPop(anchor, html, cls = "", above = false) {
     closePop();
     const R = root.getBoundingClientRect(), r = anchor.getBoundingClientRect();
     pop = document.createElement("div");
-    pop.className = "ai-pop " + cls;
+    pop.className = "cx-pop " + cls;
     pop.innerHTML = html;
     root.appendChild(pop);
     const w = pop.offsetWidth, h = pop.offsetHeight;
-    let x = r.left - R.left, y = r.bottom - R.top + 4;
-    if (x + w > R.width - 8) x = R.width - w - 8;
-    if (y + h > R.height - 8) y = Math.max(8, r.top - R.top - h - 4);
-    pop.style.left = Math.max(8, x) + "px"; pop.style.top = y + "px";
+    let x = r.left - R.left + r.width / 2 - w / 2, y = above ? r.top - R.top - h - 8 : r.bottom - R.top + 8;
+    x = clamp(x, 8, R.width - w - 8);
+    if (y + h > R.height - 8) y = Math.max(8, r.top - R.top - h - 8);
+    if (y < 8) y = r.bottom - R.top + 8;
+    pop.style.left = x + "px"; pop.style.top = y + "px";
+    pop.addEventListener("input", e => onInput(e, false));
+    pop.addEventListener("change", e => onInput(e, true));
     pop.addEventListener("click", e => {
       const t = e.target.closest("button");
       if (!t) return;
       if (t.dataset.swatch) { setPaint(paint.focus, t.dataset.swatch === "none" ? null : t.dataset.swatch); refreshUI(); closePop(); }
-      else if (t.dataset.gradient != null) { setGradient(GRADIENTS[+t.dataset.gradient]); closePop(); }
+      else if (t.dataset.gradient != null) { if (active().length) setGradient(GRADIENTS[+t.dataset.gradient]); closePop(); }
       else if (t.dataset.font) { setFont(t.dataset.font); closePop(); }
       else if (t.dataset.zoom) { if (t.dataset.zoom === "fit") fitArtboard(); else zoomCenter(+t.dataset.zoom); closePop(); }
-      else if (t.dataset.act) { closePop(); act(t.dataset.act); }
+      else if (t.dataset.abgo != null) { doc.active = +t.dataset.abgo; fitArtboard(); refreshUI(); closePop(); }
+      else if (t.dataset.set === "align") { align(t.dataset.v); closePop(); }
+      else if (t.dataset.act) { closePop(); act(t.dataset.act, t, e); }
     });
     return pop;
   }
-  document.addEventListener("pointerdown", e => {
-    if (pop && !pop.contains(e.target) && !e.target.closest("[data-act^='swatch-pop'], [data-act='font-menu'], [data-act='zoom-menu']")) closePop();
-    if (!flyout.hidden && !flyout.contains(e.target)) flyout.hidden = true;
-    if (!menuPop.hidden && !menuPop.contains(e.target) && !e.target.closest(".ai-menu-btn")) closeMenu();
-  });
-  const swatchPopHtml = () => `<div class="ai-swatches"><button type="button" class="is-none" data-swatch="none" aria-label="None"></button>${BASIC.map(c => `<button type="button" style="--c:${c}" data-swatch="${c}" aria-label="${c}"></button>`).join("")}</div>
-    <div class="ai-swatches">${GRADIENTS.map((g, i) => `<button type="button" style="--c:linear-gradient(135deg, ${g[0]}, ${g[1]})" data-gradient="${i}" aria-label="Gradient"></button>`).join("")}</div>
-    ${brief ? `<div class="ai-swatches">${pal(brief.palette).map(c => `<button type="button" style="--c:${c}" data-swatch="${c}" aria-label="${c}"></button>`).join("")}</div>` : ""}
-    <button type="button" class="ai-poplink" data-act="panel:swatches">All swatches…</button>`;
-  function openContext(e, target) {
-    if (target && tool === "select" && !active().includes(target)) cv.setActiveObject(target);
-    const has = !!cv.getActiveObject(), o = cv.getActiveObject();
-    const items = [["Undo", "mod+Z", "undo", hist.i > 0], ["Redo", "mod+shift+Z", "redo", hist.i < hist.stack.length - 1], "-",
-      ["Cut", "mod+X", "cut", has], ["Copy", "mod+C", "copy", has], ["Paste", "mod+V", "paste", !!clip], ["Duplicate", "mod+D", "duplicate", has], ["Delete", "Del", "delete", has], "-",
-      ["Bring to Front", "mod+shift+]", "front", has], ["Send to Back", "mod+shift+[", "back", has],
-      o && o.type === "activeSelection" ? ["Group", "mod+G", "group", true] : ["Ungroup", "mod+shift+G", "ungroup", !!(o && o.type === "group")],
-      [o && o.locked ? "Unlock" : "Lock", "mod+2", "lock", has], ["Hide", "mod+3", "hide", has], "-", ["Select All", "mod+A", "select-all", true]];
-    const R = root.getBoundingClientRect();
-    menuPop.innerHTML = items.map(it => it === "-" ? `<hr>` : `<button type="button" data-mact="${it[2]}"${it[3] ? "" : " disabled"}><span>${it[0]}</span><kbd>${keyLabel(it[1])}</kbd></button>`).join("");
-    menuPop.hidden = false; menuPop.dataset.ctx = "1";
-    const x = Math.min(e.clientX - R.left, R.width - menuPop.offsetWidth - 6), y = Math.min(e.clientY - R.top, R.height - menuPop.offsetHeight - 6);
-    menuPop.style.left = x + "px"; menuPop.style.top = y + "px";
-  }
-
-  /* ---------- Menu bar ---------- */
-  let menuOpen = -1;
-  const checked = flag => {
-    if (!flag) return false;
-    if (flag.startsWith("panel:")) return panel === flag.slice(6);
-    return !!view[flag];
-  };
+  const swatchPopHtml = () => `<div class="cx-pop-title">${paint.focus === "fill" ? tr("Fill") : tr("Stroke")}</div>
+    <div class="cx-swatches"><button type="button" class="is-none" data-swatch="none" aria-label="None"></button>${BASIC.map(c => `<button type="button" style="--c:${c}" data-swatch="${c}" aria-label="${c}"></button>`).join("")}</div>
+    ${paint.focus === "fill" ? `<div class="cx-swatches">${GRADIENTS.map((g, i) => `<button type="button" style="--c:linear-gradient(135deg, ${g[0]}, ${g[1]})" data-gradient="${i}" aria-label="Gradient"></button>`).join("")}</div>` : ""}
+    ${brief ? `<div class="cx-pop-title">${esc(brief.title)}</div><div class="cx-swatches">${pal(brief.palette).map(c => `<button type="button" style="--c:${c}" data-swatch="${c}" aria-label="${c}"></button>`).join("")}</div>` : ""}
+    <button type="button" class="cx-poplink" data-act="assets:colours">All colours and palettes</button>`;
+  const checked = flag => !!(flag && view[flag]);
   const enabled = a => {
     const o = cv.getActiveObject(), n = active().length;
-    if (["cut", "copy", "duplicate", "delete", "lock", "hide", "front", "back", "forward", "backward", "flip-h", "flip-v", "reset-rot", "reset-scale"].includes(a) || a.startsWith("align:") || a.startsWith("fx:shadow")) return n > 0;
+    if (["cut", "copy", "duplicate", "delete", "lock", "hide", "front", "back", "forward", "backward", "flip-h", "flip-v", "reset-rot", "reset-scale", "fit-sel"].includes(a) || a.startsWith("align:")) return n > 0;
     if (a === "paste" || a === "paste-in-place") return !!clip;
     if (a === "undo") return hist.i > 0;
     if (a === "redo") return hist.i < hist.stack.length - 1;
-    if (a === "group") return !!(o && o.type === "activeSelection");
-    if (a === "ungroup") return !!(o && o.type === "group");
+    if (a === "group" || a === "mask") return !!(o && o.type === "activeSelection");
+    if (a === "ungroup") return !!(o && o.type === "group" && !o.clipPath);
+    if (a === "unmask") return !!(o && o.clipPath && o.type === "group");
+    if (a.startsWith("bool:")) return combinable().length > 1;
     if (a.startsWith("dist:")) return n > 2;
     if (a === "expand") return !!(o && kindOf(o) === "shape");
+    if (a === "repeat") return !!(o && o.type !== "activeSelection");
+    if (a.startsWith("same:")) return n > 0;
     if (a.startsWith("case:") || a.startsWith("talign:") || a === "lorem") return flat(active()).some(isText);
-    if (a === "fx:noshadow") return n > 0;
+    if (a === "fx:shadow" || a === "fx:noshadow") return n > 0;
     if (a.startsWith("fx:")) return active().some(x => x.type === "image");
     if (a === "ab-delete") return doc.artboards.length > 1;
     return true;
   };
-  const menuItems = (items) => items.map(it => {
+  const menuItems = items => items.map(it => {
     if (it === "-") return "<hr>";
     const [label, b, c, flag] = it;
-    if (Array.isArray(b)) return `<div class="ai-sub"><button type="button" class="ai-subbtn"><span>${label}</span>${ui("right")}</button><div class="ai-submenu">${menuItems(b)}</div></div>`;
+    if (Array.isArray(b)) return `<div class="cx-sub"><button type="button" class="cx-subbtn"><i></i><span>${label}</span>${ui("right")}</button><div class="cx-menu cx-submenu">${menuItems(b)}</div></div>`;
     return `<button type="button" data-mact="${c}"${enabled(c) ? "" : " disabled"} class="${checked(flag) ? "is-checked" : ""}"><i>${checked(flag) ? ui("check") : ""}</i><span>${label}</span><kbd>${keyLabel(b)}</kbd></button>`;
   }).join("");
-  function openMenu(i) {
-    const btn = $(`[data-menu="${i}"]`, root);
-    menuOpen = i;
-    $$(".ai-menu-btn", root).forEach(b => b.classList.toggle("is-open", b === btn));
-    menuPop.innerHTML = menuItems(MENUS[i][1]);
-    delete menuPop.dataset.ctx;
+  function openMenuAt(anchor, html, mode) {
+    menuPop.innerHTML = html;
+    menuPop.dataset.mode = mode;
     menuPop.hidden = false;
-    const R = root.getBoundingClientRect(), r = btn.getBoundingClientRect();
-    menuPop.style.left = Math.min(r.left - R.left, R.width - menuPop.offsetWidth - 4) + "px";
-    menuPop.style.top = (r.bottom - R.top) + "px";
+    const R = root.getBoundingClientRect(), r = anchor.getBoundingClientRect();
+    menuPop.style.left = clamp(r.left - R.left, 8, R.width - menuPop.offsetWidth - 8) + "px";
+    menuPop.style.top = (r.bottom - R.top + 8) + "px";
   }
-  function closeMenu() { menuOpen = -1; menuPop.hidden = true; $$(".ai-menu-btn", root).forEach(b => b.classList.remove("is-open")); }
-  $(".ai-menubar", root).addEventListener("click", e => {
-    const b = e.target.closest("[data-menu]");
-    if (b) { if (menuOpen === +b.dataset.menu) closeMenu(); else openMenu(+b.dataset.menu); return; }
-    const a = e.target.closest("[data-act]");
-    if (a) act(a.dataset.act, a, e);
+  function openContext(e, target) {
+    if (target && tool === "select" && !active().includes(target)) cv.setActiveObject(target);
+    const o = cv.getActiveObject();
+    const items = o ? [["Cut", "mod+X", "cut"], ["Copy", "mod+C", "copy"], ["Paste", "mod+V", "paste"], ["Duplicate", "mod+D", "duplicate"], ["Delete", "Del", "delete"], "-",
+      ["Bring to Front", "mod+shift+]", "front"], ["Send to Back", "mod+shift+[", "back"], "-",
+      o.type === "activeSelection" ? ["Group", "mod+G", "group"] : o.clipPath ? ["Release Clipping Mask", "mod+alt+7", "unmask"] : ["Ungroup", "mod+shift+G", "ungroup"],
+      ...(o.type === "activeSelection" ? [["Make Clipping Mask", "mod+7", "mask"], ["Combine Shapes", BOOLS.map(([op, , l]) => [l, "", "bool:" + op])]] : [["Repeat Grid…", "", "repeat"]]), "-",
+      [o.locked ? "Unlock" : "Lock", "mod+2", "lock"], ["Hide", "mod+3", "hide"], ["Recolour Artwork…", "", "recolor"], ["Copy as PNG", "mod+shift+C", "copy-png"]]
+      : [["Paste", "mod+V", "paste"], ["Select All", "mod+A", "select-all"], "-", ["Zoom to Fit", "shift+1", "fit-all"], ["Rulers", "shift+R", "toggle:rulers", "rulers"], ["Grid", "mod+'", "toggle:grid", "grid"], "-", ["Command Palette", "mod+K", "palette"]];
+    menuPop.innerHTML = menuItems(items);
+    menuPop.dataset.mode = "ctx"; menuPop.hidden = false;
+    const R = root.getBoundingClientRect();
+    menuPop.style.left = clamp(e.clientX - R.left, 6, R.width - menuPop.offsetWidth - 6) + "px";
+    menuPop.style.top = clamp(e.clientY - R.top, 6, R.height - menuPop.offsetHeight - 6) + "px";
+  }
+  const closeMenus = () => { menuPop.hidden = true; closePop(); $(".cx-brand", root).classList.remove("is-open"); };
+  menuPop.addEventListener("click", e => {
+    const f = e.target.closest("[data-fly]");
+    if (f) { setTool(f.dataset.fly); closeMenus(); return; }
+    const b = e.target.closest("[data-mact]");
+    if (b && !b.disabled) { closeMenus(); act(b.dataset.mact, b, e); }
   });
-  $(".ai-menubar", root).addEventListener("pointerover", e => { const b = e.target.closest("[data-menu]"); if (b && menuOpen > -1 && +b.dataset.menu !== menuOpen) openMenu(+b.dataset.menu); });
-  menuPop.addEventListener("click", e => { const b = e.target.closest("[data-mact]"); if (b && !b.disabled) { closeMenu(); act(b.dataset.mact, b, e); } });
+  menuPop.addEventListener("contextmenu", e => e.preventDefault());
+  document.addEventListener("pointerdown", e => {
+    if (e.button === 2 && stage.contains(e.target)) return;
+    if (pop && !pop.contains(e.target) && !e.target.closest("[data-act^='swatch-pop'], [data-act='font-menu'], [data-act='zoom-menu'], [data-act='ab-menu'], [data-act='align-pop']")) closePop();
+    if (!menuPop.hidden && !menuPop.contains(e.target) && !e.target.closest("[data-act='main-menu'], [data-act='more'], [data-more]")) closeMenus();
+  });
 
   /* =====================================================================
-     Adding things: text, icons, images, templates
+     Command palette
+     ===================================================================== */
+  let pItems = [], pSel = 0;
+  function paletteSource() {
+    const out = [];
+    const walk = (items, path) => items.forEach(it => {
+      if (it === "-") return;
+      const [label, b, c] = it;
+      if (Array.isArray(b)) walk(b, [...path, label]);
+      else out.push({ group: path[0], label: [...path.slice(1), label].map(tr).join(" › "), key: keyLabel(b), run: () => act(c), on: () => enabled(c) });
+    });
+    MENUS.forEach(([m, items]) => walk(items, [m]));
+    Object.entries(TOOL_INFO).forEach(([id, t]) => out.push({ group: "Tools", label: tr(t.name), key: keyLabel(t.key), icon: id, run: () => setTool(id) }));
+    TEMPLATES.forEach((t, i) => out.push({ group: "Templates", label: tr(t.name), run: () => useTemplate(i) }));
+    BRIEFS.forEach((b, i) => out.push({ group: "Briefs", label: tr(b.title), run: () => { briefPick = i; startBrief(); } }));
+    SIZES.forEach(([n, w, h], i) => out.push({ group: "Artboard size", label: `${tr(n)} · ${w} × ${h}`, run: () => act("ab-size:" + i) }));
+    Object.keys(FONTS).forEach(f => out.push({ group: "Fonts", label: f, font: f, run: () => setFont(f), on: () => flat(active()).some(isText) }));
+    Object.entries(LIB_SHAPES).forEach(([k, [n]]) => out.push({ group: "Insert shape", label: tr(n), icon: UI[k] ? k : null, run: () => addLibShape(k) }));
+    [["heading", "Heading"], ["sub", "Subheading"], ["body", "Body text"]].forEach(([k, l]) => out.push({ group: "Insert text", label: tr(l), run: () => addText(k) }));
+    Object.keys(window.DS_ICONS || {}).forEach(n => out.push({ group: "Insert icon", label: n.replace(/-/g, " "), icon: n, run: () => addIcon(n) }));
+    return out;
+  }
+  function openPalette(q = "") {
+    closeMenus();
+    pItems = paletteSource();
+    paletteEl.hidden = false;
+    pq.value = q;
+    filterPalette();
+    setTimeout(() => pq.focus(), 20);
+  }
+  const closePalette = () => { paletteEl.hidden = true; };
+  function filterPalette() {
+    const words = pq.value.toLowerCase().split(/\s+/).filter(Boolean);
+    const list = pItems.filter(it => (!it.on || it.on()) && words.every(w => (it.label + " " + tr(it.group) + " " + it.group).toLowerCase().includes(w)));
+    const shown = words.length ? list.slice(0, 60) : list.filter(it => ["Tools", "File", "Object", "Insert shape", "Templates"].includes(it.group)).slice(0, 48);
+    pSel = 0;
+    let last = "";
+    plist.innerHTML = shown.map((it, i) => {
+      const head = it.group !== last ? `<div class="cx-pgroup">${tr(it.group)}</div>` : "";
+      last = it.group;
+      const ic = it.icon ? (UI[it.icon] ? ui(it.icon) : icon(it.icon)) : ui("command");
+      return `${head}<button type="button" class="cx-pitem${i === 0 ? " is-on" : ""}" data-pi="${i}" role="option" data-no-i18n>${ic}<span${it.font ? ` style="font-family:'${it.font}'"` : ""}>${esc(it.label)}</span>${it.key ? `<kbd>${it.key}</kbd>` : ""}</button>`;
+    }).join("") || `<p class="cx-pempty">${tr("No matches.")}</p>`;
+    plist.__items = shown;
+  }
+  const runPalette = i => { const it = (plist.__items || [])[i]; if (!it) return; closePalette(); it.run(); };
+  pq.addEventListener("input", filterPalette);
+  pq.addEventListener("keydown", e => {
+    const n = (plist.__items || []).length;
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      pSel = (pSel + (e.key === "ArrowDown" ? 1 : -1) + n) % Math.max(1, n);
+      $$(".cx-pitem", plist).forEach((b, i) => b.classList.toggle("is-on", i === pSel));
+      const on = $(".cx-pitem.is-on", plist); if (on) on.scrollIntoView({ block: "nearest" });
+    } else if (e.key === "Enter") { e.preventDefault(); runPalette(pSel); }
+    else if (e.key === "Escape") { e.preventDefault(); closePalette(); }
+  });
+  plist.addEventListener("click", e => { const b = e.target.closest("[data-pi]"); if (b) runPalette(+b.dataset.pi); });
+  plist.addEventListener("pointermove", e => { const b = e.target.closest("[data-pi]"); if (b && +b.dataset.pi !== pSel) { pSel = +b.dataset.pi; $$(".cx-pitem", plist).forEach(x => x.classList.toggle("is-on", x === b)); } });
+  paletteEl.addEventListener("pointerdown", e => { if (e.target === paletteEl) closePalette(); });
+
+  /* =====================================================================
+     Adding things: text, icons, shapes, images, templates
      ===================================================================== */
   const RTL = /[֐-ࣿ]/;
   const rtlFix = t => { if (RTL.test(t.text || "")) t.set({ charSpacing: 0, direction: "rtl", textAlign: "right" }); return t; };
@@ -1899,12 +2225,15 @@ window.DSCanvas = function (kit) {
     const [x, xw, y, yw] = PAIRS[i];
     await Promise.all([loadFont(x, xw), loadFont(y, yw)]);
     setTool("select");
+    note("Font Pair");
+    hist.busy++;
     const head = placeCentre(textbox(tr("Big ideas start here"), { fontFamily: x, fontWeight: xw, fontSize: 104, width: 820, lineHeight: 1, charSpacing: x === "Bebas Neue" ? 20 : -20, name: "Heading" }));
-    const body = placeCentre(textbox(tr("A short line of supporting text that explains the idea."), { fontFamily: y, fontWeight: yw, fontSize: 34, width: 820, lineHeight: 1.4, charSpacing: 0, name: "Body text" }));
-    const gap = 28 * unit(), a = ab(), total = head.getScaledHeight() + gap + body.getScaledHeight();
-    head.set({ top: a.y + (a.h - total) / 2 }); body.set({ top: head.top + head.getScaledHeight() + gap, left: head.left });
-    head.setCoords(); body.setCoords();
-    reselect([head, body]); changed();
+    const body2 = placeCentre(textbox(tr("A short line of supporting text that explains the idea."), { fontFamily: y, fontWeight: yw, fontSize: 34, width: 820, lineHeight: 1.4, charSpacing: 0, name: "Body text" }));
+    hist.busy--;
+    const gap = 28 * unit(), a = ab(), total = head.getScaledHeight() + gap + body2.getScaledHeight();
+    head.set({ top: a.y + (a.h - total) / 2 }); body2.set({ top: head.top + head.getScaledHeight() + gap, left: head.left });
+    head.setCoords(); body2.setCoords();
+    reselect([head, body2]); changed();
   }
   function addIcon(name) {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="#0f0f0f" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${window.DS_ICONS[name]}</svg>`;
@@ -1915,6 +2244,28 @@ window.DSCanvas = function (kit) {
       setTool("select");
       placeCentre(g, false);
     });
+  }
+  function addLibShape(k) {
+    const s = 360, st = { fill: paint.fill || "#1f7aff", stroke: paint.stroke, strokeWidth: paint.stroke ? paint.strokeWidth : 0 };
+    let o;
+    const unitPath = (d, n) => { const p = new F.Path(d, Object.assign({ name: n, kind: "shape" }, st)); p.scaleToWidth(s); return p; };
+    switch (k) {
+      case "rect": o = new F.Rect(Object.assign({ width: s, height: s * .8, name: "Rectangle", kind: "shape" }, st)); break;
+      case "rounded": o = new F.Rect(Object.assign({ width: s, height: s * .8, rx: 48, ry: 48, name: "Rounded Rectangle", kind: "shape" }, st)); break;
+      case "ellipse": o = new F.Ellipse(Object.assign({ rx: s / 2, ry: s / 2, name: "Ellipse", kind: "shape" }, st)); break;
+      case "triangle": o = vector([A(s / 2, 0), A(s, s * .87), A(0, s * .87)], true, Object.assign({ name: "Triangle" }, st)); break;
+      case "star": o = vector(STAR(5).map(q => A(q.x * s, q.y * s)), true, Object.assign({ name: "Star" }, st)); break;
+      case "polygon": o = vector(POLY(6).map(q => A(q.x * s, q.y * s)), true, Object.assign({ name: "Polygon" }, st)); break;
+      case "arrow": o = unitPath("M0 70 H230 V20 L330 110 L230 200 V150 H0 Z", "Arrow"); break;
+      case "heart": o = unitPath("M170 300 C 60 220 0 160 0 95 C 0 40 42 0 95 0 C 128 0 155 18 170 45 C 185 18 212 0 245 0 C 298 0 340 40 340 95 C 340 160 280 220 170 300 Z", "Heart"); break;
+      case "bubble": o = unitPath("M40 0 H320 A40 40 0 0 1 360 40 V200 A40 40 0 0 1 320 240 H150 L70 310 V240 H40 A40 40 0 0 1 0 200 V40 A40 40 0 0 1 40 0 Z", "Speech Bubble"); break;
+      case "badge": o = vector(STAR(12, .84).map(q => A(q.x * s, q.y * s)), true, Object.assign({ name: "Badge" }, st)); break;
+      case "blob": o = unitPath("M205 18C268 30 330 80 338 150C346 222 300 300 225 325C150 350 62 322 26 255C-10 188 10 102 66 55C112 16 152 8 205 18Z", "Blob"); break;
+      case "line": o = new F.Line([0, 0, s, 0], { stroke: toHex(paint.stroke) || toHex(paint.fill) || "#0f0f0f", strokeWidth: 8, strokeLineCap: "round", name: "Line", kind: "shape" }); break;
+      default: return;
+    }
+    setTool("select");
+    placeCentre(o);
   }
   const MAX = 2400;
   const readImage = file => new Promise((res, rej) => {
@@ -1944,20 +2295,31 @@ window.DSCanvas = function (kit) {
     for (const f of [...files].filter(x => /^image\//.test(x.type))) {
       try { const url = await readImage(f); uploads.unshift(url); addImage(url); } catch (e) { /* unreadable image */ }
     }
-    if (panel === "images") renderDock();
+    if (ltab === "assets" && assetTab === "images") renderLeft();
   }
-  const fileImg = $("[data-file-img]", root), fileJson = $("[data-file-json]", root);
+  const fileImg = $("[data-file-img]", root), fileJson = $("[data-file-json]", root), fileReplace = $("[data-file-replace]", root);
   fileImg.addEventListener("change", () => { addFiles(fileImg.files); fileImg.value = ""; });
+  fileReplace.addEventListener("change", async () => {
+    const f = fileReplace.files[0], o = cv.getActiveObject();
+    fileReplace.value = "";
+    if (!f || !o || o.type !== "image") return;
+    const url = await readImage(f), w = o.getScaledWidth(), h = o.getScaledHeight(), c = o.getCenterPoint();
+    o.setSrc(url, () => {
+      const k = Math.max(w / o.width, h / o.height);
+      o.set({ scaleX: k, scaleY: k }); o.setPositionByOrigin(c, "center", "center"); o.applyFilters(); o.setCoords();
+      cv.requestRenderAll(); note("Replace Image"); changed(); refreshUI();
+    });
+  });
   fileJson.addEventListener("change", () => {
     const f = fileJson.files[0];
     fileJson.value = "";
-    if (f) f.text().then(s => restore(s, { refit: true }).then(() => { changed(); toast(tr("Project opened")); })).catch(() => toast(tr("That file isn't a Draft Studio design.")));
+    if (f) f.text().then(s => restore(s, { refit: true }).then(() => { note("Open Project"); changed(); toast(tr("Project opened")); })).catch(() => toast(tr("That file isn't a Draft Studio design.")));
   });
   let dragDepth = 0;
-  viewport.addEventListener("dragenter", e => { if ([...(e.dataTransfer.types || [])].includes("Files")) { dragDepth++; root.classList.add("is-dropping"); } });
-  viewport.addEventListener("dragleave", () => { if (--dragDepth <= 0) { dragDepth = 0; root.classList.remove("is-dropping"); } });
-  viewport.addEventListener("dragover", e => e.preventDefault());
-  viewport.addEventListener("drop", e => { e.preventDefault(); dragDepth = 0; root.classList.remove("is-dropping"); addFiles(e.dataTransfer.files); });
+  body.addEventListener("dragenter", e => { if ([...(e.dataTransfer.types || [])].includes("Files")) { dragDepth++; root.classList.add("is-dropping"); } });
+  body.addEventListener("dragleave", () => { if (--dragDepth <= 0) { dragDepth = 0; root.classList.remove("is-dropping"); } });
+  body.addEventListener("dragover", e => { if ([...(e.dataTransfer.types || [])].includes("Files")) e.preventDefault(); });
+  body.addEventListener("drop", e => { if (!e.dataTransfer.files.length) return; e.preventDefault(); dragDepth = 0; root.classList.remove("is-dropping"); addFiles(e.dataTransfer.files); });
   document.addEventListener("paste", e => {
     if (isTyping(e.target)) return;
     const o = cv.getActiveObject();
@@ -2037,11 +2399,12 @@ window.DSCanvas = function (kit) {
     if (!isEmpty() && !confirm(tr("Replace your design with this template? You can undo it."))) return;
     const t = TEMPLATES[i];
     await tplFonts(t);
-    freshDoc(t.w, t.h, t.bg, t.name);
+    freshDoc(t.w, t.h, t.bg, tr(t.name));
     hist.busy++;
     t.make().forEach(o => { applyToolState(o); o.strokeUniform = true; cv.add(o); });
     hist.busy--;
-    refreshText(); setTool("select"); changed(); refreshUI();
+    refreshText(); setTool("select"); note(tr("Template") + ": " + tr(t.name)); changed(); refreshUI();
+    if (innerWidth < 900) root.classList.remove("show-left", "show-right");
   }
   function startBrief() {
     const b = BRIEFS[briefPick];
@@ -2049,7 +2412,117 @@ window.DSCanvas = function (kit) {
     const [, w, h] = SIZES[b.size], cols = pal(b.palette);
     freshDoc(w, h, cols[cols.length - 1], tr(b.title));
     brief = b;
-    changed(); refreshUI();
+    note(tr("Brief") + ": " + tr(b.title)); changed(); refreshUI();
+    if (ltab === "assets") renderLeft();
+    if (innerWidth < 900) root.classList.remove("show-left", "show-right");
+  }
+
+  /* =====================================================================
+     Recolour, repeat grid, QR code
+     ===================================================================== */
+  function recolorDialog() {
+    const targets = active().length ? flat(active()) : flat(cv.getObjects());
+    const counts = {};
+    targets.forEach(o => [o.fill, o.stroke].forEach(c => {
+      if (isGrad(c)) c.colorStops.forEach(s => { const h = toHex(s.color); if (h) counts[h] = (counts[h] || 0) + 1; });
+      else { const h = toHex(c); if (h) counts[h] = (counts[h] || 0) + 1; }
+    }));
+    if (!active().length) doc.artboards.forEach(a => { const h = toHex(a.bg); if (h) counts[h] = (counts[h] || 0) + 1; });
+    const cols = Object.entries(counts).sort((a, b) => b[1] - a[1]).map(([c]) => c).slice(0, 12);
+    if (!cols.length) { toast(tr("No colours to recolour.")); return; }
+    openDialog("Recolour Artwork", `
+      <p class="cx-note">${active().length ? tr("Recolours the selection.") : tr("Recolours the whole design.")} ${tr("Pick a new colour for each, or apply a palette.")}</p>
+      <div class="cx-recolor">${cols.map((c, i) => `<div class="cx-rc-row"><span class="cx-sw is-static" style="--c:${c}"></span>${ui("right")}${swatchIn("rc-" + i, c)}<code data-rc-hex="${i}">${c.toUpperCase()}</code></div>`).join("")}</div>
+      <label class="cx-field"><span>Apply a palette</span>${sel("rc-pal", "", [["", "—"], ...(DS.palettes || []).map(p => [p.name, p.name])], "Palette")}</label>`,
+      [["Cancel", "close-dialog"], ["Recolour", "do-recolor", true]]);
+    dialog.__cols = cols;
+  }
+  dialog.addEventListener("change", e => {
+    if (e.target.dataset.k !== "rc-pal" || !e.target.value) return;
+    const p = pal(e.target.value);
+    dialog.__cols.forEach((c, i) => {
+      const inp = $(`[data-k="rc-${i}"]`, dialog), v = p[i % p.length];
+      inp.value = v; inp.closest(".cx-sw").style.setProperty("--c", v);
+      $(`[data-rc-hex="${i}"]`, dialog).textContent = v.toUpperCase();
+    });
+  });
+  dialog.addEventListener("input", e => {
+    const m = /^rc-(\d+)$/.exec(e.target.dataset.k || "");
+    if (!m) return;
+    $(`[data-rc-hex="${m[1]}"]`, dialog).textContent = e.target.value.toUpperCase();
+    e.target.closest(".cx-sw").style.setProperty("--c", e.target.value);
+  });
+  function doRecolor() {
+    const map = {};
+    dialog.__cols.forEach((c, i) => { const v = $(`[data-k="rc-${i}"]`, dialog).value.toLowerCase(); if (v !== c) map[c] = v; });
+    closeDialog();
+    const targets = active().length ? flat(active()) : flat(cv.getObjects());
+    if (!active().length) doc.artboards.forEach(a => { const h = toHex(a.bg); if (map[h]) a.bg = map[h]; });
+    targets.forEach(o => {
+      ["fill", "stroke"].forEach(k => {
+        const c = o[k];
+        if (isGrad(c)) c.colorStops.forEach(s => { const h = toHex(s.color); if (map[h]) s.color = map[h]; });
+        else { const h = toHex(c); if (h && map[h]) o.set(k, map[h]); }
+      });
+      o.dirty = true;
+    });
+    cv.getObjects().forEach(o => { o.dirty = true; });
+    cv.requestRenderAll(); note("Recolour Artwork"); changed(); refreshUI();
+  }
+  function repeatDialog() {
+    const o = cv.getActiveObject();
+    if (!o || o.type === "activeSelection") { toast(tr("Select one object to repeat.")); return; }
+    openDialog("Repeat Grid", `<div class="cx-form">
+      <div class="cx-g2">${num("rp-cols", 3, { label: "Columns", min: 1, max: 30, d: 0 })}${num("rp-rows", 2, { label: "Rows", min: 1, max: 30, d: 0 })}</div>
+      <div class="cx-g2">${num("rp-gx", 24, { label: "Gap X", unit: "px", d: 0 })}${num("rp-gy", 24, { label: "Gap Y", unit: "px", d: 0 })}</div>
+      <p class="cx-note">Copies the selection into a grid, starting from where it is now.</p></div>`, [["Cancel", "close-dialog"], ["Repeat", "do-repeat", true]]);
+  }
+  function doRepeat() {
+    const v = k => +$(`[data-k="${k}"]`, dialog).value || 0;
+    const cols = clamp(v("rp-cols"), 1, 30), rows = clamp(v("rp-rows"), 1, 30), gx = v("rp-gx"), gy = v("rp-gy");
+    closeDialog();
+    const o = cv.getActiveObject();
+    if (!o) return;
+    const b = o.getBoundingRect(true, true), made = [o];
+    let left = cols * rows - 1;
+    if (!left) return;
+    hist.busy++;
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      if (!r && !c) continue;
+      o.clone(cl => {
+        cl.set({ left: o.left + c * (b.width + gx), top: o.top + r * (b.height + gy) });
+        applyToolState(cl); cv.add(cl); made.push(cl);
+        if (--left === 0) { hist.busy--; note("Repeat Grid"); reselect(made); changed(); refreshUI(); }
+      }, PROPS);
+    }
+  }
+  function qrDialog() {
+    openDialog("Insert QR Code", `<div class="cx-form">
+      <label class="cx-field"><span>Link or text</span><input class="cx-text" data-qr-text value="https://" spellcheck="false"></label>
+      <div class="cx-row"><span class="cx-lbl">Colour</span>${swatchIn("qr-colour", "#0f0f0f")}</div>
+      <p class="cx-note">Makes a crisp vector QR code you can recolour and resize. For styled codes, try QR Code Studio.</p></div>`, [["Cancel", "close-dialog"], ["Insert", "do-qr", true]]);
+  }
+  async function doQr() {
+    const text = $("[data-qr-text]", dialog).value.trim(), colour = $("[data-k=qr-colour]", dialog).value;
+    closeDialog();
+    if (!text) return;
+    try { if (!window.qrcode) await loadScript("js/vendor/qrcode.min.js"); } catch (e) { toast(tr("Couldn't load the QR maker. Check your connection.")); return; }
+    const q = window.qrcode(0, "M"); q.addData(text); q.make();
+    const n = q.getModuleCount();
+    let d = "";
+    for (let r = 0; r < n; r++) {
+      let c = 0;
+      while (c < n) {
+        if (!q.isDark(r, c)) { c++; continue; }
+        const s = c;
+        while (c < n && q.isDark(r, c)) c++;
+        d += `M${s} ${r}h${c - s}v1h${s - c}z`;
+      }
+    }
+    const p = new F.Path(d, { fill: colour, name: "QR Code", kind: "shape", strokeWidth: 0 });
+    p.scaleToWidth(360 * unit());
+    setTool("select");
+    placeCentre(p, false);
   }
 
   /* =====================================================================
@@ -2062,118 +2535,176 @@ window.DSCanvas = function (kit) {
     document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(a.href), 4000);
   };
-  async function exportArtboard(i, fmt, scale = 1, transparent = false) {
+  async function renderArtboard(i, fmt, scale = 1, transparent = false) {
     const a = doc.artboards[i];
     const keep = cv.getActiveObject();
     cv.discardActiveObject(); smart = [];
     await loadFontsOf(cv.getObjects());
-    const name = slug(doc.name) + (doc.artboards.length > 1 ? "-" + slug(a.name) : "");
+    let out;
     if (fmt === "svg") {
       const svg = cv.toSVG({ width: a.w, height: a.h, viewBox: { x: a.x, y: a.y, width: a.w, height: a.h } });
       const fonts = [...new Set(flat(cv.getObjects()).filter(isText).map(o => o.fontFamily).filter(f => f !== "Georgia"))];
-      const css = fonts.length ? `<style>@import url("https://fonts.googleapis.com/css2?${fonts.map(f => "family=" + f.replace(/ /g, "+") + ":wght@400;500;600;700;800").join("&")}&display=swap");</style>` : "";
+      const css = fonts.length ? `<style>@import url("https://fonts.googleapis.com/css2?${fonts.map(f => "family=" + f.replace(/ /g, "+") + ":wght@400;500;600;700;800").join("&amp;")}&amp;display=swap");</style>` : "";
       const bg = transparent ? "" : `<rect x="${a.x}" y="${a.y}" width="${a.w}" height="${a.h}" fill="${a.bg}"/>`;
-      saveBlob(new Blob([svg.replace(/(<svg[^>]*>)/, `$1${css}`).replace(/(<\/defs>)/, `$1${bg}`)], { type: "image/svg+xml" }), name + ".svg");
+      out = svg.replace(/(<svg[^>]*>)/, `$1${css}`).replace(/(<\/defs>)/, `$1${bg}`);
     } else {
       exportBg = !(transparent && fmt === "png");
+      const wasPresent = present; present = false;
       const v = cv.viewportTransform, z = v[0];
-      const url = cv.toDataURL({ format: fmt === "jpg" ? "jpeg" : "png", quality: .92, multiplier: scale / z,
-        left: v[4] + a.x * z, top: v[5] + a.y * z, width: a.w * z, height: a.h * z });
+      const url = cv.toDataURL({ format: fmt === "jpg" ? "jpeg" : "png", quality: .92, multiplier: scale / z, left: v[4] + a.x * z, top: v[5] + a.y * z, width: a.w * z, height: a.h * z });
+      present = wasPresent;
       exportBg = true;
-      saveBlob(await (await fetch(url)).blob(), `${name}.${fmt}`);
+      out = await (await fetch(url)).blob();
     }
-    if (keep) cv.setActiveObject(keep);
+    if (keep && cv.getObjects().includes(keep)) cv.setActiveObject(keep);
+    else if (keep && keep.type === "activeSelection") reselect(keep.getObjects());
     cv.requestRenderAll();
+    return out;
   }
-  function exportDialog(fmt = "png") {
+  async function exportArtboard(i, fmt, scale, transparent) {
+    const a = doc.artboards[i], out = await renderArtboard(i, fmt, scale, transparent);
+    const name = slug(doc.name) + (doc.artboards.length > 1 ? "-" + slug(a.name) : "");
+    saveBlob(fmt === "svg" ? new Blob([out], { type: "image/svg+xml" }) : out, `${name}.${fmt}`);
+  }
+  async function copyPng() {
+    try {
+      const blob = await renderArtboard(doc.active, "png", 1);
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+      toast(tr("Copied as PNG"));
+    } catch (e) { toast(tr("Your browser blocked copying images. Use Export instead.")); }
+  }
+  async function copySvg() {
+    try { await navigator.clipboard.writeText(await renderArtboard(doc.active, "svg")); toast(tr("SVG code copied")); }
+    catch (e) { toast(tr("Your browser blocked the clipboard. Use Export instead.")); }
+  }
+  let exFmt = "png";
+  function exportDialog(fmt = exFmt) {
+    exFmt = fmt;
+    const a = ab();
     openDialog("Export", `
-      <div class="ai-form">
-        <label>Format ${sel("ex-fmt", fmt, [["png", "PNG"], ["jpg", "JPG"], ["svg", "SVG"]], "Format")}</label>
-        <label>Scale ${sel("ex-scale", 1, [[0.5, "0.5×"], [1, "1×"], [2, "2×"], [3, "3×"], [4, "4×"]], "Scale")}</label>
-        <label>Artboards ${sel("ex-which", "current", [["current", `${tr("Current")} (${doc.active + 1})`], ["all", tr("All")]], "Artboards")}</label>
-        <label class="ai-check"><input type="checkbox" data-ex-transp><span>Transparent background (PNG and SVG)</span></label>
-      </div>`, [["Cancel", "close-dialog"], ["Export", "do-export", true]]);
+      <div class="cx-export">
+        <div class="cx-exprev"><span style="aspect-ratio:${a.w} / ${a.h};--ar:${round(a.w / a.h, 4)};background:${a.bg}"><img data-exprev alt=""></span></div>
+        <div class="cx-form">
+          <div class="cx-seg is-wide" data-exfmt>${["png", "jpg", "svg"].map(f => `<button type="button" data-v="${f}" class="${f === fmt ? "is-on" : ""}">${f.toUpperCase()}</button>`).join("")}</div>
+          <label class="cx-field"><span>Scale</span>${sel("ex-scale", 1, [[0.5, "0.5×"], [1, "1×"], [2, "2×"], [3, "3×"], [4, "4×"]], "Scale")}</label>
+          <label class="cx-field"><span>Artboards</span>${sel("ex-which", "current", [["current", `${tr("Current")} · ${esc(a.name)}`], ["all", `${tr("All")} (${doc.artboards.length})`]], "Artboards")}</label>
+          <label class="cx-switch"><input type="checkbox" data-ex-transp><i></i><span>Transparent background</span></label>
+          <p class="cx-exsize" data-exsize></p>
+        </div>
+      </div>`, [["Copy PNG", "copy-png"], ["Cancel", "close-dialog"], ["Export", "do-export", true]], "is-wide");
+    const upd = () => { const s = +$("[data-k=ex-scale]", dialog).value; $("[data-exsize]", dialog).textContent = exFmt === "svg" ? tr("Vector file, any size.") : `${round(a.w * s)} × ${round(a.h * s)} px`; };
+    upd();
+    $("[data-k=ex-scale]", dialog).addEventListener("change", upd);
+    $("[data-exfmt]", dialog).addEventListener("click", e => { const b = e.target.closest("[data-v]"); if (!b) return; exFmt = b.dataset.v; $$("[data-exfmt] button", dialog).forEach(x => x.classList.toggle("is-on", x === b)); upd(); });
+    renderArtboard(doc.active, "png", Math.min(1, 520 / Math.max(a.w, a.h))).then(blob => { const im = $("[data-exprev]", dialog); if (im) im.src = URL.createObjectURL(blob); });
   }
   async function doExport() {
-    const fmt = $("[data-k=ex-fmt]", dialog).value, scale = +$("[data-k=ex-scale]", dialog).value, which = $("[data-k=ex-which]", dialog).value, tp = $("[data-ex-transp]", dialog).checked;
+    const scale = +$("[data-k=ex-scale]", dialog).value, which = $("[data-k=ex-which]", dialog).value, tp = $("[data-ex-transp]", dialog).checked;
     closeDialog();
     const list = which === "all" ? doc.artboards.map((_, i) => i) : [doc.active];
-    for (const i of list) await exportArtboard(i, fmt, scale, tp);
+    for (const i of list) await exportArtboard(i, exFmt, scale, tp);
     toast(tr("Exported"));
   }
 
   /* =====================================================================
      Dialogs
      ===================================================================== */
-  function openDialog(title, body, buttons = [["OK", "close-dialog", true]]) {
-    dialog.innerHTML = `<header><strong>${title}</strong><button type="button" class="ai-ib" data-act="close-dialog" aria-label="Close">${ui("close")}</button></header>
-      <div class="ai-dialog-body">${body}</div>
-      <footer>${buttons.map(([l, a, primary]) => `<button type="button" class="ai-btn${primary ? " is-blue" : ""}" data-act="${a}">${l}</button>`).join("")}</footer>`;
+  function openDialog(title, bodyHtml, buttons = [["OK", "close-dialog", true]], cls = "") {
+    closeMenus();
+    dialog.className = "cx-dialog " + cls;
+    dialog.innerHTML = `<header><strong>${title}</strong><button type="button" class="cx-ib" data-act="close-dialog" aria-label="Close">${ui("close")}</button></header>
+      <div class="cx-dialog-body">${bodyHtml}</div>
+      <footer>${buttons.map(([l, a, primary]) => `<button type="button" class="cx-btn${primary ? " is-blue" : ""}" data-act="${a}">${l}</button>`).join("")}</footer>`;
     modal.hidden = false;
-    const f = $("input, select, button.is-blue", dialog);
+    const f = $(".cx-dialog-body input:not([type=color]):not([type=checkbox]), footer .is-blue", dialog);
     if (f) setTimeout(() => f.focus(), 30);
   }
   const closeDialog = () => { modal.hidden = true; dialog.innerHTML = ""; };
   modal.addEventListener("pointerdown", e => { if (e.target === modal) closeDialog(); });
   function docSetup() {
     const a = ab();
-    openDialog("Document Setup", `<div class="ai-form">
-      <label>Artboard ${sel("ab-preset", SIZES.findIndex(([, w, h]) => w === a.w && h === a.h), [[-1, "Custom"], ...SIZES.map(([n, w, h], i) => [i, `${n} · ${w} × ${h}`])], "Preset")}</label>
-      <div class="ai-g2">${num("ab-w", a.w, { label: "Width", unit: "px", min: 1 })}${num("ab-h", a.h, { label: "Height", unit: "px", min: 1 })}</div>
-      <div class="ai-row"><span class="ai-lbl">Background</span>${swatchIn("ab-bg", a.bg)}</div>
-      <button type="button" class="ai-btn" data-act="edit-artboards">Edit Artboards</button></div>`, [["OK", "close-dialog", true]]);
+    openDialog("Document Setup", `<div class="cx-form">
+      <label class="cx-field"><span>Artboard</span>${presetSel(a)}</label>
+      <div class="cx-g2">${num("ab-w", a.w, { label: "W", unit: "px", min: 1, d: 0 })}${num("ab-h", a.h, { label: "H", unit: "px", min: 1, d: 0 })}</div>
+      <div class="cx-row"><span class="cx-lbl">Background</span>${swatchIn("ab-bg", a.bg)}</div></div>`, [["Edit Artboards", "edit-artboards"], ["Done", "close-dialog", true]]);
   }
   function prefsDialog() {
-    openDialog("Preferences", `<div class="ai-form">
-      ${num("pref-nudge", prefs.nudge, { label: "Keyboard Increment", unit: "px", min: .1, wide: true })}
-      ${num("pref-grid", prefs.gridSize, { label: "Gridline every", unit: "px", min: 2, wide: true })}
-      <label class="ai-check"><input type="checkbox" data-k="pref-strokes"${prefs.scaleStrokes ? " checked" : ""}><span>Scale Strokes & Effects</span></label>
-      <label class="ai-check"><input type="checkbox" data-pref-view="smart"${view.smart ? " checked" : ""}><span>Smart Guides</span></label>
-      <label class="ai-check"><input type="checkbox" data-pref-view="names"${view.names ? " checked" : ""}><span>Show Artboard Names</span></label></div>`, [["OK", "close-dialog", true]]);
+    openDialog("Preferences", `<div class="cx-form">
+      <div class="cx-g2">${num("pref-nudge", prefs.nudge, { label: "Nudge", unit: "px", min: .1 })}${num("pref-grid", prefs.gridSize, { label: "Grid", unit: "px", min: 2, d: 0 })}</div>
+      <label class="cx-switch"><input type="checkbox" data-k="pref-strokes"${prefs.scaleStrokes ? " checked" : ""}><i></i><span>Scale strokes with objects</span></label>
+      ${[["smart", "Smart guides"], ["pixel", "Snap to whole pixels"], ["names", "Show artboard names"], ["mini", "Show minimap"], ["light", "Light interface"]]
+        .map(([f, l]) => `<label class="cx-switch"><input type="checkbox" data-pref-view="${f}"${view[f] ? " checked" : ""}><i></i><span>${l}</span></label>`).join("")}</div>`, [["Done", "close-dialog", true]]);
   }
-  dialog.addEventListener("change", e => { const v = e.target.dataset.prefView; if (v) { view[v] = e.target.checked; saveView(); cv.requestRenderAll(); } });
+  dialog.addEventListener("change", e => { const v = e.target.dataset.prefView; if (v) { view[v] = e.target.checked; saveView(); applyViewClasses(); cv.requestRenderAll(); refreshUI(); } });
   const SHORTCUTS = [
-    ["Tools", [["Selection", "V"], ["Direct Selection", "A"], ["Pen", "P"], ["Pencil", "N"], ["Paintbrush", "B"], ["Type", "T"], ["Line Segment", "\\"], ["Rectangle", "M"], ["Ellipse", "L"],
+    ["Tools", [["Move", "V"], ["Edit Points", "A"], ["Pen", "P"], ["Pencil", "N"], ["Brush", "B"], ["Text", "T"], ["Line", "\\"], ["Rectangle", "M"], ["Ellipse", "L"],
       ["Rotate", "R"], ["Scale", "S"], ["Eyedropper", "I"], ["Gradient", "G"], ["Artboard", "shift+O"], ["Hand", "H / Space"], ["Zoom", "Z"]]],
-    ["Edit", [["Undo", "mod+Z"], ["Redo", "mod+shift+Z"], ["Copy / Cut / Paste", "mod+C / X / V"], ["Paste in Place", "mod+shift+V"], ["Duplicate", "mod+D"], ["Delete", "Del"], ["Nudge", "Arrows (Shift ×10)"], ["Copy while dragging", "Alt + drag"]]],
-    ["Object", [["Group / Ungroup", "mod+G / mod+shift+G"], ["Bring Forward / Back", "mod+] / mod+["], ["To Front / Back", "mod+shift+] / ["], ["Lock / Unlock All", "mod+2 / mod+alt+2"], ["Hide / Show All", "mod+3 / mod+alt+3"]]],
-    ["Paint", [["Default Fill and Stroke", "D"], ["Switch Fill and Stroke", "X"], ["Swap Fill and Stroke", "shift+X"], ["None", "/"]]],
-    ["View", [["Zoom In / Out", "mod+= / mod+-"], ["Fit Artboard", "mod+0"], ["Fit All", "mod+alt+0"], ["Actual Size", "mod+1"], ["Rulers", "mod+R"], ["Smart Guides", "mod+U"], ["Guides", "mod+;"], ["Grid", "mod+'"]]]
+    ["Edit", [["Command palette", "mod+K"], ["Undo / Redo", "mod+Z / mod+shift+Z"], ["Copy / Cut / Paste", "mod+C / X / V"], ["Paste in Place", "mod+shift+V"], ["Duplicate", "mod+D"], ["Delete", "Del"], ["Nudge", "Arrows (Shift ×10)"], ["Copy while dragging", "Alt + drag"]]],
+    ["Object", [["Group / Ungroup", "mod+G / mod+shift+G"], ["Clipping mask / Release", "mod+7 / mod+alt+7"], ["Bring Forward / Back", "mod+] / mod+["], ["To Front / Back", "mod+shift+] / ["], ["Lock / Unlock All", "mod+2 / mod+alt+2"], ["Hide / Show All", "mod+3 / mod+alt+3"], ["Flip", "shift+H / shift+V"]]],
+    ["Paint", [["Default fill and stroke", "D"], ["Switch fill and stroke", "X"], ["Swap fill and stroke", "shift+X"], ["None", "/"]]],
+    ["View", [["Zoom In / Out", "mod+= / mod+-"], ["Zoom to Fit / Artboard / Selection", "shift+1 / 2 / 3"], ["Actual Size", "mod+1"], ["Preview", "mod+enter"], ["Hide Interface", "mod+\\"], ["Rulers", "shift+R"], ["Smart Guides", "mod+U"], ["Grid", "mod+'"]]]
   ];
   function shortcutsDialog() {
-    openDialog("Keyboard Shortcuts", `<div class="ai-keys">${SHORTCUTS.map(([g, rows]) => `<section><h4>${g}</h4>${rows.map(([l, k]) => `<div><span>${l}</span><kbd>${keyLabel(k)}</kbd></div>`).join("")}</section>`).join("")}</div>`, [["OK", "close-dialog", true]]);
+    openDialog("Keyboard Shortcuts", `<div class="cx-keys">${SHORTCUTS.map(([g, rows]) => `<section><h4>${g}</h4>${rows.map(([l, k]) => `<div><span>${l}</span><kbd>${keyLabel(k)}</kbd></div>`).join("")}</section>`).join("")}</div>`, [["Done", "close-dialog", true]], "is-wide");
   }
 
   /* =====================================================================
      Actions
      ===================================================================== */
   function toggle(flag) {
+    if (flag === "ui") { view.hideUI = !view.hideUI; applyViewClasses(); requestAnimationFrame(refreshUI); return; }
     view[flag] = !view[flag];
-    if (flag === "rulers") { root.classList.toggle("no-rulers", !view.rulers); requestAnimationFrame(() => { resize(); sizeRulers(); }); }
-    if (flag === "control") root.classList.toggle("no-control", !view.control);
-    if (flag === "tools") root.classList.toggle("no-tools", !view.tools);
-    saveView(); cv.requestRenderAll(); refreshUI();
+    saveView(); applyViewClasses();
+    if (flag === "rulers") requestAnimationFrame(() => { sizeRulers(); refreshUI(); });
+    cv.requestRenderAll(); refreshUI();
+  }
+  function setPresent(on) {
+    present = on;
+    try {
+      if (on && root.requestFullscreen && !document.fullscreenElement) root.requestFullscreen().catch(() => {});
+      if (!on && document.fullscreenElement === root) document.exitFullscreen().catch(() => {});
+    } catch (e) { /* full screen isn't available */ }
+    if (on) cv.discardActiveObject();
+    closeMenus();
+    applyViewClasses();
+    requestAnimationFrame(() => { resize(); fitArtboard(); refreshUI(); });
   }
   const selectWhere = fn => { setTool("select"); reselect(cv.getObjects().filter(o => o.visible !== false && !o.locked && fn(o))); refreshUI(); };
-  function act(a, el, e) {
+  function act(a, el) {
     if (!a) return;
     const [name, arg] = a.split(":");
     switch (name) {
+      case "main-menu": {
+        if (!menuPop.hidden && menuPop.dataset.mode === "main") { closeMenus(); break; }
+        $(".cx-brand", root).classList.add("is-open");
+        openMenuAt(el, menuItems(MENUS) + `<hr>${menuItems([["Command Palette", "mod+K", "palette"], ["Keyboard Shortcuts", "mod+/", "shortcuts"]])}<hr><a class="cx-menu-home" href="index.html">${icon("arrow-left") || ""}<span>Back to Draft Studio</span></a>`, "main");
+        break;
+      }
       case "new":
-        if (isEmpty() || confirm(tr("Start a new design? You can undo it."))) { brief = null; freshDoc(1080, 1350); changed(); refreshUI(); }
+        if (isEmpty() || confirm(tr("Start a new design? You can undo it."))) { brief = null; freshDoc(1080, 1350); note("New Design"); changed(); refreshUI(); }
         break;
       case "open": fileJson.click(); break;
-      case "save": commit(); toast(tr("Saved on this device")); break;
+      case "save": clearTimeout(commitT); commit(); store.set("current", snapshot()).then(() => { setSaved("ok", "Saved"); toast(tr("Saved on this device")); }).catch(() => toast(tr("Not saved: download a project file"))); break;
       case "save-file": saveBlob(new Blob([snapshot()], { type: "application/json" }), slug(doc.name) + ".design.json"); break;
       case "place": fileImg.click(); break;
-      case "export": exportDialog(arg || "png"); break;
-      case "export-all": doc.artboards.forEach((_, i) => exportArtboard(i, "png")); break;
+      case "replace-image": fileReplace.click(); break;
+      case "export": exportDialog(arg || exFmt); break;
+      case "export-all": (async () => { for (let i = 0; i < doc.artboards.length; i++) await exportArtboard(i, "png", 1); })(); break;
       case "do-export": doExport(); break;
+      case "copy-png": closeDialog(); copyPng(); break;
+      case "copy-svg": copySvg(); break;
+      case "qr": qrDialog(); break;
+      case "do-qr": doQr(); break;
+      case "recolor": recolorDialog(); break;
+      case "do-recolor": doRecolor(); break;
+      case "repeat": repeatDialog(); break;
+      case "do-repeat": doRepeat(); break;
       case "doc-setup": docSetup(); break;
       case "edit-artboards": closeDialog(); setTool("artboard"); break;
       case "prefs": prefsDialog(); break;
       case "shortcuts": shortcutsDialog(); break;
-      case "about": openDialog("About Canvas", `<p class="ai-note">Canvas is Draft Studio's free design app. It runs entirely in your browser: nothing is uploaded, and your work autosaves on this device.</p><p class="ai-note">Built with Fabric.js (MIT licence).</p>`); break;
+      case "palette": openPalette(); break;
+      case "about": openDialog("About Canvas", `<div class="cx-about">${MARK_SVG}<p>Canvas is Draft Studio's free design studio. It runs entirely in your browser: nothing is uploaded, and your work autosaves on this device.</p><p class="cx-note">Built with Fabric.js and paper.js (MIT licence).</p></div>`); break;
       case "learn": location.href = "learn.html"; break;
       case "close-dialog": closeDialog(); break;
       case "undo": step(-1); break;
@@ -2184,59 +2715,67 @@ window.DSCanvas = function (kit) {
       case "paste-in-place": paste(true); break;
       case "duplicate": duplicate(); break;
       case "delete": removeSel(); break;
-      case "flip-h": case "flip-v": active().forEach(o => o.set(name === "flip-h" ? "flipX" : "flipY", !o[name === "flip-h" ? "flipX" : "flipY"])); cv.requestRenderAll(); changed(); break;
-      case "reset-rot": active().forEach(o => { const c = o.getCenterPoint(); o.rotate(0); o.setPositionByOrigin(c, "center", "center"); o.setCoords(); }); cv.requestRenderAll(); changed(); refreshUI(); break;
-      case "reset-scale": active().forEach(o => { const c = o.getCenterPoint(); o.set({ scaleX: 1, scaleY: 1 }); o.setPositionByOrigin(c, "center", "center"); o.setCoords(); }); cv.requestRenderAll(); changed(); refreshUI(); break;
+      case "flip-h": case "flip-v": { const k = name === "flip-h" ? "flipX" : "flipY"; active().forEach(o => o.set(k, !o[k])); cv.requestRenderAll(); note("Flip"); changed(); break; }
+      case "reset-rot": active().forEach(o => { const c = o.getCenterPoint(); o.rotate(0); o.setPositionByOrigin(c, "center", "center"); o.setCoords(); }); cv.requestRenderAll(); note("Reset Rotation"); changed(); refreshUI(); break;
+      case "reset-scale": active().forEach(o => { const c = o.getCenterPoint(); o.set({ scaleX: 1, scaleY: 1 }); o.setPositionByOrigin(c, "center", "center"); o.setCoords(); }); cv.requestRenderAll(); note("Reset Size"); changed(); refreshUI(); break;
       case "front": case "back": case "forward": case "backward": arrange(name); break;
       case "align": align(arg); break;
+      case "align-pop": openPop(el, `<div class="cx-pop-title">${tr(active().length > 1 ? "Align to each other" : "Align to artboard")}</div>${alignRow()}${active().length > 2 ? `<div class="cx-iconrow"><button type="button" class="cx-ib" data-act="dist:h" aria-label="Distribute Horizontally">${ui("dist-h")}</button><button type="button" class="cx-ib" data-act="dist:v" aria-label="Distribute Vertically">${ui("dist-v")}</button></div>` : ""}`, "is-narrow", true); break;
+      case "more": { const r = el.getBoundingClientRect(); openContext({ clientX: r.left, clientY: r.bottom + 8 }, null); break; }
       case "dist": distribute(arg); break;
+      case "bool": combine(arg); break;
       case "group": group(); break;
       case "ungroup": ungroup(); break;
-      case "lock": { const list = active(); const lock = !list.every(o => o.locked); list.forEach(o => lockState(o, lock)); if (lock) cv.discardActiveObject(); cv.requestRenderAll(); changed(); refreshUI(); break; }
-      case "unlock-all": cv.getObjects().forEach(o => lockState(o, false)); cv.requestRenderAll(); changed(); refreshUI(); break;
-      case "hide": active().forEach(o => o.set("visible", false)); cv.discardActiveObject(); cv.requestRenderAll(); changed(); break;
-      case "show-all": cv.getObjects().forEach(o => o.set("visible", true)); cv.requestRenderAll(); changed(); break;
-      case "expand": { const o = cv.getActiveObject(); if (o) { const p = expand(o); cv.setActiveObject(p); changed(); refreshUI(); } break; }
+      case "mask": mask(); break;
+      case "unmask": unmask(); break;
+      case "lock": { const list = active(); const lock = !list.every(o => o.locked); list.forEach(o => lockState(o, lock)); cv.requestRenderAll(); note(lock ? "Lock" : "Unlock"); changed(); refreshUI(); break; }
+      case "unlock-all": cv.getObjects().forEach(o => lockState(o, false)); cv.requestRenderAll(); note("Unlock All"); changed(); refreshUI(); break;
+      case "hide": active().forEach(o => o.set("visible", false)); cv.discardActiveObject(); cv.requestRenderAll(); note("Hide"); changed(); break;
+      case "show-all": cv.getObjects().forEach(o => o.set("visible", true)); cv.requestRenderAll(); note("Show All"); changed(); break;
+      case "expand": { const o = cv.getActiveObject(); if (o) { note("Expand"); const p = expand(o); cv.setActiveObject(p); changed(); refreshUI(); } break; }
+      case "ab-menu": openPop(el, `<div class="cx-pop-title">Artboards</div><div class="cx-poplist">${doc.artboards.map((x, i) => `<button type="button" data-abgo="${i}" class="${i === doc.active ? "is-on" : ""}"><b>${esc(x.name)}</b><em>${x.w} × ${x.h}</em></button>`).join("")}</div>
+        <div class="cx-pop-title">Resize this artboard</div><div class="cx-poplist">${SIZES.map(([n, w, h], i) => `<button type="button" data-act="ab-size:${i}"><b>${n}</b><em>${w} × ${h}</em></button>`).join("")}</div>
+        <button type="button" class="cx-poplink" data-act="ab-new">+ ${tr("New Artboard")}</button>`, "is-wide"); break;
+      case "ab-size": { const [, w, h] = SIZES[+arg], t = ab(); t.w = w; t.h = h; note("Resize Artboard"); changed(); fitArtboard(); refreshUI(); break; }
       case "ab-new": {
         const last = doc.artboards[doc.artboards.length - 1], c = ab();
-        doc.artboards.push(newArtboard(c.w, c.h, last.x + last.w + 80, last.y));
-        doc.active = abSelected = doc.artboards.length - 1; fitArtboard(); changed(); refreshUI(); break;
+        doc.artboards.push(newArtboard(c.w, c.h, last.x + last.w + 100, last.y));
+        doc.active = abSelected = doc.artboards.length - 1; fitArtboard(); note("New Artboard"); changed(); refreshUI(); break;
       }
       case "ab-dup": {
-        const c = ab(), last = doc.artboards[doc.artboards.length - 1], dx = last.x + last.w + 80 - c.x, dy = last.y - c.y;
+        const c = ab(), last = doc.artboards[doc.artboards.length - 1], dx = last.x + last.w + 100 - c.x, dy = last.y - c.y;
         const copyAb = Object.assign({}, c, { name: c.name + " " + tr("copy"), x: c.x + dx, y: c.y + dy });
         const inside = cv.getObjects().filter(o => { const p = o.getCenterPoint(); return p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h; });
         doc.artboards.push(copyAb); doc.active = abSelected = doc.artboards.length - 1;
         let left = inside.length;
-        const done = () => { if (--left <= 0) { fitArtboard(); changed(); refreshUI(); } };
+        const done = () => { if (--left <= 0) { fitArtboard(); note("Duplicate Artboard"); changed(); refreshUI(); } };
         if (!left) done();
-        inside.forEach(o => o.clone(cl => { cl.set({ left: cl.left + dx, top: cl.top + dy }); applyToolState(cl); cv.add(cl); done(); }, PROPS));
+        inside.forEach(o => o.clone(cl => { cl.set({ left: cl.left + dx, top: cl.top + dy }); applyToolState(cl); hist.busy++; cv.add(cl); hist.busy--; done(); }, PROPS));
         break;
       }
       case "ab-fit": {
-        const c = doc.artboards[abSelected > -1 ? abSelected : doc.active], inside = cv.getObjects().filter(o => o.visible !== false);
+        const c = targetAb(), inside = cv.getObjects().filter(o => o.visible !== false);
         if (!inside.length) break;
         const bs = inside.map(o => o.getBoundingRect(true, true));
         const l = Math.min(...bs.map(b => b.left)), t = Math.min(...bs.map(b => b.top));
         c.x = round(l); c.y = round(t); c.w = round(Math.max(...bs.map(b => b.left + b.width)) - l); c.h = round(Math.max(...bs.map(b => b.top + b.height)) - t);
-        cv.requestRenderAll(); changed(); refreshUI(); break;
+        cv.requestRenderAll(); note("Fit Artboard"); changed(); refreshUI(); break;
       }
       case "ab-delete": {
         if (doc.artboards.length < 2) { toast(tr("A document needs at least one artboard.")); break; }
-        const i = abSelected > -1 ? abSelected : doc.active;
+        const i = abSelected > -1 && tool === "artboard" ? abSelected : doc.active;
         doc.artboards.splice(i, 1); doc.active = abSelected = clamp(i - 1, 0, doc.artboards.length - 1);
-        cv.requestRenderAll(); changed(); refreshUI(); break;
+        cv.requestRenderAll(); note("Delete Artboard"); changed(); refreshUI(); break;
       }
-      case "ab-first": case "ab-prev": case "ab-next": case "ab-last": {
+      case "ab-prev": case "ab-next": {
         const n = doc.artboards.length;
-        doc.active = { "ab-first": 0, "ab-prev": Math.max(0, doc.active - 1), "ab-next": Math.min(n - 1, doc.active + 1), "ab-last": n - 1 }[name];
+        doc.active = (doc.active + (name === "ab-next" ? 1 : -1) + n) % n;
         fitArtboard(); refreshUI(); break;
       }
       case "case": changeCase(arg); break;
       case "talign": apply("textAlign", arg); refreshUI(); break;
-      case "lorem": flat(active()).filter(isText).forEach(o => { o.set("text", "Good design is as little design as possible. Less, but better, because it concentrates on the essential."); o.initDimensions(); }); cv.requestRenderAll(); changed(); break;
+      case "lorem": flat(active()).filter(isText).forEach(o => { o.set("text", "Good design is as little design as possible. Less, but better, because it concentrates on the essential."); o.initDimensions(); }); cv.requestRenderAll(); note("Placeholder Text"); changed(); break;
       case "select-all": selectWhere(() => true); break;
-      case "select-artboard": { const c = ab(); selectWhere(o => { const p = o.getCenterPoint(); return p.x >= c.x && p.x <= c.x + c.w && p.y >= c.y && p.y <= c.y + c.h; }); break; }
       case "deselect": cv.discardActiveObject(); cv.requestRenderAll(); break;
       case "select-inverse": { const now = active(); selectWhere(o => !now.includes(o)); break; }
       case "same": {
@@ -2256,27 +2795,38 @@ window.DSCanvas = function (kit) {
       case "zoom-out": zoomCenter(zoom() / 1.25); break;
       case "fit": fitArtboard(); break;
       case "fit-all": fitRect(allBounds()); break;
+      case "fit-sel": { const o = cv.getActiveObject(); if (o) { const b = o.getBoundingRect(true, true); fitRect({ x: b.left - b.width * .15, y: b.top - b.height * .15, w: b.width * 1.3, h: b.height * 1.3 }); } break; }
       case "actual": zoomCenter(1); break;
-      case "zoom-menu": openPop(el, `<div class="ai-poplist">${[["fit", "Fit Artboard"], [.25, "25%"], [.5, "50%"], [.75, "75%"], [1, "100%"], [1.5, "150%"], [2, "200%"], [4, "400%"], [8, "800%"]].map(([v, l]) => `<button type="button" data-zoom="${v}">${l}</button>`).join("")}</div>`); break;
+      case "zoom-menu": openPop(el, `<div class="cx-poplist">${[["fit", "Zoom to artboard"], [.25, "25%"], [.5, "50%"], [1, "100%"], [2, "200%"], [4, "400%"], [8, "800%"]].map(([v, l]) => `<button type="button" data-zoom="${v}"><b>${l}</b></button>`).join("")}</div>`, "is-narrow", true); break;
       case "toggle": toggle(arg); break;
-      case "clear-guides": doc.guides = { v: [], h: [] }; cv.requestRenderAll(); changed(); break;
-      case "panel": setPanel(arg); break;
-      case "toggle-dock": root.classList.toggle("show-dock"); break;
-      case "reset-ws": Object.assign(view, { rulers: true, smart: true, guides: true, control: true, tools: true }); ["no-rulers", "no-control", "no-tools"].forEach(c => root.classList.remove(c)); panel = "properties"; collapsed.clear(); saveView(); requestAnimationFrame(resize); refreshUI(); break;
+      case "present": setPresent(!present); break;
+      case "clear-guides": doc.guides = { v: [], h: [] }; cv.requestRenderAll(); note("Clear Guides"); changed(); break;
+      case "assets":
+        ltab = "assets"; if (arg) assetTab = arg;
+        if (view.hideUI) { view.hideUI = false; applyViewClasses(); }
+        renderLeft();
+        if (innerWidth < 900) { root.classList.remove("show-right"); root.classList.add("show-left"); }
+        break;
+      case "toggle-sheet":
+        if (view.hideUI && innerWidth >= 900) { toggle("ui"); break; }
+        if (root.classList.contains("show-left") || root.classList.contains("show-right")) root.classList.remove("show-left", "show-right");
+        else root.classList.add(cv.getActiveObject() ? "show-right" : "show-left");
+        break;
       case "tool": setTool(arg); break;
-      case "sec": collapsed.has(arg) ? collapsed.delete(arg) : collapsed.add(arg); renderDock(); break;
+      case "sec":
+        if (collapsed.has(arg)) collapsed.delete(arg); else collapsed.add(arg);
+        try { localStorage.setItem("ds-canvas-collapsed", JSON.stringify([...collapsed])); } catch (er) { /* private mode */ }
+        renderRight(); break;
       case "swatch-pop": paint.focus = arg; syncPaint(); openPop(el, swatchPopHtml(), "is-swatches"); break;
-      case "font-menu": openPop(el, `<div class="ai-poplist is-fonts">${Object.keys(FONTS).map(f => `<button type="button" data-font="${esc(f)}" style="font-family:'${esc(f)}'">${esc(f)}</button>`).join("")}</div>`); break;
+      case "font-menu": openPop(el, `<div class="cx-poplist is-fonts">${Object.keys(FONTS).map(f => `<button type="button" data-font="${esc(f)}" style="font-family:'${esc(f)}'" data-no-i18n><b>${esc(f)}</b></button>`).join("")}</div>`); break;
       case "paint-none": setPaint(arg || paint.focus, null); refreshUI(); break;
-      case "paint-colour": { const k = arg || paint.focus, c = firstOf(k); setPaint(k, isGrad(c) ? gradStops(c)[0] : (c || (k === "fill" ? "#ffffff" : "#000000"))); refreshUI(); break; }
-      case "paint-gradient": { const c = firstOf("fill"); if (active().length) setGradient(gradStops(c)); else toast(tr("Select an object first.")); break; }
+      case "paint-gradient": if (active().length) setGradient(gradStops(firstOf("fill"))); else toast(tr("Select an object first.")); break;
       case "swap-paint": swapPaint(); break;
       case "default-paint": defaultPaint(); break;
       case "brief-start": startBrief(); break;
-      case "brief-next": briefPick = (briefPick + 1 + Math.floor(Math.random() * (BRIEFS.length - 1))) % BRIEFS.length; renderDock(); break;
+      case "brief-next": briefPick = (briefPick + 1 + Math.floor(Math.random() * (BRIEFS.length - 1))) % BRIEFS.length; renderLeft(); break;
       default: break;
     }
-    void e;
   }
   function toast(msg) {
     toastEl.textContent = msg; toastEl.classList.add("is-on");
@@ -2288,37 +2838,49 @@ window.DSCanvas = function (kit) {
      ===================================================================== */
   const TOOL_KEYS = { v: "select", a: "direct", p: "pen", n: "pencil", b: "brush", t: "type", "\\": "line", m: "rect", l: "ellipse", r: "rotate", s: "scale", i: "eyedropper", g: "gradient", h: "hand", z: "zoom" };
   document.addEventListener("keydown", e => {
-    if (!modal.hidden) { if (e.key === "Escape") closeDialog(); return; }
+    if (!paletteEl.hidden) return;
+    if (!modal.hidden) { if (e.key === "Escape") closeDialog(); if (e.key === "Enter" && !isTyping(e.target)) { const p = $("footer .is-blue", dialog); if (p) p.click(); } return; }
+    const mod = e.metaKey || e.ctrlKey, k = e.key.toLowerCase();
+    if (mod && k === "k") { e.preventDefault(); openPalette(); return; }
     if (isTyping(e.target)) return;
     const o = cv.getActiveObject();
-    if (o && o.isEditing) { if (e.key === "Escape") { o.exitEditing(); cv.requestRenderAll(); } return; }
-    const mod = e.metaKey || e.ctrlKey, k = e.key.toLowerCase();
+    if (o && o.isEditing) { if (e.key === "Escape") { o.exitEditing(); cv.requestRenderAll(); refreshUI(); } return; }
+    if (present) {
+      if (e.key === "Escape" || (mod && k === "enter")) setPresent(false);
+      if (k === "arrowright" || k === " ") act("ab-next");
+      if (k === "arrowleft") act("ab-prev");
+      e.preventDefault(); return;
+    }
     if (e.key === " " && !spaceHeld) { spaceHeld = true; toolBeforeSpace = tool; e.preventDefault(); cv.selection = false; cv.skipTargetFind = true; cv.isDrawingMode = false; cv.defaultCursor = "grab"; cv.setCursor("grab"); return; }
+    if (e.key === " ") { e.preventDefault(); return; }
     if (e.key === "Escape") {
       if (pen) { finishPen(false); return; }
-      if (menuOpen > -1 || !menuPop.hidden) { closeMenu(); return; }
-      closePop(); cv.discardActiveObject(); cv.requestRenderAll(); return;
+      if (!menuPop.hidden || pop) { closeMenus(); return; }
+      if (view.hideUI) { toggle("ui"); return; }
+      if (tool !== "select") { setTool("select"); return; }
+      cv.discardActiveObject(); cv.requestRenderAll(); return;
     }
     if (e.key === "Enter" && pen) { finishPen(false); return; }
     const combos = {
-      "z": () => (e.shiftKey ? step(1) : step(-1)), "y": () => step(1), "x": cut, "c": copy, "v": () => paste(e.shiftKey), "d": duplicate,
-      "a": () => act(e.altKey ? "select-artboard" : e.shiftKey ? "deselect" : "select-all"), "g": () => (e.shiftKey ? ungroup() : group()),
-      "]": () => arrange(e.shiftKey ? "front" : "forward"), "[": () => arrange(e.shiftKey ? "back" : "backward"),
-      "}": () => arrange("front"), "{": () => arrange("back"),
-      "2": () => act(e.altKey ? "unlock-all" : "lock"), "3": () => act(e.altKey ? "show-all" : "hide"),
-      "s": () => (e.shiftKey ? act("save-file") : act("save")), "o": () => act("open"), "n": () => act("new"), "e": () => (e.shiftKey ? act("export") : null),
-      "p": () => (e.shiftKey ? act("place") : e.altKey ? act("doc-setup") : null), "k": () => (e.altKey && e.shiftKey ? act("shortcuts") : act("prefs")),
-      "=": () => act("zoom-in"), "+": () => act("zoom-in"), "-": () => act("zoom-out"), "0": () => act(e.altKey ? "fit-all" : "fit"), "1": () => act("actual"),
-      "r": () => toggle("rulers"), "u": () => toggle("smart"), ";": () => toggle(e.altKey ? "lockGuides" : "guides"), "'": () => toggle(e.shiftKey ? "snapGrid" : "grid")
+      "z": () => (e.shiftKey ? step(1) : step(-1)), "y": () => step(1), "x": cut, "c": () => (e.shiftKey ? copyPng() : copy()), "v": () => paste(e.shiftKey), "d": duplicate,
+      "a": () => act(e.shiftKey ? "deselect" : "select-all"), "g": () => (e.shiftKey ? ungroup() : group()),
+      "]": () => arrange("forward"), "[": () => arrange("backward"), "}": () => arrange("front"), "{": () => arrange("back"),
+      "2": () => act(e.altKey ? "unlock-all" : "lock"), "3": () => act(e.altKey ? "show-all" : "hide"), "7": () => act(e.altKey ? "unmask" : "mask"),
+      "s": () => act(e.shiftKey ? "save-file" : "save"), "o": () => act("open"), "n": () => act("new"), "e": () => (e.shiftKey ? act("export") : null),
+      "p": () => (e.shiftKey ? act("place") : e.altKey ? act("doc-setup") : null), ",": () => act("prefs"), "/": () => act("shortcuts"),
+      "=": () => act("zoom-in"), "+": () => act("zoom-in"), "-": () => act("zoom-out"), "1": () => act("actual"),
+      "enter": () => act("present"), "\\": () => toggle("ui"),
+      "u": () => toggle("smart"), ";": () => toggle(e.altKey ? "lockGuides" : "guides"), "'": () => toggle(e.shiftKey ? "snapGrid" : "grid")
     };
     if (mod) {
-      const fn = combos[e.code === "BracketRight" ? (e.shiftKey ? "}" : "]") : e.code === "BracketLeft" ? (e.shiftKey ? "{" : "[") : e.code === "Digit2" ? "2" : e.code === "Digit3" ? "3" : e.code === "Digit0" ? "0" : e.code === "Digit1" ? "1" : k];
+      const codeMap = { BracketRight: e.shiftKey ? "}" : "]", BracketLeft: e.shiftKey ? "{" : "[", Digit1: "1", Digit2: "2", Digit3: "3", Digit7: "7", Backslash: "\\", Slash: "/", Comma: ",", Semicolon: ";", Quote: "'", Equal: "=", Minus: "-" };
+      const fn = combos[codeMap[e.code] || k];
       if (fn) { e.preventDefault(); fn(); }
       return;
     }
     if ((k === "delete" || k === "backspace") && o) {
       e.preventDefault();
-      if (tool === "direct" && o.kind === "vector" && anchorSel > -1 && o.anchors.length > 2) { o.anchors.splice(anchorSel, 1); anchorSel = -1; rebuild(o); o.controls = vectorControls(o); cv.requestRenderAll(); changed(); }
+      if (tool === "direct" && o.kind === "vector" && anchorSel > -1 && o.anchors.length > 2) { o.anchors.splice(anchorSel, 1); anchorSel = -1; rebuild(o); o.controls = vectorControls(o); cv.requestRenderAll(); note("Delete Point"); changed(); }
       else removeSel();
       return;
     }
@@ -2326,38 +2888,49 @@ window.DSCanvas = function (kit) {
       e.preventDefault();
       const d = prefs.nudge * (e.shiftKey ? 10 : 1);
       o.set({ left: o.left + (k === "arrowleft" ? -d : k === "arrowright" ? d : 0), top: o.top + (k === "arrowup" ? -d : k === "arrowdown" ? d : 0) });
-      o.setCoords(); cv.requestRenderAll(); liveTransform(); changed();
+      o.setCoords(); cv.requestRenderAll(); liveTransform(); note("Nudge"); changed();
       return;
     }
     if (e.altKey) return;
-    if (e.shiftKey && k === "o") { setTool("artboard"); return; }
-    if (e.shiftKey && k === "x") { swapPaint(); return; }
-    if (!e.shiftKey && k === "x") { paint.focus = paint.focus === "fill" ? "stroke" : "fill"; syncPaint(); if (panel === "swatches") renderDock(); return; }
+    if (e.shiftKey) {
+      if (e.code === "Digit1") { act("fit-all"); return; }
+      if (e.code === "Digit2") { act("fit"); return; }
+      if (e.code === "Digit3") { act("fit-sel"); return; }
+      if (k === "o") { setTool("artboard"); return; }
+      if (k === "x") { swapPaint(); return; }
+      if (k === "r") { toggle("rulers"); return; }
+      if (k === "h") { act("flip-h"); return; }
+      if (k === "v") { act("flip-v"); return; }
+      return;
+    }
+    if (k === "x") { paint.focus = paint.focus === "fill" ? "stroke" : "fill"; syncPaint(); return; }
     if (k === "d") { defaultPaint(); return; }
     if (k === "/") { setPaint(paint.focus, null); refreshUI(); return; }
-    if (k === "f7") { e.preventDefault(); setPanel("layers"); return; }
-    if (k === "f1") { e.preventDefault(); shortcutsDialog(); return; }
     if (TOOL_KEYS[k]) setTool(TOOL_KEYS[k]);
   });
   document.addEventListener("keyup", e => {
     if (e.key === " " && spaceHeld) { spaceHeld = false; panning = null; setTool(toolBeforeSpace || "select", true); toolBeforeSpace = null; }
   });
+  document.addEventListener("fullscreenchange", () => { if (present && document.fullscreenElement !== root) setPresent(false); });
+  addEventListener("resize", () => { if (innerWidth >= 900) root.classList.remove("show-left", "show-right"); refreshUI(); });
 
   /* =====================================================================
      Start: reopen the last design, or begin with a brief
      ===================================================================== */
   doc.artboards = [newArtboard(1080, 1350)];
+  nameIn.value = doc.name;
+  setSaved("ok", "Saved");
   setTool("select");
   resize();
+  const qBrief = new URLSearchParams(location.search).get("brief");
+  if (qBrief != null && BRIEFS[+qBrief]) { briefPick = +qBrief; ltab = "assets"; assetTab = "brief"; }
   store.get("current").then(s => (s ? restore(s, { keepHistory: false, refit: true }) : Promise.reject()))
-    .then(() => { savedEl.textContent = tr("Saved on this device"); })
+    .then(() => setSaved("ok", "Saved"))
     .catch(() => {
       fitArtboard();
-      hist.stack = [snapshot()]; hist.i = 0;
-      if (innerWidth >= 900) setPanel("brief");
+      hist.stack = [snapshot()]; hist.meta = [{ label: "New Design", time: Date.now() }]; hist.i = 0;
+      ltab = "assets"; assetTab = "brief";
       refreshUI();
     });
-  const qBrief = new URLSearchParams(location.search).get("brief");
-  if (qBrief != null && BRIEFS[+qBrief]) { briefPick = +qBrief; setPanel("brief"); }
   refreshUI();
 };
