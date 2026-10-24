@@ -2339,6 +2339,13 @@
   /* ---------- Boot ---------- */
   const page = document.body.dataset.page;
   freshness();
+  // A tab left open also checks again when you come back to it, so it picks up updates
+  let lastCheck = Date.now();
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible" || Date.now() - lastCheck < 30000) return;
+    lastCheck = Date.now();
+    freshness();
+  });
   stats();
   i18n();
   header(page === "browse" ? (new URLSearchParams(location.search).get("cat") || "browse") : page);
