@@ -106,7 +106,8 @@ window.DSCanvas = function (kit) {
   const ui = (id, cls = "") => (UI[id]
     ? `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${UI[id]}</svg>`
     : icon(id, cls));
-  const MARK_SVG = `<svg class="cx-mark" viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="cxg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6aa8ff"/><stop offset="1" stop-color="#1f5bff"/></linearGradient></defs><rect width="24" height="24" rx="7" fill="url(#cxg)"/><path d="M7 17.5 12.6 6.5h.8L17 17.5" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="17.5" r="1.7" fill="#fff"/></svg>`;
+  // The Draft Studio mark: ink in the interface text colour, one petal in the site blue
+  const MARK_SVG = `<svg class="cx-mark" viewBox="174 174 652 652" aria-hidden="true"><path d="M490.41,820.79h0c-171.87,0-311.2-139.33-311.2-311.2h0q311.2,0,311.2,311.2Z" fill="currentColor"/><path d="M490.41,179.21h0c-171.87,0-311.2,139.33-311.2,311.2h0q311.2,0,311.2-311.2Z" fill="currentColor"/><path d="M509.59,820.79h0c171.87,0,311.2-139.33,311.2-311.2h0q-311.2,0-311.2,311.2Z" fill="currentColor"/><path d="M509.59,179.21h0c171.87,0,311.2,139.33,311.2,311.2h0q-311.2,0-311.2-311.2Z" fill="#1f7aff"/></svg>`;
 
   /* =====================================================================
      Data: tools, sizes, fonts, briefs, swatches, shapes
@@ -249,7 +250,7 @@ window.DSCanvas = function (kit) {
   root.innerHTML = `
     <header class="cx-top">
       <div class="cx-top-l">
-        <button type="button" class="cx-brand" data-act="main-menu" aria-haspopup="true" aria-label="Main menu">${MARK_SVG}<span>Canvas</span>${ui("chev")}</button>
+        <button type="button" class="cx-brand" data-act="main-menu" aria-haspopup="true" aria-label="Main menu">${MARK_SVG}<span data-no-i18n>Drafty</span>${ui("chev")}</button>
         <span class="cx-vr"></span>
         <input class="cx-docname" data-name value="" aria-label="Design name" spellcheck="false" maxlength="60">
         <span class="cx-saved" data-saved><i></i><em></em></span>
