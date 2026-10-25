@@ -240,7 +240,7 @@
   };
 
   window.QRStudio = function (kit) {
-    const { $, $$, esc, icon, copy, toast, inkOn, hexRgb, lum, ICONS, palettes } = kit;
+    const { $, $$, esc, icon, libIcon, copy, toast, inkOn, hexRgb, lum, ICONS, palettes } = kit;
     const root = $("[data-qs]");
     if (!root || !window.qrcode) return;
 
@@ -271,7 +271,7 @@
     $("[data-qs-dots]", root).innerHTML = DOTS.map(([v, l]) => tile("dot", v, l, sampleDots(v))).join("");
     $("[data-qs-frames]", root).innerHTML = FRAMES.map(([v, l]) => tile("eyeFrame", v, l, sampleFrame(v))).join("");
     $("[data-qs-balls]", root).innerHTML = BALLS.map(([v, l]) => tile("eyeBall", v, l, sampleBall(v))).join("");
-    $("[data-qs-icons]", root).innerHTML = LOGO_ICONS.map(i => `<button type="button" class="qs-ico" data-icon="${i}" aria-label="${i.replace("-", " ")} logo" aria-pressed="false">${icon(i)}</button>`).join("");
+    $("[data-qs-icons]", root).innerHTML = LOGO_ICONS.map(i => `<button type="button" class="qs-ico" data-icon="${i}" aria-label="${i.replace("-", " ")} logo" aria-pressed="false">${libIcon(i)}</button>`).join("");
 
     const fieldsEl = $("[data-qs-fields]", root);
     const drawFields = () => {

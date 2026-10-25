@@ -10,7 +10,7 @@
    site.js calls window.DSChat(kit) with the shared helpers.
    ===================================================================== */
 window.DSChat = function (kit) {
-  const { $, $$, esc, icon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG } = kit;
+  const { $, $$, esc, icon, libIcon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG } = kit;
   const KEY = "ds-chat";
   const NAME = "Drafty";
   const endpoint = (DS.site && DS.site.chatEndpoint) || "";
@@ -189,7 +189,7 @@ window.DSChat = function (kit) {
         <em class="ch-price${it.price ? " is-paid" : ""}">${it.price ? (it.sold ? "Sold" : esc(it.price)) : "Free"}</em>
         ${icon("chevron-right")}
       </a>`).join("")}</div>`;
-    if (b.type === "icons") return `<div class="ch-icons">${b.ids.map(id => `<a href="icons.html#${id}" data-tip="${esc((DS.icons.find(i => i.id === id) || {}).name || id)}">${icon(id)}</a>`).join("")}</div>`;
+    if (b.type === "icons") return `<div class="ch-icons">${b.ids.map(id => `<a href="icons.html#${id}" data-tip="${esc((DS.icons.find(i => i.id === id) || {}).name || id)}">${libIcon(id)}</a>`).join("")}</div>`;
     if (b.type === "palettes") return `<div class="ch-pals">${b.list.map(n => palettes[n]).filter(Boolean).map(p => `
       <a class="ch-pal" href="palettes.html"><span class="ch-sw">${p.colors.map(c => `<i style="background:${c}"></i>`).join("")}</span><small><b data-no-i18n>${esc(p.name)}</b> · ${esc(p.mood)}</small></a>`).join("")}</div>`;
     if (b.type === "apps") { const f = FORMATS.find(x => x.ext === b.ext); return f ? `<p class="ch-apps"><span>Opens in</span>${f.apps.map(a => `<b>${esc(APPS[a].name)}</b>${APPS[a].free ? ` <em>Free</em>` : ""}`).join(", ")}</p>` : ""; }

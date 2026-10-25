@@ -80,7 +80,13 @@
 
   /* ---------- Helpers ---------- */
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const icon = (id, cls = "") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[id] || ""}</svg>`;
+  // Library icons (the 100 free icons people download) keep their own line drawing
+  const libIcon = (id, cls = "") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[id] || ""}</svg>`;
+  // Interface icons come from js/ui-icons.js (Phosphor, regular weight)
+  const UI_ICONS = window.DS_UI_ICONS || {};
+  const icon = (id, cls = "") => (UI_ICONS[id]
+    ? `<svg class="${cls}" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">${UI_ICONS[id]}</svg>`
+    : libIcon(id, cls));
   const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-");
   const catOf = name => CATS.find(c => c.name === name || c.slug === slug(name));
 
@@ -348,7 +354,7 @@
 
   /* ---------- Header & footer ---------- */
   // Diagonal arrow used in the round badge on dark pill buttons
-  const ARR = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg>`;
+  const ARR = icon("arrow-up-right");
 
   // Extra glyphs for the side menu that the icon set doesn't have
   Object.assign(ICONS, {
@@ -454,7 +460,7 @@
       <a href="${itemUrl(it)}"><span class="thumb"><img ${imgSrc(it.preview, "sm")} alt="" loading="lazy"></span>
         <span><span class="t">${esc(it.title)}</span><br><span class="s">${esc(it.category)} · ${formatsOf(it).join(", ")}</span></span></a>`).join("");
     if (ics.length) html += `<div class="group">Icons</div>` + ics.map(i => `
-      <a href="icons.html#${i.id}"><span class="thumb">${icon(i.id)}</span>
+      <a href="icons.html#${i.id}"><span class="thumb">${libIcon(i.id)}</span>
         <span><span class="t">${esc(i.name)}</span><br><span class="s">Icon · ${esc(i.group)}</span></span></a>`).join("");
     if (cats.length) html += `<div class="group">Categories</div>` + cats.map(c => `
       <a href="browse.html?cat=${c.slug}"><span class="thumb">${icon("folder")}</span>
@@ -685,9 +691,9 @@
         "cart", "bag", "wallet", "tag", "calendar", "clock", "lock", "smile"].map(id => DS.icons.find(i => i.id === id)).filter(Boolean);
       const colours = [["White", "#ffffff"], ["Silver", "#d4d4d4"], ["Grey", "#8a8a8a"]];
       sw.innerHTML = colours.map(([n, c], i) => `<button type="button" style="--sw:${c}" aria-label="${n}" aria-pressed="${i === 0}" data-c="${c}"></button>`).join("");
-      grid.innerHTML = picks.map(i => `<a href="icons.html#${i.id}" data-id="${i.id}" aria-label="${esc(i.name)} icon">${icon(i.id)}</a>`).join("");
+      grid.innerHTML = picks.map(i => `<a href="icons.html#${i.id}" data-id="${i.id}" aria-label="${esc(i.name)} icon">${libIcon(i.id)}</a>`).join("");
       const show = ic => {
-        $("[data-ix-big]", ix).innerHTML = icon(ic.id);
+        $("[data-ix-big]", ix).innerHTML = libIcon(ic.id);
         $("[data-ix-name]", ix).textContent = ic.name;
         $("[data-ix-group]", ix).textContent = ic.group + " icon";
         $("[data-ix-link]", ix).href = `icons.html#${ic.id}`;
@@ -855,7 +861,7 @@
   ];
 
   function formatExplorer(root) {
-    const ARROW = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>`;
+    const ARROW = icon("arrow-right");
     root.innerHTML = `
       <div class="fx-list" role="tablist" aria-label="File formats">
         ${FORMATS.map((f, i) => `
@@ -1177,7 +1183,7 @@
         <button type="button" role="option" data-cat="${c.slug}" aria-selected="${state.cat === c.slug}">
           <span class="dd-ico">${icon(CAT_ICON[c.slug] || "folder")}</span><span class="dd-name">${c.name}</span>
           ${c.slug === "saved" ? `<span class="dd-n" data-saved-n>${countOf(c)}</span>` : ""}
-          <svg class="dd-tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>
+          ${icon("check", "dd-tick")}
         </button>`).join("");
     };
     const setOpen = open => { cats.classList.toggle("is-open", open); ddBtn.setAttribute("aria-expanded", open); };
@@ -1296,7 +1302,7 @@
       <div class="dlx" data-dlx>
         <div class="dlx-pick">
           <button class="dlx-btn" type="button" aria-haspopup="listbox" aria-expanded="false" data-dlx-toggle${singles.length < 2 ? " disabled" : ""}>
-            <span class="sr-only">Choose a format:</span><span class="dlx-cur" data-dlx-cur>${fileLine(singles[start])}</span>${singles.length < 2 ? "" : `<span class="dlx-toggle" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></span>`}
+            <span class="sr-only">Choose a format:</span><span class="dlx-cur" data-dlx-cur>${fileLine(singles[start])}</span>${singles.length < 2 ? "" : `<span class="dlx-toggle" aria-hidden="true">${icon("chev")}</span>`}
           </button>
           <div class="dlx-menu" role="listbox" aria-label="Formats">
             ${singles.map((f, i) => `<button type="button" role="option" aria-selected="${i === start}" data-dlx-opt="${i}"
@@ -1622,7 +1628,7 @@
       const dlSvg = `<a class="btn${pngFirst ? "" : " btn-dl"}" data-dl-svg>${icon("download")} Download SVG</a>`;
       const dlPng = `<button class="btn${pngFirst ? " btn-dl" : ""}" type="button" data-dl-png>${icon(pngFirst ? "download" : "image")} Download PNG · 512px</button>`;
       insp.innerHTML = `
-        <div class="big" style="--ic:${state.color || "var(--fg)"}">${icon(ic.id)}</div>
+        <div class="big" style="--ic:${state.color || "var(--fg)"}">${libIcon(ic.id)}</div>
         <span class="mono mute">${esc(ic.group)}</span>
         <h3>${esc(ic.name)}</h3>
         <div class="opts">
@@ -1682,7 +1688,7 @@
       const list = DS.icons.filter(i => (state.group === "All" || i.group === state.group) &&
         (!ql || [i.name, i.group, i.tags.join(" ")].join(" ").toLowerCase().includes(ql)));
       $("[data-count]").textContent = `${list.length} icon${list.length === 1 ? "" : "s"}`;
-      grid.innerHTML = list.length ? list.map(i => `<button class="icon-cell" type="button" data-id="${i.id}" aria-pressed="${state.sel && state.sel.id === i.id}">${icon(i.id)}<span>${esc(i.name)}</span></button>`).join("")
+      grid.innerHTML = list.length ? list.map(i => `<button class="icon-cell" type="button" data-id="${i.id}" aria-pressed="${state.sel && state.sel.id === i.id}">${libIcon(i.id)}<span>${esc(i.name)}</span></button>`).join("")
         : `<div class="empty"><h3>No icon called that yet.</h3><p>Ask for it and we'll draw it.</p><a class="btn btn-dark" href="${waLink("Hi Draft Studio, could you add an icon for: " + state.q)}" target="_blank" rel="noopener">${icon("chat")} Request an icon</a></div>`;
     };
 
@@ -1786,8 +1792,8 @@
     const mode = $("[data-pg-mode]"), count = $("[data-pg-count]"), baseIn = $("[data-pg-base]");
     const state = { colors: [], locked: [], base: "", dark: false };
 
-    const LOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>`;
-    const UNLOCK = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 7.6-1.7"/></svg>`;
+    const LOCK = icon("lock");
+    const UNLOCK = icon("unlock");
 
     // Roles: lightest = background, darkest = text, most saturated = primary, then accent, the rest surfaces
     const ratio = (a, b) => { const x = lum(a), y = lum(b); return (Math.max(x, y) + .05) / (Math.min(x, y) + .05); };
@@ -1953,7 +1959,7 @@
 
   /* ---------- Learn ---------- */
   function canvas() {
-    if (window.DSCanvas) window.DSCanvas({ $, $$, esc, icon, DS });
+    if (window.DSCanvas) window.DSCanvas({ $, $$, esc, icon, libIcon, DS });
   }
 
   function learn() {
@@ -1991,7 +1997,7 @@
         <div class="sel-btn">
           <span class="sel-txt"><b></b></span>
           <button class="sel-toggle" type="button" aria-haspopup="listbox" aria-expanded="false" aria-label="${esc(sel.dataset.label || "Choose")}">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+            ${icon("chev")}
           </button>
         </div>
         <div class="sel-menu" role="listbox"></div>`;
@@ -1999,7 +2005,7 @@
       sel.classList.add("sel-native");
       sel.tabIndex = -1;
       const label = $(".sel-txt b", wrap), menu = $(".sel-menu", wrap), toggle = $(".sel-toggle", wrap);
-      const tick = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10"/></svg>`;
+      const tick = icon("check");
       // Options may carry data-shape="horizontal|vertical|square|panoramic|any" for a small outline icon
       const SHAPES = { horizontal: [18, 12], vertical: [12, 18], square: [14, 14], panoramic: [20, 9] };
       const shape = o => {
@@ -2050,7 +2056,7 @@
   /* ---------- QR Studio (qr.html) ---------- */
   // The studio lives in js/qr-studio.js; it gets the shared helpers from here.
   function qr() {
-    if (window.QRStudio) window.QRStudio({ $, $$, esc, icon, copy, toast, inkOn, hexRgb, lum, ICONS, pref, palettes: DS.palettes || [] });
+    if (window.QRStudio) window.QRStudio({ $, $$, esc, icon, libIcon, copy, toast, inkOn, hexRgb, lum, ICONS, pref, palettes: DS.palettes || [] });
   }
 
   /* ---------- Settings (gear in the header) ---------- */
@@ -2361,5 +2367,5 @@
   quickView();
   pressFX();
   reveal();
-  if (window.DSChat) window.DSChat({ $, $$, esc, icon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG });
+  if (window.DSChat) window.DSChat({ $, $$, esc, icon, libIcon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG });
 })();

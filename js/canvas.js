@@ -11,7 +11,7 @@
    site.js calls window.DSCanvas(kit) on the Canvas page.
    ===================================================================== */
 window.DSCanvas = function (kit) {
-  const { $, $$, esc, icon, DS } = kit;
+  const { $, $$, esc, icon, libIcon, DS } = kit;
   const root = $("[data-canvas]");
   if (!root || !window.fabric) return;
   const F = window.fabric;
@@ -27,85 +27,17 @@ window.DSCanvas = function (kit) {
   /* =====================================================================
      Icons
      ===================================================================== */
+  // Custom glyphs Phosphor has no match for; everything else comes from js/ui-icons.js
   const UI = {
-    select: '<path d="M6 3.5l12.5 9.6-5.6 1 3.1 5.8-2.3 1.2-3.1-5.8-4.6 3.7z" fill="currentColor" stroke="none"/>',
-    direct: '<path d="M6 3.5l12.5 9.6-5.6 1 3.1 5.8-2.3 1.2-3.1-5.8-4.6 3.7z"/>',
-    pen: '<path d="M12 3.5 18.5 12l-3.2 7.5H8.7L5.5 12z"/><path d="M12 3.5v7"/><circle cx="12" cy="12.2" r="1.4"/><path d="M8.7 21h6.6"/>',
-    pencil: '<path d="M4 20l1.4-4.6L15.6 5.2a2 2 0 0 1 2.9 0l.3.3a2 2 0 0 1 0 2.9L8.6 18.6z"/><path d="M13.8 7l3.2 3.2"/>',
-    brush: '<path d="M20 4 11 13"/><path d="M11 13c-2.6-.6-4.6.6-5 3.2-.3 1.9-1 2.8-2 3.3 3.3.9 7 .2 7.9-2.6.4-1.3.1-2.8-.9-3.9z"/>',
-    type: '<path d="M5 5.5h14M12 5.5v13M9 18.5h6"/>',
-    line: '<path d="M5 19 19 5"/>',
-    rect: '<rect x="4" y="5.5" width="16" height="13" rx="1"/>',
-    rounded: '<rect x="4" y="5.5" width="16" height="13" rx="4"/>',
-    ellipse: '<ellipse cx="12" cy="12" rx="8" ry="6.8"/>',
-    polygon: '<path d="M12 3.5 19.5 8v8L12 20.5 4.5 16V8z"/>',
-    star: '<path d="m12 3.6 2.6 5.4 5.9.8-4.3 4.1 1 5.9L12 17l-5.2 2.8 1-5.9-4.3-4.1 5.9-.8z"/>',
-    rotate: '<path d="M19.5 12a7.5 7.5 0 1 1-2.2-5.3"/><path d="M19.8 4.2v4.6h-4.6"/>',
-    scale: '<rect x="3.5" y="11" width="9.5" height="9.5" rx="1"/><path d="M9 3.5h11.5V15M20.5 3.5 12 12"/>',
-    eyedropper: '<path d="M14.5 4.5a2.5 2.5 0 0 1 3.5 0l1.5 1.5a2.5 2.5 0 0 1 0 3.5L17 12l-5-5z"/><path d="m12.5 7.5-8 8V19h3.5l8-8"/>',
-    gradient: '<rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 4v16" opacity=".85"/><path d="M12 4v16" opacity=".55"/><path d="M16 4v16" opacity=".25"/>',
-    artboard: '<path d="M7.5 3v18M16.5 3v18M3 7.5h18M3 16.5h18"/>',
-    hand: '<path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V11M11 11V4.8a1.5 1.5 0 0 1 3 0V11M14 11V6.5a1.5 1.5 0 0 1 3 0V14c0 4-2.6 6.8-6.2 6.8-2.3 0-3.9-1-5.3-3L3.7 15a1.5 1.5 0 0 1 2.4-1.8L8 15.2"/>',
-    zoom: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m20 20-4.7-4.7M8 10.5h5M10.5 8v5"/>',
-    undo: '<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
-    redo: '<path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/>',
     none: '<path d="M5 19 19 5" stroke="#ff453a" stroke-width="2.2"/>',
-    "eye-off": '<path d="M3 3l18 18"/><path d="M10.6 5.1A10 10 0 0 1 12 5c6 0 9.5 7 9.5 7a17 17 0 0 1-2.9 3.7M6.2 6.2C3.8 8 2.5 12 2.5 12s3.5 7 9.5 7a9.7 9.7 0 0 0 5.1-1.4"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/>',
-    unlock: '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 7.8-1.2"/>',
-    front: '<rect x="8" y="8" width="12" height="12" rx="1.5"/><path d="M4 16V5.5A1.5 1.5 0 0 1 5.5 4H16"/>',
-    back: '<rect x="4" y="4" width="12" height="12" rx="1.5"/><path d="M20 8v10.5a1.5 1.5 0 0 1-1.5 1.5H8"/>',
-    "al-left": '<path d="M4 3v18"/><rect x="7.5" y="6" width="12" height="4" rx="1"/><rect x="7.5" y="14" width="7" height="4" rx="1"/>',
-    "al-center": '<path d="M12 3v18"/><rect x="5" y="6" width="14" height="4" rx="1"/><rect x="8" y="14" width="8" height="4" rx="1"/>',
-    "al-right": '<path d="M20 3v18"/><rect x="4.5" y="6" width="12" height="4" rx="1"/><rect x="9.5" y="14" width="7" height="4" rx="1"/>',
-    "al-top": '<path d="M3 4h18"/><rect x="6" y="7.5" width="4" height="12" rx="1"/><rect x="14" y="7.5" width="4" height="7" rx="1"/>',
-    "al-middle": '<path d="M3 12h18"/><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="8" width="4" height="8" rx="1"/>',
-    "al-bottom": '<path d="M3 20h18"/><rect x="6" y="4.5" width="4" height="12" rx="1"/><rect x="14" y="9.5" width="4" height="7" rx="1"/>',
-    "dist-h": '<path d="M4 3v18M20 3v18"/><rect x="9.5" y="7" width="5" height="10" rx="1"/>',
-    "dist-v": '<path d="M3 4h18M3 20h18"/><rect x="7" y="9.5" width="10" height="5" rx="1"/>',
-    "t-left": '<path d="M4 6h16M4 12h10M4 18h13"/>', "t-center": '<path d="M4 6h16M7 12h10M5.5 18h13"/>',
-    "t-right": '<path d="M4 6h16M10 12h10M7 18h13"/>', "t-justify": '<path d="M4 6h16M4 12h16M4 18h16"/>',
-    "flip-h": '<path d="M12 3v18"/><path d="M9 7 3 17h6zM15 7l6 10h-6z"/>',
-    "flip-v": '<path d="M3 12h18"/><path d="M7 9 17 3v6zM7 15l10 6v-6z"/>',
-    group: '<rect x="3" y="3" width="18" height="18" rx="3" stroke-dasharray="3 3"/><rect x="7" y="7" width="5" height="5" rx="1"/><rect x="12" y="12" width="5" height="5" rx="1"/>',
-    ungroup: '<rect x="3" y="3" width="8" height="8" rx="1.5"/><rect x="13" y="13" width="8" height="8" rx="1.5"/>',
-    union: '<path d="M4 4h10v6h6v10H10v-6H4z" fill="currentColor" fill-opacity=".35"/>',
-    subtract: '<path d="M4 4h10v6h-4v4H4z" fill="currentColor" fill-opacity=".35"/><rect x="10" y="10" width="10" height="10" rx="1" stroke-dasharray="2.5 2"/>',
-    intersect: '<rect x="4" y="4" width="10" height="10" rx="1" stroke-dasharray="2.5 2"/><rect x="10" y="10" width="10" height="10" rx="1" stroke-dasharray="2.5 2"/><rect x="10" y="10" width="4" height="4" fill="currentColor" fill-opacity=".6" stroke="none"/>',
-    exclude: '<path d="M4 4h10v6h-4v4H4zM14 10h6v10H10v-6h4z" fill="currentColor" fill-opacity=".35"/>',
-    mask: '<rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="12" cy="12" r="5" fill="currentColor" fill-opacity=".35"/>',
-    recolor: '<circle cx="8" cy="9" r="4.5"/><circle cx="16" cy="9" r="4.5"/><circle cx="12" cy="15.5" r="4.5"/>',
-    repeat: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5" stroke-dasharray="2 2"/>',
-    expand: '<path d="M4 4h16v16H4z" stroke-dasharray="2 2"/><circle cx="4" cy="4" r="1.6" fill="currentColor"/><circle cx="20" cy="4" r="1.6" fill="currentColor"/><circle cx="20" cy="20" r="1.6" fill="currentColor"/><circle cx="4" cy="20" r="1.6" fill="currentColor"/>',
-    rulers: '<path d="M3 3h18v6H9v12H3z"/><path d="M7 3v3M11 3v3M15 3v3M3 13h3M3 17h3"/>',
-    grid: '<path d="M3 3h18v18H3zM9 3v18M15 3v18M3 9h18M3 15h18"/>',
-    guides: '<path d="M8 3v18M3 15h18" stroke-dasharray="3 2"/>',
-    smart: '<path d="M4 12h16M12 4v16" stroke="#ff3fa4"/><rect x="8" y="8" width="8" height="8" rx="1"/>',
-    snapgrid: '<path d="M3 9h18M9 3v18" opacity=".5"/><rect x="9" y="9" width="8" height="8" rx="1" fill="currentColor"/>',
-    pixel: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9.3h16M4 14.7h16M9.3 4v16M14.7 4v16" opacity=".5"/>',
-    chev: '<path d="m7 10 5 5 5-5"/>', up: '<path d="m7 14 5-5 5 5"/>', right: '<path d="m10 7 5 5-5 5"/>', left: '<path d="m14 7-5 5 5 5"/>',
-    panels: '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16M15 4v16"/>',
-    swatches: '<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>',
-    target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
-    shuffle: '<path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/>',
-    italic: '<path d="M19 4h-9M14 20H5M15 4 9 20"/>', underline: '<path d="M6 4v6a6 6 0 0 0 12 0V4M4 20h16"/>',
-    check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
-    export: '<path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/>',
-    fonts: '<path d="M4 19 9.5 5h1L16 19M6.2 14h7.6"/><path d="M17 19v-6.5a2.5 2.5 0 0 1 5 0V19M17 15.5h5"/>',
-    command: '<path d="M9 6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3z"/>',
-    play: '<path d="M7 4.5v15l12-7.5z"/>',
-    more: '<circle cx="5" cy="12" r="1.4" fill="currentColor"/><circle cx="12" cy="12" r="1.4" fill="currentColor"/><circle cx="19" cy="12" r="1.4" fill="currentColor"/>',
-    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
-    moon: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
-    sidebar: '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/>',
-    plus: '<path d="M12 5v14M5 12h14"/>', minus: '<path d="M5 12h14"/>',
-    fit: '<path d="M4 9V5a1 1 0 0 1 1-1h4M15 4h4a1 1 0 0 1 1 1v4M20 15v4a1 1 0 0 1-1 1h-4M9 20H5a1 1 0 0 1-1-1v-4"/>',
-    replace: '<path d="M4 7h11l-3-3M20 17H9l3 3"/>',
-    qr: '<rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><path d="M13.5 13.5h3v3h-3zM20.5 13.5v.01M13.5 20.5h.01M17 17h3.5v3.5H17"/>',
-    copy: '<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>'
+    guides: '<path d="M8 3v18M3 15h18" stroke-dasharray="3 2"/>'
   };
-  const ui = (id, cls = "") => (UI[id]
-    ? `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${UI[id]}</svg>`
-    : icon(id, cls));
+  const PH = window.DS_UI_ICONS || {};
+  const ui = (id, cls = "") => (PH[id]
+    ? `<svg class="${cls}" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">${PH[id]}</svg>`
+    : UI[id]
+      ? `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${UI[id]}</svg>`
+      : icon(id, cls));
   // The Draft Studio mark: ink in the interface text colour, one petal in the site blue
   const MARK_SVG = `<svg class="cx-mark" viewBox="174 174 652 652" aria-hidden="true"><path d="M490.41,820.79h0c-171.87,0-311.2-139.33-311.2-311.2h0q311.2,0,311.2,311.2Z" fill="currentColor"/><path d="M490.41,179.21h0c-171.87,0-311.2,139.33-311.2,311.2h0q311.2,0,311.2-311.2Z" fill="currentColor"/><path d="M509.59,820.79h0c171.87,0,311.2-139.33,311.2-311.2h0q-311.2,0-311.2,311.2Z" fill="currentColor"/><path d="M509.59,179.21h0c171.87,0,311.2,139.33,311.2,311.2h0q-311.2,0-311.2-311.2Z" fill="#1f7aff"/></svg>`;
 
@@ -1747,7 +1679,7 @@ window.DSCanvas = function (kit) {
     <p class="cx-note">Tip: select two shapes and use Combine to make new ones.</p>
     <button type="button" class="cx-btn" data-act="qr">${ui("qr")}<span>Insert QR Code…</span></button>`;
   const iconsPanel = () => `<label class="cx-searchbox">${icon("search")}<input type="search" data-icon-q placeholder="Search icons" aria-label="Search icons"></label>
-    <div class="cx-iconsgrid">${Object.keys(window.DS_ICONS || {}).map(n => `<button type="button" data-icon="${n}" aria-label="${n}" title="${n}">${icon(n)}</button>`).join("")}</div>`;
+    <div class="cx-iconsgrid">${Object.keys(window.DS_ICONS || {}).map(n => `<button type="button" data-icon="${n}" aria-label="${n}" title="${n}">${libIcon(n)}</button>`).join("")}</div>`;
   const uploads = [];
   const imagesPanel = () => `<button type="button" class="cx-dropzone" data-act="place">${ui("upload")}<b>Place images</b><span>Or drop them on the canvas, or paste one. They stay on your device.</span></button>
     <div class="cx-uploads">${uploads.map((u, i) => `<button type="button" data-up="${i}" aria-label="Place again"><img src="${u}" alt=""></button>`).join("")}</div>`;
@@ -1794,7 +1726,7 @@ window.DSCanvas = function (kit) {
           <div class="cx-row"><span class="cx-lbl">Background</span>${swatchIn("ab-bg", a.bg)}</div>
           <button type="button" class="cx-btn" data-act="tool:artboard">${ui("artboard")}<span>Edit Artboards</span></button>`) +
         sec("canvas", "Canvas", `<div class="cx-toggles">
-          ${[["rulers", "rulers", "Rulers"], ["grid", "grid", "Grid"], ["snapGrid", "snapgrid", "Snap to Grid"], ["smart", "smart", "Smart Guides"], ["guides", "guides", "Guides"], ["pixel", "pixel", "Whole Pixels"]]
+          ${[["rulers", "rulers", "Rulers"], ["grid", "grid-lines", "Grid"], ["snapGrid", "snapgrid", "Snap to Grid"], ["smart", "smart", "Smart Guides"], ["guides", "guides", "Guides"], ["pixel", "pixel", "Whole Pixels"]]
             .map(([f, ic, l]) => `<button type="button" class="cx-toggle${view[f] ? " is-on" : ""}" data-act="toggle:${f}" aria-pressed="${!!view[f]}">${ui(ic)}<span>${l}</span></button>`).join("")}</div>
           <div class="cx-g2">${num("pref-grid", prefs.gridSize, { label: "Grid", unit: "px", min: 2, d: 0 })}${num("pref-nudge", prefs.nudge, { label: "Nudge", unit: "px", min: .1 })}</div>`) +
         sec("start", "Get started", `<div class="cx-quick">
@@ -2211,7 +2143,7 @@ window.DSCanvas = function (kit) {
     plist.innerHTML = shown.map((it, i) => {
       const head = it.group !== last ? `<div class="cx-pgroup">${tr(it.group)}</div>` : "";
       last = it.group;
-      const ic = it.icon ? (UI[it.icon] ? ui(it.icon) : icon(it.icon)) : ui("command");
+      const ic = !it.icon ? ui("command") : it.group === "Insert icon" ? libIcon(it.icon) : ui(it.icon);
       return `${head}<button type="button" class="cx-pitem${i === 0 ? " is-on" : ""}" data-pi="${i}" role="option" data-no-i18n>${ic}<span${it.font ? ` style="font-family:'${it.font}'"` : ""}>${esc(it.label)}</span>${it.key ? `<kbd>${it.key}</kbd>` : ""}</button>`;
     }).join("") || `<p class="cx-pempty">${tr("No matches.")}</p>`;
     plist.__items = shown;
