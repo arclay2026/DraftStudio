@@ -51,27 +51,25 @@
    "requires": "Adobe Photoshop"
   },
   {
-   "id": "dore-logo",
-   "title": "Dore — Letter D Logo",
+   "id": "wiltz-logo",
+   "title": "Wiltz — Letter W Logo",
    "category": "Logos",
-   "formats": [
-    "AI",
-    "SVG",
-    "PDF",
-    "PNG",
-    "JPG"
-   ],
-   "description": "A letter D built from nested arcs in deep red, paired with a clean geometric DORE wordmark. Fully editable vector.",
+   "formats": [],
+   "description": "A slanted, fast-moving W in electric indigo, paired with a bold italic Wiltz wordmark. Made for sport, motion and tech brands. Exclusive: sold once.",
    "specs": "Vector · any size (raster 2250 × 2250 px)",
    "tags": [
-    "letter d",
+    "letter w",
     "lettermark",
     "monogram",
     "wordmark",
-    "red",
-    "arcs"
+    "italic",
+    "sport",
+    "speed",
+    "indigo",
+    "blue",
+    "purple"
    ],
-   "price": "free",
+   "price": "R450",
    "sold": false,
    "requires": ""
   },
@@ -90,7 +88,7 @@
     "geometric",
     "red"
    ],
-   "price": "R350",
+   "price": "R450",
    "sold": false,
    "requires": ""
   }

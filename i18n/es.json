@@ -1559,7 +1559,10 @@
   "Zoom to Selection": "Zoom a la selección",
   "Zoom to Fit / Artboard / Selection": "Todo / Mesa / Selección",
   "just now": "ahora mismo",
-  "selected": "seleccionados"
+  "selected": "seleccionados",
+  "Wiltz — Letter W Logo": "Wiltz — Logo letra W",
+  "A slanted, fast-moving W in electric indigo, paired with a bold italic Wiltz wordmark. Made for sport, motion and tech brands. Exclusive: sold once.": "Una W inclinada y veloz en índigo eléctrico, con un logotipo Wiltz en cursiva negrita. Pensado para marcas de deporte, movimiento y tecnología. Exclusivo: se vende una sola vez.",
+  "From": "Desde"
  },
  "patterns": {
   "^(\\d+) files$": "$1 archivos",
@@ -1601,6 +1604,9 @@
   "^(.+) · ((?:Ctrl\\+|Shift\\+|Alt\\+|⌘|⇧|⌥)\\S*|\\S)$": "$1 · $2",
   "^Current · (.+)$": "Actual · $1",
   "^All \\((\\d+)\\)$": "Todas ($1)",
-  "^(.+) finds everything$": "$1 lo encuentra todo"
+  "^(.+) finds everything$": "$1 lo encuentra todo",
+  "^From (R\\d+)$": "Desde $1",
+  "^Buy · From (R\\d+)$": "Comprar · desde $1",
+  "^(.+) · From (R\\d+)$": "$1 · desde $2"
  }
 }

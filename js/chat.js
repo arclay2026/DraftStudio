@@ -6,7 +6,7 @@
      so the chat always works, even with no server or after the AI's
      free daily allowance runs out.
    Answers can carry rich cards: files, icons, palettes and links. The AI
-   asks for them with tokens like [[file:dore-logo]] in its reply.
+   asks for them with tokens like [[file:mato-logo]] in its reply.
    site.js calls window.DSChat(kit) with the shared helpers.
    ===================================================================== */
 window.DSChat = function (kit) {
@@ -116,7 +116,7 @@ window.DSChat = function (kit) {
       const free = found.filter(it => !it.price), paid = found.filter(it => it.price && !it.sold);
       const lines = [];
       if (free.length) lines.push(`${free.map(it => it.title.split(" — ")[0]).join(" and ")} ${free.length > 1 ? "are" : "is"} free to download. No sign-up, no watermark.`);
-      if (paid.length) lines.push(...paid.map(it => `${it.title.split(" — ")[0]} is exclusive: ${it.price}, sold once, with full rights to the buyer. You buy it on WhatsApp.`));
+      if (paid.length) lines.push(...paid.map(it => `${it.title.split(" — ")[0]} is exclusive: ${it.priceFrom ? "from " : ""}${it.price}, sold once, with full rights to the buyer. You buy it on WhatsApp.`));
       if (!lines.length) lines.push("Everything marked Free costs nothing. No sign-up, no watermark.");
       return say(lines, [{ type: "files", ids: found.slice(0, 4).map(i => i.id) }]);
     }
@@ -186,7 +186,7 @@ window.DSChat = function (kit) {
       <a class="ch-file" href="${itemUrl(it)}">
         <span class="ch-thumb"><img ${imgSrc(it.preview, "sm")} alt="" loading="lazy"></span>
         <span class="ch-file-t"><b>${esc(it.title)}</b><small>${esc(it.category)} · ${formatsOf(it).join(", ")}</small></span>
-        <em class="ch-price${it.price ? " is-paid" : ""}">${it.price ? (it.sold ? "Sold" : esc(it.price)) : "Free"}</em>
+        <em class="ch-price${it.price ? " is-paid" : ""}">${it.price ? (it.sold ? "Sold" : (it.priceFrom ? "From " : "") + esc(it.price)) : "Free"}</em>
         ${icon("chevron-right")}
       </a>`).join("")}</div>`;
     if (b.type === "icons") return `<div class="ch-icons">${b.ids.map(id => `<a href="icons.html#${id}" data-tip="${esc((DS.icons.find(i => i.id === id) || {}).name || id)}">${libIcon(id)}</a>`).join("")}</div>`;

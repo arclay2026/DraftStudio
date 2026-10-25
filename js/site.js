@@ -95,6 +95,8 @@
   items.slice().reverse().forEach((it, i) => { it.num = "DS–" + String(i + 1).padStart(3, "0"); });
 
   const isPaid = it => !!it.price;
+  // "R450", or "From R450" when the price is a starting price
+  const priceText = it => (it.priceFrom ? "From " : "") + it.price;
   // Orientation: set it on a design with orientation: "vertical" (etc.), or it's worked out from the first "W × H" in specs
   const orientationOf = it => {
     if (it.orientation) return it.orientation;
@@ -782,7 +784,7 @@
         const bar = $$("i", bars)[n]; if (bar) { void bar.offsetWidth; bar.className = "is-on"; }
         link.href = itemUrl(slides[n]);
         link.setAttribute("aria-label", slides[n].title);
-        title.textContent = `${slides[n].title.split("—")[0].trim()} · ${isPaid(slides[n]) ? slides[n].price : "free " + (formatsOf(slides[n])[0] || "")}`;
+        title.textContent = `${slides[n].title.split("—")[0].trim()} · ${isPaid(slides[n]) ? priceText(slides[n]) : "free " + (formatsOf(slides[n])[0] || "")}`;
         title.style.animation = "none"; void title.offsetWidth; title.style.animation = "";
       };
       go(0);
@@ -1102,7 +1104,7 @@
   }
 
   function dropAction(it) {
-    if (isPaid(it)) return { label: `Buy · ${it.price}`, href: itemUrl(it) };
+    if (isPaid(it)) return { label: `Buy · ${priceText(it)}`, href: itemUrl(it) };
     const files = it.files || [];
     const zip = files.find(f => f.format.toUpperCase() === "ZIP");
     const one = files.length === 1 ? files[0] : null;
@@ -1314,10 +1316,10 @@
     const actions = isPaid(it) ? `
       <div class="price-box">
         <span class="mono mute">${it.sold ? "Sold" : "Exclusive · sold once"}</span>
-        <div class="amount">${esc(it.price)}</div>
+        <div class="amount">${it.priceFrom ? '<small>From</small> ' : ""}${esc(it.price)}</div>
         <p>You get ${esc((it.includes || []).join(", "))}. Once it's sold it comes off the shelf for good.</p>
         ${it.sold ? `<span class="btn" aria-disabled="true">Sold</span>` :
-          `<a class="btn btn-dark" href="${waLink(`Hi Draft Studio, I'd like to buy “${it.title}” (${it.num}) for ${it.price}.`)}" target="_blank" rel="noopener">${icon("chat")} Buy on WhatsApp</a>`}
+          `<a class="btn btn-dark" href="${waLink(`Hi Draft Studio, I'd like to buy “${it.title}” (${it.num}), ${it.priceFrom ? "priced from" : "for"} ${it.price}.`)}" target="_blank" rel="noopener">${icon("chat")} Buy on WhatsApp</a>`}
       </div>` : `
       ${it.requires ? `<div class="notice">${icon("lightbulb")}<span>This file needs <b>${esc(it.requires)}</b> (or free Photopea in your browser).</span></div>` : ""}
       ${zip ? `<a class="btn btn-dl dl-all" href="${esc(zip.path)}" download>${icon("download")} Download all${zip.size ? " · " + esc(zip.size) : ""}</a>` : ""}
@@ -1328,6 +1330,8 @@
               <img ${imgSet(it.preview, "(max-width: 900px) 92vw, 50vw")} alt="${esc(it.title)} preview" fetchpriority="high">
               <span class="zoom-hint">${icon("search")} Zoom</span>
             </button>
+            ${shotsOf(it).length > 1 ? `<div class="item-thumbs" role="group" aria-label="Previews">${shotsOf(it).map((src, i) => `
+              <button type="button" data-shot="${i}" aria-pressed="${i === 0}" aria-label="Preview ${i + 1}"><img ${imgSrc(src, "sm")} alt="" loading="lazy"></button>`).join("")}</div>` : ""}
           </div>
           <div class="item-info">
             <h1>${esc(it.title)}</h1>
@@ -1351,7 +1355,9 @@
 
   // Full-screen zoom, shared by the page and the pop-up
   let lightbox = null;
-  function zoom(it) {
+  // The main preview plus any extra gallery images
+  const shotsOf = it => [it.preview, ...(it.gallery || [])].filter(Boolean);
+  function zoom(it, src = it.preview) {
     if (!lightbox) {
       lightbox = document.createElement("div");
       lightbox.className = "lightbox";
@@ -1360,14 +1366,25 @@
       lightbox.addEventListener("click", shut);
       document.addEventListener("keydown", e => { if (e.key === "Escape" && lightbox.classList.contains("is-open")) { e.stopImmediatePropagation(); shut(); } }, true);
     }
-    lightbox.innerHTML = `<img src="${esc(it.preview)}" alt="${esc(it.title)} preview"><button class="icon-btn" type="button" aria-label="Close">${icon("close")}</button>`;
+    lightbox.innerHTML = `<img src="${esc(src)}" alt="${esc(it.title)} preview"><button class="icon-btn" type="button" aria-label="Close">${icon("close")}</button>`;
     lightbox.classList.add("is-open"); document.body.style.overflow = "hidden";
   }
 
   function bindItem(root, it) {
     const fmts = formatsOf(it);
     downloadPicker(root);
-    $("[data-zoom]", root).addEventListener("click", () => zoom(it));
+    let shot = it.preview;
+    $("[data-zoom]", root).addEventListener("click", () => zoom(it, shot));
+    // Thumbnails swap the main preview
+    $$("[data-shot]", root).forEach(b => b.addEventListener("click", () => {
+      const src = shotsOf(it)[+b.dataset.shot];
+      if (!src || src === shot) return;
+      shot = src;
+      const img = $("[data-zoom] img", root), tmp = document.createElement("div");
+      tmp.innerHTML = `<img ${imgSet(src, "(max-width: 900px) 92vw, 50vw")} alt="${esc(it.title)} preview">`;
+      img.replaceWith(tmp.firstChild);
+      $$("[data-shot]", root).forEach(x => x.setAttribute("aria-pressed", x === b));
+    }));
     $("[data-share]", root).addEventListener("click", () => {
       // The d/ page has the design's own preview card for WhatsApp, X and others
       const url = (DS.site.url || new URL(".", location.href).href) + `d/${encodeURIComponent(it.id)}.html`;
@@ -2304,7 +2321,7 @@
   /* ---------- Visitor stats (GoatCounter, when DS.site.goatcounter is set) ----------
      Counts page views and a few actions — downloads, WhatsApp and email
      clicks, searches, shares, chat opens — without cookies or personal data.
-     Actions show in GoatCounter as paths like "download/dore-logo.svg". */
+     Actions show in GoatCounter as paths like "download/mato-logo.svg". */
   const statsQueue = [];
   const track = (path, title) => {
     if (!DS.site.goatcounter) return;

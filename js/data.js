@@ -28,12 +28,15 @@
      requires     (optional) the app needed to open it, e.g. "Adobe Photoshop"
      tags         search words
      preview      path to the preview image
+     gallery      (optional) more preview images, e.g. ["previews/cap-2.jpg"];
+                  they show as thumbnails under the main preview
      files        one line per download: { format, path, size }
                   Files too big for GitHub can live on Google Drive: use the
                   share link as the path and add name: "file-name.psd".
                   A ZIP file becomes the "Download all" button.
      price        (optional) e.g. "R350" — shows a price and a
                   "Buy on WhatsApp" button instead of downloads
+     priceFrom    (with price) true = show it as a starting price, "From R450"
      includes     (with price) the formats the buyer gets
      date         YYYY-MM-DD (newest designs are shown first)
      featured     true = show in the hero and "Fresh drops" first
@@ -93,23 +96,19 @@ window.DS = {
       featured: true
     },
     {
-      id: "dore-logo",
-      title: "Dore — Letter D Logo",
+      id: "wiltz-logo",
+      title: "Wiltz — Letter W Logo",
       category: "Logos",
-      description: "A letter D built from nested arcs in deep red, paired with a clean geometric DORE wordmark. Fully editable vector.",
+      description: "A slanted, fast-moving W in electric indigo, paired with a bold italic Wiltz wordmark. Made for sport, motion and tech brands. Exclusive: sold once.",
       specs: "Vector · any size (raster 2250 × 2250 px)",
-      tags: ["letter d", "lettermark", "monogram", "wordmark", "red", "arcs"],
-      preview: "previews/dore-logo.jpg",
-      files: [
-        { format: "AI",  path: "files/logos/dore/dore-logo.ai",  size: "175 KB" },
-        { format: "SVG", path: "files/logos/dore/dore-logo.svg", size: "4 KB" },
-        { format: "PDF", path: "files/logos/dore/dore-logo.pdf", size: "43 KB" },
-        { format: "PNG", path: "files/logos/dore/dore-logo.png", size: "64 KB" },
-        { format: "JPG", path: "files/logos/dore/dore-logo.jpg", size: "134 KB" },
-        { format: "ZIP", path: "files/logos/dore/dore-logo.zip", size: "271 KB" }
-      ],
-      colors: ["red", "black", "white"],
-      date: "2026-09-28",
+      tags: ["letter w", "lettermark", "monogram", "wordmark", "italic", "sport", "speed", "indigo", "blue", "purple"],
+      preview: "previews/wiltz-logo.jpg",
+      gallery: ["previews/wiltz-logo-2.jpg"],
+      price: "R450",
+      priceFrom: true,
+      includes: ["AI", "EPS", "SVG", "PDF", "PNG"],
+      colors: ["blue", "purple", "white"],
+      date: "2026-10-25",
       featured: true
     },
     {
@@ -120,10 +119,13 @@ window.DS = {
       specs: "Vector · any size (raster 2250 × 2250 px)",
       tags: ["letter m", "lettermark", "monogram", "wordmark", "geometric", "red"],
       preview: "previews/mato-logo.jpg",
-      price: "R350",
-      includes: ["AI", "SVG", "PDF", "PNG", "JPG"],
+      gallery: ["previews/mato-logo-2.jpg"],
+      price: "R450",
+      priceFrom: true,
+      includes: ["AI", "EPS", "SVG", "PDF", "PNG"],
       colors: ["red", "black", "white"],
-      date: "2026-09-27"
+      date: "2026-10-25",
+      featured: true
     }
   ],
 

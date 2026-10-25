@@ -1559,7 +1559,10 @@
   "Zoom to Selection": "تكبير إلى التحديد",
   "Zoom to Fit / Artboard / Selection": "الكل / لوح الرسم / التحديد",
   "just now": "الآن",
-  "selected": "محدد"
+  "selected": "محدد",
+  "Wiltz — Letter W Logo": "Wiltz — شعار حرف W",
+  "A slanted, fast-moving W in electric indigo, paired with a bold italic Wiltz wordmark. Made for sport, motion and tech brands. Exclusive: sold once.": "حرف W مائل وسريع بلون النيلي الكهربائي، مع شعار نصي Wiltz بخط مائل عريض. مصمم لعلامات الرياضة والحركة والتقنية. حصري: يُباع مرة واحدة.",
+  "From": "يبدأ من"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",
@@ -1601,6 +1604,9 @@
   "^(.+) · ((?:Ctrl\\+|Shift\\+|Alt\\+|⌘|⇧|⌥)\\S*|\\S)$": "$1 · $2",
   "^Current · (.+)$": "الحالي · $1",
   "^All \\((\\d+)\\)$": "الكل ($1)",
-  "^(.+) finds everything$": "$1 يجد كل شيء"
+  "^(.+) finds everything$": "$1 يجد كل شيء",
+  "^From (R\\d+)$": "يبدأ من $1",
+  "^Buy · From (R\\d+)$": "شراء · من $1",
+  "^(.+) · From (R\\d+)$": "$1 · من $2"
  }
 }

@@ -936,6 +936,12 @@ h2 .soft { color: var(--soft); }
 .item-media .frame img { width: 100%; height: auto; max-height: calc(100vh - 110.5px); object-fit: contain; }
 .item-media .zoom-hint { position: absolute; right: 11px; bottom: 11px; display: inline-flex; align-items: center; gap: 5.5px; padding: 7px 11px; border-radius: 791px; background: rgba(12,12,11,.78); color: #f4f3ef; font-size: calc(11px * var(--ts)); backdrop-filter: blur(5.5px); }
 .item-media .zoom-hint svg { width: 11.5px; height: 11.5px; }
+/* More previews: small thumbnails that swap the main picture */
+.item-thumbs { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 11px; }
+.item-thumbs button { width: 74px; aspect-ratio: 1; padding: 0; overflow: hidden; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); opacity: .72; transition: opacity .2s, box-shadow .2s, transform .25s var(--ease); }
+.item-thumbs button:hover { opacity: 1; transform: translateY(-1px); }
+.item-thumbs button[aria-pressed="true"] { opacity: 1; box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--dl); }
+.item-thumbs img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .item-info h1 { font-size: clamp(30.5px, 3.5vw, 52px); font-weight: 600; letter-spacing: var(--tight); margin: 0 0 14.5px; }
 .item-info .desc { font-size: calc(15px * var(--ts)); color: var(--mute); }
 .item-fmts { display: flex; flex-wrap: wrap; gap: 5.5px; margin-top: 17px; }
@@ -989,6 +995,7 @@ h2 .soft { color: var(--soft); }
 .item-actions { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14.5px; }
 .price-box { padding: 19px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); }
 .price-box .amount { font: 600 45.5px/1 var(--font-display); letter-spacing: var(--tight); }
+.price-box .amount small { font-size: calc(15px * var(--ts)); font-weight: 500; letter-spacing: 0; color: var(--mute); }
 .price-box p { color: var(--mute); margin: 7px 0 14.5px; }
 .price-box .btn { width: 100%; }
 .lic-note { margin-top: 14.5px; font-size: calc(11px * var(--ts)); color: var(--mute); }

@@ -1559,7 +1559,10 @@
   "Zoom to Selection": "缩放到所选",
   "Zoom to Fit / Artboard / Selection": "全部 / 画板 / 所选",
   "just now": "刚刚",
-  "selected": "已选"
+  "selected": "已选",
+  "Wiltz — Letter W Logo": "Wiltz — 字母 W 标志",
+  "A slanted, fast-moving W in electric indigo, paired with a bold italic Wiltz wordmark. Made for sport, motion and tech brands. Exclusive: sold once.": "电光靛蓝色的倾斜动感字母 W，搭配粗斜体 Wiltz 字标。专为运动、速度和科技品牌打造。独家：只售一次。",
+  "From": "起价"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",
@@ -1601,6 +1604,9 @@
   "^(.+) · ((?:Ctrl\\+|Shift\\+|Alt\\+|⌘|⇧|⌥)\\S*|\\S)$": "$1 · $2",
   "^Current · (.+)$": "当前 · $1",
   "^All \\((\\d+)\\)$": "全部（$1）",
-  "^(.+) finds everything$": "$1 搜索一切"
+  "^(.+) finds everything$": "$1 搜索一切",
+  "^From (R\\d+)$": "$1 起",
+  "^Buy · From (R\\d+)$": "购买 · $1 起",
+  "^(.+) · From (R\\d+)$": "$1 · $2 起"
  }
 }
