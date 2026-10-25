@@ -175,7 +175,9 @@ p { margin: 0; }
 
 /* ---------- Header ---------- */
 .logo { display: block; flex: none; }
-.logo img { height: 22.5px; width: auto; }
+.logo img { height: 32px; width: auto; }
+/* The logo has a light and a dark version; the page shows the one that suits the theme */
+.logo .logo-d { display: none; }
 
 .icon-btn {
   display: inline-grid; place-items: center; width: 36px; height: 36px; border-radius: 50%;
@@ -1134,7 +1136,7 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 .5px rgb
   .ix-preview { padding: 11px; }
   .shelf, .shelf.is-open { height: 364.5px; }
   .tpl { max-height: 119px; }
-  .logo img { height: 17px; }
+  .logo img { height: 26px; }
   .hero-panel { padding-top: 16px; }
   .hero-ctas { flex-direction: column; align-items: center; gap: 11px; margin: 27px 0 35px; }
   .hero-cards { grid-template-columns: 1fr; height: auto; }
@@ -1868,12 +1870,10 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
   view-transition-name: site-side;
 }
 .side-top { display: flex; align-items: center; justify-content: space-between; gap: 6px; height: 34px; padding: 0 2px 0 8px; margin-bottom: 10px; }
-.side .logo { position: relative; display: flex; align-items: center; height: 24px; min-width: 0; overflow: hidden; }
-.side .logo-full { height: 16px; width: auto; transition: opacity .2s; }
-.logo-mark {
-  position: absolute; left: 0; top: 0; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 7px;
-  background: var(--fg); color: var(--on-fg); font: 700 12px/1 var(--font-display); letter-spacing: -.04em; opacity: 0; transition: opacity .2s;
-}
+.side .logo { position: relative; display: flex; align-items: center; height: 30px; min-width: 0; overflow: hidden; }
+.side .logo-full { height: 28px; width: auto; transition: opacity .2s; }
+.logo-mark { position: absolute; left: 0; top: 1px; display: grid; place-items: center; width: 28px; height: 28px; opacity: 0; transition: opacity .2s; }
+.logo-mark img { width: 28px; height: 28px; }
 .side-fold { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; color: var(--mute); transition: background .15s, color .15s; }
 .side-fold:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); color: var(--fg); }
 .side-fold svg { width: 15px; height: 15px; }
@@ -1902,7 +1902,7 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 /* Folded to an icon rail */
 :root[data-rail] .side { padding-inline: 10px; }
 :root[data-rail] .side-top { flex-direction: column; height: auto; gap: 8px; padding: 0; }
-:root[data-rail] .side .logo { width: 24px; }
+:root[data-rail] .side .logo { width: 28px; }
 :root[data-rail] .side .logo-full { opacity: 0; }
 :root[data-rail] .logo-mark { opacity: 1; }
 :root[data-rail] .side-link { justify-content: center; gap: 0; padding: 0; height: 32px; }
@@ -1936,7 +1936,7 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
   }
   .topbar.is-scrolled { border-bottom-color: var(--border); }
   .topbar .logo { margin-inline-end: auto; }
-  .topbar .logo img { height: 17px; width: auto; }
+  .topbar .logo img { height: 28px; width: auto; }
   .topbar .icon-btn { width: 34px; height: 34px; background: none; }
   .topbar .icon-btn:hover { background: var(--fill); }
   .topbar .icon-btn svg { width: 17px; height: 17px; }
@@ -3111,7 +3111,8 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
   --f-psd: #f5f5f5; --f-ai: #f5f5f5; --f-svg: #f5f5f5; --f-pdf: #f5f5f5; --f-eps: #f5f5f5; --f-fig: #f5f5f5; --f-img: #f5f5f5;
   color-scheme: dark;
 }
-:root[data-theme="dark"] .side .logo-full, :root[data-theme="dark"] .topbar .logo img { filter: invert(1) hue-rotate(180deg); }
+:root[data-theme="dark"] .logo .logo-l { display: none; }
+:root[data-theme="dark"] .logo .logo-d { display: block; }
 :root[data-theme="dark"] .fx-doc { --c: #0f0f0f; }
 /* the "100% free" card turns white; its dots stay hot pink */
 :root[data-theme="dark"] .hero-dots { --forest: #ffffff; --forest-2: #ececec; color: #0f0f0f; box-shadow: none; }
@@ -3131,7 +3132,8 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
 :root[data-theme="dark"] .footer, :root[data-theme="dark"] .qt { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), inset 0 -1px 0 rgba(255, 255, 255, .07); }
 :root[data-theme="dark"] .qv-backdrop { background: rgba(0, 0, 0, .62); }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .side .logo-full, :root:not([data-theme="light"]) .topbar .logo img { filter: invert(1) hue-rotate(180deg); }
+  :root:not([data-theme="light"]) .logo .logo-l { display: none; }
+  :root:not([data-theme="light"]) .logo .logo-d { display: block; }
   :root:not([data-theme="light"]) .fx-doc { --c: #0f0f0f; }
   /* the "100% free" card turns white; its dots stay hot pink */
   :root:not([data-theme="light"]) .hero-dots { --forest: #ffffff; --forest-2: #ececec; color: #0f0f0f; box-shadow: none; }

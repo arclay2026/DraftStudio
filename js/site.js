@@ -373,15 +373,16 @@
     el.outerHTML = `
       <a class="skip" href="#main">Skip to content</a>
       <header class="topbar">
-        <a class="logo" href="index.html" aria-label="Draft Studio home"><img src="assets/logo.svg" alt="Draft Studio" width="180" height="28"></a>
+        <a class="logo" href="index.html" aria-label="Draft Studio home"><img class="logo-l" src="assets/logo.svg" alt="Draft Studio" width="133" height="28"><img class="logo-d" src="assets/logo-dark.svg" alt="Draft Studio" width="133" height="28"></a>
         <button class="icon-btn" type="button" aria-label="Search" data-open-search>${icon("search")}</button>
         <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="side">${icon("menu")}</button>
       </header>
       <aside class="side" id="side" aria-label="Main">
         <div class="side-top">
           <a class="logo" href="index.html" aria-label="Draft Studio home">
-            <img class="logo-full" src="assets/logo.svg" alt="Draft Studio" width="180" height="28">
-            <span class="logo-mark" aria-hidden="true">D</span>
+            <img class="logo-full logo-l" src="assets/logo.svg" alt="Draft Studio" width="133" height="28">
+            <img class="logo-full logo-d" src="assets/logo-dark.svg" alt="Draft Studio" width="133" height="28">
+            <span class="logo-mark" aria-hidden="true"><img class="logo-l" src="assets/logo-mark.svg" alt="" width="28" height="28"><img class="logo-d" src="assets/logo-mark-dark.svg" alt="" width="28" height="28"></span>
           </a>
           <button class="side-fold" type="button" aria-label="Collapse menu" data-side-fold>${icon("ui-side")}</button>
         </div>
@@ -406,7 +407,7 @@
         <div class="wrap">
           <div class="fgrid">
             <div class="f-brand">
-              <a class="logo" href="index.html" aria-label="Draft Studio home"><img src="assets/logo-dark.svg" alt="Draft Studio" width="180" height="28"></a>
+              <a class="logo" href="index.html" aria-label="Draft Studio home"><img src="assets/logo-dark.svg" alt="Draft Studio" width="152" height="32"></a>
               <p>${esc(s.tagline)}</p>
             </div>
             <nav class="f-links" aria-label="Files">

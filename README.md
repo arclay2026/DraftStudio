@@ -48,7 +48,7 @@ All colours, fonts and sizes are tokens at the top of `css/style.css`:
 - **Font:** Inter everywhere (with optical sizing), from Google Fonts.
 - **Nav links:** the `header` function in `js/site.js`.
 - **Contact details and license text:** the `site` block at the top of `js/data.js`.
-- **Logo:** `assets/logo.svg`, `assets/favicon.svg`.
+- **Logo:** `assets/logo.svg` (and `logo-dark.svg` for dark backgrounds), the mark on its own in `assets/logo-mark.svg` / `logo-mark-dark.svg`, and `assets/favicon.svg`. The official master files are in `assets/brand/`.
 
 ## Run locally
 
