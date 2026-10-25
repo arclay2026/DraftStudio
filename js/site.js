@@ -1656,7 +1656,7 @@
             </div>
           </label>
           <label>Preview size · <span data-size-label>${state.size}px</span>
-            <input type="range" min="16" max="48" step="1" value="${state.size}" data-size>
+            <input type="range" min="16" max="48" step="any" value="${state.size}" data-size>
           </label>
         </div>
         <div class="btns">
@@ -1686,7 +1686,7 @@
         $$("[data-c]", insp).forEach(x => x.setAttribute("aria-pressed", "false"));
       });
       ci.addEventListener("change", apply);
-      $("[data-size]", insp).addEventListener("input", e => { state.size = +e.target.value; $("[data-size-label]", insp).textContent = state.size + "px"; grid.style.setProperty("--isz", state.size + "px"); });
+      $("[data-size]", insp).addEventListener("input", e => { const v = +e.target.value; state.size = Math.round(v); $("[data-size-label]", insp).textContent = state.size + "px"; grid.style.setProperty("--isz", v + "px"); });
     };
 
     const apply = () => { grid.style.setProperty("--ic", state.color || "var(--fg)"); drawInspector(); };
@@ -2053,19 +2053,61 @@
 
   window.DSEnhanceSelects = scope => enhanceSelects(scope);
 
-  /* ---------- Sliders fill blue up to the handle ---------- */
-  // CSS reads --p; it follows typing, dragging, code that sets .value, and sliders added later
+  /* ---------- Sliders: a custom track and handle that glide ---------- */
+  // Each <input type="range"> gets a drawn track, fill and handle. The real input stays
+  // on top (invisible) so dragging, keys and screen readers work as normal; the drawing
+  // eases towards the value every frame, so the handle glides instead of jumping.
   function sliders() {
-    const fill = el => {
-      if (el.type !== "range") return;
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const frac = el => {
       const min = el.min === "" ? 0 : +el.min, max = el.max === "" ? 100 : +el.max;
-      el.style.setProperty("--p", (max > min ? (+el.value - min) / (max - min) * 100 : 0) + "%");
+      return max > min ? Math.min(1, Math.max(0, (+el.value - min) / (max - min))) : 0;
     };
-    const all = node => { if (node.matches && node.matches('input[type="range"]')) fill(node); if (node.querySelectorAll) node.querySelectorAll('input[type="range"]').forEach(fill); };
-    document.addEventListener("input", e => fill(e.target), true);
-    document.addEventListener("change", e => fill(e.target), true);
+    const paint = w => w.style.setProperty("--pv", w._cur.toFixed(5));
+    const moving = new Set();
+    let raf = 0, last = 0;
+    const tick = now => {
+      const dt = Math.min(64, now - (last || now - 16)); last = now;
+      const k = 1 - Math.exp(-dt / 38);   // smoothing: about 90% of the way in 90ms
+      moving.forEach(w => {
+        w._cur += (w._to - w._cur) * k;
+        if (Math.abs(w._to - w._cur) < 0.0004) { w._cur = w._to; moving.delete(w); }
+        paint(w);
+      });
+      raf = moving.size ? requestAnimationFrame(tick) : (last = 0);
+    };
+    const go = el => {
+      const w = el._rng;
+      if (!w) return;
+      w._to = frac(el);
+      if (reduce) { w._cur = w._to; paint(w); return; }
+      moving.add(w);
+      if (!raf) raf = requestAnimationFrame(tick);
+    };
+    const wrap = el => {
+      if (el._rng || el.type !== "range") return;
+      const w = document.createElement("span");
+      w.className = "rng";
+      el.before(w);
+      w.append(el);
+      w.insertAdjacentHTML("beforeend", '<span class="rng-track" aria-hidden="true"><span class="rng-fill"></span></span><span class="rng-thumb" aria-hidden="true"></span>');
+      el._rng = w;
+      w._cur = w._to = frac(el);
+      paint(w);
+    };
+    const all = node => {
+      if (node.nodeType !== 1) return;
+      if (node.matches('input[type="range"]')) wrap(node);
+      node.querySelectorAll('input[type="range"]').forEach(wrap);
+    };
+    document.addEventListener("input", e => { if (e.target._rng) go(e.target); }, true);
+    document.addEventListener("change", e => { if (e.target._rng) go(e.target); }, true);
+    document.addEventListener("pointerdown", e => { const w = e.target._rng; if (w) w.classList.add("is-active"); }, true);
+    addEventListener("pointerup", () => $$(".rng.is-active").forEach(w => w.classList.remove("is-active")));
+    addEventListener("pointercancel", () => $$(".rng.is-active").forEach(w => w.classList.remove("is-active")));
+    // values set by page code (reset buttons, saved settings) glide too
     const d = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value");
-    if (d && d.set) Object.defineProperty(HTMLInputElement.prototype, "value", { get: d.get, set(v) { d.set.call(this, v); if (this.type === "range") fill(this); }, configurable: true, enumerable: d.enumerable });
+    if (d && d.set) Object.defineProperty(HTMLInputElement.prototype, "value", { get: d.get, set(v) { d.set.call(this, v); if (this._rng) go(this); }, configurable: true, enumerable: d.enumerable });
     new MutationObserver(list => list.forEach(m => m.addedNodes.forEach(all))).observe(document.body, { childList: true, subtree: true });
     all(document.body);
   }

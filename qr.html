@@ -6,9 +6,9 @@
   <title>QR Code Studio · Free QR code generator · Draft Studio</title>
   <meta name="description" content="Design free QR codes with custom patterns, corners, gradients, logos and labels. Every design is scan-checked live. Download SVG, PNG or JPG.">
   <meta name="theme-color" content="#ffffff">
-  <meta name="ds-version" content="202610251801">
+  <meta name="ds-version" content="202610251810">
   <script>/* Saved theme and text size (Settings), applied before paint */try{var t=localStorage.getItem("ds-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);if(localStorage.getItem("ds-rail"))document.documentElement.setAttribute("data-rail","");var x=localStorage.getItem("ds-text");if(x==="large"||x==="larger")document.documentElement.setAttribute("data-text",x);if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches))document.querySelector('meta[name="theme-color"]').setAttribute("content","#0a0a0a")}catch(e){}</script>
-  <script>/* Language (Settings > Language): pick it, set lang and direction, and load its dictionary before the page script */(function(){var A=["en","fr","es","pt","ar","zh"],d=document.documentElement,L="";try{L=localStorage.getItem("ds-lang")||""}catch(e){}var Q=(location.search.match(/[?&]lang=([a-z]{2})/)||[])[1];if(A.indexOf(Q)>-1)L=Q;if(A.indexOf(L)<0){L="en";var n=navigator.languages||[navigator.language||"en"];for(var i=0;i<n.length;i++){var c=String(n[i]).slice(0,2).toLowerCase();if(A.indexOf(c)>-1){L=c;break}}}d.lang=L;d.dir=L==="ar"?"rtl":"ltr";if(L!=="en"){d.classList.add("i18n-wait");setTimeout(function(){d.classList.remove("i18n-wait")},2500);document.write('<script src="js/i18n/'+L+'.js?v=202610251801"><\/script>')}})();</script>
+  <script>/* Language (Settings > Language): pick it, set lang and direction, and load its dictionary before the page script */(function(){var A=["en","fr","es","pt","ar","zh"],d=document.documentElement,L="";try{L=localStorage.getItem("ds-lang")||""}catch(e){}var Q=(location.search.match(/[?&]lang=([a-z]{2})/)||[])[1];if(A.indexOf(Q)>-1)L=Q;if(A.indexOf(L)<0){L="en";var n=navigator.languages||[navigator.language||"en"];for(var i=0;i<n.length;i++){var c=String(n[i]).slice(0,2).toLowerCase();if(A.indexOf(c)>-1){L=c;break}}}d.lang=L;d.dir=L==="ar"?"rtl":"ltr";if(L!=="en"){d.classList.add("i18n-wait");setTimeout(function(){d.classList.remove("i18n-wait")},2500);document.write('<script src="js/i18n/'+L+'.js?v=202610251810"><\/script>')}})();</script>
   <!-- seo -->
   <link rel="canonical" href="https://arclay2026.github.io/DraftStudio/qr.html">
   <link rel="alternate" hreflang="en" href="https://arclay2026.github.io/DraftStudio/qr.html">
@@ -34,7 +34,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap">
-  <link rel="stylesheet" href="css/style.css?v=202610251801">
+  <link rel="stylesheet" href="css/style.css?v=202610251810">
 </head>
 <body data-page="qr" id="top">
   <div data-header></div>
@@ -76,7 +76,7 @@
           </section>
           <section class="qs-card">
             <header><b>02</b><div><h3>Pattern</h3><p>The shape of every little square.</p></div></header>
-            <div class="qs-tiles" data-qs-dots></div><label class="qs-range"><span>Dot size<b data-out-for="scale"></b></span><input type="range" data-k="scale" min="0.6" max="1" step="0.01" data-out="{}%"></label>
+            <div class="qs-tiles" data-qs-dots></div><label class="qs-range"><span>Dot size<b data-out-for="scale"></b></span><input type="range" data-k="scale" min="0.6" max="1" step="any" data-out="{}%"></label>
           </section>
           <section class="qs-card">
             <header><b>03</b><div><h3>Corners</h3><p>The three big squares that phones lock on to.</p></div></header>
@@ -84,11 +84,11 @@
           </section>
           <section class="qs-card">
             <header><b>04</b><div><h3>Colour</h3><p>Solid or gradient, with corners in their own colour.</p></div></header>
-            <div class="qs-seg"><button type="button" class="qs-seg-btn" data-set="fill" data-v="solid" aria-pressed="false">Solid</button><button type="button" class="qs-seg-btn" data-set="fill" data-v="linear" aria-pressed="false">Linear</button><button type="button" class="qs-seg-btn" data-set="fill" data-v="radial" aria-pressed="false">Radial</button></div><div class="qs-grid2"><div class="qs-color-row"><label class="qs-color"><input type="color" data-k="c1" aria-label="Code colour"><i></i><div><small>Code colour</small><span></span></div></label></div><div data-when="gradient"><div class="qs-color-row"><label class="qs-color"><input type="color" data-k="c2" aria-label="Gradient end"><i></i><div><small>Gradient end</small><span></span></div></label></div></div><div class="qs-color-row"><label class="qs-color" data-auto="Match code"><input type="color" data-k="eyeFrameC" aria-label="Corner frame"><i></i><div><small>Corner frame</small><span></span></div></label><button type="button" class="qs-auto" data-auto="eyeFrameC" data-tip="Use match code">Auto</button></div><div class="qs-color-row"><label class="qs-color" data-auto="Match code"><input type="color" data-k="eyeBallC" aria-label="Corner centre"><i></i><div><small>Corner centre</small><span></span></div></label><button type="button" class="qs-auto" data-auto="eyeBallC" data-tip="Use match code">Auto</button></div><div class="qs-color-row"><label class="qs-color"><input type="color" data-k="bg" aria-label="Background"><i></i><div><small>Background</small><span></span></div></label></div><label class="qs-switch"><input type="checkbox" data-k="transparent"><i></i><span>Transparent background</span></label></div><div data-when="linear"><label class="qs-range"><span>Gradient angle<b data-out-for="angle"></b></span><input type="range" data-k="angle" min="0" max="360" step="1" data-out="{}°"></label></div>
+            <div class="qs-seg"><button type="button" class="qs-seg-btn" data-set="fill" data-v="solid" aria-pressed="false">Solid</button><button type="button" class="qs-seg-btn" data-set="fill" data-v="linear" aria-pressed="false">Linear</button><button type="button" class="qs-seg-btn" data-set="fill" data-v="radial" aria-pressed="false">Radial</button></div><div class="qs-grid2"><div class="qs-color-row"><label class="qs-color"><input type="color" data-k="c1" aria-label="Code colour"><i></i><div><small>Code colour</small><span></span></div></label></div><div data-when="gradient"><div class="qs-color-row"><label class="qs-color"><input type="color" data-k="c2" aria-label="Gradient end"><i></i><div><small>Gradient end</small><span></span></div></label></div></div><div class="qs-color-row"><label class="qs-color" data-auto="Match code"><input type="color" data-k="eyeFrameC" aria-label="Corner frame"><i></i><div><small>Corner frame</small><span></span></div></label><button type="button" class="qs-auto" data-auto="eyeFrameC" data-tip="Use match code">Auto</button></div><div class="qs-color-row"><label class="qs-color" data-auto="Match code"><input type="color" data-k="eyeBallC" aria-label="Corner centre"><i></i><div><small>Corner centre</small><span></span></div></label><button type="button" class="qs-auto" data-auto="eyeBallC" data-tip="Use match code">Auto</button></div><div class="qs-color-row"><label class="qs-color"><input type="color" data-k="bg" aria-label="Background"><i></i><div><small>Background</small><span></span></div></label></div><label class="qs-switch"><input type="checkbox" data-k="transparent"><i></i><span>Transparent background</span></label></div><div data-when="linear"><label class="qs-range"><span>Gradient angle<b data-out-for="angle"></b></span><input type="range" data-k="angle" min="0" max="360" step="any" data-out="{}°"></label></div>
           </section>
           <section class="qs-card">
             <header><b>05</b><div><h3>Logo</h3><p>Put an icon or your own logo in the middle.</p></div></header>
-            <div class="qs-logos"><button type="button" class="qs-ico qs-nologo" data-qs-nologo aria-pressed="false">None</button><div class="qs-icons" data-qs-icons></div><label class="qs-upload" data-qs-upload><input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" data-qs-file hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 9l6-6 6 6M5 20h14"/></svg><span>Upload your logo</span><small>PNG, JPG, SVG</small></label></div><div data-when="logo"><label class="qs-range"><span>Logo size<b data-out-for="logo.size"></b></span><input type="range" data-k="logo.size" min="0.12" max="0.3" step="0.01" data-out="{}%"></label><span class="qs-sub">Backing</span><div class="qs-seg"><button type="button" class="qs-seg-btn" data-set="logo.plate" data-v="none" aria-pressed="false">None</button><button type="button" class="qs-seg-btn" data-set="logo.plate" data-v="square" aria-pressed="false">Square</button><button type="button" class="qs-seg-btn" data-set="logo.plate" data-v="rounded" aria-pressed="false">Rounded</button><button type="button" class="qs-seg-btn" data-set="logo.plate" data-v="circle" aria-pressed="false">Circle</button></div><div class="qs-grid2"><div class="qs-color-row"><label class="qs-color" data-auto="Match code"><input type="color" data-k="logo.color" aria-label="Icon colour"><i></i><div><small>Icon colour</small><span></span></div></label><button type="button" class="qs-auto" data-auto="logo.color" data-tip="Use match code">Auto</button></div><div class="qs-color-row"><label class="qs-color" data-auto="Match background"><input type="color" data-k="logo.plateC" aria-label="Backing colour"><i></i><div><small>Backing colour</small><span></span></div></label><button type="button" class="qs-auto" data-auto="logo.plateC" data-tip="Use match background">Auto</button></div></div></div>
+            <div class="qs-logos"><button type="button" class="qs-ico qs-nologo" data-qs-nologo aria-pressed="false">None</button><div class="qs-icons" data-qs-icons></div><label class="qs-upload" data-qs-upload><input type="file" accept="image/png,image/jpeg,image/svg+xml,image/webp" data-qs-file hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4M6 9l6-6 6 6M5 20h14"/></svg><span>Upload your logo</span><small>PNG, JPG, SVG</small></label></div><div data-when="logo"><label class="qs-range"><span>Logo size<b data-out-for="logo.size"></b></span><input type="range" data-k="logo.size" min="0.12" max="0.3" step="any" data-out="{}%"></label><span class="qs-sub">Backing</span><div class="qs-seg"><button type="button" class="qs-seg-btn" data-set="logo.plate" data-v="none" aria-pressed="false">None</button><button type="button" class="qs-seg-btn" data-set="logo.plate" data-v="square" aria-pressed="false">Square</button><button type="button" class="qs-seg-btn" data-set="logo.plate" data-v="rounded" aria-pressed="false">Rounded</button><button type="button" class="qs-seg-btn" data-set="logo.plate" data-v="circle" aria-pressed="false">Circle</button></div><div class="qs-grid2"><div class="qs-color-row"><label class="qs-color" data-auto="Match code"><input type="color" data-k="logo.color" aria-label="Icon colour"><i></i><div><small>Icon colour</small><span></span></div></label><button type="button" class="qs-auto" data-auto="logo.color" data-tip="Use match code">Auto</button></div><div class="qs-color-row"><label class="qs-color" data-auto="Match background"><input type="color" data-k="logo.plateC" aria-label="Backing colour"><i></i><div><small>Backing colour</small><span></span></div></label><button type="button" class="qs-auto" data-auto="logo.plateC" data-tip="Use match background">Auto</button></div></div></div>
           </section>
           <section class="qs-card">
             <header><b>06</b><div><h3>Label</h3><p>A call to action people can read.</p></div></header>
@@ -96,7 +96,7 @@
           </section>
           <section class="qs-card">
             <header><b>07</b><div><h3>Finish</h3><p>Corners, breathing room and strength.</p></div></header>
-            <label class="qs-range"><span>Corner radius<b data-out-for="radius"></b></span><input type="range" data-k="radius" min="0" max="100" step="1" data-out="{}%"></label><label class="qs-range"><span>Quiet zone<b data-out-for="margin"></b></span><input type="range" data-k="margin" min="0" max="6" step="1" data-out="{} modules"></label><label class="qs-f"><span>Error correction</span><select class="select" data-k="ec" data-label="Error correction"><option value="L">Low · 7% (most compact)</option><option value="M">Medium · 15%</option><option value="Q">Quartile · 25% (good with logos)</option><option value="H">High · 30% (toughest)</option></select></label><button type="button" class="qs-reset" data-qs-reset>Reset design</button>
+            <label class="qs-range"><span>Corner radius<b data-out-for="radius"></b></span><input type="range" data-k="radius" min="0" max="100" step="any" data-out="{}%"></label><label class="qs-range"><span>Quiet zone<b data-out-for="margin"></b></span><input type="range" data-k="margin" min="0" max="6" step="any" data-out="{} modules"></label><label class="qs-f"><span>Error correction</span><select class="select" data-k="ec" data-label="Error correction"><option value="L">Low · 7% (most compact)</option><option value="M">Medium · 15%</option><option value="Q">Quartile · 25% (good with logos)</option><option value="H">High · 30% (toughest)</option></select></label><button type="button" class="qs-reset" data-qs-reset>Reset design</button>
           </section>
           </div>
         </div>
@@ -105,14 +105,14 @@
   </main>
 
   <div data-footer></div>
-  <script src="js/data.js?v=202610251801"></script>
-  <script src="js/preview-sizes.js?v=202610251801"></script>
-  <script src="js/icons.js?v=202610251801"></script>
-  <script src="js/ui-icons.js?v=202610251801"></script>
+  <script src="js/data.js?v=202610251810"></script>
+  <script src="js/preview-sizes.js?v=202610251810"></script>
+  <script src="js/icons.js?v=202610251810"></script>
+  <script src="js/ui-icons.js?v=202610251810"></script>
   <script src="js/vendor/qrcode.min.js?v=1"></script>
   <script src="js/vendor/jsqr.min.js?v=1"></script>
-  <script src="js/qr-studio.js?v=202610251801"></script>
-  <script src="js/chat.js?v=202610251801"></script>
-  <script src="js/site.js?v=202610251801"></script>
+  <script src="js/qr-studio.js?v=202610251810"></script>
+  <script src="js/chat.js?v=202610251810"></script>
+  <script src="js/site.js?v=202610251810"></script>
 </body>
 </html>

@@ -380,7 +380,8 @@
     // Sliders redraw once per frame, however fast the pointer moves
     const changedSoon = () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; changed(); }); };
     root.addEventListener("pointerdown", e => { if (e.target.matches('input[type="range"]')) dragging = e.target; });
-    addEventListener("pointerup", () => { dragging = null; });
+    // on release the handle settles on the value actually used
+    addEventListener("pointerup", () => { if (dragging) { dragging = null; sync(); } });
     root.addEventListener("click", e => {
       const t = e.target.closest("[data-type]");
       if (t) { st.type = t.dataset.type; st.data = st.data || {}; drawFields(); changed(); return; }
@@ -406,7 +407,9 @@
       const k = e.target.closest("[data-k]");
       if (!k) return;
       const cur = get(k.dataset.k);
-      set(k.dataset.k, k.type === "checkbox" ? k.checked : typeof cur === "number" ? +k.value : k.value);
+      // sliders move freely; values that must be whole numbers (quiet zone in modules) are rounded
+      const num = k.dataset.k === "margin" ? Math.round(+k.value) : +k.value;
+      set(k.dataset.k, k.type === "checkbox" ? k.checked : typeof cur === "number" ? num : k.value);
       if (k.type === "color" && k.dataset.k === "c1" && st.fill === "solid") st.c2 = st.c2 || k.value;
       if (k.type === "range") { dragging = dragging || k; changedSoon(); } else changed();
     });

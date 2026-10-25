@@ -1773,7 +1773,7 @@ window.DSCanvas = function (kit) {
         <div class="cx-g2">${num("sh-blur", target.shadow.blur, { label: "Blur", min: 0, d: 0 })}<div class="cx-row"><span class="cx-lbl">Colour</span>${swatchIn("sh-color", target.shadow.color)}</div></div>` : ""}`);
     if (k === "image") {
       const fl = o.filters || [], val = (T, key) => { const x = fl.find(t => t && t.type === T); return x ? round(x[key] * 100) : 0; };
-      const rng = (key, l, v) => `<label class="cx-range"><span>${l}</span><input type="range" data-k="${key}" min="-100" max="100" value="${v}" style="--p:${(+v + 100) / 2}%"><output>${v}</output></label>`;
+      const rng = (key, l, v) => `<label class="cx-range"><span>${l}</span><input type="range" data-k="${key}" min="-100" max="100" step="any" value="${v}" style="--p:${(+v + 100) / 2}%"><output>${v}</output></label>`;
       h += sec("image", "Image", `${num("imgRadius", o.kindRadius || 0, { label: "Corner radius", unit: "px", min: 0, wide: true, d: 0 })}
         ${rng("brightness", tr("Brightness"), val("Brightness", "brightness"))}${rng("contrast", tr("Contrast"), val("Contrast", "contrast"))}${rng("saturation", tr("Saturation"), val("Saturation", "saturation"))}
         <div class="cx-chips is-fx">${[["gray", "Black and White"], ["sepia", "Sepia"], ["invert", "Invert"], ["blur", "Blur"]].map(([f, l]) => `<button type="button" data-act="fx:${f}">${l}</button>`).join("")}</div>
@@ -1908,6 +1908,7 @@ window.DSCanvas = function (kit) {
   /* =====================================================================
      Panel and toolbar events
      ===================================================================== */
+  let rangeRaf = 0, rangeNext = null;
   const onInput = (e, done) => {
     const el = e.target;
     if (!el.dataset.k) return;
@@ -1916,7 +1917,12 @@ window.DSCanvas = function (kit) {
     if (el.type === "number" && el.value === "") return;
     const v = el.type === "checkbox" ? el.checked : el.value;
     if (el.type === "color") { const lab = el.closest(".cx-sw"); if (lab) { lab.style.setProperty("--c", v); lab.classList.remove("is-none"); } }
-    if (el.type === "range") { const out = el.nextElementSibling; if (out) out.textContent = v; }
+    if (el.type === "range") {
+      const out = el.closest(".cx-range") && el.closest(".cx-range").querySelector("output"); if (out) out.textContent = Math.round(v);
+      // image filters are heavy: apply the latest slider value once per frame
+      if (!done) { rangeNext = [k, +v]; if (!rangeRaf) rangeRaf = requestAnimationFrame(() => { rangeRaf = 0; apply(rangeNext[0], rangeNext[1], false); }); return; }
+      cancelAnimationFrame(rangeRaf); rangeRaf = 0;
+    }
     if (k === "fill" || k === "stroke") { setPaint(k, v, done); if (done) refreshUI(); return; }
     if (k === "ab-preset") { if (+v > -1) { const [, w, h] = SIZES[+v], t = targetAb(); t.w = w; t.h = h; cv.requestRenderAll(); note("Resize Artboard"); changed(); fitArtboard(); refreshUI(); } return; }
     if (el.type === "checkbox") { apply(k, v, true); refreshUI(); return; }

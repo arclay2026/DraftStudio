@@ -1048,6 +1048,22 @@ input[type="range"]:hover::-moz-range-thumb, input[type="range"]:active::-moz-ra
 input[type="range"]:focus { outline: none; }
 input[type="range"]:focus-visible::-webkit-slider-thumb { box-shadow: 0 0 0 .5px rgba(0, 0, 0, .14), 0 2px 7px rgba(0, 0, 0, .25), 0 0 0 5px color-mix(in srgb, var(--dl) 28%, transparent); }
 input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 .5px rgba(0, 0, 0, .14), 0 2px 7px rgba(0, 0, 0, .25), 0 0 0 5px color-mix(in srgb, var(--dl) 28%, transparent); }
+/* The drawn slider (site.js wraps every range input): the real input sits on top, invisible */
+.rng { --pv: .5; --rng-h: 6px; --rng-t: 20px; --rng-on: var(--blue-fill, var(--dl)); --rng-off: color-mix(in srgb, var(--fg) 12%, transparent);
+  position: relative; display: block; width: 100%; height: max(24px, var(--rng-t)); -webkit-tap-highlight-color: transparent; }
+.rng > input { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; touch-action: pan-y; }
+.rng-track { position: absolute; left: 0; right: 0; top: 50%; height: var(--rng-h); margin-top: calc(var(--rng-h) / -2); overflow: hidden; border-radius: 99px; background: var(--rng-off); pointer-events: none; }
+.rng-fill { position: absolute; left: 0; top: 0; bottom: 0; width: calc(var(--rng-t) / 2 + (100% - var(--rng-t)) * var(--pv)); border-radius: 99px; background: var(--rng-on); }
+.rng-thumb {
+  position: absolute; top: 50%; left: calc(var(--rng-t) / 2 + (100% - var(--rng-t)) * var(--pv)); width: var(--rng-t); height: var(--rng-t);
+  margin: calc(var(--rng-t) / -2) 0 0 calc(var(--rng-t) / -2); border-radius: 50%; background: #fff; pointer-events: none;
+  box-shadow: 0 0 0 .5px rgba(0, 0, 0, .14), 0 2px 7px rgba(0, 0, 0, .25);
+  transition: transform .35s var(--spring, cubic-bezier(.2, .9, .25, 1.15)), box-shadow .2s;
+}
+.rng:hover .rng-thumb { transform: scale(1.08); }
+.rng.is-active .rng-thumb { transform: scale(1.18); box-shadow: 0 0 0 .5px rgba(0, 0, 0, .14), 0 4px 12px rgba(0, 0, 0, .28); }
+.rng > input:focus-visible ~ .rng-thumb { box-shadow: 0 0 0 .5px rgba(0, 0, 0, .14), 0 2px 7px rgba(0, 0, 0, .25), 0 0 0 5px color-mix(in srgb, var(--dl) 28%, transparent); }
+.cx-range .rng { --rng-h: 4px; --rng-t: 15px; --rng-on: var(--x-blue); --rng-off: var(--x-on); height: 20px; }
 .inspector .btns { display: grid; gap: 7px; }
 
 /* ---------- Prose (license page) ---------- */
