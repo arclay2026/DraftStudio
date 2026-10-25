@@ -1656,7 +1656,7 @@
             </div>
           </label>
           <label>Preview size · <span data-size-label>${state.size}px</span>
-            <input type="range" min="16" max="48" step="2" value="${state.size}" data-size>
+            <input type="range" min="16" max="48" step="1" value="${state.size}" data-size>
           </label>
         </div>
         <div class="btns">

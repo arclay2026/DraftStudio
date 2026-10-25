@@ -241,6 +241,7 @@
 
   window.QRStudio = function (kit) {
     const { $, $$, esc, icon, libIcon, copy, toast, inkOn, hexRgb, lum, ICONS, palettes } = kit;
+    let dragging = null, frame = 0; // the slider being dragged, and the pending redraw
     const root = $("[data-qs]");
     if (!root || !window.qrcode) return;
 
@@ -303,7 +304,7 @@
         if (el.type === "checkbox") el.checked = !!v;
         else if (el.type === "color") { el.value = v || "#000000"; const sw = el.closest(".qs-color"); if (sw) { sw.style.setProperty("--sw", v || "transparent"); sw.classList.toggle("is-auto", !v); const t = $("span", sw); if (t) t.textContent = v ? v.toUpperCase() : (sw.dataset.auto || "Auto"); } }
         else if (el.tagName === "SELECT") { el.value = String(v); el.dispatchEvent(new Event("sync")); }
-        else el.value = v;
+        else if (!(el.type === "range" && el === dragging)) el.value = v; // never tug a slider while it's being dragged
         const out = el.dataset.out && $(`[data-out-for="${el.dataset.k}"]`, root);
         if (out) out.textContent = el.dataset.out.replace("{}", Math.round(el.dataset.k === "logo.size" ? v * 100 : el.dataset.k === "scale" ? v * 100 : v));
       });
@@ -376,6 +377,10 @@
 
     /* ----- Events ----- */
     const changed = () => { sync(); render(); };
+    // Sliders redraw once per frame, however fast the pointer moves
+    const changedSoon = () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; changed(); }); };
+    root.addEventListener("pointerdown", e => { if (e.target.matches('input[type="range"]')) dragging = e.target; });
+    addEventListener("pointerup", () => { dragging = null; });
     root.addEventListener("click", e => {
       const t = e.target.closest("[data-type]");
       if (t) { st.type = t.dataset.type; st.data = st.data || {}; drawFields(); changed(); return; }
@@ -403,7 +408,7 @@
       const cur = get(k.dataset.k);
       set(k.dataset.k, k.type === "checkbox" ? k.checked : typeof cur === "number" ? +k.value : k.value);
       if (k.type === "color" && k.dataset.k === "c1" && st.fill === "solid") st.c2 = st.c2 || k.value;
-      changed();
+      if (k.type === "range") { dragging = dragging || k; changedSoon(); } else changed();
     });
     root.addEventListener("change", e => {
       const fd = e.target.closest("[data-field]");
