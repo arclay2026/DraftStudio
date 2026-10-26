@@ -1190,7 +1190,7 @@
       <article class="drop drop-req reveal">
         <span class="req-icon">${icon("plus")}</span>
         <div>
-          <h3>${empty ? `Fresh ${esc(cat ? cat.name.toLowerCase() : "files")}<br>are on the way.` : `Your ${esc(what)}<br>could be next.`}</h3>
+          <h3>${empty ? `Fresh ${esc(cat ? cat.name.toLowerCase() : "files")} <br>are on the way.` : `Your ${esc(what)} <br>could be next.`}</h3>
           <p>${empty ? "Nothing on this shelf yet. Tell us what you'd like and it could be the first drop." : "Tell us what you need. Popular requests become free drops for everyone."}</p>
         </div>
         <a class="btn btn-dark" href="${waLink(`Hi Draft Studio, I'd like to request a ${what}: `)}" target="_blank" rel="noopener">Request a drop <span class="arr">${ARR}</span></a>

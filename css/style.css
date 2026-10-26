@@ -579,7 +579,7 @@ h2 .soft { color: var(--soft); }
   content: ""; position: absolute; z-index: -1; width: 80%; aspect-ratio: 1; right: -30%; top: -40%; border-radius: 50%;
   display: none;
 }
-.req-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: var(--lime); color: var(--on-lime); }
+.req-icon { flex: none; align-self: flex-start; display: grid; place-items: center; width: 36px; height: 36px; aspect-ratio: 1; border-radius: 50%; background: var(--lime); color: var(--on-lime); }
 .req-icon svg { width: 17px; height: 17px; }
 .drop-req h3 { font-size: clamp(19.5px, 1.8vw, 26px); margin-bottom: 7px; }
 .drop-req p { color: rgba(255, 255, 255, .62); font-size: calc(12px * var(--ts)); }
@@ -1163,6 +1163,13 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 .5px rgb
   .lx-ticket::after { bottom: 44px; }
   .lx-uses button { height: 31.5px; font-size: calc(11px * var(--ts)); }
   .drops { grid-auto-rows: 182px; gap: 9px; }
+  /* request card on phones: icon beside the copy so everything fits the 182px row */
+  .drop-req { display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: space-between; column-gap: 12px; row-gap: 12px; min-height: 0; padding: 16px; }
+  .drop-req .req-icon { width: 32px; height: 32px; }
+  .drop-req h3 { font-size: calc(17px * var(--ts)); margin: 5px 0 5px; }
+  .drop-req h3 br { display: none; }
+  .drop-req p { font-size: calc(12px * var(--ts)); line-height: 1.5; }
+  .drop-req .btn { grid-column: 1 / -1; min-height: 38px; }
   .drops .drop-feat { grid-row: span 2; padding: 9px; }
   .drop-panel { padding: 12.5px; }
   .drop-actions .btn { min-height: 35px; font-size: calc(12px * var(--ts)); }
@@ -1175,7 +1182,6 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 .5px rgb
   .drop-info { padding: 7px 7px 7px 11px; border-radius: 11px; }
   .drop-info b { font-size: calc(11px * var(--ts)); }
   .drop-info .go { width: 23.5px; height: 23.5px; }
-  .drop-req { min-height: 190px; }
   .ix-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .ix-grid a { height: 41.5px; }
   .ix-grid a:nth-child(n+31) { display: none; }
