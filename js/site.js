@@ -390,11 +390,12 @@
       { items: [["index.html", "Home", "home", "house"], ["browse.html", "Browse all", "browse", "layout-grid"]] },
       { title: "Files", items: [["browse.html?cat=mockups", "Mockups", "mockups", "shirt"], ["browse.html?cat=vectors", "Vectors", "vectors", "spline"],
         ["browse.html?cat=logos", "Logos", "logos", "pen-tool"], ["browse.html?cat=templates", "Templates", "templates", "layout-template"], ["icons.html", "Icons", "icons", "shapes"]] },
-      { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR Code Studio", "qr", "qr-code"], ["canvas.html", "Canvas", "canvas", "paintbrush"]] },
+      { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR Code Studio", "qr", "qr-code", true], ["canvas.html", "Canvas", "canvas", "paintbrush", true]] },
       { title: "Help", items: [["learn.html", "Learn", "learn", "lightbulb"], ["license.html", "License", "license", "file-text"]] }
     ];
-    const link = ([href, label, key, ic]) =>
-      `<a class="side-link" href="${href}" data-label="${label}"${active === key ? ' aria-current="page"' : ""}>${sideIcon(ic)}<span>${label}</span></a>`;
+    // A fifth `true` marks a page as new: it gets a NEW badge (a dot when the menu is folded)
+    const link = ([href, label, key, ic, fresh]) =>
+      `<a class="side-link${fresh ? " has-new" : ""}" href="${href}" data-label="${label}"${active === key ? ' aria-current="page"' : ""}>${sideIcon(ic)}<span>${label}</span>${fresh ? '<em class="side-new" data-no-i18n>New</em>' : ""}</a>`;
     const el = $("[data-header]");
     if (!el) return;
     el.outerHTML = `
