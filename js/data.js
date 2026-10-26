@@ -25,6 +25,11 @@
      orientation  (optional) "horizontal", "vertical", "square" or "panoramic"
                   for the Orientation filter. Leave it out and it's worked out
                   from the first "W × H" in specs.
+     letter       (logos, optional) the logo's letter for the Letter filter, e.g. "K".
+                  Leave it out and it's taken from "Letter K" in the title.
+     type         (logos) the kind of brand it suits, for the Type filter. Pick
+                  from `logoTypes` below the items list, e.g. "Tech" or
+                  ["Sport", "Tech"]. Leave it out and it shows under "Other".
      requires     (optional) the app needed to open it, e.g. "Adobe Photoshop"
      tags         search words
      preview      path to the preview image
@@ -101,6 +106,7 @@ window.DS = {
       category: "Logos",
       description: "A sharp, chevron-cut K in burnt orange, paired with a strong uppercase KAVEN wordmark. Built for construction, logistics and outdoor brands. Exclusive: sold once.",
       specs: "Vector · any size (raster 2250 × 2250 px)",
+      type: "Construction",
       tags: ["letter k", "lettermark", "monogram", "wordmark", "bold", "uppercase", "orange", "rust", "construction"],
       preview: "previews/kaven-logo.jpg",
       gallery: ["previews/kaven-logo-2.jpg"],
@@ -116,6 +122,7 @@ window.DS = {
       category: "Logos",
       description: "A slanted, fast-moving W in electric indigo, paired with a bold italic Wiltz wordmark. Made for sport, motion and tech brands. Exclusive: sold once.",
       specs: "Vector · any size (raster 2250 × 2250 px)",
+      type: ["Sport", "Tech"],
       tags: ["letter w", "lettermark", "monogram", "wordmark", "italic", "sport", "speed", "indigo", "blue", "purple"],
       preview: "previews/wiltz-logo.jpg",
       gallery: ["previews/wiltz-logo-2.jpg"],
@@ -132,6 +139,7 @@ window.DS = {
       category: "Logos",
       description: "A bold geometric M in coral red, paired with a crisp Mato wordmark whose t is capped with a matching red square. Exclusive: sold once.",
       specs: "Vector · any size (raster 2250 × 2250 px)",
+      type: "Agency",
       tags: ["letter m", "lettermark", "monogram", "wordmark", "geometric", "red"],
       preview: "previews/mato-logo.jpg",
       gallery: ["previews/mato-logo-2.jpg"],
@@ -143,6 +151,9 @@ window.DS = {
       featured: true
     }
   ],
+
+  // LOGO TYPES for the Type filter on the Logos page
+  logoTypes: ["Agency", "Tech", "Sport", "Construction", "Fashion & beauty", "Food & drink", "Finance", "Health", "Other"],
 
   // COLOURS for the Colour filter on the browse page (name: hex)
   colors: {

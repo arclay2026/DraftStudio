@@ -1564,7 +1564,20 @@
   "A slanted, fast-moving W in electric indigo, paired with a bold italic Wiltz wordmark. Made for sport, motion and tech brands. Exclusive: sold once.": "Un W incliné et dynamique en indigo électrique, associé à un logotype Wiltz en italique gras. Conçu pour les marques de sport, de mouvement et de tech. Exclusif : vendu une seule fois.",
   "From": "À partir de",
   "Kaven — Letter K Logo": "Kaven — Logo lettre K",
-  "A sharp, chevron-cut K in burnt orange, paired with a strong uppercase KAVEN wordmark. Built for construction, logistics and outdoor brands. Exclusive: sold once.": "Un K net taillé en chevron, orange brûlé, associé à un logotype KAVEN en capitales affirmées. Conçu pour les marques de construction, de logistique et d'outdoor. Exclusif : vendu une seule fois."
+  "A sharp, chevron-cut K in burnt orange, paired with a strong uppercase KAVEN wordmark. Built for construction, logistics and outdoor brands. Exclusive: sold once.": "Un K net taillé en chevron, orange brûlé, associé à un logotype KAVEN en capitales affirmées. Conçu pour les marques de construction, de logistique et d'outdoor. Exclusif : vendu une seule fois.",
+  "Letter": "Lettre",
+  "Logo type": "Type de logo",
+  "Any letter": "Toutes les lettres",
+  "All types": "Tous les types",
+  "Agency": "Agence",
+  "Tech": "Tech",
+  "Sport": "Sport",
+  "Construction": "Construction",
+  "Fashion & beauty": "Mode et beauté",
+  "Food & drink": "Restauration",
+  "Finance": "Finance",
+  "Health": "Santé",
+  "Other": "Autre"
  },
  "patterns": {
   "^(\\d+) files$": "$1 fichiers",
@@ -1609,6 +1622,7 @@
   "^(.+) finds everything$": "$1 trouve tout",
   "^From (R\\d+)$": "À partir de $1",
   "^Buy · From (R\\d+)$": "Acheter · dès $1",
-  "^(.+) · From (R\\d+)$": "$1 · dès $2"
+  "^(.+) · From (R\\d+)$": "$1 · dès $2",
+  "^Letter ([A-Z])$": "Lettre $1"
  }
 }

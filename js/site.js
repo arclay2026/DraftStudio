@@ -1176,7 +1176,7 @@
   /* ---------- Browse ---------- */
   function browse() {
     const params = new URLSearchParams(location.search);
-    const state = { cat: params.get("cat") || "all", q: params.get("q") || "", fmt: params.get("format") || "", lic: params.get("license") || "", ori: params.get("orientation") || "", color: params.get("color") || "", sort: params.get("sort") || "new" };
+    const state = { cat: params.get("cat") || "all", q: params.get("q") || "", fmt: params.get("format") || "", lic: params.get("license") || "", ori: params.get("orientation") || "", color: params.get("color") || "", letter: (params.get("letter") || "").toUpperCase(), type: params.get("type") || "", sort: params.get("sort") || "new" };
     if (state.sort === "free") { state.sort = "new"; state.lic = "free"; } // old "Free only" sort links
     const grid = $("[data-results]"), count = $("[data-count]");
     const cats = $("[data-cats]"), fmts = $("[data-fmts]"), q = $("[data-q]"), sort = $("[data-sort]");
@@ -1218,6 +1218,8 @@
       if (state.lic) p.set("license", state.lic);
       if (state.ori) p.set("orientation", state.ori);
       if (state.color) p.set("color", state.color);
+      if (state.letter) p.set("letter", state.letter);
+      if (state.type) p.set("type", state.type);
       if (state.sort !== "new") p.set("sort", state.sort);
       history.replaceState(null, "", location.pathname + (p.toString() ? "?" + p : ""));
     };
@@ -1237,6 +1239,13 @@
       n.textContent = cur.slug === "saved" ? countOf(cur) : "";
       n.hidden = cur.slug !== "saved";
 
+      // Letter and Type only make sense for logos; Orientation doesn't (they're all square)
+      const logos = state.cat === "logos";
+      ldd.hidden = typeWrap.hidden = !logos;
+      oriWrap.hidden = logos;
+      if (logos && state.ori) { state.ori = ""; ori.value = ""; ori.dispatchEvent(new Event("sync")); }
+      if (!logos && (state.letter || state.type)) { state.letter = state.type = ""; typeSel.value = ""; typeSel.dispatchEvent(new Event("sync")); paintLetter(); }
+
       const ql = state.q.toLowerCase();
       let list = items.filter(it =>
         (state.cat === "all" || (state.cat === "saved" ? isSaved(it.id) : slug(it.category) === state.cat)) &&
@@ -1244,6 +1253,8 @@
         (!state.lic || (state.lic === "premium") === isPaid(it)) &&
         (!state.ori || orientationOf(it) === state.ori) &&
         (!state.color || (it.colors || []).includes(state.color)) &&
+        (!state.letter || letterOf(it) === state.letter) &&
+        (!state.type || typesOf(it).some(t => slug(t) === state.type)) &&
         (!ql || [it.title, it.category, it.description, (it.tags || []).join(" "), formatsOf(it).join(" ")].join(" ").toLowerCase().includes(ql)));
       if (state.sort === "az") list = list.slice().sort((a, b) => a.title.localeCompare(b.title));
       if (state.sort === "old") list = list.slice().reverse();
@@ -1251,7 +1262,7 @@
       count.textContent = `${list.length} result${list.length === 1 ? "" : "s"}`;
       grid.innerHTML = list.length ? list.map(card).join("") : state.cat === "saved"
         ? `<div class="empty"><h3>Nothing saved yet.</h3><p>Tap the bookmark on any design to keep it here.</p><a class="btn btn-dark" href="browse.html">Browse files</a></div>`
-        : emptyState(state.q || state.fmt || state.lic || state.ori || state.color ? null : cat);
+        : emptyState(state.q || state.fmt || state.lic || state.ori || state.color || state.letter || state.type ? null : cat);
       reveal(grid);
       sync();
     };
@@ -1283,6 +1294,38 @@
     document.addEventListener("click", e => { if (!cdd.contains(e.target)) setColorOpen(false); });
     document.addEventListener("keydown", e => { if (e.key === "Escape") setColorOpen(false); });
     paintColor();
+
+    // Logos: Letter dropdown (an A–Z grid; letters with no logo yet are greyed out) and Type
+    const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    const letterOf = it => (it.letter || (/\bletter ([a-z])\b/i.exec(it.title) || [])[1] || "").toUpperCase();
+    const typesOf = it => [].concat(it.type || "Other");
+    const hasLetter = new Set(items.filter(it => it.category === "Logos").map(letterOf));
+    if (!LETTERS.includes(state.letter)) state.letter = "";
+    const ldd = $("[data-letter-dd]"), lmenu = $("[data-letter-menu]"), ltoggle = $(".sel-toggle", ldd);
+    const paintLetter = () => {
+      $("[data-letter-label]").innerHTML = state.letter
+        ? `<i class="lt-chip" data-no-i18n>${state.letter}</i>Letter ${state.letter}`
+        : `${icon("type", "sel-shape")}Any letter`;
+      lmenu.innerHTML = `<div class="lt-grid" data-no-i18n>${LETTERS.map(l =>
+        `<button type="button" class="lt" data-letter="${l}" aria-pressed="${state.letter === l}" aria-label="Letter ${l}"${hasLetter.has(l) ? "" : " disabled"}>${l}</button>`).join("")}</div>
+        <button type="button" class="sw-clear" data-letter=""${state.letter ? "" : " disabled"}>Any letter</button>`;
+    };
+    const setLetterOpen = open => { ldd.classList.toggle("is-open", open); ltoggle.setAttribute("aria-expanded", open); };
+    ltoggle.addEventListener("click", e => { e.stopPropagation(); const open = !ldd.classList.contains("is-open"); if (open) closeDropdowns(); setLetterOpen(open); });
+    lmenu.addEventListener("click", e => {
+      const b = e.target.closest("[data-letter]"); if (!b || b.disabled) return;
+      state.letter = b.dataset.letter; setLetterOpen(false); paintLetter(); draw();
+    });
+    document.addEventListener("click", e => { if (!ldd.contains(e.target)) setLetterOpen(false); });
+    document.addEventListener("keydown", e => { if (e.key === "Escape") setLetterOpen(false); });
+    paintLetter();
+    const TYPES = DS.logoTypes || [];
+    const typeSel = $("[data-type]"), typeWrap = $("[data-type-wrap]"), oriWrap = ori.closest(".sel-wrap");
+    typeSel.insertAdjacentHTML("beforeend", TYPES.map(t => `<option value="${slug(t)}">${esc(t)}</option>`).join(""));
+    if (!TYPES.some(t => slug(t) === state.type)) state.type = "";
+    typeSel.value = state.type;
+    typeSel.addEventListener("change", () => { state.type = typeSel.value; draw(); });
+
     q.addEventListener("input", () => { state.q = q.value.trim(); draw(); });
     sort.addEventListener("change", () => { state.sort = sort.value; draw(); });
     document.addEventListener("ds:saved", () => { $$("[data-saved-n]").forEach(n => { n.textContent = saved.length; }); if (state.cat === "saved") draw(); else renderMenu(); });

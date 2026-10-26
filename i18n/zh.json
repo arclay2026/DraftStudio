@@ -1564,7 +1564,20 @@
   "A slanted, fast-moving W in electric indigo, paired with a bold italic Wiltz wordmark. Made for sport, motion and tech brands. Exclusive: sold once.": "电光靛蓝色的倾斜动感字母 W，搭配粗斜体 Wiltz 字标。专为运动、速度和科技品牌打造。独家：只售一次。",
   "From": "起价",
   "Kaven — Letter K Logo": "Kaven — 字母 K 标志",
-  "A sharp, chevron-cut K in burnt orange, paired with a strong uppercase KAVEN wordmark. Built for construction, logistics and outdoor brands. Exclusive: sold once.": "焦橙色的利落 V 形切角字母 K，搭配有力的大写 KAVEN 字标。专为建筑、物流和户外品牌打造。独家：只售一次。"
+  "A sharp, chevron-cut K in burnt orange, paired with a strong uppercase KAVEN wordmark. Built for construction, logistics and outdoor brands. Exclusive: sold once.": "焦橙色的利落 V 形切角字母 K，搭配有力的大写 KAVEN 字标。专为建筑、物流和户外品牌打造。独家：只售一次。",
+  "Letter": "字母",
+  "Logo type": "标志类型",
+  "Any letter": "任意字母",
+  "All types": "所有类型",
+  "Agency": "设计机构",
+  "Tech": "科技",
+  "Sport": "运动",
+  "Construction": "建筑",
+  "Fashion & beauty": "时尚美妆",
+  "Food & drink": "餐饮",
+  "Finance": "金融",
+  "Health": "健康",
+  "Other": "其他"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",
@@ -1609,6 +1622,7 @@
   "^(.+) finds everything$": "$1 搜索一切",
   "^From (R\\d+)$": "$1 起",
   "^Buy · From (R\\d+)$": "购买 · $1 起",
-  "^(.+) · From (R\\d+)$": "$1 · $2 起"
+  "^(.+) · From (R\\d+)$": "$1 · $2 起",
+  "^Letter ([A-Z])$": "字母 $1"
  }
 }
