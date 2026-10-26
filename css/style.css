@@ -1954,28 +1954,31 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .side-new { --new: #3dff9a; --new-bg: rgba(61, 255, 154, .1); --new-line: rgba(61, 255, 154, .42); text-shadow: 0 0 10px rgba(61, 255, 154, .45); }
 }
-:root[data-rail] .side-new { display: none; }
-:root[data-rail] .side-link.has-new::after { content: ""; position: absolute; top: 7px; right: 9px; width: 7px; height: 7px; border-radius: 50%; background: #1fe07f; box-shadow: 0 0 0 2px var(--side-bg), 0 0 8px rgba(31, 224, 127, .7); }
 .side-foot { display: flex; flex-direction: column; gap: 1px; padding-top: 8px; border-top: 1px solid var(--border); }
 .side .set-btn { width: 100%; height: 30px; border: 0; border-radius: 8px; background: none; }
 .side .set-btn:hover, .side .set-btn[aria-expanded="true"] { background: color-mix(in srgb, var(--fg) 5%, transparent); color: var(--fg); }
 
-/* Folded to an icon rail */
-:root[data-rail] .side { padding-inline: 10px; }
-:root[data-rail] .side-top { flex-direction: column; height: auto; gap: 8px; padding: 0; }
-:root[data-rail] .side .logo { width: 28px; }
-:root[data-rail] .side .logo-full { opacity: 0; }
-:root[data-rail] .logo-mark { opacity: 1; }
-:root[data-rail] .side-link { justify-content: center; gap: 0; padding: 0; height: 36px; }
-:root[data-rail] .side-link span { flex: 0 0 0; width: 0; padding: 0; opacity: 0; }
-:root[data-rail] .side-label { height: 1px; margin: 10px 8px; padding: 0; background: var(--border); color: transparent; opacity: 1; overflow: hidden; }
-:root[data-rail] .side-nav { overflow: visible; margin: 0; padding-inline: 0; }
-:root[data-rail] .side [data-label]:hover::after {
-  content: attr(data-label); position: absolute; z-index: 5; left: calc(100% + 10px); top: 50%; transform: translateY(-50%);
-  padding: 5px 9px; border-radius: 7px; background: var(--fg); color: var(--on-fg); font-size: 11.5px; font-weight: 500; white-space: nowrap;
-  pointer-events: none; animation: side-tip .16s ease;
+/* Folded to an icon rail. Hovering it slides the full menu out over the page
+   (.is-peek); icons stay exactly where they are, only the labels fade in. */
+@media (min-width: 1024px) {
+  :root[data-rail] .side { overflow: hidden; transition: width .42s var(--ease), box-shadow .35s var(--ease), background-color .3s; }
+  :root[data-rail] .side.is-peek { width: 228px; box-shadow: 18px 0 44px -22px rgba(0, 0, 0, .28), 1px 0 0 var(--border); }
+  :root[data-rail] .side-top { padding-left: 6px; }
+  :root[data-rail] .side-nav { margin: 0; padding-inline: 0; overflow-x: hidden; }
+  :root[data-rail] .side-link { padding: 0 11px; height: 36px; }
+  :root[data-rail] .side-link span, :root[data-rail] .side .logo-full, :root[data-rail] .side-fold, :root[data-rail] .side-new { transition: opacity .22s var(--ease) .06s; }
+  :root[data-rail] .side:not(.is-peek) .side-link span,
+  :root[data-rail] .side:not(.is-peek) .logo-full,
+  :root[data-rail] .side:not(.is-peek) .side-new { opacity: 0; transition-delay: 0s; transition-duration: .12s; }
+  :root[data-rail] .side:not(.is-peek) .side-fold { opacity: 0; pointer-events: none; transition-delay: 0s; transition-duration: .12s; }
+  :root[data-rail] .side:not(.is-peek) .logo-mark { opacity: 1; }
+  /* section titles keep their height, so nothing jumps; folded they read as a thin line */
+  :root[data-rail] .side-label { transition: color .2s, background-size .3s var(--ease); background: linear-gradient(var(--border), var(--border)) 10px 50% / 0 1px no-repeat; }
+  :root[data-rail] .side:not(.is-peek) .side-label { color: transparent; background-size: 20px 1px; }
+  /* a new page shows a green dot while folded */
+  :root[data-rail] .side-link.has-new::after { content: ""; position: absolute; top: 7px; left: 25px; width: 7px; height: 7px; border-radius: 50%; background: #1fe07f; box-shadow: 0 0 0 2px var(--side-bg), 0 0 8px rgba(31, 224, 127, .7); transition: opacity .2s; }
+  :root[data-rail] .side.is-peek .side-link.has-new::after { opacity: 0; }
 }
-@keyframes side-tip { from { opacity: 0; transform: translate(-4px, -50%); } }
 
 .topbar, .side-scrim { display: none; }
 
@@ -2007,10 +2010,6 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
   .side-fold { display: none; }
   .side-scrim { display: block; position: fixed; inset: 0; z-index: 85; background: rgba(0, 0, 0, .45); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); opacity: 0; visibility: hidden; transition: opacity .3s, visibility .3s; }
   .side-open .side-scrim { opacity: 1; visibility: visible; }
-  :root[data-rail] .side .logo-full, :root[data-rail] .side-link span { opacity: 1; width: auto; flex: initial; }
-  :root[data-rail] .logo-mark { opacity: 0; }
-  :root[data-rail] .side-new { display: inline-block; }
-  :root[data-rail] .side-link.has-new::after { content: none; }
   .set { top: calc(var(--bar-h) + 6px); }
 }
 

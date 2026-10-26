@@ -597,7 +597,19 @@
       fold.setAttribute("aria-label", on ? "Expand menu" : "Collapse menu");
       try { on ? localStorage.setItem("ds-rail", "1") : localStorage.removeItem("ds-rail"); } catch (e) {}
     };
-    fold && fold.addEventListener("click", () => setRail(!root.hasAttribute("data-rail")));
+    fold && fold.addEventListener("click", () => { side.classList.remove("is-peek"); setRail(!root.hasAttribute("data-rail")); });
+    // Folded: hovering (or tabbing into) the rail slides the full menu out over the page
+    let peekT = 0;
+    const peek = (on, wait) => {
+      clearTimeout(peekT);
+      peekT = setTimeout(() => side.classList.toggle("is-peek", on && root.hasAttribute("data-rail") && matchMedia("(min-width: 1024px)").matches), wait);
+    };
+    if (side) {
+      side.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") peek(true, 90); });
+      side.addEventListener("pointerleave", () => peek(false, 160));
+      side.addEventListener("focusin", () => peek(true, 0));
+      side.addEventListener("focusout", e => { if (!side.contains(e.relatedTarget)) peek(false, 0); });
+    }
     if (fold) fold.setAttribute("aria-label", root.hasAttribute("data-rail") ? "Expand menu" : "Collapse menu");
     const setDrawer = open => {
       side.classList.toggle("is-open", open);
