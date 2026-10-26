@@ -96,6 +96,21 @@ window.DS = {
       featured: true
     },
     {
+      id: "kaven-logo",
+      title: "Kaven — Letter K Logo",
+      category: "Logos",
+      description: "A sharp, chevron-cut K in burnt orange, paired with a strong uppercase KAVEN wordmark. Built for construction, logistics and outdoor brands. Exclusive: sold once.",
+      specs: "Vector · any size (raster 2250 × 2250 px)",
+      tags: ["letter k", "lettermark", "monogram", "wordmark", "bold", "uppercase", "orange", "rust", "construction"],
+      preview: "previews/kaven-logo.jpg",
+      gallery: ["previews/kaven-logo-2.jpg"],
+      price: "R250",
+      includes: ["AI", "EPS", "SVG", "PDF", "PNG"],
+      colors: ["orange", "red", "white"],
+      date: "2026-10-26",
+      featured: true
+    },
+    {
       id: "wiltz-logo",
       title: "Wiltz — Letter W Logo",
       category: "Logos",

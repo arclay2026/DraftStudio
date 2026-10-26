@@ -1562,7 +1562,9 @@
   "selected": "已选",
   "Wiltz — Letter W Logo": "Wiltz — 字母 W 标志",
   "A slanted, fast-moving W in electric indigo, paired with a bold italic Wiltz wordmark. Made for sport, motion and tech brands. Exclusive: sold once.": "电光靛蓝色的倾斜动感字母 W，搭配粗斜体 Wiltz 字标。专为运动、速度和科技品牌打造。独家：只售一次。",
-  "From": "起价"
+  "From": "起价",
+  "Kaven — Letter K Logo": "Kaven — 字母 K 标志",
+  "A sharp, chevron-cut K in burnt orange, paired with a strong uppercase KAVEN wordmark. Built for construction, logistics and outdoor brands. Exclusive: sold once.": "焦橙色的利落 V 形切角字母 K，搭配有力的大写 KAVEN 字标。专为建筑、物流和户外品牌打造。独家：只售一次。"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",

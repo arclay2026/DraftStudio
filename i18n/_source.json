@@ -1505,7 +1505,9 @@
   "selected",
   "Wiltz — Letter W Logo",
   "A slanted, fast-moving W in electric indigo, paired with a bold italic Wiltz wordmark. Made for sport, motion and tech brands. Exclusive: sold once.",
-  "From"
+  "From",
+  "Kaven — Letter K Logo",
+  "A sharp, chevron-cut K in burnt orange, paired with a strong uppercase KAVEN wordmark. Built for construction, logistics and outdoor brands. Exclusive: sold once."
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",
