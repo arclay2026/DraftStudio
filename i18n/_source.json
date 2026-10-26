@@ -1520,7 +1520,15 @@
   "Food & drink",
   "Finance",
   "Health",
-  "Other"
+  "Other",
+  "Design it right here.",
+  "No app to install.",
+  "A full design editor in your browser. Start from a template, add text, shapes, icons and photos, then export your design as PNG, JPG or SVG.",
+  "Ready-made templates",
+  "Layers & artboards",
+  "Pen, shapes & text",
+  "Open the canvas",
+  "The Drafty Canvas editor with an event flyer open"
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",

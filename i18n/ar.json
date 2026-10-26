@@ -1577,7 +1577,15 @@
   "Food & drink": "طعام وشراب",
   "Finance": "مالية",
   "Health": "صحة",
-  "Other": "أخرى"
+  "Other": "أخرى",
+  "Design it right here.": "صمّم هنا مباشرة.",
+  "No app to install.": "لا حاجة لتثبيت أي تطبيق.",
+  "A full design editor in your browser. Start from a template, add text, shapes, icons and photos, then export your design as PNG, JPG or SVG.": "محرّر تصميم كامل في متصفحك. ابدأ من قالب، وأضف النصوص والأشكال والأيقونات والصور، ثم صدّر تصميمك بصيغة PNG أو JPG أو SVG.",
+  "Ready-made templates": "قوالب جاهزة",
+  "Layers & artboards": "الطبقات ولوحات الرسم",
+  "Pen, shapes & text": "القلم والأشكال والنص",
+  "Open the canvas": "افتح لوحة الرسم",
+  "The Drafty Canvas editor with an event flyer open": "محرّر Drafty Canvas مع ملصق فعالية مفتوح"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",

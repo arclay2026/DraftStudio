@@ -1577,7 +1577,15 @@
   "Food & drink": "餐饮",
   "Finance": "金融",
   "Health": "健康",
-  "Other": "其他"
+  "Other": "其他",
+  "Design it right here.": "就在这里设计。",
+  "No app to install.": "无需安装任何软件。",
+  "A full design editor in your browser. Start from a template, add text, shapes, icons and photos, then export your design as PNG, JPG or SVG.": "浏览器里的完整设计编辑器。从模板开始，添加文字、形状、图标和照片，然后将设计导出为 PNG、JPG 或 SVG。",
+  "Ready-made templates": "现成模板",
+  "Layers & artboards": "图层和画板",
+  "Pen, shapes & text": "钢笔、形状和文字",
+  "Open the canvas": "打开画布",
+  "The Drafty Canvas editor with an event flyer open": "打开了活动海报的 Drafty Canvas 编辑器"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",
