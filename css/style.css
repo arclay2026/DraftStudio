@@ -948,13 +948,19 @@ h2 .soft { color: var(--soft); }
 .crumbs a:hover { color: var(--fg); }
 .item { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: clamp(22.5px, 4vw, 56.5px); padding: 22.5px 0 0; align-items: start; }
 .item-media { position: sticky; top: calc(var(--bar-h) + 15.5px); }
-.item-media .frame { position: relative; border-radius: calc(var(--radius) * 1.2); overflow: hidden; background: var(--surface); border: 1px solid var(--line); cursor: zoom-in; }
-.item-media .frame { display: block; width: 100%; padding: 0; }
-.item-media .frame img { width: 100%; height: auto; max-height: calc(100vh - 110.5px); object-fit: contain; }
+/* The frame takes the picture's own shape (--ar, set from preview-sizes.js), so the picture fills it edge to edge */
+.item-media { --max-h: calc(100vh - 110.5px); }
+.item-media .frame {
+  position: relative; display: block; width: min(100%, calc(var(--max-h) * var(--ar, 1))); aspect-ratio: var(--ar, 1); margin-inline: auto; padding: 0;
+  border-radius: calc(var(--radius) * 1.2); overflow: hidden; background: var(--surface); cursor: zoom-in;
+}
+.item-media .frame::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--line); pointer-events: none; }
+.item-media .frame img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .item-media .zoom-hint { position: absolute; right: 11px; bottom: 11px; display: inline-flex; align-items: center; gap: 5.5px; padding: 7px 11px; border-radius: 791px; background: rgba(12,12,11,.78); color: #f4f3ef; font-size: calc(11px * var(--ts)); backdrop-filter: blur(5.5px); }
 .item-media .zoom-hint svg { width: 11.5px; height: 11.5px; }
 /* Extra previews: a vertical strip of thumbnails just left of the main preview */
 .item-media:has(.item-thumbs) { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12.5px; align-items: start; }
+.item-media:has(.item-thumbs) .frame { margin-inline: 0; }
 .item-thumbs { order: -1; display: flex; flex-direction: column; gap: 9px; }
 .item-thumbs button { width: 64px; aspect-ratio: 1; padding: 0; overflow: hidden; border-radius: 13px; background: var(--surface); opacity: .65; box-shadow: 0 0 0 1px var(--line); transition: opacity .2s, box-shadow .25s, transform .3s var(--ease); }
 .item-thumbs button:hover { opacity: 1; transform: translateY(-1px); }
@@ -1442,13 +1448,11 @@ html.qv-lock { overflow: hidden; }
 .qv-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 5.5px clamp(18px, 2vw, 32.5px) 36px; }
 .item.is-qv { padding-top: 5.5px; }
 .item.is-qv .item-media { top: 0; }
-.item.is-qv .item-media .frame img { max-height: calc(100vh - 144px); }
-.item.is-qv .item-media .frame { min-height: min(calc(100vh - 144px), 684px); display: grid; place-items: center; }
+.item.is-qv .item-media { --max-h: min(calc(100vh - 144px), 684px); }
 .item.is-qv .item-info h1 { font-size: clamp(26px, 3vw, 43px); margin-top: 0; }
 @media (max-width: 640px) {
   .qv { padding: 16px 0 0; }
   .qv-panel { border-radius: 21.5px 21.5px 0 0; }
-  .item.is-qv .item-media .frame { min-height: 0; }
   .qv-bar { padding: 11px 11px 0 16px; }
   .qv-body { padding: 3.5px 14.5px 18px; }
 }

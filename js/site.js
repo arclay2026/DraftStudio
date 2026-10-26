@@ -118,6 +118,7 @@
   // Lighter WebP copies of previews (tools/build-images.py): "sm" for thumbnails,
   // "md" for big previews. Falls back to the original if a copy isn't there yet.
   // width/height from js/preview-sizes.js let the page keep the space before the picture arrives
+  const arOf = src => { const d = (window.DS_SIZES || {})[src]; return d ? +(d[0] / d[1]).toFixed(4) : 1; };
   const dims = src => { const d = (window.DS_SIZES || {})[src]; return d ? ` width="${d[0]}" height="${d[1]}"` : ""; };
   const imgSrc = (src, size) => {
     const m = /^previews\/([^/]+)\.(jpe?g|png)$/i.exec(src || "");
@@ -1396,7 +1397,7 @@
       ${picker}`;
     return `
           <div class="item-media">
-            <button class="frame" type="button" data-zoom aria-label="Zoom preview">
+            <button class="frame" type="button" data-zoom aria-label="Zoom preview" style="--ar:${arOf(it.preview)}">
               <img ${imgSet(it.preview, "(max-width: 900px) 92vw, 50vw")} alt="${esc(it.title)} preview" fetchpriority="high">
               <span class="zoom-hint">${icon("search")} Zoom</span>
             </button>
@@ -1453,6 +1454,7 @@
       const img = $("[data-zoom] img", root), tmp = document.createElement("div");
       tmp.innerHTML = `<img ${imgSet(src, "(max-width: 900px) 92vw, 50vw")} alt="${esc(it.title)} preview">`;
       img.replaceWith(tmp.firstChild);
+      $("[data-zoom]", root).style.setProperty("--ar", arOf(src));
       $$("[data-shot]", root).forEach(x => x.setAttribute("aria-pressed", x === b));
     }));
     $("[data-share]", root).addEventListener("click", () => {
