@@ -1680,10 +1680,10 @@ html.qv-lock { overflow: hidden; }
   .cvh { grid-template-columns: 1fr; padding: 28px 18px 26px; }
   .cvh-copy { padding-inline: 4px; }
   .cvh-shot {
-    width: min(76%, 300px); margin: 4px auto 0; transform: none; padding: 7px; border-radius: 38px; background: #0b0b0c;
+    width: min(76%, 300px); margin: 4px auto 0; transform: none; padding: 6px; border-radius: 20px; background: #0b0b0c;
     box-shadow: 0 30px 60px -30px rgba(15, 23, 42, .6), 0 0 0 1px rgba(255, 255, 255, .06) inset, 0 0 0 1px rgba(0, 0, 0, .12);
   }
-  .cvh-shot img { border-radius: 31px; }
+  .cvh-shot img { border-radius: 14px; }
   .cvh:hover .cvh-shot { transform: none; }
 }
 @media (prefers-reduced-motion: reduce) { .cvh-shot, .cvh:hover .cvh-shot { transition: none; } }
