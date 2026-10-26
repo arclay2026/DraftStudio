@@ -953,16 +953,13 @@ h2 .soft { color: var(--soft); }
 .item-media .frame img { width: 100%; height: auto; max-height: calc(100vh - 110.5px); object-fit: contain; }
 .item-media .zoom-hint { position: absolute; right: 11px; bottom: 11px; display: inline-flex; align-items: center; gap: 5.5px; padding: 7px 11px; border-radius: 791px; background: rgba(12,12,11,.78); color: #f4f3ef; font-size: calc(11px * var(--ts)); backdrop-filter: blur(5.5px); }
 .item-media .zoom-hint svg { width: 11.5px; height: 11.5px; }
-/* Extra previews float as a frosted strip at the top left of the main preview */
-.item-thumbs {
-  position: absolute; top: 12.5px; left: 12.5px; z-index: 2; display: flex; gap: 6px; padding: 5px; border-radius: 17px;
-  background: rgba(255, 255, 255, .62); box-shadow: 0 10px 26px -14px rgba(15, 15, 15, .45), inset 0 0 0 1px rgba(255, 255, 255, .55);
-  -webkit-backdrop-filter: blur(14px) saturate(1.6); backdrop-filter: blur(14px) saturate(1.6);
-}
-.item-thumbs button { width: 54px; aspect-ratio: 1; padding: 0; overflow: hidden; border-radius: 12px; background: var(--surface); opacity: .7; box-shadow: 0 0 0 1px rgba(15, 15, 15, .08); transition: opacity .2s, box-shadow .25s, transform .3s var(--ease); }
+/* Extra previews: a vertical strip of thumbnails just left of the main preview */
+.item-media:has(.item-thumbs) { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12.5px; align-items: start; }
+.item-thumbs { order: -1; display: flex; flex-direction: column; gap: 9px; }
+.item-thumbs button { width: 64px; aspect-ratio: 1; padding: 0; overflow: hidden; border-radius: 13px; background: var(--surface); opacity: .65; box-shadow: 0 0 0 1px var(--line); transition: opacity .2s, box-shadow .25s, transform .3s var(--ease); }
 .item-thumbs button:hover { opacity: 1; transform: translateY(-1px); }
-.item-thumbs button[aria-pressed="true"] { opacity: 1; box-shadow: 0 0 0 2px #fff, 0 0 0 3.5px #1f7aff; }
-@media (max-width: 600px) { .item-thumbs { top: 9px; left: 9px; gap: 5px; padding: 4px; border-radius: 14px; } .item-thumbs button { width: 42px; border-radius: 10px; } }
+.item-thumbs button[aria-pressed="true"] { opacity: 1; box-shadow: 0 0 0 2px var(--bg), 0 0 0 3.5px #1f7aff; }
+@media (max-width: 600px) { .item-media:has(.item-thumbs) { gap: 9px; } .item-thumbs { gap: 7px; } .item-thumbs button { width: 46px; border-radius: 10px; } }
 .item-thumbs img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .item-info h1 { font-size: clamp(30.5px, 3.5vw, 52px); font-weight: 600; letter-spacing: var(--tight); margin: 0 0 14.5px; }
 .item-info .desc { font-size: calc(15px * var(--ts)); color: var(--mute); }
