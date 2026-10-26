@@ -1921,9 +1921,9 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 .side .logo-full { height: 28px; width: auto; transition: opacity .2s; }
 .logo-mark { position: absolute; left: 0; top: 1px; display: grid; place-items: center; width: 28px; height: 28px; opacity: 0; transition: opacity .2s; }
 .logo-mark img { width: 28px; height: 28px; }
-.side-fold { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; color: var(--mute); transition: background .15s, color .15s; }
+.side-fold { flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 7px; color: var(--mute); transition: background .15s, color .15s; }
 .side-fold:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); color: var(--fg); }
-.side-fold svg { width: 15px; height: 15px; }
+.side-fold svg { width: 18px; height: 18px; stroke-width: 2; }
 
 
 .side-nav { flex: 1; min-height: 0; overflow-y: auto; overflow-x: hidden; scrollbar-width: none; margin: 0 -4px; padding: 2px 4px 8px; }
@@ -1931,11 +1931,12 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 .side-group { display: flex; flex-direction: column; gap: 1px; }
 .side-label { margin: 16px 0 5px; padding: 0 10px; font-size: calc(11px * var(--ts)); font-weight: 500; color: var(--mute); opacity: .85; white-space: nowrap; letter-spacing: .01em; }
 .side-link {
-  position: relative; display: flex; align-items: center; gap: 9px; width: 100%; height: 30px; padding: 0 9px; border-radius: 8px;
+  position: relative; display: flex; align-items: center; gap: 11px; width: 100%; height: 34px; padding: 0 10px; border-radius: 9px;
   font-size: calc(13px * var(--ts)); font-weight: 450; letter-spacing: -.005em; color: var(--mute); white-space: nowrap; text-align: start;
   transition: background .15s, color .15s, box-shadow .15s;
 }
-.side-link svg { flex: none; width: 16px; height: 16px; stroke-width: 1.6; }
+.side-link svg { flex: none; width: 18px; height: 18px; stroke-width: 2; color: color-mix(in srgb, var(--fg) 78%, transparent); transition: color .15s; }
+.side-link:hover svg, .side-link[aria-current="page"] svg { color: var(--fg); }
 .side-link span { min-width: 0; overflow: hidden; text-overflow: ellipsis; transition: opacity .2s; }
 .side-link:hover { background: color-mix(in srgb, var(--fg) 5%, transparent); color: var(--fg); }
 .side-link[aria-current="page"] {
@@ -1952,7 +1953,7 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 :root[data-rail] .side .logo { width: 28px; }
 :root[data-rail] .side .logo-full { opacity: 0; }
 :root[data-rail] .logo-mark { opacity: 1; }
-:root[data-rail] .side-link { justify-content: center; gap: 0; padding: 0; height: 32px; }
+:root[data-rail] .side-link { justify-content: center; gap: 0; padding: 0; height: 36px; }
 :root[data-rail] .side-link span { flex: 0 0 0; width: 0; padding: 0; opacity: 0; }
 :root[data-rail] .side-label { height: 1px; margin: 10px 8px; padding: 0; background: var(--border); color: transparent; opacity: 1; overflow: hidden; }
 :root[data-rail] .side-nav { overflow: visible; margin: 0; padding-inline: 0; }

@@ -364,18 +364,37 @@
     "ui-side": '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/>'
   });
 
+  // Side menu icons: Lucide (ISC licence, js/vendor/lucide-LICENSE.txt), drawn heavier than the rest of the UI
+  const SIDE_ICONS = {
+    "house": '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    "layout-grid": '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+    "shirt": '<path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>',
+    "spline": '<circle cx="19" cy="5" r="2"/><circle cx="5" cy="19" r="2"/><path d="M5 17A12 12 0 0 1 17 5"/>',
+    "pen-tool": '<path d="m18 13-.654-4.736a4 4 0 00-2.756-3.266l-9.163-2.9a2 2 0 00-2.017.493l-.82.819a2 2 0 00-.492 2.017l2.9 9.163a4 4 0 003.266 2.756L13 18"/><path d="M18.648 12.352a1.205 1.205 0 011.704 0l1.296 1.296a1.205 1.205 0 010 1.704l-6.296 6.296a1.205 1.205 0 01-1.704 0l-1.296-1.296a1.205 1.205 0 010-1.704z"/><path d="m3 3 6.586 6.586"/><circle cx="11" cy="11" r="2"/>',
+    "layout-template": '<rect width="18" height="7" x="3" y="3" rx="1"/><rect width="9" height="7" x="3" y="14" rx="1"/><rect width="5" height="7" x="16" y="14" rx="1"/>',
+    "shapes": '<path d="M8.3 10a.7.7 0 0 1-.626-1.079L11.4 3a.7.7 0 0 1 1.198-.043L16.3 8.9a.7.7 0 0 1-.572 1.1Z"/><rect x="3" y="14" width="7" height="7" rx="1"/><circle cx="17.5" cy="17.5" r="3.5"/>',
+    "palette": '<path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"/><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/>',
+    "qr-code": '<rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/>',
+    "paintbrush": '<path d="m14.622 17.897-10.68-2.913"/><path d="M18.376 2.622a1 1 0 1 1 3.002 3.002L17.36 9.643a.5.5 0 0 0 0 .707l.944.944a2.41 2.41 0 0 1 0 3.408l-.944.944a.5.5 0 0 1-.707 0L8.354 7.348a.5.5 0 0 1 0-.707l.944-.944a2.41 2.41 0 0 1 3.408 0l.944.944a.5.5 0 0 0 .707 0z"/><path d="M9 8c-1.804 2.71-3.97 3.46-6.583 3.948a.507.507 0 0 0-.302.819l7.32 8.883a1 1 0 0 0 1.185.204C12.735 20.405 16 16.792 16 15"/>',
+    "lightbulb": '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+    "file-text": '<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>',
+    "settings": '<path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/>',
+    "panel-left": '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/>'
+  };
+  const sideIcon = id => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${SIDE_ICONS[id]}</svg>`;
+
   /* Side menu: a dashboard-style rail on the left. On phones it becomes a
      drawer behind a slim top bar. */
   function header(active) {
     const GROUPS = [
-      { items: [["index.html", "Home", "home", "home"], ["browse.html", "Browse all", "browse", "grid"]] },
-      { title: "Files", items: [["browse.html?cat=mockups", "Mockups", "mockups", "t-shirt"], ["browse.html?cat=vectors", "Vectors", "vectors", "vector"],
-        ["browse.html?cat=logos", "Logos", "logos", "pen-tool"], ["browse.html?cat=templates", "Templates", "templates", "layers"], ["icons.html", "Icons", "icons", "smile"]] },
-      { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR Code Studio", "qr", "ui-qr"], ["canvas.html", "Canvas", "canvas", "brush"]] },
-      { title: "Help", items: [["learn.html", "Learn", "learn", "lightbulb"], ["license.html", "License", "license", "file"]] }
+      { items: [["index.html", "Home", "home", "house"], ["browse.html", "Browse all", "browse", "layout-grid"]] },
+      { title: "Files", items: [["browse.html?cat=mockups", "Mockups", "mockups", "shirt"], ["browse.html?cat=vectors", "Vectors", "vectors", "spline"],
+        ["browse.html?cat=logos", "Logos", "logos", "pen-tool"], ["browse.html?cat=templates", "Templates", "templates", "layout-template"], ["icons.html", "Icons", "icons", "shapes"]] },
+      { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR Code Studio", "qr", "qr-code"], ["canvas.html", "Canvas", "canvas", "paintbrush"]] },
+      { title: "Help", items: [["learn.html", "Learn", "learn", "lightbulb"], ["license.html", "License", "license", "file-text"]] }
     ];
     const link = ([href, label, key, ic]) =>
-      `<a class="side-link" href="${href}" data-label="${label}"${active === key ? ' aria-current="page"' : ""}>${icon(ic)}<span>${label}</span></a>`;
+      `<a class="side-link" href="${href}" data-label="${label}"${active === key ? ' aria-current="page"' : ""}>${sideIcon(ic)}<span>${label}</span></a>`;
     const el = $("[data-header]");
     if (!el) return;
     el.outerHTML = `
@@ -392,13 +411,13 @@
             <img class="logo-full logo-d" src="assets/logo-dark.svg" alt="Draft Studio" width="133" height="28">
             <span class="logo-mark" aria-hidden="true"><img class="logo-l" src="assets/logo-mark.svg" alt="" width="28" height="28"><img class="logo-d" src="assets/logo-mark-dark.svg" alt="" width="28" height="28"></span>
           </a>
-          <button class="side-fold" type="button" aria-label="Collapse menu" data-side-fold>${icon("ui-side")}</button>
+          <button class="side-fold" type="button" aria-label="Collapse menu" data-side-fold>${sideIcon("panel-left")}</button>
         </div>
         <nav class="side-nav" aria-label="Main">
           ${GROUPS.map(g => `<div class="side-group">${g.title ? `<p class="side-label">${g.title}</p>` : ""}${g.items.map(link).join("")}</div>`).join("")}
         </nav>
         <div class="side-foot">
-          <button class="side-link set-btn" type="button" data-label="Settings" aria-expanded="false" aria-controls="settings" data-open-settings>${icon("settings")}<span>Settings</span></button>
+          <button class="side-link set-btn" type="button" data-label="Settings" aria-expanded="false" aria-controls="settings" data-open-settings>${sideIcon("settings")}<span>Settings</span></button>
         </div>
       </aside>
       <div class="side-scrim" data-side-close></div>`;
