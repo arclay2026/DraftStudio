@@ -371,17 +371,22 @@ h2 .soft { color: var(--soft); }
 
 /* 02 Logos: logo cards on paper */
 .s-logos { --ink: var(--fg); background: var(--surface); border: 1px solid var(--border); }
-.logo-stack { position: absolute; inset: 50.5px 8% 50%; display: grid; place-items: center; transition: transform .8s var(--ease); }
+.logo-stack { position: absolute; inset: 50.5px 4% 49%; display: grid; place-items: center; transition: transform .8s var(--ease); }
+/* Brand cards: each logo shown big on its own colour, like a presentation board */
 .logo-stack span {
-  grid-area: 1 / 1; display: grid; place-items: center; width: min(52%, 254px); aspect-ratio: 16 / 9; border-radius: 14.5px; background: #fff;
-  box-shadow: 0 23.5px 39.5px -22.5px rgba(15, 15, 15, .35); padding: 9%;
-  transition: transform .8s var(--ease);
+  grid-area: 1 / 1; display: block; width: min(28%, 320px); aspect-ratio: 4 / 3; overflow: hidden; border-radius: 18px; background: #fff;
+  box-shadow: 0 30px 50px -26px rgba(15, 15, 15, .45), 0 0 0 1px rgba(15, 15, 15, .05);
+  transition: transform .9s var(--spring, var(--ease)), box-shadow .6s;
 }
-.logo-stack span:first-child { transform: rotate(-6deg) translate(-6%, -4%); z-index: 2; }
-.logo-stack span:last-child { transform: rotate(5deg) translate(8%, 10%); }
-.s-logos.is-open .logo-stack span:first-child { transform: rotate(-4deg) translate(-38%, -8%); }
-.s-logos.is-open .logo-stack span:last-child { transform: rotate(4deg) translate(38%, 12%); }
-.logo-stack img { width: 100%; height: auto; }
+.logo-stack img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.32); }
+/* closed: a tidy fanned pile */
+.logo-stack span:nth-child(1) { z-index: 3; transform: rotate(-3deg); }
+.logo-stack span:nth-child(2) { z-index: 2; transform: rotate(-11deg) translate(-9%, 5%); }
+.logo-stack span:nth-child(3) { z-index: 1; transform: rotate(7deg) translate(9%, 7%); }
+/* open: the cards spread out, newest in front */
+.s-logos.is-open .logo-stack span:nth-child(1) { transform: translateY(-5%) scale(1.06); box-shadow: 0 40px 60px -28px rgba(15, 15, 15, .5), 0 0 0 1px rgba(15, 15, 15, .05); }
+.s-logos.is-open .logo-stack span:nth-child(2) { transform: rotate(-6deg) translate(-104%, 6%); }
+.s-logos.is-open .logo-stack span:nth-child(3) { transform: rotate(6deg) translate(104%, 6%); }
 .shelf:not(.is-open) .logo-stack span { width: 86%; }
 
 /* 03 Vectors: pen-tool construction on dark */
@@ -1106,9 +1111,10 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 .5px rgb
   .shelf .shelf-body { opacity: 1; transform: none; pointer-events: auto; }
   .shelf .shelf-vtitle { display: none; }
   .shelf:not(.is-open) .shelf-count { opacity: 1; }
-  .shelf .logo-stack span, .shelf:not(.is-open) .logo-stack span { width: min(44%, 190px); }
-  .s-logos .logo-stack span:first-child { transform: rotate(-4deg) translate(-36%, -8%); }
-  .s-logos .logo-stack span:last-child { transform: rotate(4deg) translate(36%, 12%); }
+  .shelf .logo-stack span, .shelf:not(.is-open) .logo-stack span { width: min(36%, 170px); }
+  .s-logos .logo-stack span:nth-child(1), .s-logos.is-open .logo-stack span:nth-child(1) { transform: translateY(-4%); }
+  .s-logos .logo-stack span:nth-child(2), .s-logos.is-open .logo-stack span:nth-child(2) { transform: rotate(-7deg) translate(-62%, 8%); }
+  .s-logos .logo-stack span:nth-child(3), .s-logos.is-open .logo-stack span:nth-child(3) { transform: rotate(7deg) translate(62%, 8%); }
   .s-templates:not(.is-open) .tpl-stack { transform: none; }
   .s-templates .tpl.t1 { transform: rotate(-10deg) translateX(-62%); }
   .s-templates .tpl.t3 { transform: rotate(10deg) translateX(62%); }

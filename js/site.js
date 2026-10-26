@@ -611,6 +611,13 @@
 
   /* ---------- Home ---------- */
   function home() {
+    // Logos shelf: the three newest logos, each on its own brand colour (its second preview when it has one)
+    const stack = $("[data-logo-stack]");
+    if (stack) {
+      const logos = items.filter(it => it.category === "Logos" && !it.sold).slice(0, 3);
+      if (logos.length) stack.innerHTML = logos.map(it => `<span><img ${imgSrc((it.gallery && it.gallery[0]) || it.preview, "sm")} alt="" loading="lazy"></span>`).join("");
+      stack.dataset.n = logos.length;
+    }
     heroFx();
     heroSearch();
 
