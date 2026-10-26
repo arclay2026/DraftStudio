@@ -2001,7 +2001,7 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
   :root[data-rail] .side { overflow: hidden; transition: width .42s var(--ease), box-shadow .35s var(--ease), background-color .3s; }
   :root[data-rail] .side.is-peek { width: 228px; box-shadow: 18px 0 44px -22px rgba(0, 0, 0, .28), 1px 0 0 var(--border); }
   :root[data-rail] .side-top { padding-left: 6px; }
-  :root[data-rail] .side-nav { margin: 0; padding-inline: 0; overflow-x: hidden; }
+  :root[data-rail] .side-nav { overflow-x: hidden; } /* keeps the base 4px inner padding so the active ring isn't clipped */
   :root[data-rail] .side-link { padding: 0 11px; height: 36px; }
   :root[data-rail] .side-link span, :root[data-rail] .side .logo-full, :root[data-rail] .side-fold, :root[data-rail] .side-new { transition: opacity .22s var(--ease) .06s; }
   :root[data-rail] .side:not(.is-peek) .side-link span,
