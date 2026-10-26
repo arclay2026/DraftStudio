@@ -1585,7 +1585,8 @@
   "Layers & artboards": "Capas y mesas de trabajo",
   "Pen, shapes & text": "Pluma, formas y texto",
   "Open the canvas": "Abrir el lienzo",
-  "The Drafty Canvas editor with an event flyer open": "El editor Drafty Canvas con un cartel de evento abierto"
+  "The Drafty Canvas editor with an event flyer open": "El editor Drafty Canvas con un cartel de evento abierto",
+  "Pen & shapes": "Pluma y formas"
  },
  "patterns": {
   "^(\\d+) files$": "$1 archivos",

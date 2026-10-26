@@ -1585,7 +1585,8 @@
   "Layers & artboards": "图层和画板",
   "Pen, shapes & text": "钢笔、形状和文字",
   "Open the canvas": "打开画布",
-  "The Drafty Canvas editor with an event flyer open": "打开了活动海报的 Drafty Canvas 编辑器"
+  "The Drafty Canvas editor with an event flyer open": "打开了活动海报的 Drafty Canvas 编辑器",
+  "Pen & shapes": "钢笔和形状"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",

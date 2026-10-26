@@ -1585,7 +1585,8 @@
   "Layers & artboards": "الطبقات ولوحات الرسم",
   "Pen, shapes & text": "القلم والأشكال والنص",
   "Open the canvas": "افتح لوحة الرسم",
-  "The Drafty Canvas editor with an event flyer open": "محرّر Drafty Canvas مع ملصق فعالية مفتوح"
+  "The Drafty Canvas editor with an event flyer open": "محرّر Drafty Canvas مع ملصق فعالية مفتوح",
+  "Pen & shapes": "القلم والأشكال"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",

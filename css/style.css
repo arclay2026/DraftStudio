@@ -1676,11 +1676,19 @@ html.qv-lock { overflow: hidden; }
 .cvh-shot img { display: block; width: 100%; height: auto; }
 .cvh:hover .cvh-shot { transform: perspective(1800px) rotateY(-3deg) rotateX(0deg) translateX(1.5%); box-shadow: 0 50px 90px -40px rgba(15, 23, 42, .6), 0 0 0 1px rgba(0, 0, 0, .1); }
 @media (max-width: 900px) {
-  /* phones and tablets: the editor as it looks on a phone, in a slim device frame */
-  .cvh { grid-template-columns: 1fr; padding: 28px 18px 26px; }
-  .cvh-copy { padding-inline: 4px; }
+  /* phones and tablets: one centred column; features become compact chips,
+     the button spans the width, and the editor shows as it looks on a phone */
+  .cvh { grid-template-columns: 1fr; gap: 24px; padding: 26px 18px 24px; text-align: center; }
+  .cvh-copy { display: flex; flex-direction: column; align-items: center; }
+  .cvh h2 { margin: 12px 0 8px; font-size: clamp(25px, 7vw, 34px); line-height: 1.12; text-wrap: balance; }
+  .cvh-copy > p { font-size: calc(14px * var(--ts)); line-height: 1.6; max-width: 30em; text-wrap: pretty; }
+  .cvh-feats { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin: 16px 0 20px; }
+  .cvh-feats li { gap: 6px; padding: 5px 11px 5px 6px; border-radius: 999px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); font-size: calc(12.5px * var(--ts)); font-weight: 500; }
+  .cvh-feats svg { width: 17px; height: 17px; padding: 3.5px; }
+  .cvh-btns { flex-direction: column; gap: 8px; width: 100%; max-width: 380px; }
+  .cvh-btns .btn { width: 100%; justify-content: center; }
   .cvh-shot {
-    width: min(76%, 300px); margin: 4px auto 0; transform: none; padding: 6px; border-radius: 20px; background: #0b0b0c;
+    width: min(72%, 290px); margin: 0 auto; transform: none; padding: 6px; border-radius: 20px; background: #0b0b0c;
     box-shadow: 0 30px 60px -30px rgba(15, 23, 42, .6), 0 0 0 1px rgba(255, 255, 255, .06) inset, 0 0 0 1px rgba(0, 0, 0, .12);
   }
   .cvh-shot img { border-radius: 14px; }

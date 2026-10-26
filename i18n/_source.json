@@ -1528,7 +1528,8 @@
   "Layers & artboards",
   "Pen, shapes & text",
   "Open the canvas",
-  "The Drafty Canvas editor with an event flyer open"
+  "The Drafty Canvas editor with an event flyer open",
+  "Pen & shapes"
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",
