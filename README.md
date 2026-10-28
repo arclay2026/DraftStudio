@@ -112,3 +112,7 @@ actions: `download/<file>` (every file, icon, palette and QR download), `search/
 `share/<design>`, `contact/whatsapp`, `contact/email` and `chat/open`. Nothing is counted when the
 site runs on your own computer (localhost).
 
+
+## Backend (planned)
+
+Sign-in, a database and online payments: PHP + MySQL on Hostinger with PayFast. The design is in [docs/backend-design.md](docs/backend-design.md); nothing is built yet.
