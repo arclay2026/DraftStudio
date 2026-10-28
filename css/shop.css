@@ -21,8 +21,8 @@
   --sp-paper: #fbf9f4;
   --sp-gold: #a07a2c;
 }
-:root[data-theme="dark"] { --sp-panel: #0f0f10; --sp-ink-2: #c4c4c8; --sp-paper: #17150f; --sp-gold: #d2ad62; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sp-panel: #0f0f10; --sp-ink-2: #c4c4c8; --sp-paper: #17150f; --sp-gold: #d2ad62; } }
+:root[data-theme="dark"] { --sp-panel: #1c1c1f; --sp-ink-2: #c4c4c8; --sp-paper: #17150f; --sp-gold: #d2ad62; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --sp-panel: #1c1c1f; --sp-ink-2: #c4c4c8; --sp-paper: #17150f; --sp-gold: #d2ad62; } }
 
 /* ---------- Brand bar (focus pages) ---------- */
 body.sp-focus { padding-inline-start: 0; background: var(--bg); }

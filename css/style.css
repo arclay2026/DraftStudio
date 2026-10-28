@@ -3212,13 +3212,13 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
    default) follows the system; the choice is stored as data-theme on <html>.
    ===================================================================== */
 :root[data-theme="dark"] {
-  --bg: #0a0a0a; --bg-2: #161616; --card: #141414; --card-2: #232323;
+  --bg: #161618; --bg-2: #1f1f22; --card: #1c1c1f; --card-2: #2a2a2e;
   --fg: #f5f5f5; --mute: #9b9b9b; --line: rgba(255, 255, 255, .08); --line-2: rgba(255, 255, 255, .16);
-  --shadow: 0 21px 44px -21px rgba(0, 0, 0, .8); --glass: rgba(10, 10, 10, .78);
-  --surface: #121212; --surface-2: #1b1b1b; --raised: #2e2e2e; --fill: #1c1c1c; --fill-2: #272727;
-  --border: #262626; --border-2: #3a3a3a; --outline: #575757; --soft: #626262; --on-fg: #0a0a0a;
+  --shadow: 0 21px 44px -21px rgba(0, 0, 0, .8); --glass: rgba(22, 22, 24, .8);
+  --surface: #18181b; --surface-2: #212124; --raised: #333338; --fill: #202023; --fill-2: #2a2a2e;
+  --border: #2a2a2e; --border-2: #3d3d42; --outline: #5a5a60; --soft: #66666c; --on-fg: #161618;
   --grid: rgba(255, 255, 255, .035); --dot: rgba(255, 255, 255, .08); --spot: rgba(255, 255, 255, .05);
-  --forest: #151515; --forest-2: #2a2a2a; --pink: #262626; --lime-2: #262626;
+  --forest: #1c1c1f; --forest-2: #2e2e33; --pink: #2a2a2e; --lime-2: #2a2a2e;
   --f-psd: #f5f5f5; --f-ai: #f5f5f5; --f-svg: #f5f5f5; --f-pdf: #f5f5f5; --f-eps: #f5f5f5; --f-fig: #f5f5f5; --f-img: #f5f5f5;
   color-scheme: dark;
 }
@@ -3233,7 +3233,7 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
 :root[data-theme="dark"] .dots { --neon: var(--dl); }
 /* settings floats above the page like an iOS sheet */
 :root[data-theme="dark"] .set { --surface: #1c1c1c; --fill: #282828; --fill-2: #323232; --border: #343434; box-shadow: 0 30px 80px -18px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .04); }
-:root[data-theme="dark"] { --side-bg: #000000; }
+:root[data-theme="dark"] { --side-bg: #111113; }  /* Graphite */
 :root[data-theme="dark"] .shell { box-shadow: none; }
 :root[data-theme="dark"] .side-scrim { background: rgba(0, 0, 0, .72); }
 @media (max-width: 1023.98px) { :root[data-theme="dark"] .side { background: #121212; border-right-color: #262626; } }
@@ -3254,7 +3254,7 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
   :root:not([data-theme="light"]) .dots { --neon: var(--dl); }
   /* settings floats above the page like an iOS sheet */
   :root:not([data-theme="light"]) .set { --surface: #1c1c1c; --fill: #282828; --fill-2: #323232; --border: #343434; box-shadow: 0 30px 80px -18px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .04); }
-  :root:not([data-theme="light"]) { --side-bg: #000000; }
+  :root:not([data-theme="light"]) { --side-bg: #111113; }
   :root:not([data-theme="light"]) .shell { box-shadow: none; }
   :root:not([data-theme="light"]) .side-scrim { background: rgba(0, 0, 0, .72); }
   @media (max-width: 1023.98px) { :root:not([data-theme="light"]) .side { background: #121212; border-right-color: #262626; } }
@@ -3264,13 +3264,13 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
   :root:not([data-theme="light"]) .footer, :root:not([data-theme="light"]) .qt { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), inset 0 -1px 0 rgba(255, 255, 255, .07); }
   :root:not([data-theme="light"]) .qv-backdrop { background: rgba(0, 0, 0, .62); }
   :root:not([data-theme="light"]) {
-  --bg: #0a0a0a; --bg-2: #161616; --card: #141414; --card-2: #232323;
+  --bg: #161618; --bg-2: #1f1f22; --card: #1c1c1f; --card-2: #2a2a2e;
   --fg: #f5f5f5; --mute: #9b9b9b; --line: rgba(255, 255, 255, .08); --line-2: rgba(255, 255, 255, .16);
-  --shadow: 0 21px 44px -21px rgba(0, 0, 0, .8); --glass: rgba(10, 10, 10, .78);
-  --surface: #121212; --surface-2: #1b1b1b; --raised: #2e2e2e; --fill: #1c1c1c; --fill-2: #272727;
-  --border: #262626; --border-2: #3a3a3a; --outline: #575757; --soft: #626262; --on-fg: #0a0a0a;
+  --shadow: 0 21px 44px -21px rgba(0, 0, 0, .8); --glass: rgba(22, 22, 24, .8);
+  --surface: #18181b; --surface-2: #212124; --raised: #333338; --fill: #202023; --fill-2: #2a2a2e;
+  --border: #2a2a2e; --border-2: #3d3d42; --outline: #5a5a60; --soft: #66666c; --on-fg: #161618;
   --grid: rgba(255, 255, 255, .035); --dot: rgba(255, 255, 255, .08); --spot: rgba(255, 255, 255, .05);
-  --forest: #151515; --forest-2: #2a2a2a; --pink: #262626; --lime-2: #262626;
+  --forest: #1c1c1f; --forest-2: #2e2e33; --pink: #2a2a2e; --lime-2: #2a2a2e;
   --f-psd: #f5f5f5; --f-ai: #f5f5f5; --f-svg: #f5f5f5; --f-pdf: #f5f5f5; --f-eps: #f5f5f5; --f-fig: #f5f5f5; --f-img: #f5f5f5;
   color-scheme: dark;
   }
