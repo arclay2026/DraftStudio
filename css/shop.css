@@ -708,3 +708,10 @@ body.sp-focus { padding-inline-start: 0; background: var(--bg); }
   .au-col { animation: none; }
   .ty-ok, .ty-ok svg, .ty-ok::after { animation: none; stroke-dashoffset: 0; }
 }
+
+/* Soft squircle corners on the shop pages' panels and controls (picture frames stay round) */
+.sp-input, .sp-tag, .sp-pv, .sp-chip, .sp-tile, .sp-switch, .sp-copy, .sp-eye, .co-express, .co-files, .co-hold, .co-pay-note, .co-trust,
+.co-agree, .co-cert-preview, .co-prod, .co-help, .co-sec-h .n, .ty-card, .ty-dl, .ty-next a, .ty-next .ic, .cert, .ua-hero, .ua-stats,
+.ua-box, .ua-feed .ic, .st-card, .st-nav a, .tbl, .hub-list, .au-note, .ty-hero, .ty-ok, .sp-tabs .n, .ua-tools .sp-input {
+  corner-shape: superellipse(1.5);
+}

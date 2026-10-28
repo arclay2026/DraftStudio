@@ -3277,11 +3277,16 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
 }
 @media (max-width: 640px) { .hero-sub br { display: none; } }
 
-/* Soft squircle corners on everything rounded: buttons, panels, menus, swatches.
-   Picture frames (anything holding an image, video or canvas) and spinning
-   loaders keep plain round corners. Browsers without corner-shape ignore this. */
-* { corner-shape: superellipse(1.5); }
-*::before, *::after { corner-shape: superellipse(1.5); }
-:where(img, picture, video, canvas, iframe, .hero-photo, .ty-spin, .spin, .ring,
-  :has(> img, > picture, > video, > canvas, > iframe, > .slide)) { corner-shape: round; }
-.ty-wait .ring::before, .ty-wait .ring::after { corner-shape: round; }
+/* Soft squircle corners on controls, swatches and panels. Listed by name on
+   purpose: a site-wide * rule made Chrome repaint far too much and stutter.
+   Picture frames keep plain round corners. Browsers without corner-shape ignore this. */
+.icon-btn, .glass-btn, .hsearch-go, .qs-iconbtn, .pal-btn, .ps-tool, .qv-btn, .ch-fab, .ch-send, .side-fold, .side-link,
+.sel-btn, .sel-toggle, .sel-menu, .sel-menu button, .sw-clear, .lt, .lt-chip,
+.dd-btn, .dd-toggle, .dd-menu, .dd-menu button, .dd-ico, .field, .seg, .seg-thumb, .search-results, .hsearch-results, .hsearch-field,
+.cx-dd-btn, .cx-ddlist, .cx-pop, .cx-menu, .cx-poplist button,
+.sw, .swatch, .ix-swatches button, .ps-chip, .sw-dot, .cvh-feats svg,
+.drop-req, .pal, .pt, .pt-stage, .pt-swatches, .qs-card, .qs-stage, .qs-tile, .qs-type, .ix, .ix-preview, .ix-big, .ix-grid a,
+.fx-panel, .lx-panel, .lx-ticket, .qv-panel, .qt-card, .icon-cell, .inspector, .hero-dots, .nav-drop, .cpick, .set, .price-box, .notice,
+.side-new, .cvh-new, .fchip, .eyebrow, .kbd, .hsearch-tags a, .tag, .shelf-count {
+  corner-shape: superellipse(1.5);
+}
