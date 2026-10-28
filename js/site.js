@@ -439,7 +439,7 @@
         <div class="wrap">
           <div class="fgrid">
             <div class="f-brand">
-              <a class="logo" href="index.html" aria-label="Draft Studio home"><img src="assets/logo-dark.svg" alt="Draft Studio" width="152" height="32"></a>
+              <a class="logo" href="index.html" aria-label="Draft Studio home"><img class="f-logo-w" src="assets/logo-dark.svg" alt="Draft Studio" width="152" height="32"><img class="f-logo-k" src="assets/logo.svg" alt="Draft Studio" width="152" height="32"></a>
               <p>${esc(s.tagline)}</p>
             </div>
             <nav class="f-links" aria-label="Files">

@@ -819,6 +819,26 @@ h2 .soft { color: var(--soft); }
 .f-links a:hover { color: #fff; }
 .f-bottom { display: flex; justify-content: space-between; gap: 12.5px; padding-top: 19px; border-top: 1px solid rgba(255, 255, 255, .12); font-size: calc(11px * var(--ts)); color: rgba(255, 255, 255, .45); }
 .f-bottom a:hover { color: #fff; }
+.footer .f-logo-k { display: none; }
+/* Dark mode: the footer turns light, so the page ends on a bright band */
+:root[data-theme="dark"] .footer { background: #f2f2f2; color: #0f0f0f; box-shadow: none; }
+:root[data-theme="dark"] .footer .f-brand p { color: rgba(15, 15, 15, .6); }
+:root[data-theme="dark"] .footer h2 { color: rgba(15, 15, 15, .5); }
+:root[data-theme="dark"] .footer .f-links a { color: rgba(15, 15, 15, .85); }
+:root[data-theme="dark"] .footer .f-links a:hover, :root[data-theme="dark"] .footer .f-bottom a:hover { color: #0f0f0f; }
+:root[data-theme="dark"] .footer .f-bottom { color: rgba(15, 15, 15, .5); border-top-color: rgba(15, 15, 15, .12); }
+:root[data-theme="dark"] .footer .f-logo-w { display: none; }
+:root[data-theme="dark"] .footer .f-logo-k { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .footer { background: #f2f2f2; color: #0f0f0f; box-shadow: none; }
+  :root:not([data-theme="light"]) .footer .f-brand p { color: rgba(15, 15, 15, .6); }
+  :root:not([data-theme="light"]) .footer h2 { color: rgba(15, 15, 15, .5); }
+  :root:not([data-theme="light"]) .footer .f-links a { color: rgba(15, 15, 15, .85); }
+  :root:not([data-theme="light"]) .footer .f-links a:hover, :root:not([data-theme="light"]) .footer .f-bottom a:hover { color: #0f0f0f; }
+  :root:not([data-theme="light"]) .footer .f-bottom { color: rgba(15, 15, 15, .5); border-top-color: rgba(15, 15, 15, .12); }
+  :root:not([data-theme="light"]) .footer .f-logo-w { display: none; }
+  :root:not([data-theme="light"]) .footer .f-logo-k { display: block; }
+}
 
 /* ---------- Search overlay ---------- */
 .search-modal {
@@ -3240,7 +3260,7 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
 /* glass cards on photos stay light */
 :root[data-theme="dark"] .drop-panel, :root[data-theme="dark"] .drop-info { --fg: #0f0f0f; --on-fg: #ffffff; --mute: #6f6f6f; --surface: #ffffff; --outline: #a6a6a6; --f-psd: #0f0f0f; --f-ai: #0f0f0f; --f-svg: #0f0f0f; --f-pdf: #0f0f0f; --f-eps: #0f0f0f; --f-fig: #0f0f0f; --f-img: #0f0f0f; color: var(--fg); }
 :root[data-theme="dark"] .hero-dots, :root[data-theme="dark"] .s-vectors, :root[data-theme="dark"] .drop-req, :root[data-theme="dark"] .fx-panel, :root[data-theme="dark"] .ix, :root[data-theme="dark"] .lx-ticket { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); }
-:root[data-theme="dark"] .footer, :root[data-theme="dark"] .qt { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), inset 0 -1px 0 rgba(255, 255, 255, .07); }
+:root[data-theme="dark"] .qt { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), inset 0 -1px 0 rgba(255, 255, 255, .07); }
 :root[data-theme="dark"] .qv-backdrop { background: rgba(0, 0, 0, .62); }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .logo .logo-l { display: none; }
@@ -3261,7 +3281,7 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
   /* glass cards on photos stay light */
   :root:not([data-theme="light"]) .drop-panel, :root:not([data-theme="light"]) .drop-info { --fg: #0f0f0f; --on-fg: #ffffff; --mute: #6f6f6f; --surface: #ffffff; --outline: #a6a6a6; --f-psd: #0f0f0f; --f-ai: #0f0f0f; --f-svg: #0f0f0f; --f-pdf: #0f0f0f; --f-eps: #0f0f0f; --f-fig: #0f0f0f; --f-img: #0f0f0f; color: var(--fg); }
   :root:not([data-theme="light"]) .hero-dots, :root:not([data-theme="light"]) .s-vectors, :root:not([data-theme="light"]) .drop-req, :root:not([data-theme="light"]) .fx-panel, :root:not([data-theme="light"]) .ix, :root:not([data-theme="light"]) .lx-ticket { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); }
-  :root:not([data-theme="light"]) .footer, :root:not([data-theme="light"]) .qt { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), inset 0 -1px 0 rgba(255, 255, 255, .07); }
+  :root:not([data-theme="light"]) .qt { box-shadow: inset 0 1px 0 rgba(255, 255, 255, .07), inset 0 -1px 0 rgba(255, 255, 255, .07); }
   :root:not([data-theme="light"]) .qv-backdrop { background: rgba(0, 0, 0, .62); }
   :root:not([data-theme="light"]) {
   --bg: #171717; --bg-2: #202020; --card: #1c1c1c; --card-2: #2a2a2a;
