@@ -1645,7 +1645,9 @@
   "Ask on WhatsApp": "在 WhatsApp 上咨询",
   "Websites from": "网站起价",
   "See pricing": "查看价格",
-  "Pricing": "价格"
+  "Pricing": "价格",
+  "Want one for your business?": "想为您的企业也做一个？",
+  "Websites from R3,500, designed, built and launched for you.": "网站起价 R3,500，为您设计、搭建并上线。"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",

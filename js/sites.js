@@ -59,6 +59,9 @@
       </article>`).join("");
   });
 
+  // WhatsApp buttons on these pages (data-wa="message")
+  $$("[data-wa]").forEach(a => { a.href = `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(a.dataset.wa)}`; a.target = "_blank"; a.rel = "noopener"; });
+
   /* ---------- pricing.html: website packages ---------- */
   const plans = $("[data-plans]");
   if (plans && DS.webPackages) {
@@ -75,7 +78,6 @@
         <a class="btn ${k.popular ? "btn-light" : "btn-dark"} pl-btn" href="${pwa(k.name)}" target="_blank" rel="noopener">Get started</a>
         <ul>${k.items.map(i => `<li>${TICK}<span>${esc(i)}</span></li>`).join("")}</ul>
       </article>`).join("");
-    $$("[data-wa]").forEach(a => { a.href = `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(a.dataset.wa)}`; a.target = "_blank"; a.rel = "noopener"; });
     const note = $("[data-plans-note]");
     if (note && DS.webPackagesNote) note.textContent = DS.webPackagesNote;
   }

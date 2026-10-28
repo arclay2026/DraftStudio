@@ -1588,7 +1588,9 @@
   "Ask on WhatsApp",
   "Websites from",
   "See pricing",
-  "Pricing"
+  "Pricing",
+  "Want one for your business?",
+  "Websites from R3,500, designed, built and launched for you."
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",

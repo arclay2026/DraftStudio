@@ -1645,7 +1645,9 @@
   "Ask on WhatsApp": "Perguntar no WhatsApp",
   "Websites from": "Sites a partir de",
   "See pricing": "Ver preços",
-  "Pricing": "Preços"
+  "Pricing": "Preços",
+  "Want one for your business?": "Quer um para o seu negócio?",
+  "Websites from R3,500, designed, built and launched for you.": "Sites a partir de R3,500, desenhados, construídos e publicados para você."
  },
  "patterns": {
   "^(\\d+) files$": "$1 arquivos",
