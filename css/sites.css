@@ -6,7 +6,7 @@
 .sc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); gap: clamp(16px, 2vw, 24px); }
 .sc { display: flex; flex-direction: column; overflow: hidden; border-radius: 20px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--border); corner-shape: superellipse(1.5); transition: box-shadow .3s, transform .4s var(--ease); }
 .sc:hover { transform: translateY(-3px); box-shadow: inset 0 0 0 1px var(--border-2), 0 30px 60px -36px rgba(0, 0, 0, .35); }
-.sc-win { display: block; margin: 10px 10px 0; overflow: hidden; border-radius: 12px; background: #fff; box-shadow: 0 0 0 1px var(--border); }
+.sc-win { display: block; margin: 10px 10px 0; overflow: hidden; border-radius: 12px; background: var(--surface-2); /* matches the title bar, so no light edge shows at the rounded corners */ box-shadow: 0 0 0 1px var(--border); }
 .sb-bar { display: flex; align-items: center; gap: 6px; height: 32px; padding: 0 12px; border-bottom: 1px solid var(--border); background: var(--surface-2); }
 .sb-bar i { width: 9px; height: 9px; border-radius: 50%; }
 .sb-bar i:nth-child(1) { background: #ff5f57; } .sb-bar i:nth-child(2) { background: #febc2e; } .sb-bar i:nth-child(3) { background: #28c840; }
