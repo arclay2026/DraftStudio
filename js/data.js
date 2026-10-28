@@ -170,6 +170,21 @@ window.DS = {
     }
   ],
 
+  // WEBSITE PACKAGES on pricing.html (prices in rands, once-off).
+  //   from: true shows "From" before the price; popular: true highlights the card.
+  //   "Get started" opens WhatsApp with the package name filled in.
+  webPackages: [
+    { name: "Landing Page", price: "R3,500", desc: "One page that gets customers to call, book or message you.",
+      items: ["Single-page, mobile-first design", "WhatsApp button and contact form", "Google Maps and opening hours", "Basic SEO setup", "1 month of free changes"] },
+    { name: "Business Website", price: "R7,500", popular: true, desc: "A proper home for your business online, built to be found.",
+      items: ["Up to 5 pages", "Custom design in your brand", "Contact form, WhatsApp and maps", "Google Business Profile setup", "3 months of support"] },
+    { name: "Pro Website", price: "R14,500", desc: "For growing businesses that need bookings, a blog or more pages.",
+      items: ["Up to 10 pages", "Booking system or blog", "Speed and SEO optimisation", "Visitor analytics", "3 months of support"] },
+    { name: "Online Store", price: "R22,000", from: true, desc: "Sell online with card and instant EFT payments built in.",
+      items: ["Up to 50 products to start", "PayFast or Yoco payments", "Delivery and collection options", "Order emails and stock control", "Training and 3 months of support"] }
+  ],
+  webPackagesNote: "Domain and hosting are not included. We'll help you set them up and quote them separately.",
+
   // LOGO TYPES for the Type filter on the Logos page
   logoTypes: ["Agency", "Tech", "Sport", "Construction", "Fashion & beauty", "Food & drink", "Finance", "Health", "Other"],
 

@@ -5,6 +5,8 @@
   const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
   const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const ICONS = {
+    "check": '<path d="M20 6 9 17l-5-5"/>',
+    "info": '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
     "clock": '<circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>',
     "message-circle": '<path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/>',
     "calculator": '<rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/>',
@@ -56,6 +58,27 @@
         </div>
       </article>`).join("");
   });
+
+  /* ---------- pricing.html: website packages ---------- */
+  const plans = $("[data-plans]");
+  if (plans && DS.webPackages) {
+    const TICK = ic("check", 2.6);
+    const pwa = name => `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(`Hi Draft Studio, I'm interested in your ${name} package (website).`)}`;
+    plans.innerHTML = DS.webPackages.map(k => `
+      <article class="pl${k.popular ? " is-pop" : ""}">
+        <div class="pl-top">
+          <h2>${esc(k.name)}</h2>
+          ${k.popular ? '<span class="pl-badge">Most popular</span>' : ""}
+        </div>
+        <p class="pl-desc">${esc(k.desc)}</p>
+        <div class="pl-price">${k.from ? "<small>From</small>" : ""}<b>${esc(k.price)}</b><span>once-off</span></div>
+        <a class="btn ${k.popular ? "btn-light" : "btn-dark"} pl-btn" href="${pwa(k.name)}" target="_blank" rel="noopener">Get started</a>
+        <ul>${k.items.map(i => `<li>${TICK}<span>${esc(i)}</span></li>`).join("")}</ul>
+      </article>`).join("");
+    $$("[data-wa]").forEach(a => { a.href = `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(a.dataset.wa)}`; a.target = "_blank"; a.rel = "noopener"; });
+    const note = $("[data-plans-note]");
+    if (note && DS.webPackagesNote) note.textContent = DS.webPackagesNote;
+  }
 
   /* ---------- Home: the newest site as a small "recent work" example ---------- */
   const feat = $("[data-site-feature]");
