@@ -67,11 +67,25 @@
     $("[data-pv-start]").href = wa(s);
     const frame = $("[data-pv-frame]"), stage = $("[data-pv-stage]");
     frame.src = s.frame || s.url;
-    frame.addEventListener("load", () => stage.classList.add("is-loaded"));
+    // Phones and tablets don't show a scrollbar, so hide the site's own one in those
+    // modes (it also narrows the page). Only possible when the site is on the same
+    // origin as this page (both on GitHub Pages); otherwise this quietly does nothing.
+    const frameDoc = () => { try { return frame.contentDocument; } catch (e) { return null; } };
+    const scrollbar = () => {
+      const d = frameDoc(); if (!d || !d.documentElement) return;
+      if (!d.getElementById("ds-pv-style")) {
+        const st = d.createElement("style"); st.id = "ds-pv-style";
+        st.textContent = "html.ds-pv-touch{scrollbar-width:none}html.ds-pv-touch::-webkit-scrollbar,html.ds-pv-touch *::-webkit-scrollbar{display:none}";
+        (d.head || d.documentElement).append(st);
+      }
+      d.documentElement.classList.toggle("ds-pv-touch", stage.dataset.device !== "desktop");
+    };
+    frame.addEventListener("load", () => { stage.classList.add("is-loaded"); scrollbar(); });
     const seg = $("[data-pv-seg]");
     const set = d => {
       stage.dataset.device = d;
       $$("button", seg).forEach(b => b.setAttribute("aria-pressed", b.dataset.device === d));
+      scrollbar();
       const on = $(`[data-device="${d}"]`, seg), th = $(".pv-thumb", seg);
       th.style.width = on.offsetWidth + "px"; th.style.transform = `translateX(${on.offsetLeft - 4}px)`;
     };
