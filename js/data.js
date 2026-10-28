@@ -152,6 +152,24 @@ window.DS = {
     }
   ],
 
+  // WEBSITES we designed and built, shown as cards on websites.html.
+  //   shot   a full-page screenshot, 1200px wide (it scrolls inside the card on hover)
+  //   url    the real address; frame is the address loaded in the live preview,
+  //          which must allow being framed (GitHub Pages does)
+  sites: [
+    {
+      id: "webgraphs",
+      name: "Web Graphs Technologies",
+      type: "Business website",
+      year: "2026",
+      summary: "A fast, multi-page site for a Johannesburg tech and design studio.",
+      tags: ["12 pages", "Mobile-first"],
+      shot: "assets/sites/webgraphs/index.webp",
+      url: "https://webgraphs.co.za",
+      frame: "https://arclay2026.github.io/WebGraphs-/"
+    }
+  ],
+
   // LOGO TYPES for the Type filter on the Logos page
   logoTypes: ["Agency", "Tech", "Sport", "Construction", "Fashion & beauty", "Food & drink", "Finance", "Health", "Other"],
 

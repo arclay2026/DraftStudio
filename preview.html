@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Live preview · Draft Studio</title>
+  <meta name="description" content="Live preview of a website built by Draft Studio.">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="ds-version" content="202610281509">
+  <script>/* Saved theme and text size (Settings), applied before paint */try{var t=localStorage.getItem("ds-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);if(localStorage.getItem("ds-rail"))document.documentElement.setAttribute("data-rail","");var x=localStorage.getItem("ds-text");if(x==="large"||x==="larger")document.documentElement.setAttribute("data-text",x);if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches))document.querySelector('meta[name="theme-color"]').setAttribute("content","#121212")}catch(e){}</script>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap">
+  <link rel="stylesheet" href="css/style.css?v=202610281509">
+  <link rel="stylesheet" href="css/sites.css?v=202610281509">
+</head>
+<body class="pv-body" data-page="preview">
+  <header class="pv-bar">
+    <div class="pv-l">
+      <a class="pv-back" href="websites.html" data-pv-back aria-label="Back to the project"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg></a>
+      <div class="pv-name"><b data-pv-name></b><span data-pv-host></span></div>
+    </div>
+    <div class="pv-seg" role="group" aria-label="Screen size" data-pv-seg>
+      <span class="pv-thumb" aria-hidden="true"></span>
+      <button type="button" data-device="desktop" aria-label="Desktop"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg><span>Desktop</span></button>
+      <button type="button" data-device="tablet" aria-label="Tablet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="16" height="20" x="4" y="2" rx="2" ry="2"/><line x1="12" x2="12.01" y1="18" y2="18"/></svg><span>Tablet</span></button>
+      <button type="button" data-device="phone" aria-label="Phone"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/></svg><span>Phone</span></button>
+    </div>
+    <div class="pv-r">
+      <a class="pv-open" href="#" target="_blank" rel="noopener" data-pv-open><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg><span>Open site</span></a>
+      <a class="btn btn-dark pv-start" href="#" target="_blank" rel="noopener" data-pv-start>Start a project like this</a>
+    </div>
+  </header>
+  <main class="pv-stage" data-pv-stage data-device="desktop">
+    <div class="pv-device"><div class="pv-loading" aria-hidden="true"><span></span></div><iframe title="Live website preview" data-pv-frame loading="eager"></iframe></div>
+  </main>
+  <script src="js/data.js?v=202610281509"></script>
+  <script src="js/sites.js?v=202610281509"></script>
+</body>
+</html>
