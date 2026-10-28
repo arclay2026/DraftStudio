@@ -1,4 +1,4 @@
-/* Shop pages (preview): sign in, checkout, payment result, account.
+/* Shop pages (preview): sign in, checkout, order confirmed, account.
    Only the interface: nothing here talks to a server yet. Forms show a
    "preview" note instead of submitting. */
 (function () {
@@ -20,7 +20,7 @@
     clearTimeout(toastT);
     toastT = setTimeout(() => t.classList.remove("is-on"), 2600);
   };
-  const PREVIEW = "Preview only. Nothing is sent or saved yet.";
+  const PREVIEW = "Preview only. Nothing is sent, saved or charged yet.";
 
   // Show / hide password
   $$("[data-eye]").forEach(b => b.addEventListener("click", () => {
@@ -34,80 +34,136 @@
   $$("form[data-preview]").forEach(f => f.addEventListener("submit", e => { e.preventDefault(); toast(PREVIEW); }));
   $$("[data-preview-click]").forEach(b => b.addEventListener("click", e => { e.preventDefault(); toast(PREVIEW); }));
 
-  /* ---------- Sign in ---------- */
-  const au = $("[data-au]");
-  if (au) {
-    const TEXT = {
-      signin: ["Sign in to Draft Studio", "Welcome back. Use your email or Google."],
-      signup: ["Create your account", "Keep your purchases and saved designs in one place."],
-      forgot: ["Reset your password", "We'll email you a link to choose a new one."]
-    };
-    const show = v => {
-      $$(".au-view", au).forEach(x => { x.hidden = x.dataset.view !== v; });
-      $("h1", au).textContent = TEXT[v][0];
-      $(".au-sub", au).textContent = TEXT[v][1];
-      history.replaceState(null, "", v === "signin" ? location.pathname : "#" + v);
-      const first = $(`.au-view[data-view="${v}"] input`, au);
-      if (first && matchMedia("(pointer: fine)").matches) first.focus({ preventScroll: true });
-    };
-    $$("[data-goto]", au).forEach(a => a.addEventListener("click", e => { e.preventDefault(); show(a.dataset.goto); }));
-    if (TEXT[location.hash.slice(1)]) show(location.hash.slice(1));
-  }
+  // Copy buttons
+  $$("[data-copy]").forEach(b => b.addEventListener("click", () => {
+    const done = () => toast(`Copied ${b.dataset.copy}`);
+    if (navigator.clipboard) navigator.clipboard.writeText(b.dataset.copy).then(done, done); else done();
+  }));
 
-  /* ---------- Checkout ---------- */
-  const hold = $("[data-hold]");
-  if (hold) {
-    let left = 15 * 60;
-    const tick = () => {
-      hold.textContent = `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
-      if (left > 0) left--;
-    };
-    tick(); setInterval(tick, 1000);
-  }
+  // Radio groups (payment methods)
   $$("[role=radiogroup]").forEach(g => g.addEventListener("click", e => {
     const r = e.target.closest("[role=radio]");
     if (!r) return;
     $$("[role=radio]", g).forEach(x => { x.setAttribute("aria-checked", x === r); x.tabIndex = x === r ? 0 : -1; });
   }));
+
+  // Switches
+  $$(".sp-switch").forEach(s => s.addEventListener("click", () => { if (!s.disabled) s.setAttribute("aria-checked", s.getAttribute("aria-checked") !== "true"); }));
+
+  // "Add company details" and similar reveals
+  $$("[data-more]").forEach(b => b.addEventListener("click", () => {
+    const c = $(`[data-collapse="${b.dataset.more}"]`);
+    const open = !c.classList.contains("is-open");
+    c.classList.toggle("is-open", open);
+    b.setAttribute("aria-expanded", open);
+  }));
+
+  /* ---------- Sign in ---------- */
+  const au = $("[data-au]");
+  if (au) {
+    const TEXT = {
+      signin: ["Sign in", "Welcome back", "Sign in to download your files, view receipts and manage your saved designs."],
+      signup: ["Create account", "Join Draft Studio", "Keep every purchase, certificate and saved design in one place."],
+      forgot: ["Password reset", "Forgot your password?", "Enter the email you signed up with and we'll send you a secure link to choose a new one."]
+    };
+    const show = v => {
+      $$(".au-view", au).forEach(x => { x.hidden = x.dataset.view !== v; });
+      $("[data-au-eyebrow]").textContent = TEXT[v][0];
+      $("[data-au-title]").textContent = TEXT[v][1];
+      $("[data-au-sub]").textContent = TEXT[v][2];
+      history.replaceState(null, "", v === "signin" ? location.pathname : "#" + v);
+      const first = $(`.au-view[data-view="${v}"] input`, au);
+      if (first && matchMedia("(pointer: fine)").matches) first.focus({ preventScroll: true });
+    };
+    $$("[data-goto], [data-goto-out]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); show(a.dataset.goto || a.dataset.gotoOut); }));
+    if (TEXT[location.hash.slice(1)]) show(location.hash.slice(1));
+
+    // Live password strength
+    const pw = $("[data-pw]"), meter = $("[data-pw-meter]"), label = $("[data-pw-label]");
+    const COMMON = ["password", "123456", "qwerty", "letmein", "welcome", "draftstudio", "iloveyou", "admin"];
+    if (pw) pw.addEventListener("input", () => {
+      const v = pw.value;
+      const rules = {
+        len: v.length >= 10,
+        mix: /[a-z]/.test(v) && /[A-Z]/.test(v),
+        num: /[\d\W_]/.test(v),
+        common: v.length > 0 && !COMMON.some(c => v.toLowerCase().includes(c))
+      };
+      Object.entries(rules).forEach(([k, ok]) => $(`[data-rule="${k}"]`).classList.toggle("ok", ok));
+      const s = v ? Object.values(rules).filter(Boolean).length : 0;
+      meter.dataset.s = s;
+      label.textContent = !v ? "Too short" : ["Too weak", "Weak", "Fair", "Good", "Strong"][s];
+      label.style.color = s === 4 ? "var(--sp-ok)" : "";
+    });
+  }
+
+  /* ---------- Checkout ---------- */
+  const hold = $("[data-hold]"), holdBar = $("[data-hold-bar]");
+  if (hold) {
+    const TOTAL = 15 * 60;
+    let left = TOTAL;
+    const tick = () => {
+      hold.textContent = `${String(Math.floor(left / 60)).padStart(2, "0")}:${String(left % 60).padStart(2, "0")}`;
+      if (holdBar) holdBar.style.transform = `scaleX(${left / TOTAL})`;
+      if (left > 0) left--;
+    };
+    tick(); setInterval(tick, 1000);
+  }
   const agree = $("[data-agree]"), pay = $("[data-pay]");
   if (agree && pay) {
     const sync = () => { pay.disabled = !agree.checked; };
     agree.addEventListener("change", sync); sync();
-    pay.addEventListener("click", () => { pay.innerHTML = '<span class="ty-spin" style="width:16px;height:16px;margin:0;border-width:2px;border-color:rgba(255,255,255,.35);border-top-color:#fff"></span>Redirecting to PayFast…'; setTimeout(() => { location.href = "thanks.html"; }, 900); });
+    pay.addEventListener("click", () => {
+      pay.disabled = true;
+      pay.innerHTML = '<span class="l"><span class="spin"></span>Connecting to PayFast…</span><span class="amt">R250.00</span>';
+      setTimeout(() => { location.href = "thanks.html"; }, 1100);
+    });
   }
-  const sum = $(".co-sum"), toggle = $(".co-toggle");
-  if (sum && toggle) toggle.addEventListener("click", () => {
-    const open = sum.classList.toggle("is-open");
+  const rail = $(".co-rail"), toggle = $(".co-toggle");
+  if (rail && toggle) toggle.addEventListener("click", () => {
+    const open = rail.classList.toggle("is-open");
     toggle.setAttribute("aria-expanded", open);
     $("span", toggle).textContent = open ? "Hide order summary" : "Show order summary";
   });
 
-  /* ---------- Payment result ---------- */
+  /* ---------- Order confirmed ---------- */
   const ty = $("[data-ty]");
   if (ty) {
-    const paid = () => { $("[data-ty-wait]").hidden = true; $("[data-ty-paid]").hidden = false; };
-    if (new URLSearchParams(location.search).get("state") === "paid") paid();
-    else setTimeout(paid, 2200);
-    const replay = $("[data-ty-replay]");
-    replay && replay.addEventListener("click", e => {
-      e.preventDefault();
+    const steps = $$("[data-ty-steps] li");
+    const run = () => {
       $("[data-ty-paid]").hidden = true; $("[data-ty-wait]").hidden = false;
-      setTimeout(paid, 2200);
-    });
+      steps.forEach(s => s.classList.remove("ok"));
+      steps.forEach((s, i) => setTimeout(() => s.classList.add("ok"), 500 + i * 650));
+      setTimeout(() => { $("[data-ty-wait]").hidden = true; $("[data-ty-paid]").hidden = false; scrollTo(0, 0); }, 500 + steps.length * 650 + 300);
+    };
+    if (new URLSearchParams(location.search).get("state") === "paid") { $("[data-ty-wait]").hidden = true; $("[data-ty-paid]").hidden = false; }
+    else run();
+    const replay = $("[data-ty-replay]");
+    replay && replay.addEventListener("click", e => { e.preventDefault(); run(); });
   }
 
   /* ---------- Account ---------- */
   const ac = $("[data-ua]");
   if (ac) {
-    const tabs = $$(".ua-tabs [data-tab]", ac);
+    const tabs = $$(".sp-tabs [data-tab]", ac);
     const open = id => {
-      if (!$(`[data-panel="${id}"]`, ac)) id = "purchases";
+      if (!$(`[data-panel="${id}"]`, ac)) id = "overview";
       tabs.forEach(b => b.setAttribute("aria-selected", b.dataset.tab === id));
       $$("[data-panel]", ac).forEach(p => { p.hidden = p.dataset.panel !== id; });
       history.replaceState(null, "", "#" + id);
     };
     tabs.forEach(b => b.addEventListener("click", () => open(b.dataset.tab)));
-    open(location.hash.slice(1) || "purchases");
+    $$("[data-tab-link]", ac).forEach(a => a.addEventListener("click", e => { e.preventDefault(); open(a.dataset.tabLink); scrollTo({ top: 0, behavior: "smooth" }); }));
+    open(location.hash.slice(1) || "overview");
+
+    // Settings menu: highlight the section in view
+    const links = $$(".st-nav a", ac);
+    links.forEach(a => a.addEventListener("click", e => {
+      e.preventDefault();
+      const t = $(a.getAttribute("href"));
+      t && t.scrollIntoView({ behavior: "smooth", block: "start" });
+      links.forEach(x => x.classList.toggle("is-on", x === a));
+    }));
 
     // Wishlist: built from the real catalogue so it matches the live site
     const wl = $("[data-wishlist]");
@@ -118,13 +174,15 @@
       const SAVED = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"/></svg>';
       wl.innerHTML = items.map(it => {
         const sold = it.id === "mato-logo"; // example of how a sold logo looks
-        const kind = it.price ? "Exclusive logo" : it.category.replace(/s$/, "") + " · Free";
-        const price = it.price ? `${it.priceFrom ? "From " : ""}${esc(it.price)}` : "Free";
+        const paid = !!it.price;
+        const chip = sold ? '<span class="sp-chip is-dark">SOLD</span>' : paid ? '<span class="sp-chip is-dark">1 OF 1</span>' : "";
+        const status = sold ? '<span class="sp-status is-off">Sold to another buyer</span>' : paid ? '<span class="sp-status is-warn">Available · 1 left</span>' : '<span class="sp-status">Free download</span>';
+        const price = paid ? `${it.priceFrom ? "From " : ""}${esc(it.price)}<small>${it.date ? "Saved " + new Date(it.date).toLocaleDateString("en-ZA", { day: "numeric", month: "short" }) : ""}</small>` : "Free";
+        const buy = sold ? "" : `<a class="sp-btn is-sm is-primary is-block wl-buy" href="${paid ? "checkout.html" : "item.html?id=" + encodeURIComponent(it.id)}">${paid ? "Buy now" : "Download"}</a>`;
         return `<article class="wl-card${sold ? " is-sold" : ""}">
-          <a class="wl-img" href="${it.price && !sold ? "checkout.html" : "item.html?id=" + encodeURIComponent(it.id)}"><img src="${sm(it.preview)}" onerror="this.onerror=null;this.src='${esc(it.preview)}'" alt="" loading="lazy"></a>
-          ${sold ? '<span class="wl-sold">Sold</span>' : ""}
+          <div class="wl-img"><img src="${sm(it.preview)}" onerror="this.onerror=null;this.src='${esc(it.preview)}'" alt="" loading="lazy">${chip}${buy}</div>
           <button class="wl-save" type="button" aria-label="Remove from wishlist" data-unsave>${SAVED}</button>
-          <div class="wl-body"><div><b>${esc(it.title.split(" — ")[0])}</b><small>${sold ? "No longer available" : kind}</small></div><span class="wl-price">${price}</span></div>
+          <div class="wl-body"><div><b>${esc(it.title.split(" — ")[0])}</b><small>${status}</small></div><span class="wl-price">${price}</span></div>
         </article>`;
       }).join("");
       const count = $("[data-wl-n]");

@@ -7,67 +7,169 @@
   <meta name="description" content="Secure checkout for your Draft Studio design.">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#ffffff">
-  <meta name="ds-version" content="202610281001">
+  <meta name="ds-version" content="202610281020">
   <script>/* Saved theme and text size (Settings), applied before paint */try{var t=localStorage.getItem("ds-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);if(localStorage.getItem("ds-rail"))document.documentElement.setAttribute("data-rail","");var x=localStorage.getItem("ds-text");if(x==="large"||x==="larger")document.documentElement.setAttribute("data-text",x);if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches))document.querySelector('meta[name="theme-color"]').setAttribute("content","#0a0a0a")}catch(e){}</script>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap">
-  <link rel="stylesheet" href="css/style.css?v=202610281001">
-  <link rel="stylesheet" href="css/shop.css?v=202610281001">
+  <link rel="stylesheet" href="css/style.css?v=202610281020">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap">
+  <link rel="stylesheet" href="css/shop.css?v=202610281020">
 </head>
 <body class="sp-focus" data-page="checkout">
   <header class="sp-bar">
     <div class="sp-bar-l"><a class="logo" href="index.html" aria-label="Draft Studio home"><img class="logo-l" src="assets/logo.svg" alt="Draft Studio" width="124" height="26"><img class="logo-d" src="assets/logo-dark.svg" alt="Draft Studio" width="124" height="26"></a><a class="sp-pv" href="shop-preview.html">Preview</a></div>
-    <div class="sp-bar-r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Secure checkout</span></div>
+    <div class="sp-mid"><ol class="sp-steps"><li class="is-on"><b>1</b>Details</li><li class=""><b>2</b>Payment</li><li class=""><b>3</b>Download</li></ol></div>
+    <div class="sp-bar-r"><span class="sp-secure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg><span class="hide-sm">Secure checkout</span></span></div>
   </header>
   <main id="main" class="co">
-    <section class="co-sum" aria-label="Order summary">
-      <div class="co-in">
-        <button class="co-toggle" type="button" aria-expanded="false"><span>Show order summary</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><b>R250.00</b></button>
-        <div class="co-detail"><div>
-          <p class="co-eyebrow">Kaven — Letter K Logo</p>
-          <p class="co-amount">R250.00</p>
-          <div class="co-shot"><img src="previews/sm/kaven-logo.webp" alt="Kaven logo"></div>
-          <ul class="co-lines">
-            <li><span>Kaven — Letter K Logo<small>Exclusive license · AI, EPS, SVG, PDF, PNG</small></span><span>R250.00</span></li>
-            <li class="is-mute"><span>Subtotal</span><span>R250.00</span></li>
-            <li class="is-mute"><span>VAT</span><span>Included</span></li>
-            <li class="is-total"><span>Total due</span><span>R250.00</span></li>
-          </ul>
-          <div class="co-hold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Reserved for you while you check out</span><b data-hold>15:00</b></div>
-          <div class="co-foot"><span>Payments by PayFast</span><a href="license.html">License</a><a href="#" data-preview-click>Privacy</a><a href="#" data-preview-click>Refunds</a></div>
-        </div></div>
-      </div>
-    </section>
+    <section class="co-main">
+      <div class="co-main-in">
+        <div class="co-title">
+          <div>
+            <p class="sp-eyebrow">Step 1 of 3</p>
+            <h1>Checkout</h1>
+            <p>Kaven is reserved for you. Complete payment within 15 minutes to keep it.</p>
+          </div>
+        </div>
 
-    <section class="co-form" aria-label="Payment details">
-      <div class="co-in">
+        <div class="co-express">
+          <div class="co-express-h"><span>Express checkout</span><span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.914 4a1.5 1.5 0 00-2.474-1.561l-9 9A1.5 1.5 0 005.5 14h4.002a.5.5 0 01.471.666L8.086 20a1.5 1.5 0 002.475 1.56l9-9A1.5 1.5 0 0018.5 10h-3.997a.5.5 0 01-.472-.667z"/></svg></span></div>
+          <div class="co-express-btns">
+            <button class="sp-btn is-apple" type="button" data-preview-click><svg viewBox="0 0 11 13" style="width:15px;height:17px" aria-hidden="true"><path fill="currentColor" d="M8.4 6.4c0-1.3 1.1-1.9 1.1-2-.6-.9-1.5-1-1.9-1-.8-.1-1.6.5-2 .5-.4 0-1-.5-1.7-.5-.9 0-1.7.5-2.2 1.3-.9 1.6-.2 4 .7 5.3.4.6.9 1.4 1.6 1.3.6 0 .9-.4 1.7-.4.8 0 1 .4 1.7.4.7 0 1.1-.7 1.6-1.3.5-.7.7-1.4.7-1.5 0 0-1.3-.5-1.3-2.1zM7.2 2.5c.4-.4.6-1 .5-1.6-.5 0-1.1.3-1.5.8-.3.4-.6 1-.5 1.5.6.1 1.1-.3 1.5-.7z"/></svg>Pay</button>
+            <button class="sp-btn co-snap" type="button" data-preview-click aria-label="Pay with SnapScan">Snap<span>Scan</span></button>
+          </div>
+        </div>
+        <div class="sp-or">or pay another way</div>
+
         <form data-preview novalidate>
           <div class="co-sec">
-            <h2 class="co-h">Contact</h2>
-            <p class="co-signed">Have an account? <a href="signin.html">Sign in</a> to save this purchase to it.</p>
-            <div class="sp-field"><label class="sp-label" for="co-email"><span>Email</span></label><div class="sp-input"><input id="co-email" type="email" placeholder="you@company.com" autocomplete="email"></div><p class="sp-hint">Your receipt and download link go here.</p></div>
-            <div class="sp-field"><label class="sp-label" for="co-name"><span>Full name</span></label><div class="sp-input"><input id="co-name" type="text" placeholder="" autocomplete="name"></div></div>
-          </div>
-          <div class="co-sec">
-            <h2 class="co-h">Payment method</h2>
-            <div class="co-methods" role="radiogroup" aria-label="Payment method">
-              <button class="sp-row" type="button" role="radio" aria-checked="true" tabindex="0"><span class="rad"></span><b>Card</b><small>Visa · Mastercard · Amex</small></button>
-              <button class="sp-row" type="button" role="radio" aria-checked="false" tabindex="-1"><span class="rad"></span><b>Instant EFT</b><small>All major South African banks</small></button>
-              <button class="sp-row" type="button" role="radio" aria-checked="false" tabindex="-1"><span class="rad"></span><b>SnapScan</b><small>Scan with your phone</small></button>
-              <button class="sp-row" type="button" role="radio" aria-checked="false" tabindex="-1"><span class="rad"></span><b>Apple Pay</b><small>On supported devices</small></button>
+            <div class="co-sec-h"><span class="n">1</span><div><h2>Contact</h2><p>Where we send your receipt and download link.</p></div><span class="r">Have an account? <a href="signin.html">Sign in</a></span></div>
+            <div class="sp-field"><label class="sp-label" for="co-email"><span>Email address</span></label><div class="sp-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg><input id="co-email" type="email" placeholder="you@company.com" autocomplete="email"></div></div>
+            <div class="sp-two">
+              <div class="sp-field"><label class="sp-label" for="co-first"><span>First name</span></label><div class="sp-input"><input id="co-first" type="text" placeholder="" autocomplete="given-name"></div></div>
+              <div class="sp-field"><label class="sp-label" for="co-last"><span>Last name</span></label><div class="sp-input"><input id="co-last" type="text" placeholder="" autocomplete="family-name"></div></div>
             </div>
-            <p class="co-methods-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Processed by PayFast. You'll confirm on their secure page.</p>
+            <label class="sp-check"><input type="checkbox"><span>Email me when new exclusive logos drop <b>(optional)</b></span></label>
           </div>
-          <label class="sp-check co-agree"><input type="checkbox" data-agree><span>I understand this design is sold to one buyer only, and I agree to the <a href="license.html">exclusive license</a>.</span></label>
-          <button class="sp-btn is-primary is-block" type="button" data-pay>Pay R250.00</button>
-          <p class="co-secure sp-fine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Encrypted end to end. Draft Studio never sees or stores your card details.</span></p>
+
+          <div class="co-sec">
+            <div class="co-sec-h"><span class="n">2</span><div><h2>Ownership</h2><p>Printed on your certificate of exclusive ownership.</p></div></div>
+            <div class="sp-field"><label class="sp-label" for="co-cert"><span>Certificate name</span><span><small>Can be a person or a business</small></span></label><div class="sp-input"><input id="co-cert" type="text" placeholder="Your name or company name" autocomplete="organization"></div></div>
+            <div class="co-cert-preview"><svg class="seal-sm" viewBox="0 0 100 100" aria-hidden="true"><defs><path id="sealp1" d="M50 50m-35 0a35 35 0 1 1 70 0a35 35 0 1 1-70 0"/></defs><g fill="none" stroke="currentColor"><circle cx="50" cy="50" r="48" stroke-width="1.2"/><circle cx="50" cy="50" r="44.6" stroke-width=".5"/><circle cx="50" cy="50" r="31.5" stroke-width=".4"/><circle cx="50" cy="50" r="27" stroke-width=".8"/><g stroke-width=".6"><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(0.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(7.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(15.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(22.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(30.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(37.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(45.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(52.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(60.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(67.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(75.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(82.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(90.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(97.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(105.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(112.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(120.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(127.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(135.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(142.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(150.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(157.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(165.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(172.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(180.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(187.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(195.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(202.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(210.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(217.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(225.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(232.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(240.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(247.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(255.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(262.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(270.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(277.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(285.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(292.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(300.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(307.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(315.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(322.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(330.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(337.5 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(345.0 50 50)"/><line x1="50" y1="2.6" x2="50" y2="4.6" transform="rotate(352.5 50 50)"/></g></g><text><textPath href="#sealp1" startOffset="0" textLength="216" lengthAdjust="spacing">EXCLUSIVE · ONE OWNER · DRAFT STUDIO · </textPath></text><text x="50" y="57" text-anchor="middle" style="font:400 21px var(--sp-serif);letter-spacing:0">1/1</text></svg><div><b>Kaven</b><small>Certificate DS-C-0004 · issued to you the moment payment clears</small></div></div>
+            <div style="margin-top:16px">
+              <button class="co-more" type="button" aria-expanded="false" data-more="invoice"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>Need a tax invoice? Add company details</button>
+              <div class="co-collapse" data-collapse="invoice"><div>
+                <div class="sp-two">
+                  <div class="sp-field"><label class="sp-label" for="co-company"><span>Company name</span></label><div class="sp-input"><input id="co-company" type="text" placeholder="" autocomplete="organization"></div></div>
+                  <div class="sp-field"><label class="sp-label" for="co-vat"><span>VAT number</span><span><small>Optional</small></span></label><div class="sp-input"><input id="co-vat" type="text" placeholder="4xxxxxxxxx" ></div></div>
+                </div>
+                <div class="sp-field"><label class="sp-label" for="co-addr"><span>Billing address</span></label><div class="sp-input"><input id="co-addr" type="text" placeholder="Street, city, postal code" autocomplete="street-address"></div></div>
+              </div></div>
+            </div>
+          </div>
+
+          <div class="co-sec">
+            <div class="co-sec-h"><span class="n">3</span><div><h2>Payment</h2><p>All transactions are secure and encrypted.</p></div></div>
+            <div class="co-tiles" role="radiogroup" aria-label="Payment method">
+              <button class="sp-tile" type="button" role="radio" aria-checked="true" tabindex="0"><span class="rad"></span><span class="pm"><svg viewBox="0 0 38 24" role="img" aria-label="Visa"><rect width="38" height="24" rx="4" fill="#fff"/><text x="19" y="15.6" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-style="italic" font-size="9.6" letter-spacing=".3" fill="#1a1f71">VISA</text></svg><svg viewBox="0 0 38 24" role="img" aria-label="Mastercard"><defs><clipPath id="mcc"><circle cx="15.5" cy="12" r="6.5"/></clipPath></defs><rect width="38" height="24" rx="4" fill="#1d1d1f"/><circle cx="15.5" cy="12" r="6.5" fill="#eb001b"/><circle cx="22.5" cy="12" r="6.5" fill="#f79e1b"/><circle cx="22.5" cy="12" r="6.5" fill="#ff5f00" clip-path="url(#mcc)"/></svg><svg viewBox="0 0 38 24" role="img" aria-label="American Express"><rect width="38" height="24" rx="4" fill="#1f72cd"/><text x="19" y="15.2" text-anchor="middle" font-family="Arial,sans-serif" font-weight="800" font-size="8.2" letter-spacing=".6" fill="#fff">AMEX</text></svg></span><span><b>Card</b><small>Visa, Mastercard, Amex</small></span></button>
+              <button class="sp-tile" type="button" role="radio" aria-checked="false" tabindex="-1"><span class="rad"></span><span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 18v-7"/><path d="M11.119 2.205a2 2 0 0 1 1.762 0l7.84 3.846A.5.5 0 0 1 20.5 7h-17a.5.5 0 0 1-.22-.949z"/><path d="M14 18v-7"/><path d="M18 18v-7"/><path d="M3 22h18"/><path d="M6 18v-7"/></svg></span><span><b>Instant EFT</b><small>Pay straight from your bank</small></span></button>
+              <button class="sp-tile" type="button" role="radio" aria-checked="false" tabindex="-1"><span class="rad"></span><span class="pm"><svg viewBox="0 0 46 24" role="img" aria-label="SnapScan"><rect width="46" height="24" rx="4" fill="#fff"/><text x="23" y="15.2" text-anchor="middle" font-family="Arial,sans-serif" font-weight="800" font-size="7.6" fill="#00a6e0">SnapScan</text></svg></span><span><b>SnapScan</b><small>Scan the code with your phone</small></span></button>
+              <button class="sp-tile" type="button" role="radio" aria-checked="false" tabindex="-1"><span class="rad"></span><span class="pm"><svg viewBox="0 0 38 24" role="img" aria-label="Apple Pay"><rect width="38" height="24" rx="4" fill="#000"/><path transform="translate(7 5.6)" fill="#fff" d="M8.4 6.4c0-1.3 1.1-1.9 1.1-2-.6-.9-1.5-1-1.9-1-.8-.1-1.6.5-2 .5-.4 0-1-.5-1.7-.5-.9 0-1.7.5-2.2 1.3-.9 1.6-.2 4 .7 5.3.4.6.9 1.4 1.6 1.3.6 0 .9-.4 1.7-.4.8 0 1 .4 1.7.4.7 0 1.1-.7 1.6-1.3.5-.7.7-1.4.7-1.5 0 0-1.3-.5-1.3-2.1zM7.2 2.5c.4-.4.6-1 .5-1.6-.5 0-1.1.3-1.5.8-.3.4-.6 1-.5 1.5.6.1 1.1-.3 1.5-.7z"/><text x="25" y="15.6" text-anchor="middle" font-family="-apple-system,Helvetica,Arial,sans-serif" font-weight="600" font-size="8.6" fill="#fff">Pay</text></svg></span><span><b>Apple Pay</b><small>Safari on iPhone, iPad or Mac</small></span></button>
+            </div>
+            <div class="co-pay-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg><span>After you click <b>Pay</b>, you'll finish on <b>PayFast's</b> secure page and return here automatically. Card payments use <b>3-D Secure</b>, so your bank may ask you to approve.</span></div>
+            <div class="sp-field" style="margin:18px 0 0">
+              <label class="sp-label" for="co-code"><span>Discount code</span></label>
+              <div class="co-code"><div class="sp-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z"/><path d="M13 5v2"/><path d="M13 17v2"/><path d="M13 11v2"/></svg><input id="co-code" type="text" placeholder="Enter code"></div><button class="sp-btn" type="button" data-preview-click>Apply</button></div>
+            </div>
+          </div>
+
+          <label class="sp-check co-agree"><input type="checkbox" data-agree><span>I understand <b>Kaven is sold to one buyer only</b> and is removed from the store after my purchase, and I agree to the <a href="license.html">exclusive license</a> and <a href="#" data-preview-click>terms of sale</a>.</span></label>
+          <button class="sp-btn is-primary is-block is-xl co-paybtn" type="button" data-pay><span class="l"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Pay securely</span><span class="amt">R250.00</span></button>
+          <div class="co-trust">
+            <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg><b>PCI DSS</b>Level 1 via PayFast</div>
+            <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 10a2 2 0 0 0-2 2c0 1.02-.1 2.51-.26 4"/><path d="M14 13.12c0 2.38 0 6.38-1 8.88"/><path d="M17.29 21.02c.12-.6.43-2.3.5-3.02"/><path d="M2 12a10 10 0 0 1 18-6"/><path d="M2 16h.01"/><path d="M21.8 16c.2-2 .131-5.354 0-6"/><path d="M5 19.5C5.5 18 6 15 6 12a6 6 0 0 1 .34-2"/><path d="M8.65 22c.21-.66.45-1.32.57-2"/><path d="M9 6.8a6 6 0 0 1 9 5.2v2"/></svg><b>3-D Secure</b>Bank-verified cards</div>
+            <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="16" r="1"/><rect x="3" y="10" width="18" height="12" rx="2"/><path d="M7 10V7a5 5 0 0 1 10 0v3"/></svg><b>TLS 1.3</b>256-bit encryption</div>
+            <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m16 9-5.5 5.5L8 12"/></svg><b>POPIA</b>Your data protected</div>
+          </div>
+          <div class="co-marks"><span class="pm"><svg viewBox="0 0 38 24" role="img" aria-label="Visa"><rect width="38" height="24" rx="4" fill="#fff"/><text x="19" y="15.6" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-style="italic" font-size="9.6" letter-spacing=".3" fill="#1a1f71">VISA</text></svg><svg viewBox="0 0 38 24" role="img" aria-label="Mastercard"><defs><clipPath id="mcc"><circle cx="15.5" cy="12" r="6.5"/></clipPath></defs><rect width="38" height="24" rx="4" fill="#1d1d1f"/><circle cx="15.5" cy="12" r="6.5" fill="#eb001b"/><circle cx="22.5" cy="12" r="6.5" fill="#f79e1b"/><circle cx="22.5" cy="12" r="6.5" fill="#ff5f00" clip-path="url(#mcc)"/></svg><svg viewBox="0 0 38 24" role="img" aria-label="American Express"><rect width="38" height="24" rx="4" fill="#1f72cd"/><text x="19" y="15.2" text-anchor="middle" font-family="Arial,sans-serif" font-weight="800" font-size="8.2" letter-spacing=".6" fill="#fff">AMEX</text></svg><svg viewBox="0 0 38 24" role="img" aria-label="Apple Pay"><rect width="38" height="24" rx="4" fill="#000"/><path transform="translate(7 5.6)" fill="#fff" d="M8.4 6.4c0-1.3 1.1-1.9 1.1-2-.6-.9-1.5-1-1.9-1-.8-.1-1.6.5-2 .5-.4 0-1-.5-1.7-.5-.9 0-1.7.5-2.2 1.3-.9 1.6-.2 4 .7 5.3.4.6.9 1.4 1.6 1.3.6 0 .9-.4 1.7-.4.8 0 1 .4 1.7.4.7 0 1.1-.7 1.6-1.3.5-.7.7-1.4.7-1.5 0 0-1.3-.5-1.3-2.1zM7.2 2.5c.4-.4.6-1 .5-1.6-.5 0-1.1.3-1.5.8-.3.4-.6 1-.5 1.5.6.1 1.1-.3 1.5-.7z"/><text x="25" y="15.6" text-anchor="middle" font-family="-apple-system,Helvetica,Arial,sans-serif" font-weight="600" font-size="8.6" fill="#fff">Pay</text></svg><svg viewBox="0 0 46 24" role="img" aria-label="SnapScan"><rect width="46" height="24" rx="4" fill="#fff"/><text x="23" y="15.2" text-anchor="middle" font-family="Arial,sans-serif" font-weight="800" font-size="7.6" fill="#00a6e0">SnapScan</text></svg><svg viewBox="0 0 46 24" role="img" aria-label="PayFast"><rect width="46" height="24" rx="4" fill="#fff"/><text x="23" y="15.4" text-anchor="middle" font-family="Arial,sans-serif" font-weight="800" font-size="8" fill="#022d6d">pay<tspan fill="#e31e24">fast</tspan></text></svg></span></div>
+          <p class="co-legal sp-fine">Prices include 15% VAT. Need help? <a href="#" data-preview-click>WhatsApp us</a> or read the <a href="license.html">license</a>.</p>
         </form>
       </div>
     </section>
+
+    <aside class="co-rail" aria-label="Order summary">
+      <div class="co-rail-in">
+        <button class="co-toggle" type="button" aria-expanded="false"><span>Show order summary</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><b>R250.00</b></button>
+        <div class="co-detail"><div>
+          <div class="co-rail-h"><h2>Order summary</h2><span>1 item</span></div>
+          <article class="co-prod">
+            <div class="co-prod-img"><img src="previews/sm/kaven-logo.webp" alt="Kaven logo"><span class="sp-chip is-dark">EXCLUSIVE · 1 OF 1</span><span class="ed">No. 004</span></div>
+            <div class="co-prod-body">
+              <h3>Kaven — Letter K Logo</h3>
+              <p>Designed by Draft Studio · Johannesburg</p>
+              <dl class="co-specs">
+                <dt>Licence</dt><dd>Exclusive, full rights</dd>
+                <dt>Formats</dt><dd>AI · EPS · SVG · PDF · PNG</dd>
+                <dt>Colours</dt><dd><i class="co-sw" style="background:#9a3412"></i><i class="co-sw" style="background:#ea580c"></i><i class="co-sw" style="background:#ffffff"></i></dd>
+                <dt>Delivery</dt><dd>Instant, after payment</dd>
+              </dl>
+            </div>
+          </article>
+
+          <div class="co-block">
+            <p class="co-block-h">What you get</p>
+            <ul class="co-files">
+              <li><svg class="fi" viewBox="0 0 34 40" aria-hidden="true"><path d="M5 1.5h17l9.5 9.5v25a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-31.5a3 3 0 0 1 3-3z" style="fill:var(--surface);stroke:var(--border-2)" stroke-width="1"/><path d="M22 1.5v7a2.5 2.5 0 0 0 2.5 2.5h7" fill="none" style="stroke:var(--border-2)" stroke-width="1"/><rect x="0" y="21" width="20" height="12" rx="3" fill="#ff7c00"/><text x="10.0" y="29.6" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="7.4" fill="#fff">AI</text></svg><span><b>kaven-logo.ai</b><small>Editable master · Illustrator</small></span><span class="sz">1.6 MB</span></li>
+              <li><svg class="fi" viewBox="0 0 34 40" aria-hidden="true"><path d="M5 1.5h17l9.5 9.5v25a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-31.5a3 3 0 0 1 3-3z" style="fill:var(--surface);stroke:var(--border-2)" stroke-width="1"/><path d="M22 1.5v7a2.5 2.5 0 0 0 2.5 2.5h7" fill="none" style="stroke:var(--border-2)" stroke-width="1"/><rect x="0" y="21" width="26" height="12" rx="3" fill="#0d9488"/><text x="13.0" y="29.6" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="7.4" fill="#fff">EPS</text></svg><span><b>kaven-logo.eps</b><small>Print and older apps</small></span><span class="sz">1.9 MB</span></li>
+              <li><svg class="fi" viewBox="0 0 34 40" aria-hidden="true"><path d="M5 1.5h17l9.5 9.5v25a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-31.5a3 3 0 0 1 3-3z" style="fill:var(--surface);stroke:var(--border-2)" stroke-width="1"/><path d="M22 1.5v7a2.5 2.5 0 0 0 2.5 2.5h7" fill="none" style="stroke:var(--border-2)" stroke-width="1"/><rect x="0" y="21" width="26" height="12" rx="3" fill="#d97706"/><text x="13.0" y="29.6" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="7.4" fill="#fff">SVG</text></svg><span><b>kaven-logo.svg</b><small>Web and apps</small></span><span class="sz">24 KB</span></li>
+              <li><svg class="fi" viewBox="0 0 34 40" aria-hidden="true"><path d="M5 1.5h17l9.5 9.5v25a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-31.5a3 3 0 0 1 3-3z" style="fill:var(--surface);stroke:var(--border-2)" stroke-width="1"/><path d="M22 1.5v7a2.5 2.5 0 0 0 2.5 2.5h7" fill="none" style="stroke:var(--border-2)" stroke-width="1"/><rect x="0" y="21" width="26" height="12" rx="3" fill="#e11d48"/><text x="13.0" y="29.6" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="7.4" fill="#fff">PDF</text></svg><span><b>kaven-logo.pdf</b><small>Print-ready vector</small></span><span class="sz">310 KB</span></li>
+              <li><svg class="fi" viewBox="0 0 34 40" aria-hidden="true"><path d="M5 1.5h17l9.5 9.5v25a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-31.5a3 3 0 0 1 3-3z" style="fill:var(--surface);stroke:var(--border-2)" stroke-width="1"/><path d="M22 1.5v7a2.5 2.5 0 0 0 2.5 2.5h7" fill="none" style="stroke:var(--border-2)" stroke-width="1"/><rect x="0" y="21" width="26" height="12" rx="3" fill="#2563eb"/><text x="13.0" y="29.6" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="7.4" fill="#fff">PNG</text></svg><span><b>kaven-logo.png</b><small>2250 × 2250 · transparent</small></span><span class="sz">180 KB</span></li>
+              <li><svg class="fi" viewBox="0 0 34 40" aria-hidden="true"><path d="M5 1.5h17l9.5 9.5v25a3 3 0 0 1-3 3H5a3 3 0 0 1-3-3v-31.5a3 3 0 0 1 3-3z" style="fill:var(--surface);stroke:var(--border-2)" stroke-width="1"/><path d="M22 1.5v7a2.5 2.5 0 0 0 2.5 2.5h7" fill="none" style="stroke:var(--border-2)" stroke-width="1"/><rect x="0" y="21" width="26" height="12" rx="3" fill="#a07a2c"/><text x="13.0" y="29.6" text-anchor="middle" font-family="Inter,Arial,sans-serif" font-weight="700" font-size="7.4" fill="#fff">PDF</text></svg><span><b>Ownership certificate</b><small>Signed PDF · DS-C-0004</small></span><span class="sz">Included</span></li>
+            </ul>
+          </div>
+
+          <div class="co-block">
+            <p class="co-block-h">Your rights</p>
+            <ul class="co-rights">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Full commercial use, worldwide</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Register it as your trademark</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Unlimited print, web and merchandise</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>Removed from sale permanently</li>
+              <li class="no"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>Reselling the design files</li>
+            </ul>
+          </div>
+
+          <div class="co-lines">
+            <div><span>Subtotal</span><span>R250.00</span></div>
+            <div><span>Discount</span><span>—</span></div>
+            <div><span>VAT (15%, included)</span><span>R32.61</span></div>
+          </div>
+          <div class="co-total"><span>Total due<small>Including VAT</small></span><b><sup>ZAR</sup>R250.00</b></div>
+
+          <div class="co-hold">
+            <div class="co-hold-top"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg><span>Reserved for you</span><b data-hold>15:00</b></div>
+            <div class="co-hold-bar"><i data-hold-bar></i></div>
+            <p>Exclusive logos are held while you check out, so nobody else can buy Kaven. If time runs out, it goes back on sale.</p>
+          </div>
+
+          <div class="co-help">
+            <span class="co-help-av"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg></span>
+            <span><b>Questions before you buy?</b><small>Chat to the designer on WhatsApp</small></span>
+            <a class="sp-btn is-sm" href="#" data-preview-click>Chat</a>
+          </div>
+
+          <div class="co-faq">
+            <details><summary>When do I get my files?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><p>Immediately. As soon as PayFast confirms your payment, the download buttons appear and a link is emailed to you.</p></details>
+            <details><summary>Can I ask for changes to the logo?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><p>Yes. Colour changes and extra file sizes are free for 14 days. Message us on WhatsApp with your order number.</p></details>
+            <details><summary>What if the payment fails?<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg></summary><p>Nothing is charged and Kaven stays reserved until the timer runs out, so you can try again or use another method.</p></details>
+          </div>
+        </div></div>
+      </div>
+    </aside>
   </main>
-  <script src="js/data.js?v=202610281001"></script>
-  <script src="js/shop.js?v=202610281001"></script>
+  <script src="js/data.js?v=202610281020"></script>
+  <script src="js/shop.js?v=202610281020"></script>
 </body>
 </html>
