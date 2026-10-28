@@ -17,12 +17,22 @@
 @media (hover: hover) { .sc:hover .sb-view img { transform: translateY(calc(-100% + 100cqh)); transition-duration: 9s; } }
 .sc-body { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; padding: 18px 20px 20px; }
 .sc-type { font-size: calc(12px * var(--ts)); color: var(--mute); }
-.sc-body h2 { margin: 4px 0 6px; font: 600 calc(19px * var(--ts))/1.2 var(--font-display); letter-spacing: -.025em; }
+.sc-body h3 { margin: 4px 0 6px; font: 600 calc(19px * var(--ts))/1.2 var(--font-display); letter-spacing: -.025em; }
 .sc-body p { margin: 0; color: var(--mute); font-size: calc(13px * var(--ts)); line-height: 1.55; }
 .sc-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
 .sc-tags span { padding: 3px 9px; border-radius: 999px; background: var(--card); font-size: calc(11.5px * var(--ts)); color: var(--fg); }
 .sc-body .btn { flex: none; }
 .sc-body .btn svg { width: 15px; height: 15px; }
+/* One card on its own (home page): wide, the site on the left and its info on the right */
+.sc-grid.is-single { grid-template-columns: 1fr; }
+@media (min-width: 900px) {
+  .sc-grid.is-single .sc { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+  .sc-grid.is-single .sc-win { margin: 10px 0 10px 10px; }
+  .sc-grid.is-single .sb-view { aspect-ratio: 16 / 9.5; }
+  .sc-grid.is-single .sc-body { flex-direction: column; align-items: flex-start; justify-content: space-between; padding: clamp(22px, 2.6vw, 36px); }
+  .sc-grid.is-single .sc-body h3 { font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -.035em; margin: 8px 0 10px; }
+  .sc-grid.is-single .sc-body p { font-size: calc(14px * var(--ts)); }
+}
 @media (max-width: 600px) {
   .sc-body { flex-direction: column; align-items: stretch; }
   .sc-body .btn { justify-content: center; }

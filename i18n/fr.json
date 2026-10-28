@@ -1586,7 +1586,16 @@
   "Pen, shapes & text": "Plume, formes et texte",
   "Open the canvas": "Ouvrir le canevas",
   "The Drafty Canvas editor with an event flyer open": "L'éditeur Drafty Canvas avec une affiche d'événement ouverte",
-  "Pen & shapes": "Plume et formes"
+  "Pen & shapes": "Plume et formes",
+  "Web design & development": "Conception et développement web",
+  "Websites,": "Des sites web,",
+  "built to work.": "conçus pour fonctionner.",
+  "See all websites": "Voir tous les sites",
+  "Business website": "Site d'entreprise",
+  "Mobile-first": "Pensé mobile",
+  "A fast, multi-page site for a Johannesburg tech and design studio.": "Un site rapide de plusieurs pages pour un studio tech et design de Johannesburg.",
+  "Websites, built to work.": "Des sites web, conçus pour fonctionner.",
+  "Real sites we've designed and built for real businesses. Open the live preview to click around them on desktop, tablet or phone.": "De vrais sites que nous avons conçus et développés pour de vraies entreprises. Ouvrez l'aperçu en direct pour les parcourir sur ordinateur, tablette ou téléphone."
  },
  "patterns": {
   "^(\\d+) files$": "$1 fichiers",
@@ -1632,6 +1641,7 @@
   "^From (R\\d+)$": "À partir de $1",
   "^Buy · From (R\\d+)$": "Acheter · dès $1",
   "^(.+) · From (R\\d+)$": "$1 · dès $2",
-  "^Letter ([A-Z])$": "Lettre $1"
+  "^Letter ([A-Z])$": "Lettre $1",
+  "^(\\d+) pages$": "$1 pages"
  }
 }

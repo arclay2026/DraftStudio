@@ -1529,7 +1529,16 @@
   "Pen, shapes & text",
   "Open the canvas",
   "The Drafty Canvas editor with an event flyer open",
-  "Pen & shapes"
+  "Pen & shapes",
+  "Web design & development",
+  "Websites,",
+  "built to work.",
+  "See all websites",
+  "Business website",
+  "Mobile-first",
+  "A fast, multi-page site for a Johannesburg tech and design studio.",
+  "Websites, built to work.",
+  "Real sites we've designed and built for real businesses. Open the live preview to click around them on desktop, tablet or phone."
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",
@@ -1573,6 +1582,7 @@
   "^From (R\\d+)$": "From (R\\d+)",
   "^Buy · From (R\\d+)$": "Buy · From (R\\d+)",
   "^(.+) · From (R\\d+)$": "(.+) · From (R\\d+)",
-  "^Letter ([A-Z])$": "Letter $1"
+  "^Letter ([A-Z])$": "Letter $1",
+  "^(\\d+) pages$": "$1 pages"
  }
 }

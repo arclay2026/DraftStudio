@@ -1586,7 +1586,16 @@
   "Pen, shapes & text": "القلم والأشكال والنص",
   "Open the canvas": "افتح لوحة الرسم",
   "The Drafty Canvas editor with an event flyer open": "محرّر Drafty Canvas مع ملصق فعالية مفتوح",
-  "Pen & shapes": "القلم والأشكال"
+  "Pen & shapes": "القلم والأشكال",
+  "Web design & development": "تصميم وتطوير المواقع",
+  "Websites,": "مواقع ويب،",
+  "built to work.": "مصممة لتعمل.",
+  "See all websites": "عرض كل المواقع",
+  "Business website": "موقع أعمال",
+  "Mobile-first": "مصمم للهاتف أولاً",
+  "A fast, multi-page site for a Johannesburg tech and design studio.": "موقع سريع متعدد الصفحات لاستوديو تقنية وتصميم في جوهانسبرغ.",
+  "Websites, built to work.": "مواقع ويب، مصممة لتعمل.",
+  "Real sites we've designed and built for real businesses. Open the live preview to click around them on desktop, tablet or phone.": "مواقع حقيقية صممناها وبنيناها لأعمال حقيقية. افتح المعاينة المباشرة لتتصفحها على الحاسوب أو الجهاز اللوحي أو الهاتف."
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",
@@ -1632,6 +1641,7 @@
   "^From (R\\d+)$": "يبدأ من $1",
   "^Buy · From (R\\d+)$": "شراء · من $1",
   "^(.+) · From (R\\d+)$": "$1 · من $2",
-  "^Letter ([A-Z])$": "الحرف $1"
+  "^Letter ([A-Z])$": "الحرف $1",
+  "^(\\d+) pages$": "$1 صفحة"
  }
 }

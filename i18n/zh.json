@@ -1586,7 +1586,16 @@
   "Pen, shapes & text": "钢笔、形状和文字",
   "Open the canvas": "打开画布",
   "The Drafty Canvas editor with an event flyer open": "打开了活动海报的 Drafty Canvas 编辑器",
-  "Pen & shapes": "钢笔和形状"
+  "Pen & shapes": "钢笔和形状",
+  "Web design & development": "网页设计与开发",
+  "Websites,": "网站，",
+  "built to work.": "为实用而建。",
+  "See all websites": "查看所有网站",
+  "Business website": "企业网站",
+  "Mobile-first": "移动优先",
+  "A fast, multi-page site for a Johannesburg tech and design studio.": "为约翰内斯堡一家科技与设计工作室打造的快速多页面网站。",
+  "Websites, built to work.": "网站，为实用而建。",
+  "Real sites we've designed and built for real businesses. Open the live preview to click around them on desktop, tablet or phone.": "我们为真实企业设计和搭建的真实网站。打开实时预览，在电脑、平板或手机上浏览它们。"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",
@@ -1632,6 +1641,7 @@
   "^From (R\\d+)$": "$1 起",
   "^Buy · From (R\\d+)$": "购买 · $1 起",
   "^(.+) · From (R\\d+)$": "$1 · $2 起",
-  "^Letter ([A-Z])$": "字母 $1"
+  "^Letter ([A-Z])$": "字母 $1",
+  "^(\\d+) pages$": "$1 个页面"
  }
 }

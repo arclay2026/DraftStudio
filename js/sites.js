@@ -35,9 +35,13 @@
   const wa = s => `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(`Hi Draft Studio, I saw ${s.name} on your site and I'd like a website like it for my business.`)}`;
   const page = document.body.dataset.page;
 
-  /* ---------- websites.html: one card per site ---------- */
-  if (page === "websites") {
-    $("[data-sites]").innerHTML = SITES.map(s => `
+  /* ---------- Site cards: websites.html, and the newest ones on the home page ---------- */
+  // <div data-sites data-limit="2"> shows that many (newest first); one card on
+  // its own is laid out wide, the site on the left and its info on the right.
+  $$("[data-sites]").forEach(grid => {
+    const list = SITES.slice(0, +grid.dataset.limit || SITES.length);
+    grid.classList.toggle("is-single", list.length === 1 && grid.hasAttribute("data-limit"));
+    grid.innerHTML = list.map(s => `
       <article class="sc">
         <a class="sc-win" href="preview.html?id=${encodeURIComponent(s.id)}" aria-label="Live preview of ${esc(s.name)}">
           <div class="sb-bar"><i></i><i></i><i></i><span>${ic("globe")}${esc(host(s.url))}</span></div>
@@ -46,14 +50,14 @@
         <div class="sc-body">
           <div class="sc-text">
             <span class="sc-type">${esc(s.type)} · ${esc(s.year)}</span>
-            <h2>${esc(s.name)}</h2>
+            <h3>${esc(s.name)}</h3>
             <p>${esc(s.summary)}</p>
             <div class="sc-tags">${(s.tags || []).map(t => `<span>${esc(t)}</span>`).join("")}</div>
           </div>
           <a class="btn btn-dark" href="preview.html?id=${encodeURIComponent(s.id)}">${ic("eye")}Live preview</a>
         </div>
       </article>`).join("");
-  }
+  });
 
   /* ---------- preview.html ---------- */
   if (page === "preview") {
