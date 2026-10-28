@@ -1419,7 +1419,6 @@
           <div class="item-info">
             <h1>${esc(it.title)}</h1>
             <p class="desc">${esc(it.description || "")}</p>
-            <div class="item-fmts">${fmts.map(f => fmtBadge(f)).join("")}</div>
             <dl class="specs">
               ${it.specs ? `<div><dt>Size</dt><dd>${esc(it.specs)}</dd></div>` : ""}
               <div><dt>Formats</dt><dd>${fmts.join(", ")}</dd></div>
