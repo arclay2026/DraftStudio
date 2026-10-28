@@ -4,104 +4,70 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Checkout · Draft Studio</title>
-  <meta name="description" content="Pay securely for your Draft Studio design.">
+  <meta name="description" content="Secure checkout for your Draft Studio design.">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#ffffff">
-  <meta name="ds-version" content="202610280949">
+  <meta name="ds-version" content="202610281001">
   <script>/* Saved theme and text size (Settings), applied before paint */try{var t=localStorage.getItem("ds-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);if(localStorage.getItem("ds-rail"))document.documentElement.setAttribute("data-rail","");var x=localStorage.getItem("ds-text");if(x==="large"||x==="larger")document.documentElement.setAttribute("data-text",x);if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches))document.querySelector('meta[name="theme-color"]').setAttribute("content","#0a0a0a")}catch(e){}</script>
-  <script>/* Language (Settings > Language): pick it, set lang and direction, and load its dictionary before the page script */(function(){var A=["en","fr","es","pt","ar","zh"],d=document.documentElement,L="";try{L=localStorage.getItem("ds-lang")||""}catch(e){}var Q=(location.search.match(/[?&]lang=([a-z]{2})/)||[])[1];if(A.indexOf(Q)>-1)L=Q;if(A.indexOf(L)<0){L="en";var n=navigator.languages||[navigator.language||"en"];for(var i=0;i<n.length;i++){var c=String(n[i]).slice(0,2).toLowerCase();if(A.indexOf(c)>-1){L=c;break}}}d.lang=L;d.dir=L==="ar"?"rtl":"ltr";if(L!=="en"){d.classList.add("i18n-wait");setTimeout(function(){d.classList.remove("i18n-wait")},2500);document.write('<script src="js/i18n/'+L+'.js?v=202610280949"><\/script>')}})();</script>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap">
-  <link rel="stylesheet" href="css/style.css?v=202610280949">
-  <link rel="stylesheet" href="css/shop.css?v=202610280949">
+  <link rel="stylesheet" href="css/style.css?v=202610281001">
+  <link rel="stylesheet" href="css/shop.css?v=202610281001">
 </head>
-<body data-page="checkout" id="top">
-  <div data-header></div>
-
-  <main id="main" class="sx">
-    <div class="sx-flag"><i></i><span><b>Design preview</b> · not connected yet</span><a href="shop-preview.html">All preview pages</a></div>
-    <div class="sx-wrap">
-      <div class="co-head">
-        <div>
-          <h1 class="sx-h1">Checkout</h1>
-          <p class="sx-sub">One exclusive logo, yours alone once it's paid.</p>
-        </div>
-        <ol class="co-steps">
-          <li class="is-on"><b>1</b>Details</li>
-          <li><b>2</b>Pay</li>
-          <li><b>3</b>Download</li>
-        </ol>
-      </div>
-
-      <div class="co">
-        <div class="co-main">
-          <section class="co-block sx-card">
-            <h2><span class="n">1</span>Your details</h2>
-            <p>We'll email your receipt and download link here. Already have an account? <a href="signin.html">Sign in</a></p>
-            <form data-preview novalidate>
-              <div class="co-two">
-                <div class="sx-field">
-                <label class="sx-label" for="co-email">Email</label>
-                <div class="sx-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg><input id="co-email" type="email" name="co-email" placeholder="you@example.com" autocomplete="email"></div>
-              </div>
-                <div class="sx-field">
-                <label class="sx-label" for="co-name">Name</label>
-                <div class="sx-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><input id="co-name" type="text" name="co-name" placeholder="Name on the receipt" autocomplete="name"></div>
-              </div>
-              </div>
-              <label class="sx-check"><input type="checkbox" checked><span>Create an account so I can re-download later <small>(optional)</small></span></label>
-            </form>
-          </section>
-
-          <section class="co-block sx-card">
-            <h2><span class="n">2</span>Payment</h2>
-            <p>You'll finish on PayFast's secure page, then come straight back for your files.</p>
-            <div class="co-pay">
-              <span class="co-pay-logo">PayFast</span>
-              <span><b>Pay with PayFast</b><small>South Africa's most used payment gateway</small></span>
-              <span class="co-radio" aria-hidden="true"></span>
-            </div>
-            <div class="co-methods"><span>Card</span><span>Instant EFT</span><span>SnapScan</span><span>Apple Pay</span><span>Zapper</span></div>
-            <label class="sx-check"><input type="checkbox" data-agree><span>I agree to the <a href="license.html">license</a>: this is an exclusive design, sold once, with full rights to me.</span></label>
-            <button class="btn btn-dark sx-btn" type="button" data-pay style="margin-top:18px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>Pay R250.00 securely</button>
-            <p class="co-secure"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Card details go straight to PayFast. We never see them.</p>
-          </section>
-        </div>
-
-        <aside class="co-sum sx-card">
-          <div class="co-hold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/></svg><span>We're holding this logo for you</span><b data-hold>15:00</b></div>
-          <div class="co-item">
-            <span class="co-thumb"><img src="previews/sm/kaven-logo.webp" alt=""></span>
-            <div>
-              <h3>Kaven — Letter K Logo</h3>
-              <span class="sx-pill warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/></svg>Exclusive · sold once</span>
-              <div class="co-fmts"><span>AI</span><span>EPS</span><span>SVG</span><span>PDF</span><span>PNG</span></div>
-            </div>
-          </div>
-          <div class="co-lines">
-            <div><span>Logo</span><span>R250.00</span></div>
-            <div><span>VAT</span><span>Included</span></div>
-          </div>
-          <div class="co-total"><span>Total</span><b><small>ZAR</small>R250.00</b></div>
-          <ul class="co-perks">
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>Instant download after payment</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z"/><path d="m16 9-5.5 5.5L8 12"/></svg>Full rights, it comes off the shelf for good</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg>Questions? We're on WhatsApp</li>
+<body class="sp-focus" data-page="checkout">
+  <header class="sp-bar">
+    <div class="sp-bar-l"><a class="logo" href="index.html" aria-label="Draft Studio home"><img class="logo-l" src="assets/logo.svg" alt="Draft Studio" width="124" height="26"><img class="logo-d" src="assets/logo-dark.svg" alt="Draft Studio" width="124" height="26"></a><a class="sp-pv" href="shop-preview.html">Preview</a></div>
+    <div class="sp-bar-r"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Secure checkout</span></div>
+  </header>
+  <main id="main" class="co">
+    <section class="co-sum" aria-label="Order summary">
+      <div class="co-in">
+        <button class="co-toggle" type="button" aria-expanded="false"><span>Show order summary</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg><b>R250.00</b></button>
+        <div class="co-detail"><div>
+          <p class="co-eyebrow">Kaven — Letter K Logo</p>
+          <p class="co-amount">R250.00</p>
+          <div class="co-shot"><img src="previews/sm/kaven-logo.webp" alt="Kaven logo"></div>
+          <ul class="co-lines">
+            <li><span>Kaven — Letter K Logo<small>Exclusive license · AI, EPS, SVG, PDF, PNG</small></span><span>R250.00</span></li>
+            <li class="is-mute"><span>Subtotal</span><span>R250.00</span></li>
+            <li class="is-mute"><span>VAT</span><span>Included</span></li>
+            <li class="is-total"><span>Total due</span><span>R250.00</span></li>
           </ul>
-        </aside>
+          <div class="co-hold"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span>Reserved for you while you check out</span><b data-hold>15:00</b></div>
+          <div class="co-foot"><span>Payments by PayFast</span><a href="license.html">License</a><a href="#" data-preview-click>Privacy</a><a href="#" data-preview-click>Refunds</a></div>
+        </div></div>
       </div>
-    </div>
-  </main>
+    </section>
 
-  <div data-footer></div>
-  <script src="js/data.js?v=202610280949"></script>
-  <script src="js/preview-sizes.js?v=202610280949"></script>
-  <script src="js/icons.js?v=202610280949"></script>
-  <script src="js/ui-icons.js?v=202610280949"></script>
-  <script src="js/chat.js?v=202610280949"></script>
-  <script src="js/site.js?v=202610280949"></script>
-  <script src="js/shop.js?v=202610280949"></script>
+    <section class="co-form" aria-label="Payment details">
+      <div class="co-in">
+        <form data-preview novalidate>
+          <div class="co-sec">
+            <h2 class="co-h">Contact</h2>
+            <p class="co-signed">Have an account? <a href="signin.html">Sign in</a> to save this purchase to it.</p>
+            <div class="sp-field"><label class="sp-label" for="co-email"><span>Email</span></label><div class="sp-input"><input id="co-email" type="email" placeholder="you@company.com" autocomplete="email"></div><p class="sp-hint">Your receipt and download link go here.</p></div>
+            <div class="sp-field"><label class="sp-label" for="co-name"><span>Full name</span></label><div class="sp-input"><input id="co-name" type="text" placeholder="" autocomplete="name"></div></div>
+          </div>
+          <div class="co-sec">
+            <h2 class="co-h">Payment method</h2>
+            <div class="co-methods" role="radiogroup" aria-label="Payment method">
+              <button class="sp-row" type="button" role="radio" aria-checked="true" tabindex="0"><span class="rad"></span><b>Card</b><small>Visa · Mastercard · Amex</small></button>
+              <button class="sp-row" type="button" role="radio" aria-checked="false" tabindex="-1"><span class="rad"></span><b>Instant EFT</b><small>All major South African banks</small></button>
+              <button class="sp-row" type="button" role="radio" aria-checked="false" tabindex="-1"><span class="rad"></span><b>SnapScan</b><small>Scan with your phone</small></button>
+              <button class="sp-row" type="button" role="radio" aria-checked="false" tabindex="-1"><span class="rad"></span><b>Apple Pay</b><small>On supported devices</small></button>
+            </div>
+            <p class="co-methods-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>Processed by PayFast. You'll confirm on their secure page.</p>
+          </div>
+          <label class="sp-check co-agree"><input type="checkbox" data-agree><span>I understand this design is sold to one buyer only, and I agree to the <a href="license.html">exclusive license</a>.</span></label>
+          <button class="sp-btn is-primary is-block" type="button" data-pay>Pay R250.00</button>
+          <p class="co-secure sp-fine"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg><span>Encrypted end to end. Draft Studio never sees or stores your card details.</span></p>
+        </form>
+      </div>
+    </section>
+  </main>
+  <script src="js/data.js?v=202610281001"></script>
+  <script src="js/shop.js?v=202610281001"></script>
 </body>
 </html>

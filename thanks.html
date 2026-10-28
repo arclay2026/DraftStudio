@@ -3,68 +3,72 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Payment received · Draft Studio</title>
+  <title>Payment successful · Draft Studio</title>
   <meta name="description" content="Your Draft Studio order.">
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#ffffff">
-  <meta name="ds-version" content="202610280949">
+  <meta name="ds-version" content="202610281001">
   <script>/* Saved theme and text size (Settings), applied before paint */try{var t=localStorage.getItem("ds-theme");if(t==="light"||t==="dark")document.documentElement.setAttribute("data-theme",t);if(localStorage.getItem("ds-rail"))document.documentElement.setAttribute("data-rail","");var x=localStorage.getItem("ds-text");if(x==="large"||x==="larger")document.documentElement.setAttribute("data-text",x);if(t==="dark"||(t!=="light"&&matchMedia("(prefers-color-scheme: dark)").matches))document.querySelector('meta[name="theme-color"]').setAttribute("content","#0a0a0a")}catch(e){}</script>
-  <script>/* Language (Settings > Language): pick it, set lang and direction, and load its dictionary before the page script */(function(){var A=["en","fr","es","pt","ar","zh"],d=document.documentElement,L="";try{L=localStorage.getItem("ds-lang")||""}catch(e){}var Q=(location.search.match(/[?&]lang=([a-z]{2})/)||[])[1];if(A.indexOf(Q)>-1)L=Q;if(A.indexOf(L)<0){L="en";var n=navigator.languages||[navigator.language||"en"];for(var i=0;i<n.length;i++){var c=String(n[i]).slice(0,2).toLowerCase();if(A.indexOf(c)>-1){L=c;break}}}d.lang=L;d.dir=L==="ar"?"rtl":"ltr";if(L!=="en"){d.classList.add("i18n-wait");setTimeout(function(){d.classList.remove("i18n-wait")},2500);document.write('<script src="js/i18n/'+L+'.js?v=202610280949"><\/script>')}})();</script>
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400..700&display=swap">
-  <link rel="stylesheet" href="css/style.css?v=202610280949">
-  <link rel="stylesheet" href="css/shop.css?v=202610280949">
+  <link rel="stylesheet" href="css/style.css?v=202610281001">
+  <link rel="stylesheet" href="css/shop.css?v=202610281001">
 </head>
-<body data-page="thanks" id="top">
-  <div data-header></div>
+<body class="sp-focus" data-page="thanks">
+  <header class="sp-bar">
+    <div class="sp-bar-l"><a class="logo" href="index.html" aria-label="Draft Studio home"><img class="logo-l" src="assets/logo.svg" alt="Draft Studio" width="124" height="26"><img class="logo-d" src="assets/logo-dark.svg" alt="Draft Studio" width="124" height="26"></a><a class="sp-pv" href="shop-preview.html">Preview</a></div>
+    <div class="sp-bar-r"><a href="index.html">Back to Draft Studio</a></div>
+  </header>
+  <main id="main" class="ty" data-ty>
+    <div class="ty-box">
+      <div class="ty-state ty-wait" data-ty-wait>
+        <div class="ty-spin" aria-hidden="true"></div>
+        <h1>Confirming your payment</h1>
+        <p>This takes a few seconds. Please keep this page open.</p>
+      </div>
 
-  <main id="main" class="sx">
-    <div class="sx-flag"><i></i><span><b>Design preview</b> · not connected yet</span><a href="shop-preview.html">All preview pages</a></div>
-    <div class="sx-wrap">
-      <div class="ty" data-ty>
-        <section class="ty-card sx-card">
-          <div class="ty-state" data-ty-wait>
-            <div class="ty-spin" aria-hidden="true"></div>
-            <h1 class="sx-h1">Confirming your payment…</h1>
-            <p class="sx-sub">This usually takes a few seconds. Please keep this page open.</p>
+      <div class="ty-state" data-ty-paid hidden>
+        <div class="ty-head">
+          <span class="ty-ok"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></span>
+          <div>
+            <h1>Payment successful</h1>
+            <p>Order <span class="sp-mono">DS-7K2M9QX4</span> · A receipt was sent to alex@example.com</p>
           </div>
-          <div class="ty-state" data-ty-paid hidden>
-            <div class="ty-tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
-            <h1 class="sx-h1">Payment received</h1>
-            <p class="sx-sub">Thank you! Kaven is yours now, and it's off the shelf for good.</p>
-            <div class="ty-meta"><span>Order <b>DS-7K2M9QX4</b></span><span>Paid <b>R250.00</b></span><span>28 Oct 2026</span></div>
-            <div class="ty-dl">
-              <div class="ty-dl-row">
-                <span class="co-thumb"><img src="previews/sm/kaven-logo.webp" alt=""></span>
-                <div><h3>Kaven — Letter K Logo</h3><p>Exclusive · full rights</p></div>
-              </div>
-              <a class="btn btn-dark" href="#" data-preview-click><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>Download everything (ZIP · 4.2 MB)</a>
-              <div class="ty-files">
-                <a href="#" data-preview-click><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>AI</a><a href="#" data-preview-click><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>EPS</a><a href="#" data-preview-click><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>SVG</a><a href="#" data-preview-click><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>PDF</a><a href="#" data-preview-click><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>PNG</a>
-              </div>
-            </div>
-            <p class="ty-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>We also emailed the link to <b>&nbsp;alex@example.com</b></p>
+        </div>
+
+        <div class="ty-panel">
+          <div class="ty-prod">
+            <span class="ty-thumb"><img src="previews/sm/kaven-logo.webp" alt=""></span>
+            <div><b>Kaven — Letter K Logo</b><small>Exclusive license · full commercial rights</small></div>
+            <a class="sp-btn is-primary is-sm" href="#" data-preview-click><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg>Download all · 4.2 MB</a>
           </div>
-        </section>
-        <section class="ty-save sx-card">
-          <span class="ty-save-ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" x2="19" y1="8" y2="14"/><line x1="22" x2="16" y1="11" y2="11"/></svg></span>
-          <div><h3>Save this purchase to an account</h3><p>Re-download any time, from any device. Takes ten seconds.</p></div>
-          <a class="btn" href="signin.html#signup">Create account</a>
-        </section>
-        <p class="ty-help">Something wrong? <a href="#" data-preview-click>Message us on WhatsApp</a> with your order number. · <a href="#" data-ty-replay>Replay</a></p>
+          <ul class="ty-files">
+            <li><span class="ty-ext">AI</span><span class="sp-mono">kaven-logo.ai</span><span class="size">1.6 MB</span><a class="ty-dl" href="#" aria-label="Download kaven-logo.ai" data-preview-click><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></a></li>
+            <li><span class="ty-ext">EPS</span><span class="sp-mono">kaven-logo.eps</span><span class="size">1.9 MB</span><a class="ty-dl" href="#" aria-label="Download kaven-logo.eps" data-preview-click><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></a></li>
+            <li><span class="ty-ext">SVG</span><span class="sp-mono">kaven-logo.svg</span><span class="size">24 KB</span><a class="ty-dl" href="#" aria-label="Download kaven-logo.svg" data-preview-click><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></a></li>
+            <li><span class="ty-ext">PDF</span><span class="sp-mono">kaven-logo.pdf</span><span class="size">310 KB</span><a class="ty-dl" href="#" aria-label="Download kaven-logo.pdf" data-preview-click><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></a></li>
+            <li><span class="ty-ext">PNG</span><span class="sp-mono">kaven-logo.png</span><span class="size">180 KB</span><a class="ty-dl" href="#" aria-label="Download kaven-logo.png" data-preview-click><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/></svg></a></li>
+          </ul>
+        </div>
+
+        <dl class="ty-facts">
+          <dt>Amount paid</dt><dd>R250.00</dd>
+          <dt>Payment method</dt><dd>Card via PayFast</dd>
+          <dt>Date</dt><dd>28 Oct 2026, 09:41</dd>
+          <dt>Download links</dt><dd>Valid for 7 days</dd>
+        </dl>
+
+        <div class="ty-save">
+          <p><b>Keep this purchase in an account</b>Re-download any time, from any device.</p>
+          <a class="sp-btn" href="signin.html#signup">Create account</a>
+        </div>
+        <p class="ty-help">Need help? Message us on <a href="#" data-preview-click>WhatsApp</a> with your order number. <a href="#" data-ty-replay style="margin-left:6px">Replay</a></p>
       </div>
     </div>
   </main>
-
-  <div data-footer></div>
-  <script src="js/data.js?v=202610280949"></script>
-  <script src="js/preview-sizes.js?v=202610280949"></script>
-  <script src="js/icons.js?v=202610280949"></script>
-  <script src="js/ui-icons.js?v=202610280949"></script>
-  <script src="js/chat.js?v=202610280949"></script>
-  <script src="js/site.js?v=202610280949"></script>
-  <script src="js/shop.js?v=202610280949"></script>
+  <script src="js/data.js?v=202610281001"></script>
+  <script src="js/shop.js?v=202610281001"></script>
 </body>
 </html>
