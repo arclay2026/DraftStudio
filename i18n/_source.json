@@ -1538,7 +1538,17 @@
   "Mobile-first",
   "A fast, multi-page site for a Johannesburg tech and design studio.",
   "Websites, built to work.",
-  "Real sites we've designed and built for real businesses. Open the live preview to click around them on desktop, tablet or phone."
+  "Real sites we've designed and built for real businesses. Open the live preview to click around them on desktop, tablet or phone.",
+  "We build websites",
+  "that bring in business.",
+  "Your site, designed and built from scratch, then launched for you. It looks premium, loads fast on any phone and turns visitors into enquiries.",
+  "Custom design, no templates",
+  "Fast on every phone",
+  "Set up to be found on Google",
+  "Enquiries straight to WhatsApp",
+  "Start a project",
+  "See our work",
+  "Recent work"
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",

@@ -1595,7 +1595,17 @@
   "Mobile-first": "مصمم للهاتف أولاً",
   "A fast, multi-page site for a Johannesburg tech and design studio.": "موقع سريع متعدد الصفحات لاستوديو تقنية وتصميم في جوهانسبرغ.",
   "Websites, built to work.": "مواقع ويب، مصممة لتعمل.",
-  "Real sites we've designed and built for real businesses. Open the live preview to click around them on desktop, tablet or phone.": "مواقع حقيقية صممناها وبنيناها لأعمال حقيقية. افتح المعاينة المباشرة لتتصفحها على الحاسوب أو الجهاز اللوحي أو الهاتف."
+  "Real sites we've designed and built for real businesses. Open the live preview to click around them on desktop, tablet or phone.": "مواقع حقيقية صممناها وبنيناها لأعمال حقيقية. افتح المعاينة المباشرة لتتصفحها على الحاسوب أو الجهاز اللوحي أو الهاتف.",
+  "We build websites": "نبني مواقع ويب",
+  "that bring in business.": "تجلب لك العملاء.",
+  "Your site, designed and built from scratch, then launched for you. It looks premium, loads fast on any phone and turns visitors into enquiries.": "موقعك مصمم ومبني من الصفر ثم ننشره لك. مظهر راقٍ، وتحميل سريع على أي هاتف، ويحوّل الزوار إلى استفسارات.",
+  "Custom design, no templates": "تصميم مخصص بلا قوالب",
+  "Fast on every phone": "سريع على كل الهواتف",
+  "Set up to be found on Google": "مهيأ للظهور في Google",
+  "Enquiries straight to WhatsApp": "الاستفسارات مباشرة إلى واتساب",
+  "Start a project": "ابدأ مشروعاً",
+  "See our work": "شاهد أعمالنا",
+  "Recent work": "أحدث الأعمال"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",

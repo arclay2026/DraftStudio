@@ -1595,7 +1595,17 @@
   "Mobile-first": "移动优先",
   "A fast, multi-page site for a Johannesburg tech and design studio.": "为约翰内斯堡一家科技与设计工作室打造的快速多页面网站。",
   "Websites, built to work.": "网站，为实用而建。",
-  "Real sites we've designed and built for real businesses. Open the live preview to click around them on desktop, tablet or phone.": "我们为真实企业设计和搭建的真实网站。打开实时预览，在电脑、平板或手机上浏览它们。"
+  "Real sites we've designed and built for real businesses. Open the live preview to click around them on desktop, tablet or phone.": "我们为真实企业设计和搭建的真实网站。打开实时预览，在电脑、平板或手机上浏览它们。",
+  "We build websites": "我们打造网站",
+  "that bring in business.": "为您带来生意。",
+  "Your site, designed and built from scratch, then launched for you. It looks premium, loads fast on any phone and turns visitors into enquiries.": "从零设计和开发您的网站，并为您上线。高端质感，在任何手机上都能快速加载，把访客变成咨询。",
+  "Custom design, no templates": "定制设计，不用模板",
+  "Fast on every phone": "任何手机都很快",
+  "Set up to be found on Google": "为 Google 搜索优化",
+  "Enquiries straight to WhatsApp": "咨询直达 WhatsApp",
+  "Start a project": "开始项目",
+  "See our work": "查看我们的作品",
+  "Recent work": "近期作品"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",

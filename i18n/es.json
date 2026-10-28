@@ -1595,7 +1595,17 @@
   "Mobile-first": "Pensado para móvil",
   "A fast, multi-page site for a Johannesburg tech and design studio.": "Un sitio rápido de varias páginas para un estudio de tecnología y diseño de Johannesburgo.",
   "Websites, built to work.": "Sitios web, hechos para funcionar.",
-  "Real sites we've designed and built for real businesses. Open the live preview to click around them on desktop, tablet or phone.": "Sitios reales que hemos diseñado y creado para negocios reales. Abre la vista previa en vivo para recorrerlos en ordenador, tableta o móvil."
+  "Real sites we've designed and built for real businesses. Open the live preview to click around them on desktop, tablet or phone.": "Sitios reales que hemos diseñado y creado para negocios reales. Abre la vista previa en vivo para recorrerlos en ordenador, tableta o móvil.",
+  "We build websites": "Creamos sitios web",
+  "that bring in business.": "que atraen clientes.",
+  "Your site, designed and built from scratch, then launched for you. It looks premium, loads fast on any phone and turns visitors into enquiries.": "Tu sitio, diseñado y creado desde cero, y publicado por nosotros. Se ve premium, carga rápido en cualquier móvil y convierte visitas en consultas.",
+  "Custom design, no templates": "Diseño a medida, sin plantillas",
+  "Fast on every phone": "Rápido en cualquier móvil",
+  "Set up to be found on Google": "Preparado para Google",
+  "Enquiries straight to WhatsApp": "Consultas directas a WhatsApp",
+  "Start a project": "Empezar un proyecto",
+  "See our work": "Ver nuestro trabajo",
+  "Recent work": "Trabajo reciente"
  },
  "patterns": {
   "^(\\d+) files$": "$1 archivos",

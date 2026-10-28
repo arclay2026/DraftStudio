@@ -23,16 +23,33 @@
 .sc-tags span { padding: 3px 9px; border-radius: 999px; background: var(--card); font-size: calc(11.5px * var(--ts)); color: var(--fg); }
 .sc-body .btn { flex: none; }
 .sc-body .btn svg { width: 15px; height: 15px; }
-/* One card on its own (home page): wide, the site on the left and its info on the right */
-.sc-grid.is-single { grid-template-columns: 1fr; }
-@media (min-width: 900px) {
-  .sc-grid.is-single .sc { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
-  .sc-grid.is-single .sc-win { margin: 10px 0 10px 10px; }
-  .sc-grid.is-single .sb-view { aspect-ratio: 16 / 9.5; }
-  .sc-grid.is-single .sc-body { flex-direction: column; align-items: flex-start; justify-content: space-between; padding: clamp(22px, 2.6vw, 36px); }
-  .sc-grid.is-single .sc-body h3 { font-size: clamp(22px, 2.2vw, 30px); letter-spacing: -.035em; margin: 8px 0 10px; }
-  .sc-grid.is-single .sc-body p { font-size: calc(14px * var(--ts)); }
+/* Home: "We build websites" section, the service on the left and recent work on the right */
+.wsv {
+  display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: clamp(25px, 4vw, 64px); align-items: center;
+  padding: clamp(28px, 4vw, 60px); border-radius: var(--radius-lg); corner-shape: superellipse(1.5);
+  background: radial-gradient(90% 80% at 100% 100%, rgba(31, 122, 255, .12), transparent 60%), var(--surface-2); box-shadow: inset 0 0 0 1px var(--line);
 }
+.wsv h2 { margin: 14.5px 0 11px; font-size: clamp(26px, 2.8vw, 40px); font-weight: 600; letter-spacing: -.04em; line-height: 1.1; }
+.wsv-copy > p { color: var(--mute); font-size: calc(clamp(13px, 1.1vw, 15px) * var(--ts)); max-width: 32em; line-height: 1.6; }
+.wsv-work { position: relative; }
+.wsv-label { display: inline-block; margin-bottom: 12px; font: 600 10.5px/1 var(--font-display); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
+.wsv-work .sc-win { margin: 0; box-shadow: 0 0 0 1px var(--border), 0 30px 60px -34px rgba(0, 0, 0, .4); transition: transform .5s var(--ease), box-shadow .4s; }
+.wsv-work .sc-win:hover { transform: translateY(-3px); box-shadow: 0 0 0 1px var(--border-2), 0 40px 70px -34px rgba(0, 0, 0, .45); }
+@media (hover: hover) { .wsv-work .sc-win:hover .sb-view img { transform: translateY(calc(-100% + 100cqh)); transition-duration: 9s; } }
+.wsv-cap { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; font-size: calc(12.5px * var(--ts)); }
+.wsv-cap b { display: block; font-size: calc(13.5px * var(--ts)); font-weight: 600; color: var(--fg); }
+.wsv-cap span { color: var(--mute); }
+.wsv-cap a { display: inline-flex; align-items: center; gap: 5px; flex: none; font-weight: 600; color: var(--fg); }
+.wsv-cap a svg { width: 14px; height: 14px; transition: transform .25s var(--ease); }
+.wsv-cap a:hover svg { transform: translate(2px, -2px); }
+@media (max-width: 900px) {
+  .wsv { grid-template-columns: 1fr; padding: 26px 18px 22px; }
+  .wsv h2 { font-size: clamp(25px, 7vw, 32px); }
+  .wsv .cvh-feats { display: grid; grid-template-columns: 1fr; justify-content: start; gap: 10px; margin: 18px 0 22px; }
+  .wsv .cvh-feats li { padding: 0; background: none; box-shadow: none; font-size: calc(13.5px * var(--ts)); font-weight: 400; }
+  .wsv .cvh-feats svg { width: 20px; height: 20px; padding: 4.5px; }
+}
+
 @media (max-width: 600px) {
   .sc-body { flex-direction: column; align-items: stretch; }
   .sc-body .btn { justify-content: center; }

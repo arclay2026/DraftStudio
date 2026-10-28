@@ -35,12 +35,10 @@
   const wa = s => `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(`Hi Draft Studio, I saw ${s.name} on your site and I'd like a website like it for my business.`)}`;
   const page = document.body.dataset.page;
 
-  /* ---------- Site cards: websites.html, and the newest ones on the home page ---------- */
-  // <div data-sites data-limit="2"> shows that many (newest first); one card on
-  // its own is laid out wide, the site on the left and its info on the right.
+  /* ---------- Site cards (websites.html) ---------- */
+  // <div data-sites data-limit="2"> shows that many (newest first)
   $$("[data-sites]").forEach(grid => {
     const list = SITES.slice(0, +grid.dataset.limit || SITES.length);
-    grid.classList.toggle("is-single", list.length === 1 && grid.hasAttribute("data-limit"));
     grid.innerHTML = list.map(s => `
       <article class="sc">
         <a class="sc-win" href="preview.html?id=${encodeURIComponent(s.id)}" aria-label="Live preview of ${esc(s.name)}">
@@ -58,6 +56,19 @@
         </div>
       </article>`).join("");
   });
+
+  /* ---------- Home: the newest site as a small "recent work" example ---------- */
+  const feat = $("[data-site-feature]");
+  if (feat && SITES[0]) {
+    const s = SITES[0], go = `preview.html?id=${encodeURIComponent(s.id)}`;
+    feat.innerHTML = `
+      <span class="wsv-label">Recent work</span>
+      <a class="sc-win" href="${go}" aria-label="Live preview of ${esc(s.name)}">
+        <div class="sb-bar"><i></i><i></i><i></i><span>${ic("globe")}${esc(host(s.url))}</span></div>
+        <div class="sb-view"><img src="${esc(s.shot)}" alt="${esc(s.name)} website" loading="lazy" decoding="async"></div>
+      </a>
+      <div class="wsv-cap"><span><b>${esc(s.name)}</b>${esc(s.type)}</span><a href="${go}">Live preview ${ic("arrow-up-right")}</a></div>`;
+  }
 
   /* ---------- preview.html ---------- */
   if (page === "preview") {
