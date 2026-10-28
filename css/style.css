@@ -3290,3 +3290,9 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
 .side-new, .cvh-new, .fchip, .eyebrow, .kbd, .hsearch-tags a, .tag, .shelf-count {
   corner-shape: superellipse(1.5);
 }
+
+/* Every rounded div gets the soft squircle too. Exceptions: the page-sized
+   panels (on those Chrome has to redraw the whole page while scrolling, which
+   made the site stutter) and the boxes that frame a picture. */
+div { corner-shape: superellipse(1.5); }
+.shell, .hero-panel, .hero-photo, .card-media, .cx-miniwrap, .ax-m-photo, .wl-img, .co-prod-img, .co-shot { corner-shape: round; }
