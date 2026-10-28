@@ -10,6 +10,8 @@
    site.js calls window.DSChat(kit) with the shared helpers.
    ===================================================================== */
 window.DSChat = function (kit) {
+  // Drafty's avatar: the official mark, white on the dark tile (black in dark mode, where the tile is light)
+  const AV_MARK = '<img class="ch-av-w" src="assets/logo-mark-dark.svg" alt=""><img class="ch-av-k" src="assets/logo-mark.svg" alt="">';
   const { $, $$, esc, icon, libIcon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG } = kit;
   const KEY = "ds-chat";
   const NAME = "Drafty";
@@ -215,7 +217,7 @@ window.DSChat = function (kit) {
     <span class="ch-hello" aria-hidden="true">Ask ${NAME}</span>
     <section class="ch-panel" id="ch-panel" role="dialog" aria-label="${NAME}, Draft Studio assistant" hidden>
       <header class="ch-head">
-        <span class="ch-av ch-av-lg" aria-hidden="true">D</span>
+        <span class="ch-av ch-av-lg" aria-hidden="true">${AV_MARK}</span>
         <span class="ch-who"><b data-no-i18n>${NAME}</b><small><i></i><span>Draft Studio assistant</span></small></span>
         <button class="ch-hbtn" type="button" data-ch-new aria-label="New chat" data-tip="New chat">${icon("refresh")}</button>
         <button class="ch-hbtn" type="button" data-ch-close aria-label="Close chat">${icon("close")}</button>
@@ -236,7 +238,7 @@ window.DSChat = function (kit) {
 
   const bubble = m => m.role === "user"
     ? `<div class="ch-msg ch-me"><div class="ch-body">${para(m.text[0])}</div></div>`
-    : `<div class="ch-msg ch-bot"><span class="ch-av" aria-hidden="true">D</span><div class="ch-body">${m.text.map(para).join("")}${(m.blocks || []).map(block).join("")}</div></div>`;
+    : `<div class="ch-msg ch-bot"><span class="ch-av" aria-hidden="true">${AV_MARK}</span><div class="ch-body">${m.text.map(para).join("")}${(m.blocks || []).map(block).join("")}</div></div>`;
   const draw = () => {
     const all = msgs.length ? msgs : [Object.assign({ role: "bot" }, greeting())];
     log.innerHTML = all.map(bubble).join("");
@@ -246,7 +248,7 @@ window.DSChat = function (kit) {
   };
   const typing = on => {
     const t = $(".ch-typing", log);
-    if (on && !t) { log.insertAdjacentHTML("beforeend", `<div class="ch-msg ch-bot ch-typing"><span class="ch-av" aria-hidden="true">D</span><div class="ch-body"><span class="ch-dots"><i></i><i></i><i></i></span></div></div>`); log.scrollTop = log.scrollHeight; }
+    if (on && !t) { log.insertAdjacentHTML("beforeend", `<div class="ch-msg ch-bot ch-typing"><span class="ch-av" aria-hidden="true">${AV_MARK}</span><div class="ch-body"><span class="ch-dots"><i></i><i></i><i></i></span></div></div>`); log.scrollTop = log.scrollHeight; }
     if (!on && t) t.remove();
   };
 
