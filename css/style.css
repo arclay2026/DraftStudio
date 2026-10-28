@@ -1856,14 +1856,6 @@ html.qv-dragging #main, html.qv-dragging .footer, html.qv-dragging .qv-backdrop 
 @keyframes vt-out { to { opacity: 0; transform: scale(.99); } }
 @keyframes vt-in { from { opacity: 0; transform: translateY(11px); } }
 
-/* Continuous "squircle" corners where the browser supports them */
-@supports (corner-shape: squircle) {
-  .card-media, .drop, .pal, .pt, .pt-stage, .pt-swatches, .qs-card, .qs-stage, .qs-preview, .qs-tile, .qs-type, .ix, .fx-panel,
-  .lx-panel, .lx-ticket, .qv-panel, .qt-card, .icon-cell, .inspector, .shelves > *, .hero-photo, .hero-dots, .sel-menu, .dd-menu, .nav-drop, .cpick {
-    corner-shape: squircle;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   html.qv-lock #main, html.qv-lock .footer { transform: none; }
 }
@@ -3285,12 +3277,11 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
 }
 @media (max-width: 640px) { .hero-sub br { display: none; } }
 
-/* Soft squircle corners on icon buttons and dropdowns, to match the buttons
-   (browsers without corner-shape keep the normal round corners) */
-.icon-btn, .glass-btn, .hsearch-go, .qs-iconbtn, .pal-btn, .ps-tool, .qv-btn, .ch-fab, .ch-send, .side-fold,
-.sel-btn, .sel-toggle, .sel-menu, .sel-menu button, .color-menu .sw-clear, .letter-menu .lt,
-.dd-btn, .dd-toggle, .dd-menu, .dd-menu button, .dd-ico,
-.cx-dd-btn, .cx-ddlist, .cx-pop, .cx-menu, .cx-poplist button,
-.field, .seg, .seg-thumb, .search-results, .hsearch-results {
-  corner-shape: superellipse(1.5);
-}
+/* Soft squircle corners on everything rounded: buttons, panels, menus, swatches.
+   Picture frames (anything holding an image, video or canvas) and spinning
+   loaders keep plain round corners. Browsers without corner-shape ignore this. */
+* { corner-shape: superellipse(1.5); }
+*::before, *::after { corner-shape: superellipse(1.5); }
+:where(img, picture, video, canvas, iframe, .hero-photo, .ty-spin, .spin, .ring,
+  :has(> img, > picture, > video, > canvas, > iframe, > .slide)) { corner-shape: round; }
+.ty-wait .ring::before, .ty-wait .ring::after { corner-shape: round; }
