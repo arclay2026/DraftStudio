@@ -1907,7 +1907,17 @@
   "Type on a Path": "Texte curviligne",
   "Makes the in-between steps from one object to the other: position, size, rotation, colour and, for shapes, the outline.": "Crée les étapes intermédiaires d’un objet à l’autre : position, taille, rotation, couleur et, pour les formes, le contour.",
   "[ and ] change the size": "[ et ] changent la taille",
-  "Direct Selection": "Sélection directe"
+  "Direct Selection": "Sélection directe",
+  "Recent": "Récentes",
+  "All fonts": "Toutes les polices",
+  "No fonts match that search.": "Aucune police ne correspond à cette recherche.",
+  "Search fonts": "Rechercher une police",
+  "Sans": "Sans",
+  "Serif": "Serif",
+  "Script": "Manuscrite",
+  "Mono": "Mono",
+  "Thin": "Fin",
+  "Extra light": "Extra-léger"
  },
  "patterns": {
   "^(\\d+) files$": "$1 fichiers",

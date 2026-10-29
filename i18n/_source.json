@@ -1850,7 +1850,17 @@
   "Type on a Path",
   "Makes the in-between steps from one object to the other: position, size, rotation, colour and, for shapes, the outline.",
   "[ and ] change the size",
-  "Direct Selection"
+  "Direct Selection",
+  "Recent",
+  "All fonts",
+  "No fonts match that search.",
+  "Search fonts",
+  "Sans",
+  "Serif",
+  "Script",
+  "Mono",
+  "Thin",
+  "Extra light"
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",

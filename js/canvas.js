@@ -128,13 +128,14 @@ window.DSCanvas = function (kit) {
     ["Poster", 1240, 1754], ["Presentation", 1920, 1080], ["YouTube thumbnail", 1280, 720],
     ["Facebook ad", 1200, 628], ["Business card", 1050, 600], ["Logo", 1000, 1000]
   ];
-  const FONTS = {
-    "Inter": [400, 500, 600, 700], "Poppins": [400, 500, 600, 700, 800], "Montserrat": [400, 500, 600, 700, 800],
-    "Space Grotesk": [400, 500, 700], "Syne": [400, 600, 700, 800], "Archivo Black": [400], "Bebas Neue": [400],
-    "Oswald": [400, 500, 700], "Playfair Display": [400, 600, 700, 800], "DM Serif Display": [400], "Lora": [400, 600, 700],
-    "Georgia": [400, 700], "Caveat": [400, 700]
-  };
-  const WEIGHT_NAMES = { 400: "Regular", 500: "Medium", 600: "Semibold", 700: "Bold", 800: "Extra bold" };
+  // Fonts: the Google Fonts list in js/canvas-fonts.js plus Georgia. family -> weights, family -> style
+  const FONTS = { "Georgia": [400, 700] }, FONT_CAT = { "Georgia": "Serif" };
+  Object.entries(window.DS_CANVAS_FONTS || {}).forEach(([cat, list]) => list.forEach(([name, w]) => {
+    FONTS[name] = String(w).split("").map(d => d * 100); FONT_CAT[name] = cat;
+  }));
+  const FONT_NAMES = Object.keys(FONTS).sort((a, b) => a.localeCompare(b));
+  const FONT_TABS = [["", "All"], ["Sans", "Sans"], ["Serif", "Serif"], ["Display", "Display"], ["Handwriting", "Script"], ["Mono", "Mono"]];
+  const WEIGHT_NAMES = { 100: "Thin", 200: "Extra light", 300: "Light", 400: "Regular", 500: "Medium", 600: "Semibold", 700: "Bold", 800: "Extra bold", 900: "Black" };
   const PAIRS = [["Bebas Neue", 400, "Inter", 400], ["Playfair Display", 700, "Lora", 400], ["Archivo Black", 400, "Inter", 400],
     ["Syne", 800, "Space Grotesk", 400], ["DM Serif Display", 400, "Inter", 400], ["Caveat", 700, "Poppins", 400]];
   const pal = name => ((DS.palettes || []).find(p => p.name === name) || { colors: ["#0f0f0f", "#1f7aff", "#ffffff"] }).colors;
@@ -585,17 +586,43 @@ window.DSCanvas = function (kit) {
   /* =====================================================================
      Fonts
      ===================================================================== */
-  const fontReady = {};
+  const fontReady = {}, fontCss = {};
+  const fontQ = f => encodeURIComponent(f).replace(/%20/g, "+");
+  // A font's stylesheet goes in the first time a design uses it
+  const ensureFontCss = family => {
+    if (!FONTS[family] || family === "Georgia") return Promise.resolve();
+    return fontCss[family] || (fontCss[family] = new Promise(res => {
+      const l = document.createElement("link");
+      l.rel = "stylesheet";
+      l.href = `https://fonts.googleapis.com/css2?family=${fontQ(family)}:wght@${FONTS[family].join(";")}&display=swap`;
+      l.onload = l.onerror = () => res();
+      document.head.appendChild(l);
+    }));
+  };
+  // Font menu previews load just the letters of each name, under their own family name,
+  // so a preview never stands in for the full font on the canvas
+  const previewed = new Set();
+  const previewFonts = names => {
+    names = [...new Set(names)].filter(f => FONTS[f] && f !== "Georgia" && !previewed.has(f));
+    if (!names.length) return;
+    names.forEach(f => previewed.add(f));
+    const fams = names.map(f => `family=${fontQ(f)}:wght@${FONTS[f].includes(400) ? 400 : FONTS[f][0]}`).join("&");
+    fetch(`https://fonts.googleapis.com/css2?${fams}&text=${encodeURIComponent([...new Set(names.join(""))].join(""))}`)
+      .then(r => (r.ok ? r.text() : Promise.reject()))
+      .then(css => { const st = document.createElement("style"); st.textContent = css.replace(/font-family: '([^']+)'/g, "font-family: '$1 Preview'"); document.head.appendChild(st); })
+      .catch(() => names.forEach(f => previewed.delete(f)));
+  };
+  const fontFace = f => (f === "Georgia" ? "Georgia" : `'${f} Preview', '${f}'`);
   const loadFont = (family, weight = 400) => {
     if (family === "Georgia" || !document.fonts) return Promise.resolve();
     const key = family + weight;
-    if (!fontReady[key]) fontReady[key] = document.fonts.load(`${weight} 40px "${family}"`).then(() => { F.util.clearFabricFontCache(family); }).catch(() => {});
+    if (!fontReady[key]) fontReady[key] = ensureFontCss(family).then(() => document.fonts.load(`${weight} 40px "${family}"`)).then(() => { F.util.clearFabricFontCache(family); }).catch(() => {});
     return fontReady[key];
   };
   const isText = o => o && (o.type === "textbox" || o.type === "i-text" || o.type === "text");
   const flat = objs => objs.flatMap(o => (o.type === "group" ? flat(o.getObjects()) : [o]));
   const loadFontsOf = objs => Promise.all(flat(objs).filter(isText).map(o => loadFont(o.fontFamily, o.fontWeight)));
-  const refreshText = () => { flat(cv.getObjects()).forEach(o => { if (o.initDimensions) { o.initDimensions(); o.setCoords(); } }); cv.requestRenderAll(); };
+  const refreshText = () => { flat(cv.getObjects()).forEach(o => { if (o.initDimensions) { o.initDimensions(); o.setCoords(); o.dirty = true; } }); cv.requestRenderAll(); };
 
   /* =====================================================================
      Vector paths: anchors with handles, editable with Edit Points
@@ -2320,8 +2347,12 @@ window.DSCanvas = function (kit) {
     cv.requestRenderAll();
     if (done) { note(PROP_LABEL[k] || "Change"); changed(); }
   }
+  let recentFonts = [];
+  try { recentFonts = (JSON.parse(localStorage.getItem("ds-canvas-fonts")) || []).filter(f => FONTS[f]); } catch (e) { /* private mode */ }
   async function setFont(family) {
     charState.family = family;
+    recentFonts = [family, ...recentFonts.filter(f => f !== family)].slice(0, 8);
+    try { localStorage.setItem("ds-canvas-fonts", JSON.stringify(recentFonts)); } catch (e) { /* private mode */ }
     const list = flat(active()).filter(isText);
     const weights = FONTS[family] || [400];
     await Promise.all(list.map(o => {
@@ -2813,6 +2844,46 @@ window.DSCanvas = function (kit) {
   /* ---------- Popovers, main menu, context menu ---------- */
   let pop = null;
   function closePop() { if (pop) { if (pop.__btn) pop.__btn.setAttribute("aria-expanded", "false"); pop.remove(); pop = null; } }
+  // Font menu: search, a style filter, recently used fonts, then every font A to Z
+  function fontMenu(el) {
+    const cur = (flat(active()).find(isText) || {}).fontFamily || charState.family;
+    let tab = "", q = "";
+    const row = f => `<button type="button" data-font="${esc(f)}"${f === cur ? ' class="is-on"' : ""} data-no-i18n><b style="font-family:${esc(fontFace(f))}">${esc(f)}</b>${tab ? "" : `<em>${tr(FONT_TABS.find(t => t[0] === FONT_CAT[f])[1])}</em>`}</button>`;
+    const listHtml = () => {
+      const words = q.trim().toLowerCase();
+      const hits = FONT_NAMES.filter(f => (!tab || FONT_CAT[f] === tab) && (!words || f.toLowerCase().includes(words)));
+      const rec = !tab && !words ? recentFonts.slice(0, 5) : [];
+      return (rec.length ? `<span class="cx-pop-title">${tr("Recent")}</span>${rec.map(row).join("")}<span class="cx-pop-title">${tr("All fonts")}</span>` : "")
+        + (hits.length ? hits.map(row).join("") : `<p class="cx-fnone">${tr("No fonts match that search.")}</p>`);
+    };
+    const p = openPop(el, `<label class="cx-fsearch">${ui("search")}<input data-fq placeholder="${tr("Search fonts")}" aria-label="${tr("Search fonts")}" spellcheck="false" autocomplete="off"></label>
+      <div class="cx-ftabs">${FONT_TABS.map(([k, t]) => `<button type="button" data-ftab="${k}" aria-pressed="${!k}">${tr(t)}</button>`).join("")}</div>
+      <div class="cx-poplist is-fonts" data-flist>${listHtml()}</div>`, "is-fonts");
+    const list = $("[data-flist]", p), input = $("[data-fq]", p);
+    const io = "IntersectionObserver" in window ? new IntersectionObserver(es => {
+      const seen = es.filter(x => x.isIntersecting).map(x => { io.unobserve(x.target); return x.target.dataset.font; });
+      for (let i = 0; i < seen.length; i += 40) previewFonts(seen.slice(i, i + 40));
+    }, { root: list, rootMargin: "240px 0px" }) : null;
+    const watch = () => $$("[data-font]", list).forEach(b => { if (!previewed.has(b.dataset.font)) io ? io.observe(b) : previewFonts([b.dataset.font]); });
+    const draw = () => { list.innerHTML = listHtml(); list.scrollTop = 0; watch(); };
+    watch();
+    const on = $(".is-on", list);
+    if (on) list.scrollTop = on.offsetTop - list.clientHeight / 2;
+    input.addEventListener("input", () => { q = input.value; draw(); });
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") { const b = $("[data-font]", list); if (b) { setFont(b.dataset.font); closePop(); } }
+      if (e.key === "ArrowDown") { e.preventDefault(); const b = $("[data-font]", list); if (b) b.focus(); }
+      if (e.key === "Escape") closePop();
+    });
+    p.addEventListener("click", e => {
+      const t = e.target.closest("[data-ftab]");
+      if (!t) return;
+      tab = t.dataset.ftab;
+      $$("[data-ftab]", p).forEach(b => b.setAttribute("aria-pressed", b === t));
+      draw();
+    });
+    if (matchMedia("(pointer: fine)").matches) input.focus({ preventScroll: true });
+  }
   function openPop(anchor, html, cls = "", above = false) {
     closePop();
     const R = root.getBoundingClientRect(), r = anchor.getBoundingClientRect();
@@ -2975,9 +3046,10 @@ window.DSCanvas = function (kit) {
       const head = it.group !== last ? `<div class="cx-pgroup">${tr(it.group)}</div>` : "";
       last = it.group;
       const ic = !it.icon ? ui("command") : it.group === "Insert icon" ? libIcon(it.icon) : ui(it.icon);
-      return `${head}<button type="button" class="cx-pitem${i === 0 ? " is-on" : ""}" data-pi="${i}" role="option" data-no-i18n>${ic}<span${it.font ? ` style="font-family:'${it.font}'"` : ""}>${esc(it.label)}</span>${it.key ? `<kbd>${it.key}</kbd>` : ""}</button>`;
+      return `${head}<button type="button" class="cx-pitem${i === 0 ? " is-on" : ""}" data-pi="${i}" role="option" data-no-i18n>${ic}<span${it.font ? ` style="font-family:${esc(fontFace(it.font))}"` : ""}>${esc(it.label)}</span>${it.key ? `<kbd>${it.key}</kbd>` : ""}</button>`;
     }).join("") || `<p class="cx-pempty">${tr("No matches.")}</p>`;
     plist.__items = shown;
+    previewFonts(shown.filter(it => it.font).map(it => it.font));
   }
   const runPalette = i => { const it = (plist.__items || [])[i]; if (!it) return; closePalette(); it.run(); };
   pq.addEventListener("input", filterPalette);
@@ -3335,7 +3407,8 @@ window.DSCanvas = function (kit) {
     if (fmt === "svg") {
       const svg = cv.toSVG({ width: a.w, height: a.h, viewBox: { x: a.x, y: a.y, width: a.w, height: a.h } });
       const fonts = [...new Set(flat(cv.getObjects()).filter(isText).map(o => o.fontFamily).filter(f => f !== "Georgia"))];
-      const css = fonts.length ? `<style>@import url("https://fonts.googleapis.com/css2?${fonts.map(f => "family=" + f.replace(/ /g, "+") + ":wght@400;500;600;700;800").join("&amp;")}&amp;display=swap");</style>` : "";
+      const gf = fonts.filter(f => FONTS[f] && f !== "Georgia");
+      const css = gf.length ? `<style>@import url("https://fonts.googleapis.com/css2?${gf.map(f => "family=" + fontQ(f) + ":wght@" + FONTS[f].join(";")).join("&amp;")}&amp;display=swap");</style>` : "";
       const bg = transparent ? "" : `<rect x="${a.x}" y="${a.y}" width="${a.w}" height="${a.h}" fill="${a.bg}"/>`;
       out = svg.replace(/(<svg[^>]*>)/, `$1${css}`).replace(/(<\/defs>)/, `$1${bg}`);
     } else {
@@ -3615,7 +3688,7 @@ window.DSCanvas = function (kit) {
         renderRight(); break;
       case "dd": if (pop && pop.__btn === el) closePop(); else openDropdown(el); break;
       case "swatch-pop": paint.focus = arg; syncPaint(); openPop(el, swatchPopHtml(), "is-swatches"); break;
-      case "font-menu": openPop(el, `<div class="cx-poplist is-fonts">${Object.keys(FONTS).map(f => `<button type="button" data-font="${esc(f)}" style="font-family:'${esc(f)}'" data-no-i18n><b>${esc(f)}</b></button>`).join("")}</div>`); break;
+      case "font-menu": fontMenu(el); break;
       case "paint-none": setPaint(arg || paint.focus, null); refreshUI(); break;
       case "paint-gradient": if (active().length) setGradient(gradStops(firstOf("fill"))); else toast(tr("Select an object first.")); break;
       case "swap-paint": swapPaint(); break;

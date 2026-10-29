@@ -1907,7 +1907,17 @@
   "Type on a Path": "路径文字工具",
   "Makes the in-between steps from one object to the other: position, size, rotation, colour and, for shapes, the outline.": "生成从一个对象到另一个对象的中间步骤：位置、大小、旋转、颜色，以及形状的轮廓。",
   "[ and ] change the size": "[ 和 ] 调整大小",
-  "Direct Selection": "直接选择"
+  "Direct Selection": "直接选择",
+  "Recent": "最近使用",
+  "All fonts": "全部字体",
+  "No fonts match that search.": "没有符合该搜索的字体。",
+  "Search fonts": "搜索字体",
+  "Sans": "无衬线",
+  "Serif": "衬线",
+  "Script": "手写",
+  "Mono": "等宽",
+  "Thin": "极细",
+  "Extra light": "特细"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",

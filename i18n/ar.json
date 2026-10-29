@@ -1907,7 +1907,17 @@
   "Type on a Path": "الكتابة على مسار",
   "Makes the in-between steps from one object to the other: position, size, rotation, colour and, for shapes, the outline.": "ينشئ الخطوات الوسيطة من عنصر إلى آخر: الموضع والحجم والدوران واللون، وللأشكال الحدود الخارجية.",
   "[ and ] change the size": "[ و ] لتغيير الحجم",
-  "Direct Selection": "التحديد المباشر"
+  "Direct Selection": "التحديد المباشر",
+  "Recent": "الأخيرة",
+  "All fonts": "كل الخطوط",
+  "No fonts match that search.": "لا توجد خطوط تطابق هذا البحث.",
+  "Search fonts": "ابحث عن خط",
+  "Sans": "بلا زوائد",
+  "Serif": "بزوائد",
+  "Script": "يدوي",
+  "Mono": "أحادي المسافة",
+  "Thin": "رفيع",
+  "Extra light": "خفيف جدًا"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",

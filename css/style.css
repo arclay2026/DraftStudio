@@ -3087,8 +3087,21 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
 .cx-poplist button:hover em { color: rgba(255, 255, 255, .8); }
 .cx-poplist button.is-on b { color: var(--x-blue2); }
 .cx-poplist button.is-on:hover b { color: #fff; }
-.cx-poplist.is-fonts button { height: 38px; }
-.cx-poplist.is-fonts b { font-size: 16px; font-weight: 400; letter-spacing: 0; }
+.cx-pop.is-fonts { width: 288px; max-height: none; overflow: hidden; gap: 8px; }
+.cx-fsearch { display: flex; align-items: center; gap: 8px; height: 32px; padding: 0 10px; border-radius: 4px; background: var(--x-field); box-shadow: inset 0 0 0 1px var(--x-fline); color: var(--x-mute); }
+.cx-fsearch:focus-within { box-shadow: inset 0 0 0 1px var(--x-blue); }
+.cx-fsearch svg { flex: none; width: 15px; height: 15px; }
+.cx-fsearch input, .cx-fsearch input:focus, .cx-fsearch input:focus-visible { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; border-radius: 0; outline: 0; box-shadow: none; background: none; color: var(--x-txt); font: 500 12.5px var(--font-body); }
+.cx-ftabs { display: flex; gap: 4px; }
+.cx-ftabs button { flex: 1 1 auto; height: 24px; padding: 0 6px; border-radius: 4px; color: var(--x-mute); font: 500 11.5px var(--font-body); box-shadow: inset 0 0 0 1px var(--x-fline); }
+.cx-ftabs button:hover { color: var(--x-txt); }
+.cx-ftabs button[aria-pressed="true"] { background: var(--x-blue); color: #fff; box-shadow: none; }
+.cx-poplist.is-fonts { height: min(360px, 52vh); overflow-y: auto; overscroll-behavior: contain; margin: 0 -4px; padding: 0 4px; }
+.cx-poplist.is-fonts .cx-pop-title { padding: 8px 6px 4px; }
+.cx-poplist.is-fonts button { flex: none; height: 38px; }
+.cx-poplist.is-fonts b { overflow: hidden; font-size: 17px; font-weight: 400; letter-spacing: 0; white-space: nowrap; text-overflow: ellipsis; }
+.cx-poplist.is-fonts em { flex: none; font-size: 10.5px; }
+.cx-fnone { padding: 18px 8px; color: var(--x-mute); font-size: 12px; text-align: center; }
 .cx-poplink { height: 32px; border-radius: 8px; color: var(--x-blue2) !important; font-weight: 600; text-align: center; }
 .cx-poplink:hover { background: var(--x-in); }
 

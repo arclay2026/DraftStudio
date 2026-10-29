@@ -1907,7 +1907,17 @@
   "Type on a Path": "Texto no traçado",
   "Makes the in-between steps from one object to the other: position, size, rotation, colour and, for shapes, the outline.": "Cria as etapas intermediárias de um objeto ao outro: posição, tamanho, rotação, cor e, nas formas, o contorno.",
   "[ and ] change the size": "[ e ] mudam o tamanho",
-  "Direct Selection": "Seleção direta"
+  "Direct Selection": "Seleção direta",
+  "Recent": "Recentes",
+  "All fonts": "Todas as fontes",
+  "No fonts match that search.": "Nenhuma fonte corresponde a essa pesquisa.",
+  "Search fonts": "Pesquisar fontes",
+  "Sans": "Sans",
+  "Serif": "Serifa",
+  "Script": "Manuscrita",
+  "Mono": "Mono",
+  "Thin": "Fina",
+  "Extra light": "Extra leve"
  },
  "patterns": {
   "^(\\d+) files$": "$1 arquivos",
