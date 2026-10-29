@@ -952,8 +952,8 @@ svg.mi .mi-on { display: none; }
 .letter-menu .lt:disabled { background: none; color: var(--mute); opacity: .4; cursor: default; }
 .letter-menu .lt[aria-pressed="true"], .letter-menu .lt[aria-pressed="true"]:hover { background: var(--blue-fill, #1f7aff); color: #fff; }
 .lt-chip { display: grid; place-items: center; width: 17px; height: 17px; border-radius: 5px; background: var(--blue-fill, #1f7aff); color: #fff; font-style: normal; font-size: 10.5px; font-weight: 700; line-height: 1; flex: none; }
-.sw-dot { width: 12.5px; height: 12.5px; border-radius: 50%; background: var(--sw); box-shadow: inset 0 0 0 1px rgba(15, 15, 15, .18); flex: none; }
-.sel-shape, .sel-menu button svg.sel-shape { width: 14.5px; height: 14.5px; flex: none; opacity: 1; color: var(--fg); }
+.sw-dot { width: 16px; height: 16px; border-radius: 5px; background: var(--sw); box-shadow: inset 0 0 0 1px rgba(15, 15, 15, .18); flex: none; }
+.sw-dot.is-rainbow { background: conic-gradient(from 210deg, #ff595e, #ffca3a, #8ac926, #1982c4, #6a4c93, #ff595e); box-shadow: none; }
 .result-count { font: 500 calc(11px * var(--ts))/1 var(--font-mono); letter-spacing: .06em; text-transform: uppercase; color: var(--mute); }
 
 /* ---------- Item page ---------- */

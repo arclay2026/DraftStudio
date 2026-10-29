@@ -1335,7 +1335,7 @@
     const paintColor = () => {
       $("[data-color-label]").innerHTML = state.color
         ? `<i class="sw-dot" style="--sw:${COLORS[state.color]}"></i>${esc(nice(state.color))}`
-        : `${icon("palette", "sel-shape")}Any colour`;
+        : `<i class="sw-dot is-rainbow" aria-hidden="true"></i>Any colour`;
       cmenu.innerHTML = `<div class="sw-grid">${Object.entries(COLORS).map(([k, v]) =>
         `<button type="button" class="sw" style="--sw:${v}" data-color="${esc(k)}" aria-pressed="${state.color === k}" aria-label="${esc(nice(k))}" data-tip="${esc(nice(k))}"></button>`).join("")}</div>
         <button type="button" class="sw-clear" data-color=""${state.color ? "" : " disabled"}>Any colour</button>`;
@@ -1360,7 +1360,7 @@
     const paintLetter = () => {
       $("[data-letter-label]").innerHTML = state.letter
         ? `<i class="lt-chip" data-no-i18n>${state.letter}</i>Letter ${state.letter}`
-        : `${icon("type", "sel-shape")}Any letter`;
+        : "Any letter";
       lmenu.innerHTML = `<div class="lt-grid" data-no-i18n>${LETTERS.map(l =>
         `<button type="button" class="lt" data-letter="${l}" aria-pressed="${state.letter === l}" aria-label="Letter ${l}"${hasLetter.has(l) ? "" : " disabled"}>${l}</button>`).join("")}</div>
         <button type="button" class="sw-clear" data-letter=""${state.letter ? "" : " disabled"}>Any letter</button>`;
@@ -2128,18 +2128,10 @@
       sel.tabIndex = -1;
       const label = $(".sel-txt b", wrap), menu = $(".sel-menu", wrap), toggle = $(".sel-toggle", wrap);
       const tick = icon("check");
-      // Options may carry data-shape="horizontal|vertical|square|panoramic|any" for a small outline icon
-      const SHAPES = { horizontal: [18, 12], vertical: [12, 18], square: [14, 14], panoramic: [20, 9] };
-      const shape = o => {
-        const k = o && o.dataset.shape; if (!k) return "";
-        if (k === "any") return `<svg class="sel-shape" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M12 3v18M3 12h9"/></svg>`;
-        const [w, h] = SHAPES[k];
-        return `<svg class="sel-shape" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="${(24 - w) / 2}" y="${(24 - h) / 2}" width="${w}" height="${h}" rx="2.5"/></svg>`;
-      };
       const render = () => {
         const cur = sel.options[sel.selectedIndex];
-        label.innerHTML = cur ? shape(cur) + esc(cur.text) : "";
-        menu.innerHTML = Array.from(sel.options).map(o => `<button type="button" role="option" data-v="${esc(o.value)}" aria-selected="${o.value === sel.value}"><span>${shape(o)}${esc(o.text)}</span>${tick}</button>`).join("");
+        label.innerHTML = cur ? esc(cur.text) : "";
+        menu.innerHTML = Array.from(sel.options).map(o => `<button type="button" role="option" data-v="${esc(o.value)}" aria-selected="${o.value === sel.value}"><span>${esc(o.text)}</span>${tick}</button>`).join("");
       };
       const setOpen = open => { wrap.classList.toggle("is-open", open); toggle.setAttribute("aria-expanded", open); };
       toggle.addEventListener("click", e => { e.stopPropagation(); render(); const open = !wrap.classList.contains("is-open"); if (open) closeDropdowns(); setOpen(open); });
