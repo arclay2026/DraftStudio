@@ -2792,7 +2792,7 @@ window.DSCanvas = function (kit) {
     if (t.dataset.pair != null) { addPair(+t.dataset.pair); return; }
     if (t.dataset.icon) { addIcon(t.dataset.icon); return; }
     if (t.dataset.libshape) { addLibShape(t.dataset.libshape); return; }
-    if (t.dataset.up != null) { addImage(uploads[+t.dataset.up]); return; }
+    if (t.dataset.up != null) { const u = uploads[+t.dataset.up]; if (isSvgUrl(u)) addSvg(svgText(u)); else addImage(u); return; }
     const li = t.closest("li[data-ly]");
     if (li) {
       const o = cv.getObjects()[+li.dataset.ly];
@@ -3149,7 +3149,7 @@ window.DSCanvas = function (kit) {
         const c = document.createElement("canvas");
         c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
         c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
-        res(/png|gif|webp/.test(file.type) ? c.toDataURL("image/png") : c.toDataURL("image/jpeg", .9));
+        res(/png|gif|webp|svg/.test(file.type) ? c.toDataURL("image/png") : c.toDataURL("image/jpeg", .9));
       };
       img.onerror = rej; img.src = r.result;
     };
@@ -3162,9 +3162,35 @@ window.DSCanvas = function (kit) {
     setTool("select");
     placeCentre(img, false);
   });
+  // SVG files come in as editable vector shapes (a group, ready to ungroup and recolour)
+  const isSvgUrl = u => u.startsWith("data:image/svg+xml");
+  const readText = file => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(r.result); r.onerror = rej; r.readAsText(file); });
+  const svgUrl = text => "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(text)));
+  const svgText = url => decodeURIComponent(escape(atob(url.split(",")[1])));
+  const addSvg = (text, name = "Vector") => new Promise(res => F.loadSVGFromString(text, (objs, opts) => {
+    objs = (objs || []).filter(Boolean);
+    if (!objs.length) { res(false); return; }
+    const g = objs.length === 1 ? objs[0] : new F.Group(objs);
+    if (objs.length === 1 && opts) g.set({ left: opts.left || 0, top: opts.top || 0 });
+    const a = ab(), k = Math.min(a.w * .7 / (g.width || 1), a.h * .7 / (g.height || 1));
+    g.set({ scaleX: (g.scaleX || 1) * k, scaleY: (g.scaleY || 1) * k, name });
+    setTool("select");
+    placeCentre(g, false);
+    res(true);
+  }));
+  const fileName = f => (f.name || "").replace(/\.[^.]+$/, "").replace(/[-_]+/g, " ").trim() || "Vector";
   async function addFiles(files) {
     for (const f of [...files].filter(x => /^image\//.test(x.type))) {
-      try { const url = await readImage(f); uploads.unshift(url); addImage(url); } catch (e) { /* unreadable image */ }
+      try {
+        if (/svg/.test(f.type)) {
+          const text = await readText(f);
+          uploads.unshift(svgUrl(text));
+          // what Fabric can't parse still comes in, as a picture
+          if (!(await addSvg(text, fileName(f)))) addImage(await readImage(f));
+          continue;
+        }
+        const url = await readImage(f); uploads.unshift(url); addImage(url);
+      } catch (e) { /* unreadable image */ }
     }
     if (ltab === "assets" && assetTab === "images") renderLeft();
   }
