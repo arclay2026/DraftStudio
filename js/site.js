@@ -2238,7 +2238,9 @@
     const paintMeta = () => meta && meta.setAttribute("content", getComputedStyle(document.body).backgroundColor);
     const paintRoot = () => {
       const t = pref("theme"), x = pref("text");
-      if (t === "device") delete root.dataset.theme; else root.dataset.theme = t;
+      // Some pages (the portfolio) always stay light, whatever the setting
+      if (root.hasAttribute("data-theme-lock")) root.dataset.theme = "light";
+      else if (t === "device") delete root.dataset.theme; else root.dataset.theme = t;
       if (x === "default") delete root.dataset.text; else root.dataset.text = x;
     };
 

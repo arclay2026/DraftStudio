@@ -155,10 +155,11 @@ window.DS = {
   // CLIENT LOGOS we designed, shown on portfolio.html (newest first). The page
   // joins the side menu as soon as there is at least one.
   //   file      the SVG, saved in assets/work/logos/ (cropped to the artwork, no background)
-  //   client    shown when the card is hovered
+  //   client, industry   shown when the card is hovered ("Mabs Tech → E-commerce")
   clientLogos: [
-    { id: "mabs-tech", client: "Mabs Tech", file: "assets/work/logos/mabs-tech.svg" },
-    { id: "webgraphs", client: "WebGraphs", file: "assets/work/logos/webgraphs.svg" },
+    { id: "mabs-tech", client: "Mabs Tech", industry: "E-commerce", file: "assets/work/logos/mabs-tech.svg" },
+    { id: "webgraphs", client: "WebGraphs", industry: "Tech", file: "assets/work/logos/webgraphs.svg" },
+    { id: "vorne", client: "Vorne", industry: "Clothing", file: "assets/work/logos/vorne.svg" },
   ],
 
   // WEBSITES we designed and built, shown as cards on websites.html.
