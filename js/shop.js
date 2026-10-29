@@ -126,18 +126,40 @@
     $("span", toggle).textContent = open ? "Hide order summary" : "Show order summary";
   });
 
-  /* ---------- Order confirmed ---------- */
+  /* ---------- Order page: live invoice status ---------- */
+  // The page shows one of four states, from the order's status on the server:
+  // paid, pending (awaiting payment), failed or refunded. Elements carry
+  // data-show="paid pending …" and CSS shows only those matching the state.
+  // In the preview, the bar at the bottom switches between them.
   const ty = $("[data-ty]");
   if (ty) {
-    const steps = $$("[data-ty-steps] li");
+    const box = $("[data-ty-paid]"), wait = $("[data-ty-wait]");
+    const steps = $$("[data-ty-steps] li"), bar = $$(".sp-steps li");
+    const TITLE = { paid: "Payment successful", pending: "Waiting for payment", failed: "Payment failed", refunded: "Order refunded" };
+    const tick = bar[0] ? $("b", bar[0]).innerHTML : "";
+    const setState = st => {
+      box.dataset.status = st;
+      $$("[data-demo]").forEach(b => b.setAttribute("aria-pressed", b.dataset.demo === st));
+      document.title = `${TITLE[st]} · Draft Studio`;
+      // top bar: all steps done once paid; otherwise still on Payment
+      bar.forEach((li, i) => {
+        const done = st === "paid" || st === "refunded" ? true : i === 0;
+        const on = !done && i === 1;
+        li.className = done ? "is-done" : on ? "is-on" : "";
+        $("b", li).innerHTML = done ? tick : String(i + 1);
+      });
+      const u = new URL(location.href); u.searchParams.set("state", st); history.replaceState(null, "", u);
+    };
+    const show = st => { wait.hidden = true; box.hidden = false; setState(st); };
     const run = () => {
-      $("[data-ty-paid]").hidden = true; $("[data-ty-wait]").hidden = false;
+      box.hidden = true; wait.hidden = false;
       steps.forEach(s => s.classList.remove("ok"));
       steps.forEach((s, i) => setTimeout(() => s.classList.add("ok"), 500 + i * 650));
-      setTimeout(() => { $("[data-ty-wait]").hidden = true; $("[data-ty-paid]").hidden = false; scrollTo(0, 0); }, 500 + steps.length * 650 + 300);
+      setTimeout(() => { show("paid"); scrollTo(0, 0); }, 500 + steps.length * 650 + 300);
     };
-    if (new URLSearchParams(location.search).get("state") === "paid") { $("[data-ty-wait]").hidden = true; $("[data-ty-paid]").hidden = false; }
-    else run();
+    const start = new URLSearchParams(location.search).get("state");
+    if (TITLE[start]) show(start); else run();
+    $$("[data-demo]").forEach(b => b.addEventListener("click", () => show(b.dataset.demo)));
     const replay = $("[data-ty-replay]");
     replay && replay.addEventListener("click", e => { e.preventDefault(); run(); });
   }

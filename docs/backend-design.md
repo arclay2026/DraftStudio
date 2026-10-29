@@ -130,7 +130,7 @@ CREATE TABLE products (
   title           VARCHAR(200) NOT NULL,
   kind            ENUM('exclusive','pack') NOT NULL,
   price_cents     INT UNSIGNED NOT NULL,          -- the price actually charged
-  price_from      BOOLEAN NOT NULL DEFAULT FALSE, -- "From R450": see 5.5
+  price_from      BOOLEAN NOT NULL DEFAULT FALSE, -- "From R450": see 5.6
   currency        CHAR(3) NOT NULL DEFAULT 'ZAR',
   status          ENUM('draft','available','held','sold','retired') NOT NULL DEFAULT 'draft',
   held_until      DATETIME NULL,                  -- exclusive logos only
@@ -230,6 +230,7 @@ All under `/api`, JSON in and out. "CSRF" means the request must carry the `X-CS
 | POST | `/api/payfast/itn` | PayFast only | | Payment notice (section 5.2) |
 | GET | `/api/orders` | signed in | | My purchases |
 | GET | `/api/orders/{ref}` | owner, or the link from the email | | One order and its download links |
+| POST | `/api/orders/{ref}/pay` | owner, or the link from the email | ✓ | Pay an unpaid or failed order again (5.5) |
 | POST | `/api/orders/claim` | signed in | ✓ | Attach a guest order to my account (from the claim link) |
 | GET | `/api/download/{token}` | link holder | | Streams the file |
 | | `/api/admin/...` | admin | ✓ | Orders list, mark sold or available, refund note (version 1.1) |
@@ -289,11 +290,25 @@ All of this is first built against **PayFast's sandbox**, with a switch in `conf
 
 When an exclusive logo is paid, the ITN step also fills in a one-page PDF from a fixed template: buyer name, logo, order number, date, price and Draft Studio's signature image. It's saved with the order and listed with the other files, so it shows on the order page, in the email and under My purchases. One small PDF library (for example FPDF, no other dependencies) does this.
 
-### 5.5 "From R450" prices
+### 5.5 Invoice status on the order page
+
+The order page (`/checkout/thanks.html?ref=…`) and My purchases read `orders.status` and show it as a live invoice:
+
+| `orders.status` | Invoice badge | What the buyer sees |
+|---|---|---|
+| `paid` | Paid | Files unlocked, receipt with card and PayFast reference, Tax invoice PDF |
+| `pending` | Awaiting payment | Files locked, "Amount due", **Pay now** button, how long the logo stays reserved |
+| `failed` / `cancelled` | Payment failed | Files locked, the last attempt, **Try again** button |
+| `refunded` | Refunded | Files locked (download links off), refund amount and date, credit note PDF |
+| `expired` | Expired | Hold ended and the logo is back on sale; **Pay now** only if it's still available |
+
+**Pay now / Try again** calls `POST /api/orders/{ref}/pay`. It checks the order is still unpaid, re-holds an exclusive logo if the hold has lapsed and nobody else bought it, and returns fresh PayFast fields. The same order and invoice number are kept, so there's never a duplicate. The page polls `GET /api/orders/{ref}` while it waits, so the badge flips to Paid by itself when the ITN arrives.
+
+### 5.6 "From R450" prices
 
 Wiltz and Mato are "From R450": the base logo is R450 and extra work costs more. Version 1 charges the base price online, and the receipt invites the buyer to WhatsApp for extras. **Confirm this is what "From" means.**
 
-### 5.6 Accounts
+### 5.7 Accounts
 
 - **Sign up:** email, password (at least 10 characters, checked against a list of common passwords), name. A verification email is sent. Buying works before verification; viewing past orders needs it.
 - **Sign in:** same error for a wrong email or a wrong password, so nobody can test which emails exist.

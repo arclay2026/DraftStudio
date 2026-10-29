@@ -346,7 +346,7 @@ body.sp-focus { padding-inline-start: 0; background: var(--bg); }
 /* =====================================================================
    ORDER CONFIRMED
    ===================================================================== */
-.ty { padding: clamp(32px, 5vw, 64px) clamp(16px, 4vw, 48px) 96px; }
+.ty { padding: clamp(32px, 5vw, 64px) clamp(16px, 4vw, 48px) 120px; }
 .ty-in { max-width: 1080px; margin: 0 auto; }
 .ty-state[hidden] { display: none; }
 .ty-wait { display: grid; place-items: center; min-height: 60vh; text-align: center; }
@@ -369,6 +369,39 @@ body.sp-focus { padding-inline-start: 0; background: var(--bg); }
 .ty-hero h1 { margin: 0; font: 600 clamp(26px, 2.6vw, 34px)/1.15 var(--font-display); letter-spacing: -.04em; }
 .ty-hero p { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; margin: 6px 0 0; color: var(--mute); font-size: calc(13.5px * var(--ts)); }
 .ty-hero p .sp-mono { color: var(--fg); }
+/* State-driven parts: data-show lists the states an element appears in */
+[data-status="paid"] [data-show]:not([data-show~="paid"]),
+[data-status="pending"] [data-show]:not([data-show~="pending"]),
+[data-status="failed"] [data-show]:not([data-show~="failed"]),
+[data-status="refunded"] [data-show]:not([data-show~="refunded"]) { display: none !important; }
+.ty-ok.is-wait { background: var(--sp-warn); }
+.ty-ok.is-bad { background: var(--sp-danger); }
+.ty-ok.is-off { background: var(--mute); }
+.ty-files-wrap { position: relative; }
+[data-status]:not([data-status="paid"]) .ty-files { filter: blur(2px) grayscale(1); opacity: .3; pointer-events: none; user-select: none; }
+.ty-lock { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; padding: 20px; text-align: center; background: radial-gradient(closest-side, var(--surface) 55%, color-mix(in srgb, var(--surface) 70%, transparent)); }
+.ty-lock-ic { display: grid; place-items: center; width: 44px; height: 44px; margin-bottom: 8px; border-radius: 50%; background: var(--surface); color: var(--fg); box-shadow: 0 0 0 1px var(--border), 0 10px 24px -12px rgba(0, 0, 0, .3); }
+.ty-lock-ic svg { width: 19px; height: 19px; }
+.ty-lock b { font-size: calc(14.5px * var(--ts)); font-weight: 600; }
+.ty-lock small { font-size: calc(12.5px * var(--ts)); color: var(--mute); }
+.rc-no { margin-left: 6px; font-family: var(--sp-mono); letter-spacing: 0; text-transform: none; font-size: 11.5px; color: var(--fg); }
+.rc-st { display: inline-flex; align-items: center; gap: 6px; padding: 4px 9px; border-radius: 999px; font: 600 11px/1 var(--font-display); letter-spacing: .02em; text-transform: none; corner-shape: superellipse(1.5); }
+.rc-st::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.rc-st.is-paid { color: var(--sp-ok); background: color-mix(in srgb, var(--sp-ok) 12%, transparent); }
+.rc-st.is-due { color: var(--sp-warn); background: color-mix(in srgb, var(--sp-warn) 12%, transparent); }
+.rc-st.is-bad { color: var(--sp-danger); background: color-mix(in srgb, var(--sp-danger) 11%, transparent); }
+.rc-st.is-off { color: var(--mute); background: var(--card); }
+.rc-pay { margin-top: 16px; }
+.rc-pay p { margin: 8px 0 0; text-align: center; font-size: 11.5px; color: var(--mute); }
+.ty-demo {
+  position: fixed; z-index: 60; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; align-items: center; gap: 4px; padding: 5px;
+  border-radius: 14px; background: var(--fg); color: var(--on-fg); box-shadow: 0 16px 40px -14px rgba(0, 0, 0, .45); corner-shape: superellipse(1.5); max-width: calc(100vw - 20px); overflow-x: auto; scrollbar-width: none;
+}
+.ty-demo > span { padding: 0 8px 0 6px; font-size: 11.5px; opacity: .6; white-space: nowrap; }
+.ty-demo button { height: 30px; padding: 0 11px; border-radius: 9px; font-size: 12.5px; font-weight: 500; color: inherit; opacity: .75; white-space: nowrap; corner-shape: superellipse(1.5); }
+.ty-demo button:hover { opacity: 1; }
+.ty-demo button[aria-pressed="true"] { opacity: 1; background: color-mix(in srgb, var(--on-fg) 16%, transparent); }
+.ty-demo [data-ty-replay] { border-left: 1px solid color-mix(in srgb, var(--on-fg) 18%, transparent); border-radius: 0 9px 9px 0; margin-left: 2px; }
 @media (max-width: 600px) { .ty-hero { align-items: flex-start; } .ty-sep { display: none; } .ty-hero p > span:last-child { width: 100%; } }
 .ty-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 18px; margin-top: 28px; align-items: start; }
 .ty-card { border-radius: var(--sp-r-lg); background: var(--surface); box-shadow: inset 0 0 0 1px var(--border); }
@@ -396,9 +429,9 @@ body.sp-focus { padding-inline-start: 0; background: var(--bg); }
 .rc:first-child { margin-top: 0; }
 .rc-h { display: flex; justify-content: space-between; align-items: baseline; font: 600 10.5px/1 var(--font-display); letter-spacing: .14em; text-transform: uppercase; color: var(--mute); }
 .rc-h span:last-child { font-family: var(--sp-mono); letter-spacing: 0; text-transform: none; font-size: 11.5px; }
-.rc dl { display: grid; grid-template-columns: 1fr auto; gap: 9px 12px; margin: 16px 0 0; font-size: 12.5px; }
+.rc dl { display: grid; grid-template-columns: 1fr auto; gap: 9px 0; margin: 16px 0 0; font-size: 12.5px; }
 .rc dt { color: var(--mute); }
-.rc dd { margin: 0; text-align: end; font-variant-numeric: tabular-nums; }
+.rc dd { margin: 0; padding-left: 12px; text-align: end; font-variant-numeric: tabular-nums; }
 .rc .tot { padding-top: 12px; border-top: 1px dashed var(--border-2); color: var(--fg); font-weight: 600; font-size: 14px; }
 .rc-act { display: flex; gap: 8px; margin-top: 16px; }
 .rc-act .sp-btn { flex: 1; }
