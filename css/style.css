@@ -1237,7 +1237,10 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 .5px rgb
   .tb-right .result-count { grid-column: 1 / -1; order: 3; }
   .tb-right .sel-wrap { grid-column: 1 / -1; }
   .dd-menu { width: 100%; }
-  .icon-grid { grid-template-columns: repeat(auto-fill, minmax(66.5px, 1fr)); }
+  .icon-grid { grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 8px; }
+  /* Names don't fit on phone-sized cells: show the icon only (the name stays for screen readers) */
+  .icon-cell { position: relative; gap: 0; }
+  .icon-cell span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 }
 
 @media (prefers-reduced-motion: reduce) {
