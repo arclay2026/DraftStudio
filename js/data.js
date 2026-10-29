@@ -152,6 +152,16 @@ window.DS = {
     }
   ],
 
+  // CLIENT LOGOS we designed, shown on logo-design.html (newest first). The page
+  // joins the side menu as soon as there is at least one.
+  //   file      the SVG, saved in assets/work/logos/
+  //   bg        the card colour behind the logo (the client's brand colour works well);
+  //             leave it out for a plain light card
+  //   dark      true when bg is dark, so the name strip below reads right
+  clientLogos: [
+    // { id: "acme", client: "Acme Coffee", industry: "Coffee roastery", year: 2026, file: "assets/work/logos/acme.svg", bg: "#1f3a2e", dark: true },
+  ],
+
   // WEBSITES we designed and built, shown as cards on websites.html.
   //   shot   a full-page screenshot, 1200px wide (it scrolls inside the card on hover)
   //   url    the real address; frame is the address loaded in the live preview,

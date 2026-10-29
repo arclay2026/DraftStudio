@@ -157,3 +157,16 @@ body.pv-body { display: flex; flex-direction: column; height: 100vh; height: 100
 /* Preview bar buttons: soft squircle pills and circles, like the rest of the site */
 .pv-back { border-radius: 50%; corner-shape: superellipse(1.5); }
 .pv-open, .pv-seg, .pv-seg button, .pv-thumb { border-radius: 999px; corner-shape: superellipse(1.5); }
+
+/* ---------- Logo design (logo-design.html) ----------
+   Each client logo sits on its own card, on the client's colour (--lw-bg) */
+.lw-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); gap: clamp(14px, 1.8vw, 22px); }
+.lw { --lw-bg: var(--surface-2); --lw-fg: var(--fg); --lw-mute: var(--mute); position: relative; margin: 0; overflow: hidden; border-radius: 20px; background: var(--lw-bg); box-shadow: inset 0 0 0 1px var(--border); corner-shape: superellipse(1.5); }
+.lw.is-dark { --lw-fg: #fff; --lw-mute: rgba(255, 255, 255, .6); box-shadow: none; }
+.lw-stage { display: grid; place-items: center; aspect-ratio: 4 / 3; padding: 14%; }
+.lw-stage img { display: block; width: 100%; height: 100%; object-fit: contain; transition: transform .6s var(--ease); }
+.lw:hover .lw-stage img { transform: scale(1.04); }
+.lw figcaption { position: absolute; left: 18px; right: 18px; bottom: 15px; display: flex; align-items: baseline; justify-content: space-between; gap: 12px; font-size: calc(12.5px * var(--ts)); }
+.lw figcaption b { color: var(--lw-fg); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lw figcaption span { flex: none; color: var(--lw-mute); }
+.lw-empty { grid-column: 1 / -1; margin: 0; padding: 60px 20px; border-radius: 20px; text-align: center; color: var(--mute); background: var(--surface-2); }

@@ -400,7 +400,9 @@
       { title: "Files", items: [["browse.html?cat=mockups", "Mockups", "mockups", "shirt"], ["browse.html?cat=vectors", "Vectors", "vectors", "spline"],
         ["browse.html?cat=logos", "Logos", "logos", "pen-tool"], ["browse.html?cat=templates", "Templates", "templates", "layout-template"], ["icons.html", "Icons", "icons", "shapes"]] },
       { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR Code Studio", "qr", "qr-code", true], ["canvas.html", "Canvas", "canvas", "paintbrush", true]] },
-      { title: "Studio", items: [["websites.html", "Websites", "websites", "app-window", true], ["pricing.html", "Pricing", "pricing", "tag"]] },
+      { title: "Studio", items: [["websites.html", "Websites", "websites", "app-window", true]]
+        .concat((DS.clientLogos || []).length ? [["logo-design.html", "Logo design", "logo-design", "pen-tool", true]] : [])
+        .concat([["pricing.html", "Pricing", "pricing", "tag"]]) },
       { title: "Help", items: [["learn.html", "Learn", "learn", "lightbulb"], ["license.html", "License", "license", "file-text"]] }
     ];
     // A fifth `true` marks a page as new: it gets a NEW badge (a dot when the menu is folded)

@@ -59,6 +59,17 @@
       </article>`).join("");
   });
 
+  /* ---------- Client logos (logo-design.html) ---------- */
+  const LOGOS = DS.clientLogos || [];
+  $$("[data-client-logos]").forEach(grid => {
+    grid.innerHTML = LOGOS.length ? LOGOS.map(l => `
+      <figure class="lw${l.dark ? " is-dark" : ""}"${l.bg ? ` style="--lw-bg:${esc(l.bg)}"` : ""}>
+        <div class="lw-stage"><img src="${esc(l.file)}" alt="${esc(l.client)} logo" loading="lazy" decoding="async"></div>
+        <figcaption><b>${esc(l.client)}</b><span>${esc([l.industry, l.year].filter(Boolean).join(" · "))}</span></figcaption>
+      </figure>`).join("")
+      : `<p class="lw-empty">New work is on its way.</p>`;
+  });
+
   // WhatsApp buttons on these pages (data-wa="message")
   $$("[data-wa]").forEach(a => { a.href = `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(a.dataset.wa)}`; a.target = "_blank"; a.rel = "noopener"; });
 
