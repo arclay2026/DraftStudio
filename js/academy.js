@@ -356,6 +356,100 @@ window.DSAcademy = function (kit) {
   const drawCards = () => { root.innerHTML = `<div class="ac-grid">${LESSONS.map(card).join("")}</div>`; };
   drawCards();
 
+  /* ---------- Listen: the lesson read aloud ----------
+     Uses the browser's own speech engine (free, offline, nothing uploaded). Reads one
+     paragraph at a time, sentence by sentence (Chrome cuts off long utterances),
+     highlights it and keeps it in view. Voices depend on the device. */
+  // skip back / forward: a triangle against a bar
+  const SKIP = back => `<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"${back ? ' style="transform:scaleX(-1)"' : ""}><path d="M6 5.6v12.8c0 .8.9 1.3 1.6.8l9-6.4c.6-.4.6-1.2 0-1.6l-9-6.4C6.9 4.3 6 4.8 6 5.6Z"/><rect x="17.5" y="5" width="2.2" height="14" rx="1.1"/></svg>`;
+  const SAY = "speechSynthesis" in window && "SpeechSynthesisUtterance" in window;
+  const SAY_SEL = "h1, .ac-lead, .ac-sec h2, .ac-sec > p, .ac-fig figcaption, .ac-tip, .ac-bad li, .ac-good li, .ac-practise p:last-child";
+  const RATES = [1, 1.25, 1.5, .75];
+  const say = { blocks: [], i: 0, playing: false, started: false, token: 0, voice: null, rate: 1, fails: 0 };
+  try { say.rate = RATES.includes(+localStorage.getItem("ds-listen-rate")) ? +localStorage.getItem("ds-listen-rate") : 1; } catch (e) { /* private mode */ }
+  const pickVoice = () => {
+    const score = v => (/natural|neural|online/i.test(v.name) ? 8 : 0) + (/google/i.test(v.name) ? 4 : 0) +
+      (/samantha|daniel|serena|karen|moira|libby|sonia|aria|jenny|ryan|guy|emma/i.test(v.name) ? 3 : 0) + (/en[-_]GB/i.test(v.lang) ? 1 : 0) + (v.localService ? 0 : 1);
+    say.voice = speechSynthesis.getVoices().filter(v => /^en([-_]|$)/i.test(v.lang)).sort((a, b) => score(b) - score(a))[0] || null;
+  };
+  if (SAY) { pickVoice(); speechSynthesis.addEventListener ? speechSynthesis.addEventListener("voiceschanged", pickVoice) : (speechSynthesis.onvoiceschanged = pickVoice); }
+  const sayText = el => {
+    if (el.matches(".ac-sec h2")) { const n = el.querySelector("span"); return n ? `Part ${n.textContent}. ${el.lastChild.textContent}.` : el.textContent + "."; }
+    if (el.matches(".ac-tip")) return "Pro tip. " + el.querySelector("p").textContent;
+    if (el.matches("figcaption")) return el.textContent.replace(/^Figure (\d+)\s*/, "Figure $1. ");
+    if (el.matches("h1")) return el.textContent + ".";
+    return el.textContent;
+  };
+  const sentences = t => (t.replace(/\s+/g, " ").trim().match(/[^.!?]+[.!?]+[”"’)]*\s*|[^.!?]+$/g) || [t]).map(x => x.trim()).filter(Boolean);
+  const sayMark = () => {
+    say.blocks.forEach((b, k) => b.classList.toggle("is-saying", say.started && k === say.i));
+    const el = say.blocks[say.i];
+    if (!el || !say.started) return;
+    const r = el.getBoundingClientRect(), sr = scroller.getBoundingClientRect();
+    if (r.top < sr.top + 70 || r.bottom > sr.bottom - 40) scroller.scrollTo({ top: scroller.scrollTop + r.top - sr.top - 110, behavior: "smooth" });
+  };
+  const sayUi = () => {
+    const ui = $("[data-say-ui]", reader);
+    ui.hidden = !SAY;
+    $("[data-say-more]", reader).hidden = !say.started;
+    reader.classList.toggle("is-listening", say.started);
+    $$("[data-say=toggle]", reader).forEach(b => {
+      b.classList.toggle("is-on", say.playing);
+      b.querySelector("svg").outerHTML = icon(say.playing ? "pause" : "play");
+      const lab = say.playing ? "Pause" : say.started ? "Resume" : "Listen";
+      if (b.classList.contains("ac-say-main")) { b.querySelector("span").textContent = lab; b.setAttribute("aria-label", lab === "Listen" ? "Listen to this lesson" : lab); }
+      else b.querySelector("b").textContent = say.playing ? "Pause reading" : say.started ? "Resume reading" : "Listen to this lesson";
+    });
+    $("[data-say=rate]", reader).textContent = String(say.rate).replace(/^0/, "") + "×";
+  };
+  const sayAt = i => {
+    const tok = ++say.token;
+    speechSynthesis.cancel();
+    say.i = Math.max(0, i);
+    sayMark();
+    const el = say.blocks[say.i];
+    if (!el) { sayStop(); return; }
+    const parts = sentences(sayText(el));
+    const next = k => {
+      if (tok !== say.token || !say.playing) return;
+      if (k >= parts.length) { sayAt(say.i + 1); return; }
+      const u = new SpeechSynthesisUtterance(parts[k]);
+      if (say.voice) u.voice = say.voice;
+      u.lang = say.voice ? say.voice.lang : "en-GB";
+      u.rate = say.rate;
+      u.onend = () => { say.fails = 0; next(k + 1); };
+      u.onerror = e => {
+        if (e.error === "interrupted" || e.error === "canceled") return;
+        // no working voice on this device: stop instead of racing through the lesson
+        if (++say.fails >= 3) { sayStop(); const b = $(".ac-listen small", doc); if (b) b.textContent = "Your device has no voice for reading aloud. Try another browser."; return; }
+        next(k + 1);
+      };
+      speechSynthesis.speak(u);
+    };
+    setTimeout(() => next(0), 60);  // Chrome drops a speak() that follows cancel() too closely
+  };
+  function sayStop() {
+    if (!SAY) return;
+    say.token++; say.playing = false; say.started = false;
+    speechSynthesis.cancel();
+    say.blocks.forEach(b => b.classList.remove("is-saying"));
+    if ($("[data-say-ui]", reader)) sayUi();
+  }
+  const sayAction = what => {
+    if (!SAY) return;
+    if (what === "toggle") {
+      if (say.playing) { say.playing = false; say.token++; speechSynthesis.cancel(); }
+      else { if (!say.started) { say.blocks = $$(SAY_SEL, doc); say.i = 0; } say.started = true; say.playing = true; sayAt(say.i); }
+    } else if (what === "prev" || what === "next") { say.playing = true; sayAt(say.i + (what === "next" ? 1 : -1)); }
+    else if (what === "rate") {
+      say.rate = RATES[(RATES.indexOf(say.rate) + 1) % RATES.length];
+      try { localStorage.setItem("ds-listen-rate", say.rate); } catch (e) { /* private mode */ }
+      if (say.playing) sayAt(say.i);
+    }
+    sayUi();
+  };
+  addEventListener("pagehide", () => SAY && speechSynthesis.cancel());
+
   /* ---------- The reader ---------- */
   const reader = document.createElement("div");
   reader.className = "ac-reader";
@@ -364,6 +458,14 @@ window.DSAcademy = function (kit) {
     <div class="ac-backdrop" data-ac-close></div>
     <article class="ac-panel" role="dialog" aria-modal="true" aria-labelledby="ac-title" tabindex="-1">
       <header class="ac-bar">
+        <span class="ac-say" data-say-ui hidden>
+          <button type="button" class="ac-say-main" data-say="toggle" aria-label="Listen to this lesson">${icon("play")}<span>Listen</span></button>
+          <span class="ac-say-more" data-say-more hidden>
+            <button type="button" data-say="prev" aria-label="Previous paragraph" data-tip="Previous paragraph">${SKIP(true)}</button>
+            <button type="button" data-say="next" aria-label="Next paragraph" data-tip="Next paragraph">${SKIP(false)}</button>
+            <button type="button" class="ac-say-rate" data-say="rate" aria-label="Reading speed" data-tip="Reading speed" data-no-i18n>1×</button>
+          </span>
+        </span>
         <span class="ac-step" data-ac-step></span>
         <span class="ac-nav">
           <button type="button" data-ac-go="-1" aria-label="Previous lesson">${icon("arrow-left")}</button>
@@ -385,6 +487,7 @@ window.DSAcademy = function (kit) {
       <p class="ac-kicker">Design Basics · Lesson ${i + 1} of ${LESSONS.length}</p>
       <h1 id="ac-title">${esc(l.title)}</h1>
       <p class="ac-lead">${esc(l.intro)}</p>
+      ${SAY ? `<button type="button" class="ac-listen" data-say="toggle">${icon("play")}<span><b>Listen to this lesson</b><small>About ${l.time.replace(" read", "")} · read aloud by your device</small></span></button>` : ""}
       <nav class="ac-toc" aria-label="In this lesson">
         <p class="ac-label">In this lesson</p>
         <ol>${l.sections.map((s, k) => `<li><a href="#ac-s${k + 1}" data-ac-jump="${k + 1}">${esc(s.h)}</a></li>`).join("")}</ol>
@@ -413,10 +516,13 @@ window.DSAcademy = function (kit) {
       </section>`;
   };
   const fill = i => {
+    sayStop();
     cur = (i + LESSONS.length) % LESSONS.length;
     const l = LESSONS[cur];
     $("[data-ac-step]", reader).textContent = `Lesson ${cur + 1} of ${LESSONS.length} · ${l.time}`;
     doc.innerHTML = lessonHtml(l, cur);
+    say.blocks = [];
+    sayUi();
     scroller.scrollTop = 0;
     progress();
     if (location.hash !== "#lesson-" + l.key) history.replaceState(null, "", "#lesson-" + l.key);
@@ -436,6 +542,7 @@ window.DSAcademy = function (kit) {
     setTimeout(() => panel.focus({ preventScroll: true }), 50);
   };
   const close = () => {
+    sayStop();
     reader.classList.remove("is-open");
     document.documentElement.style.overflow = "";
     reader._t = setTimeout(() => { reader.hidden = true; }, 300);
@@ -445,6 +552,10 @@ window.DSAcademy = function (kit) {
   root.addEventListener("click", e => { const c = e.target.closest("[data-ac]"); if (c) { lastCard = c; open(+c.dataset.ac); } });
   reader.addEventListener("click", e => {
     if (e.target.closest("[data-ac-close]")) { close(); return; }
+    const sb = e.target.closest("[data-say]");
+    if (sb) { sayAction(sb.dataset.say); return; }
+    // while listening, a click on a paragraph reads from there
+    if (say.started && !e.target.closest("a, button")) { const k = say.blocks.indexOf(e.target.closest(SAY_SEL)); if (k > -1) { say.playing = true; sayAt(k); sayUi(); } }
     const g = e.target.closest("[data-ac-go]");
     if (g) { fill(cur + +g.dataset.acGo); return; }
     const j = e.target.closest("[data-ac-jump]");

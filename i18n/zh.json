@@ -1918,7 +1918,16 @@
   "Mono": "等宽",
   "Thin": "极细",
   "Extra light": "特细",
-  "Fill and stroke · X switches": "填充和描边 · 按 X 切换"
+  "Fill and stroke · X switches": "填充和描边 · 按 X 切换",
+  "Listen": "朗读",
+  "Resume": "继续",
+  "Listen to this lesson": "朗读本课",
+  "Pause reading": "暂停朗读",
+  "Resume reading": "继续朗读",
+  "Previous paragraph": "上一段",
+  "Next paragraph": "下一段",
+  "Reading speed": "朗读速度",
+  "Your device has no voice for reading aloud. Try another browser.": "你的设备没有可朗读的语音。请换个浏览器试试。"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",

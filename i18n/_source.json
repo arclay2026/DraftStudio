@@ -1861,7 +1861,16 @@
   "Mono",
   "Thin",
   "Extra light",
-  "Fill and stroke · X switches"
+  "Fill and stroke · X switches",
+  "Listen",
+  "Resume",
+  "Listen to this lesson",
+  "Pause reading",
+  "Resume reading",
+  "Previous paragraph",
+  "Next paragraph",
+  "Reading speed",
+  "Your device has no voice for reading aloud. Try another browser."
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",

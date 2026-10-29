@@ -1918,7 +1918,16 @@
   "Mono": "أحادي المسافة",
   "Thin": "رفيع",
   "Extra light": "خفيف جدًا",
-  "Fill and stroke · X switches": "التعبئة والحد · X للتبديل"
+  "Fill and stroke · X switches": "التعبئة والحد · X للتبديل",
+  "Listen": "استمع",
+  "Resume": "استئناف",
+  "Listen to this lesson": "استمع إلى هذا الدرس",
+  "Pause reading": "إيقاف القراءة مؤقتًا",
+  "Resume reading": "استئناف القراءة",
+  "Previous paragraph": "الفقرة السابقة",
+  "Next paragraph": "الفقرة التالية",
+  "Reading speed": "سرعة القراءة",
+  "Your device has no voice for reading aloud. Try another browser.": "لا يحتوي جهازك على صوت للقراءة. جرّب متصفحًا آخر."
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",

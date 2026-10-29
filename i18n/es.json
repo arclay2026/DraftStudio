@@ -1918,7 +1918,16 @@
   "Mono": "Mono",
   "Thin": "Fina",
   "Extra light": "Extra ligera",
-  "Fill and stroke · X switches": "Relleno y trazo · X los intercambia"
+  "Fill and stroke · X switches": "Relleno y trazo · X los intercambia",
+  "Listen": "Escuchar",
+  "Resume": "Reanudar",
+  "Listen to this lesson": "Escuchar esta lección",
+  "Pause reading": "Pausar la lectura",
+  "Resume reading": "Reanudar la lectura",
+  "Previous paragraph": "Párrafo anterior",
+  "Next paragraph": "Párrafo siguiente",
+  "Reading speed": "Velocidad de lectura",
+  "Your device has no voice for reading aloud. Try another browser.": "Tu dispositivo no tiene voz para leer en voz alta. Prueba otro navegador."
  },
  "patterns": {
   "^(\\d+) files$": "$1 archivos",
