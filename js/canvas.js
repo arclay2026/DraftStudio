@@ -16,6 +16,16 @@ window.DSCanvas = function (kit) {
   const root = $("[data-canvas]");
   if (!root || !window.fabric) return;
   const F = window.fabric;
+  // Fabric 5 brings back a text's path for Text but not IText, so text on a path would not reopen
+  if (!F.IText.__withPath) {
+    const base = F.IText.fromObject;
+    F.IText.fromObject = (obj, cb) => {
+      const path = obj.path;
+      if (!path) return base(obj, cb);
+      return base(Object.assign({}, obj, { path: null }), t => F.Path.fromObject(path, p => { t.set("path", p); cb(t); }));
+    };
+    F.IText.__withPath = true;
+  }
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const round = (v, d = 0) => { const k = Math.pow(10, d); return Math.round(v * k) / k; };
   // Text that isn't in the page (dialogs, default words on the canvas) in the visitor's language
@@ -31,7 +41,13 @@ window.DSCanvas = function (kit) {
   // Custom glyphs Phosphor has no match for; everything else comes from js/ui-icons.js
   const UI = {
     none: '<path d="M5 19 19 5" stroke="#ff453a" stroke-width="2.2"/>',
-    guides: '<path d="M8 3v18M3 15h18" stroke-dasharray="3 2"/>'
+    guides: '<path d="M8 3v18M3 15h18" stroke-dasharray="3 2"/>',
+    "add-anchor": '<path d="M3 20C6 13 11 10 18 10"/><rect x="7.5" y="11.5" width="4" height="4" fill="currentColor" stroke="none"/><path d="M18 2.5v5M15.5 5h5"/>',
+    "del-anchor": '<path d="M3 20C6 13 11 10 18 10"/><rect x="7.5" y="11.5" width="4" height="4" fill="currentColor" stroke="none"/><path d="M15.5 5h5"/>',
+    anchor: '<path d="M3 20C6 13 11 10 18 10"/><rect x="7.5" y="11.5" width="4" height="4" fill="currentColor" stroke="none"/><path d="m15 6.5 3-3 3 3"/>',
+    arc: '<path d="M4 20C4 11 11 4 20 4"/><rect x="2.5" y="18.5" width="3" height="3" fill="currentColor" stroke="none"/><rect x="18.5" y="2.5" width="3" height="3" fill="currentColor" stroke="none"/>',
+    pgrid: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><path d="M12 3v18M3 12h18"/>',
+    typepath: '<path d="M3 20C7 13 17 13 21 20"/><path d="M8 3.5h8M12 3.5v8"/>'
   };
   const PH = window.DS_UI_ICONS || {};
   const ui = (id, cls = "") => (PH[id]
@@ -47,15 +63,22 @@ window.DSCanvas = function (kit) {
      ===================================================================== */
   // Dock groups: the first tool shows; the rest open from the little arrow
   const TOOL_GROUPS = [
-    [["select", "Move", "V"], ["direct", "Edit Points", "A"]],
-    [["artboard", "Artboard", "shift+O"]],
+    [["select", "Move", "V"], ["direct", "Edit Points", "A"], ["lasso", "Lasso", "Q"], ["magic-wand", "Magic Wand", "Y"]],
+    [["artboard", "Artboard", "shift+O"], ["crop-tool", "Crop Image", ""]],
     "|",
-    [["rect", "Rectangle", "M"], ["rounded", "Rounded Rectangle", ""], ["ellipse", "Ellipse", "L"], ["polygon", "Polygon", ""], ["star", "Star", ""], ["line", "Line", "\\"]],
-    [["pen", "Pen", "P"], ["pencil", "Pencil", "N"], ["brush", "Brush", "B"]],
-    [["type", "Text", "T"]],
+    [["pen", "Pen", "P"], ["curvature", "Curvature", ""], ["add-anchor", "Add Anchor Point", "+"], ["del-anchor", "Delete Anchor Point", "-"], ["anchor", "Anchor Point", "shift+C"]],
+    [["rect", "Rectangle", "M"], ["rounded", "Rounded Rectangle", ""], ["ellipse", "Ellipse", "L"], ["polygon", "Polygon", ""], ["star", "Star", ""]],
+    [["line", "Line", "\\"], ["arc", "Arc", ""], ["spiral", "Spiral", ""], ["rgrid", "Rectangular Grid", ""], ["pgrid", "Polar Grid", ""]],
+    [["pencil", "Pencil", "N"], ["brush", "Brush", "B"], ["blob", "Blob Brush", "shift+B"]],
+    [["type", "Text", "T"], ["typepath", "Type on a Path", ""]],
+    [["eraser", "Eraser", "shift+E"], ["scissors", "Scissors", "C"], ["knife", "Knife", ""]],
     "|",
-    [["eyedropper", "Eyedropper", "I"], ["gradient", "Gradient", "G"]],
-    [["rotate", "Rotate", "R"], ["scale", "Scale", "S"]],
+    [["rotate", "Rotate", "R"], ["reflect", "Reflect", "O"]],
+    [["scale", "Scale", "S"], ["shear", "Shear", ""], ["distort", "Free Distort", ""]],
+    [["shapebuilder", "Shape Builder", "shift+M"]],
+    [["eyedropper", "Eyedropper", "I"], ["measure", "Measure", ""]],
+    [["gradient", "Gradient", "G"]],
+    "|",
     [["hand", "Hand", "H"], ["zoom", "Zoom", "Z"]]
   ];
   const TOOL_INFO = Object.fromEntries(TOOL_GROUPS.filter(g => g !== "|").flat().map(([id, name, key]) => [id, { name, key }]));
@@ -77,6 +100,27 @@ window.DSCanvas = function (kit) {
     gradient: "Click and drag across a selected object to fill it with a gradient.",
     artboard: "Click an artboard to select it, drag to move it with its artwork, or drag on the pasteboard to make a new one.",
     hand: "Drag to move around. Hold Space with any tool to pan.",
+    lasso: "Drag around objects to select them.",
+    "magic-wand": "Click an object to select everything with the same fill colour.",
+    "crop-tool": "Select an image, then drag the handles to crop it. Press Enter or Esc when done.",
+    curvature: "Click to place points: the curve flows through them. Alt-click makes a corner. Click the first point to close, Enter to finish.",
+    "add-anchor": "Click a path to add an anchor point.",
+    "del-anchor": "Click an anchor point to remove it.",
+    anchor: "Click an anchor to switch it between smooth and corner. Drag from an anchor to pull out new handles.",
+    arc: "Drag to draw an arc. Shift keeps it circular.",
+    spiral: "Drag out from the centre to draw a spiral.",
+    rgrid: "Drag to draw a grid of rows and columns.",
+    pgrid: "Drag to draw a polar grid. Shift keeps it circular.",
+    blob: "Paint filled shapes that merge with touching shapes of the same colour. [ and ] change the size.",
+    typepath: "Click a path or shape to type along its outline.",
+    eraser: "Drag across filled shapes to erase parts of them. [ and ] change the size.",
+    scissors: "Click a path to cut it at that point.",
+    knife: "Drag a line across filled shapes to slice them apart.",
+    reflect: "Select something, then click to flip it across a vertical axis, or drag to set the axis angle. Alt keeps the original.",
+    shear: "Select something, then drag sideways or up and down to slant it.",
+    distort: "Select a shape or path, then drag its corner handles to distort it.",
+    shapebuilder: "Select overlapping shapes first. Click or drag across areas to merge them; Alt-click or Alt-drag removes areas.",
+    measure: "Drag to measure the distance and angle between two points.",
     zoom: "Click to zoom in, Alt-click to zoom out."
   };
   const SIZES = [
@@ -156,6 +200,9 @@ window.DSCanvas = function (kit) {
       ["Arrange", [["Bring to Front", "mod+shift+]", "front"], ["Bring Forward", "mod+]", "forward"], ["Send Backward", "mod+[", "backward"], ["Send to Back", "mod+shift+[", "back"]]],
       ["Align", [["Left", "", "align:left"], ["Horizontal Centre", "", "align:center"], ["Right", "", "align:right"], ["Top", "", "align:top"], ["Vertical Centre", "", "align:middle"], ["Bottom", "", "align:bottom"], "-", ["Distribute Horizontally", "", "dist:h"], ["Distribute Vertically", "", "dist:v"]]],
       ["Combine Shapes", [["Union", "", "bool:unite"], ["Subtract", "", "bool:subtract"], ["Intersect", "", "bool:intersect"], ["Exclude", "", "bool:exclude"]]],
+      ["Path", [["Join", "mod+J", "join"], ["Simplify", "", "simplify"], "-", ["Add Anchor Points", "", "tool:add-anchor"], ["Cut at Point", "", "tool:scissors"]]],
+      ["Blend", [["Make Blend…", "mod+alt+B", "blend"]]],
+      ["Crop Image", "", "crop-image"],
       "-", ["Group", "mod+G", "group"], ["Ungroup", "mod+shift+G", "ungroup"], ["Make Clipping Mask", "mod+7", "mask"], ["Release Clipping Mask", "mod+alt+7", "unmask"], "-",
       ["Repeat Grid…", "", "repeat"], ["Recolour Artwork…", "", "recolor"], ["Expand to Editable Path", "", "expand"], "-",
       ["Lock Selection", "mod+2", "lock"], ["Unlock All", "mod+alt+2", "unlock-all"], ["Hide Selection", "mod+3", "hide"], ["Show All", "mod+alt+3", "show-all"], "-",
@@ -278,11 +325,15 @@ window.DSCanvas = function (kit) {
     selectionColor: "rgba(31, 122, 255, .07)", selectionBorderColor: "#1f7aff", selectionLineWidth: 1, targetFindTolerance: 4
   });
 
+  // Rotate, Scale, Reflect and Shear work on what's already selected: a click must not drop it
+  const keepSelection = cv._shouldClearSelection.bind(cv);
+  cv._shouldClearSelection = (e, target) => (["rotate", "scale", "reflect", "shear"].includes(tool) ? false : keepSelection(e, target));
+
   /* ---------- Document state ---------- */
   const GUIDE = "#24c1ff", SMART = "#ff3fa4";
   const doc = { name: tr("Untitled design"), artboards: [], active: 0, guides: { v: [], h: [] } };
   const view = { rulers: true, smart: true, guides: true, lockGuides: false, grid: false, snapGrid: false, pixel: true, names: true, mini: true, light: false, hideUI: false };
-  const prefs = { nudge: 1, scaleStrokes: false, gridSize: 20 };
+  const prefs = { nudge: 1, scaleStrokes: false, gridSize: 20, brush: 24 };
   const DEFAULT_PAINT = { fill: "#1f7aff", stroke: null, strokeWidth: 2 };
   const paint = Object.assign({ focus: "fill" }, DEFAULT_PAINT);
   const charState = { family: "Inter", weight: 600, size: 64 };
@@ -371,6 +422,15 @@ window.DSCanvas = function (kit) {
         ctx.fillText(`${a.w} × ${a.h}`, a.x + nameW + 8 / z, a.y - 8 / z);
       }
     });
+    const co = tool === "crop-tool" && cv.getActiveObject();
+    if (co && co.type === "image" && !exporting()) {
+      ctx.save();
+      const m = co.calcTransformMatrix();
+      ctx.transform(m[0], m[1], m[2], m[3], m[4], m[5]);
+      ctx.globalAlpha = .28;
+      ctx.drawImage(co.getElement(), -co.width / 2 - (co.cropX || 0), -co.height / 2 - (co.cropY || 0));
+      ctx.restore();
+    }
     if (view.guides) {
       ctx.strokeStyle = GUIDE; ctx.lineWidth = 1 / z;
       const inv = F.util.invertTransform(v), tl = F.util.transformPoint(new F.Point(0, 0), inv), br = F.util.transformPoint(new F.Point(cv.width, cv.height), inv);
@@ -580,15 +640,34 @@ window.DSCanvas = function (kit) {
       case "triangle": return [A(w / 2, 0), A(w, h), A(0, h)];
       case "polygon": case "polyline": return o.points.map(p => A(p.x, p.y));
       case "line": { const p = o.calcLinePoints(); return [A(p.x1, p.y1), A(p.x2, p.y2)]; }
+      case "path": { const r = pathAnchors(o); return r ? r.pts : null; }
       default: return null;
     }
+  }
+  // A single-outline path's commands as anchors (paths with several outlines stay as they are)
+  function pathAnchors(o) {
+    const cmds = o.path;
+    if (!cmds || o.anchors || cmds.filter(c => c[0] === "M" || c[0] === "m").length !== 1) return null;
+    const pts = [];
+    let closed = false;
+    for (const c of cmds) {
+      const [k, ...n] = c, last = pts[pts.length - 1];
+      if (k === "M" || k === "L") pts.push(A(n[0], n[1]));
+      else if (k === "C") { last.ox = n[0] - last.x; last.oy = n[1] - last.y; pts.push(A(n[4], n[5], n[2] - n[4], n[3] - n[5])); }
+      else if (k === "Q") { last.ox = (n[0] - last.x) * 2 / 3; last.oy = (n[1] - last.y) * 2 / 3; pts.push(A(n[2], n[3], (n[0] - n[2]) * 2 / 3, (n[1] - n[3]) * 2 / 3)); }
+      else if (k === "Z" || k === "z") closed = true;
+      else return null;
+    }
+    // "Z" draws the closing segment itself, so a repeated start point goes
+    if (closed && pts.length > 2) { const f = pts[0], l = pts[pts.length - 1]; if (Math.hypot(f.x - l.x, f.y - l.y) < 1e-6) { f.ix = l.ix; f.iy = l.iy; pts.pop(); } }
+    return pts.length > 1 ? { pts, closed } : null;
   }
   // A live shape as an editable path (detached; the caller decides whether to swap it in)
   function asVector(o) {
     if (o.kind === "vector") return o;
     const pts = shapeAnchors(o);
     if (!pts) return null;
-    const closed = !(o.type === "line" || o.type === "polyline");
+    const closed = o.type === "path" ? pathAnchors(o).closed : !(o.type === "line" || o.type === "polyline");
     const p = vector(pts, closed, {
       fill: o.type === "line" ? null : o.fill, stroke: o.stroke, strokeWidth: o.strokeWidth, strokeUniform: o.strokeUniform, strokeDashArray: o.strokeDashArray,
       strokeLineCap: o.strokeLineCap, strokeLineJoin: o.strokeLineJoin, opacity: o.opacity, shadow: o.shadow, name: o.name, globalCompositeOperation: o.globalCompositeOperation,
@@ -654,14 +733,22 @@ window.DSCanvas = function (kit) {
     }
     rebuild(o); cv.requestRenderAll(); note("Edit Points"); changed();
   }
+  // Tools that give the selected object its own handles: Edit Points, Free Distort, Crop Image
   function setDirectControls() {
-    cv.getObjects().forEach(o => { if (o.__direct && (tool !== "direct" || o !== cv.getActiveObject())) { delete o.controls; o.hasBorders = true; o.__direct = false; } });
-    const o = cv.getActiveObject();
-    if (tool === "direct" && o && o.type !== "activeSelection") {
-      const v = o.kind === "vector" ? o : expand(o);
-      if (v && v.kind === "vector") {
-        if (v !== o) { cv.setActiveObject(v); note("Expand"); changed(); }
-        v.controls = vectorControls(v); v.hasBorders = false; v.__direct = true; anchorSel = -1;
+    const cur = cv.getActiveObject();
+    cv.getObjects().forEach(o => { if (o.__direct && (o.__direct !== tool || o !== cur)) { delete o.controls; o.hasBorders = true; o.__direct = false; delete o.__dist; } });
+    const o = cur;
+    if (o && o.type !== "activeSelection" && o.__direct !== tool) {
+      if (tool === "direct" || tool === "distort") {
+        const v = o.kind === "vector" ? o : (isText(o) || o.type === "image" || o.type === "group") ? null : expand(o);
+        if (v && v.kind === "vector") {
+          if (v !== o) { cv.setActiveObject(v); note("Expand"); changed(); }
+          if (tool === "direct") { v.controls = vectorControls(v); v.hasBorders = false; v.__direct = "direct"; anchorSel = -1; }
+          else startDistort(v);
+        } else if (tool === "distort") toast(tr("Free Distort works on shapes and paths."));
+      } else if (tool === "crop-tool") {
+        if (o.type === "image") { o.controls = cropControls(o); o.hasBorders = true; o.__direct = "crop-tool"; }
+        else toast(tr("Select an image to crop it."));
       }
     }
     cv.requestRenderAll();
@@ -773,7 +860,7 @@ window.DSCanvas = function (kit) {
   const lockState = (o, on) => o.set({ locked: on, hasControls: !on, lockMovementX: on, lockMovementY: on, lockScalingX: on, lockScalingY: on, lockRotation: on });
   const iconParts = o => (o.kind === "icon" && o.type === "group" ? o.getObjects() : [o]);
   function applyToolState(o) {
-    const s = tool === "select" || tool === "direct";
+    const s = ["select", "direct", "distort", "crop-tool"].includes(tool);
     o.selectable = s;
     o.evented = !(tool === "pen" || tool === "hand" || tool === "zoom" || tool === "artboard");
     if (o.strokeUniform === undefined || o.__new) o.strokeUniform = !prefs.scaleStrokes;
@@ -912,7 +999,7 @@ window.DSCanvas = function (kit) {
   const ensurePaper = () => paperReady || (paperReady = (window.paper ? Promise.resolve() : loadScript("js/vendor/paper-core.min.js"))
     .then(() => { window.paper.setup(document.createElement("canvas")); }));
   // Outline of an object as SVG path data in scene coordinates
-  function sceneData(o) {
+  function sceneData(o, keepOpen = false) {
     if (o.type === "path" && !o.anchors) {
       // fabric keeps paths as absolute M, L, C, Q and Z commands
       return o.path.map(c => {
@@ -930,7 +1017,7 @@ window.DSCanvas = function (kit) {
       : ` L ${f2(pt[k].p.x)} ${f2(pt[k].p.y)}`);
     let d = `M ${f2(pt[0].p.x)} ${f2(pt[0].p.y)}`;
     for (let i = 1; i < an.length; i++) d += seg(i - 1, i);
-    return d + seg(an.length - 1, 0) + " Z";
+    return keepOpen && !v.closed ? d : d + seg(an.length - 1, 0) + " Z";
   }
   const combinable = () => cv.getObjects().filter(o => active().includes(o)).filter(o => !isText(o) && o.type !== "image" && o.type !== "group");
   async function combine(op) {
@@ -943,11 +1030,12 @@ window.DSCanvas = function (kit) {
     let res = items[0];
     for (let i = 1; i < items.length; i++) res = res[op](items[i]);
     const d = res.pathData;
-    P.project.clear();
-    if (!d) { reselect(list); toast(tr("Nothing left after combining.")); return; }
+    if (!d) { P.project.clear(); reselect(list); toast(tr("Nothing left after combining.")); return; }
     const base = list[0], label = { unite: "Union", subtract: "Subtract", intersect: "Intersect", exclude: "Exclude" }[op];
-    const out = new F.Path(d, { fill: base.fill || "#1f7aff", stroke: base.stroke, strokeWidth: base.strokeWidth, opacity: base.opacity, shadow: base.shadow,
+    const one = op !== "exclude" && fromPaper(res, Object.assign(styleOf(base), { fill: base.fill || "#1f7aff" }), label);
+    const out = one && one.length === 1 ? one[0] : new F.Path(d, { fill: base.fill || "#1f7aff", stroke: base.stroke, strokeWidth: base.strokeWidth, opacity: base.opacity, shadow: base.shadow,
       fillRule: op === "exclude" ? "evenodd" : "nonzero", name: label, kind: "shape", strokeUniform: !prefs.scaleStrokes });
+    P.project.clear();
     const index = cv.getObjects().indexOf(base);
     hist.busy++;
     list.forEach(o => cv.remove(o));
@@ -1036,6 +1124,8 @@ window.DSCanvas = function (kit) {
   const groupTool = {};
   function setTool(id, temp = false) {
     if (pen && id !== "pen") finishPen(false);
+    if (curv && id !== "curvature") finishCurv(false);
+    t2 = null; mouseBrush = null; sb = null;
     if (cv.getActiveObject() && cv.getActiveObject().isEditing) cv.getActiveObject().exitEditing();
     tool = id;
     if (!temp) TOOL_GROUPS.forEach(g => { if (g !== "|" && g.some(t => t[0] === id)) groupTool[g[0][0]] = id; });
@@ -1054,10 +1144,13 @@ window.DSCanvas = function (kit) {
       cv.freeDrawingBrush = b;
     }
     cv.selection = id === "select" || id === "direct";
-    cv.skipTargetFind = !(id === "select" || id === "direct" || id === "type" || id === "eyedropper" || id === "gradient");
+    cv.skipTargetFind = !["select", "direct", "type", "eyedropper", "gradient", "magic-wand", "typepath", "distort", "crop-tool"].includes(id);
+    if (["eraser", "blob", "knife", "shapebuilder"].includes(id)) ensurePaper().catch(() => {});
+    if (id === "shapebuilder") sbStart().then(ok => { if (!ok && tool === "shapebuilder") toast(tr("Select two or more overlapping shapes, then use the Shape Builder.")); });
     cv.getObjects().forEach(applyToolState);
     const cursors = { select: "default", direct: "default", pen: "crosshair", type: "text", line: "crosshair", rect: "crosshair", rounded: "crosshair", ellipse: "crosshair",
-      polygon: "crosshair", star: "crosshair", rotate: "crosshair", scale: "crosshair", eyedropper: "copy", gradient: "crosshair", artboard: "default", hand: "grab", zoom: "zoom-in" };
+      polygon: "crosshair", star: "crosshair", rotate: "crosshair", scale: "crosshair", eyedropper: "copy", gradient: "crosshair", artboard: "default", hand: "grab", zoom: "zoom-in",
+      lasso: "crosshair", "magic-wand": "pointer", "crop-tool": "default", distort: "default", typepath: "text", eraser: "none", blob: "none", "add-anchor": "copy", "del-anchor": "pointer", anchor: "pointer", shapebuilder: "cell" };
     cv.defaultCursor = cursors[id] || "crosshair";
     cv.hoverCursor = id === "select" || id === "direct" ? "move" : cv.defaultCursor;
     if (id === "artboard") { abSelected = doc.active; cv.discardActiveObject(); }
@@ -1085,8 +1178,14 @@ window.DSCanvas = function (kit) {
     menuPop.dataset.mode = "fly";
     menuPop.hidden = false;
     const R = root.getBoundingClientRect(), r = b.getBoundingClientRect();
-    menuPop.style.left = clamp(r.left - R.left - 8, 8, R.width - menuPop.offsetWidth - 8) + "px";
-    menuPop.style.top = (r.top - R.top - menuPop.offsetHeight - 12) + "px";
+    if (innerWidth >= 900) {
+      // beside the tool column
+      menuPop.style.left = (r.right - R.left + 6) + "px";
+      menuPop.style.top = clamp(r.top - R.top - 4, 8, R.height - menuPop.offsetHeight - 8) + "px";
+    } else {
+      menuPop.style.left = clamp(r.left - R.left - 8, 8, R.width - menuPop.offsetWidth - 8) + "px";
+      menuPop.style.top = (r.top - R.top - menuPop.offsetHeight - 12) + "px";
+    }
   }
 
   /* ---------- Measurement tip ---------- */
@@ -1185,14 +1284,17 @@ window.DSCanvas = function (kit) {
     if (drag && drag.box && drag.kind === "type") {
       c.strokeStyle = "#1f7aff"; c.lineWidth = 1 / z; c.strokeRect(drag.box.x, drag.box.y, drag.box.w, drag.box.h);
     }
+    if (TOOLS2[tool] && TOOLS2[tool].draw) TOOLS2[tool].draw(c, z);
     c.restore();
   }
   const topRender = () => { if (cv.contextTop) cv.clearContext(cv.contextTop); drawTop(); };
 
   /* ---------- Shapes drawn by dragging ---------- */
-  const SHAPE_TOOLS = ["rect", "rounded", "ellipse", "polygon", "star", "line"];
+  const SHAPE_TOOLS = ["rect", "rounded", "ellipse", "polygon", "star", "line", "arc", "spiral", "rgrid", "pgrid"];
   const STAR = (n, inner = .42) => Array.from({ length: n * 2 }, (_, i) => { const r = i % 2 ? inner : 1, a = Math.PI / n * i - Math.PI / 2; return { x: .5 + .5 * r * Math.cos(a), y: .5 + .5 * r * Math.sin(a) }; });
   const POLY = n => Array.from({ length: n }, (_, i) => { const a = Math.PI * 2 / n * i - Math.PI / 2; return { x: .5 + .5 * Math.cos(a), y: .5 + .5 * Math.sin(a) }; });
+  // open paths and grids are drawn with the stroke colour (or the fill colour when there's no stroke)
+  const lineLook = () => ({ fill: null, stroke: toHex(paint.stroke) || toHex(isGrad(paint.fill) ? null : paint.fill) || "#000000", strokeWidth: Math.max(1, paint.strokeWidth || 2), strokeLineCap: "round", strokeLineJoin: "round", strokeUniform: !prefs.scaleStrokes });
   const shapePaint = () => ({ fill: paint.fill, stroke: paint.stroke, strokeWidth: paint.stroke ? paint.strokeWidth : 0, strokeUniform: !prefs.scaleStrokes });
   function shapeBox(p0, p, e) {
     let w = p.x - p0.x, h = p.y - p0.y;
@@ -1215,6 +1317,36 @@ window.DSCanvas = function (kit) {
         if (e && e.shiftKey) { const ang = Math.round(Math.atan2(y2 - p0.y, x2 - p0.x) / (Math.PI / 4)) * Math.PI / 4, len = Math.hypot(x2 - p0.x, y2 - p0.y); x2 = p0.x + Math.cos(ang) * len; y2 = p0.y + Math.sin(ang) * len; }
         return new F.Line([p0.x, p0.y, x2, y2], { stroke: toHex(paint.stroke) || toHex(paint.fill) || "#000000", strokeWidth: Math.max(1, paint.strokeWidth || 2), strokeLineCap: "round", strokeUniform: !prefs.scaleStrokes, name: "Line", kind: "shape" });
       }
+      case "arc": {
+        // a quarter ellipse from where the drag starts to where it ends
+        let x1 = p1.x, y1 = p1.y;
+        if (e && e.shiftKey) { const m = Math.max(Math.abs(x1 - p0.x), Math.abs(y1 - p0.y)); x1 = p0.x + Math.sign(x1 - p0.x || 1) * m; y1 = p0.y + Math.sign(y1 - p0.y || 1) * m; }
+        return vector([A(p0.x, p0.y, 0, 0, 0, K * (y1 - p0.y)), A(x1, y1, -K * (x1 - p0.x), 0, 0, 0)], false, Object.assign({ name: "Arc" }, lineLook()));
+      }
+      case "spiral": {
+        // an Archimedean spiral: four turns, drawn out from the centre
+        const R = Math.max(1, Math.hypot(p1.x - p0.x, p1.y - p0.y)), a0 = Math.atan2(p1.y - p0.y, p1.x - p0.x), turns = 4, n = turns * 8;
+        const pts = Array.from({ length: n + 1 }, (_, i) => { const a = a0 + i / n * turns * Math.PI * 2, r = R * (1 - i / n); return { x: p0.x + Math.cos(a) * r, y: p0.y + Math.sin(a) * r }; });
+        return vector(curvAnchors(pts, false), false, Object.assign({ name: "Spiral" }, lineLook()));
+      }
+      case "rgrid": {
+        const cols = 5, rows = 5;
+        let d = `M ${f2(b.x)} ${f2(b.y)} H ${f2(b.x + b.w)} V ${f2(b.y + b.h)} H ${f2(b.x)} Z`;
+        for (let i = 1; i < cols; i++) d += ` M ${f2(b.x + b.w * i / cols)} ${f2(b.y)} V ${f2(b.y + b.h)}`;
+        for (let i = 1; i < rows; i++) d += ` M ${f2(b.x)} ${f2(b.y + b.h * i / rows)} H ${f2(b.x + b.w)}`;
+        return new F.Path(d, Object.assign({ name: "Rectangular Grid", kind: "shape" }, lineLook()));
+      }
+      case "pgrid": {
+        const cx = b.x + b.w / 2, cy = b.y + b.h / 2, rings = 4, spokes = 8;
+        let d = "";
+        for (let i = 1; i <= rings; i++) {
+          const rx = b.w / 2 * i / rings, ry = b.h / 2 * i / rings, kx = K * rx, ky = K * ry;
+          d += ` M ${f2(cx + rx)} ${f2(cy)} C ${f2(cx + rx)} ${f2(cy + ky)} ${f2(cx + kx)} ${f2(cy + ry)} ${f2(cx)} ${f2(cy + ry)} C ${f2(cx - kx)} ${f2(cy + ry)} ${f2(cx - rx)} ${f2(cy + ky)} ${f2(cx - rx)} ${f2(cy)}`
+            + ` C ${f2(cx - rx)} ${f2(cy - ky)} ${f2(cx - kx)} ${f2(cy - ry)} ${f2(cx)} ${f2(cy - ry)} C ${f2(cx + kx)} ${f2(cy - ry)} ${f2(cx + rx)} ${f2(cy - ky)} ${f2(cx + rx)} ${f2(cy)} Z`;
+        }
+        for (let i = 0; i < spokes; i++) { const a = i / spokes * Math.PI * 2; d += ` M ${f2(cx)} ${f2(cy)} L ${f2(cx + Math.cos(a) * b.w / 2)} ${f2(cy + Math.sin(a) * b.h / 2)}`; }
+        return new F.Path(d.trim(), Object.assign({ name: "Polar Grid", kind: "shape" }, lineLook()));
+      }
       default: return null;
     }
   }
@@ -1232,6 +1364,643 @@ window.DSCanvas = function (kit) {
       addObject(o);
     }
     topRender();
+  }
+
+  /* ---------- Curvature: click points and the curve flows through them ---------- */
+  let curv = null;
+  const curvAnchors = (pts, closed) => {
+    const n = pts.length;
+    return pts.map((q, i) => {
+      if (q.corner) return A(q.x, q.y);
+      const prev = pts[closed ? (i - 1 + n) % n : Math.max(0, i - 1)], next = pts[closed ? (i + 1) % n : Math.min(n - 1, i + 1)];
+      const tx = (next.x - prev.x) / 6, ty = (next.y - prev.y) / 6;
+      return A(q.x, q.y, -tx, -ty, tx, ty);
+    });
+  };
+  function finishCurv(closed) {
+    if (!curv) return;
+    const pts = curv.pts;
+    curv = null;
+    if (pts.length >= 2) {
+      const o = vector(curvAnchors(pts, closed), closed, {
+        fill: closed ? paint.fill : null, stroke: paint.stroke || (closed ? null : "#000000"), strokeWidth: Math.max(1, paint.strokeWidth || 2), strokeUniform: !prefs.scaleStrokes, name: "Path"
+      });
+      if (!o.stroke && !o.fill) o.set({ stroke: "#000000" });
+      addObject(o);
+    }
+    topRender();
+  }
+
+  /* ---------- Path geometry shared by the anchor, cutting and distort tools ---------- */
+  const editable = o => !!o && o.visible !== false && !o.locked && !isText(o) && o.type !== "image" && o.type !== "group" && o.type !== "activeSelection";
+  const styleOf = o => ({ fill: o.fill, stroke: o.stroke, strokeWidth: o.strokeWidth, strokeUniform: o.strokeUniform, strokeDashArray: o.strokeDashArray,
+    strokeLineCap: o.strokeLineCap, strokeLineJoin: o.strokeLineJoin, opacity: o.opacity, shadow: o.shadow, globalCompositeOperation: o.globalCompositeOperation });
+  // anchors in scene coordinates (handles stay relative to their anchor)
+  const sceneAnchors = v => v.anchors.map(a => {
+    const p = toScene(v, a.x, a.y), i = toScene(v, a.x + a.ix, a.y + a.iy), q = toScene(v, a.x + a.ox, a.y + a.oy);
+    return A(p.x, p.y, i.x - p.x, i.y - p.y, q.x - p.x, q.y - p.y);
+  });
+  const reversed = pts => pts.slice().reverse().map(a => A(a.x, a.y, a.ox, a.oy, a.ix, a.iy));
+  const bez = (c, t) => { const u = 1 - t; return { x: u * u * u * c[0].x + 3 * u * u * t * c[1].x + 3 * u * t * t * c[2].x + t * t * t * c[3].x, y: u * u * u * c[0].y + 3 * u * u * t * c[1].y + 3 * u * t * t * c[2].y + t * t * t * c[3].y }; };
+  const isOpenPath = o => (o.kind === "vector" ? !o.closed : o.type === "line" || o.type === "polyline" || (o.type === "path" && !o.fill));
+  // the path segment nearest to p, on the top-most object within tol: { o, j, t, pt }
+  function segmentAt(p, tol = 6 / zoom()) {
+    for (const o of cv.getObjects().slice().reverse()) {
+      if (!editable(o)) continue;
+      const v = o.kind === "vector" ? o : asVector(o);
+      if (!v) continue;
+      const sa = sceneAnchors(v), n = sa.length;
+      let best = null;
+      for (let j = 0; j < (v.closed ? n : n - 1); j++) {
+        const a = sa[j], b = sa[(j + 1) % n], c = [a, { x: a.x + a.ox, y: a.y + a.oy }, { x: b.x + b.ix, y: b.y + b.iy }, b];
+        let bt = 0, bd = Infinity;
+        for (let s = 0; s <= 48; s++) { const q = bez(c, s / 48), d = Math.hypot(q.x - p.x, q.y - p.y); if (d < bd) { bd = d; bt = s / 48; } }
+        for (let st = 1 / 96; st > 1e-4; st /= 2) [bt - st, bt + st].forEach(t => { if (t < 0 || t > 1) return; const q = bez(c, t), d = Math.hypot(q.x - p.x, q.y - p.y); if (d < bd) { bd = d; bt = t; } });
+        if (bd < tol && (!best || bd < best.d)) best = { o, j, t: bt, d: bd, pt: bez(c, bt) };
+      }
+      if (best) return best;
+    }
+    return null;
+  }
+  // the anchor point nearest to p: { o, i, pt }
+  function anchorAt(p, tol = 7 / zoom()) {
+    for (const o of cv.getObjects().slice().reverse()) {
+      if (!editable(o)) continue;
+      const v = o.kind === "vector" ? o : asVector(o);
+      if (!v) continue;
+      let best = null;
+      sceneAnchors(v).forEach((a, i) => { const d = Math.hypot(a.x - p.x, a.y - p.y); if (d < tol && (!best || d < best.d)) best = { o, i, d, pt: a }; });
+      if (best) return best;
+    }
+    return null;
+  }
+  // live shapes become editable paths the moment a tool needs their points
+  const ensureVector = o => (o.kind === "vector" ? o : expand(o));
+  // split segment j at t (de Casteljau); returns the new anchor's index
+  function splitAt(v, j, t) {
+    const an = v.anchors, n = an.length, a = an[j], b = an[(j + 1) % n];
+    const curved = a.ox || a.oy || b.ix || b.iy;
+    const L = (u, w) => ({ x: u.x + (w.x - u.x) * t, y: u.y + (w.y - u.y) * t });
+    const p0 = { x: a.x, y: a.y }, p1 = { x: a.x + a.ox, y: a.y + a.oy }, p2 = { x: b.x + b.ix, y: b.y + b.iy }, p3 = { x: b.x, y: b.y };
+    const p01 = L(p0, p1), p12 = L(p1, p2), p23 = L(p2, p3), p012 = L(p01, p12), p123 = L(p12, p23), m = L(p012, p123);
+    const N = curved ? A(m.x, m.y, p012.x - m.x, p012.y - m.y, p123.x - m.x, p123.y - m.y) : A(m.x, m.y);
+    if (curved) { a.ox = p01.x - a.x; a.oy = p01.y - a.y; b.ix = p23.x - b.x; b.iy = p23.y - b.y; }
+    an.splice(j + 1, 0, N);
+    return j + 1;
+  }
+  const refreshPath = v => { rebuild(v); if (v.__direct === "direct") v.controls = vectorControls(v); cv.requestRenderAll(); };
+  function replaceObj(o, list) {
+    const i = cv.getObjects().indexOf(o);
+    hist.busy++;
+    cv.remove(o);
+    list.forEach((n, k) => { applyToolState(n); cv.insertAt(n, i + k); n.setCoords(); });
+    hist.busy--;
+  }
+
+  function addAnchorAt(p) {
+    const h = segmentAt(p);
+    if (!h) return;
+    const v = ensureVector(h.o);
+    splitAt(v, h.j, h.t);
+    refreshPath(v); note("Add Anchor Point"); changed();
+  }
+  function deleteAnchorAt(p) {
+    const h = anchorAt(p);
+    if (!h) return;
+    const v = ensureVector(h.o);
+    if (v.anchors.length <= (v.closed ? 3 : 2)) { toast(tr("A path needs at least that many points.")); return; }
+    v.anchors.splice(h.i, 1);
+    refreshPath(v); note("Delete Anchor Point"); changed();
+  }
+  function cutAt(p) {
+    const h = segmentAt(p);
+    if (!h) return;
+    const v = ensureVector(h.o), k = splitAt(v, h.j, h.t), an = v.anchors;
+    if (v.closed) {
+      // the closed path opens at the cut
+      const pts = [...an.slice(k), ...an.slice(0, k + 1)].map(a => Object.assign({}, a));
+      pts[0].ix = pts[0].iy = 0; pts[pts.length - 1].ox = pts[pts.length - 1].oy = 0;
+      v.anchors = pts; v.closed = false;
+      refreshPath(v);
+    } else {
+      // an open path becomes two paths
+      const sa = sceneAnchors(v), second = sa.slice(k).map(a => Object.assign({}, a));
+      second[0].ix = second[0].iy = 0;
+      v.anchors = an.slice(0, k + 1); v.anchors[k].ox = v.anchors[k].oy = 0;
+      refreshPath(v);
+      if (second.length > 1) { const w = vector(second, false, Object.assign(styleOf(v), { name: v.name || "Path" })); hist.busy++; applyToolState(w); cv.insertAt(w, cv.getObjects().indexOf(v) + 1); hist.busy--; }
+    }
+    note("Cut Path"); changed(); refreshUI();
+  }
+
+  /* ---------- paper.js results back into objects ---------- */
+  // Single outlines become editable paths; outlines with holes stay compound paths
+  function fromPaper(item, style, name) {
+    const parts = (item.children ? item.children.slice() : [item]).filter(c => c.segments && c.segments.length > 1);
+    if (!parts.length) return [];
+    const toAnchors = path => path.segments.map(sg => A(sg.point.x, sg.point.y, sg.handleIn.x, sg.handleIn.y, sg.handleOut.x, sg.handleOut.y));
+    const outerDir = parts.reduce((b, c) => (Math.abs(c.area) > Math.abs(b.area) ? c : b)).clockwise;
+    const outers = parts.filter(c => c.clockwise === outerDir), holes = parts.filter(c => c.clockwise !== outerDir);
+    return outers.map(out => {
+      const mine = holes.filter(h => out.contains(h.interiorPoint));
+      const opts = Object.assign({}, style, { name, strokeUniform: !prefs.scaleStrokes });
+      if (!mine.length) return vector(toAnchors(out), out.closed, opts);
+      return new F.Path([out, ...mine].map(c => c.pathData).join(" "), Object.assign(opts, { fillRule: "evenodd", kind: "shape" }));
+    });
+  }
+  const paperOf = o => { const d = sceneData(o); return d ? window.paper.PathItem.create(d) : null; };
+  const boxHit = (o, b) => { const r = o.getBoundingRect(true, true); return !(r.left > b.right || r.left + r.width < b.left || r.top > b.bottom || r.top + r.height < b.top); };
+  // the outline of a round brush dragged through pts
+  function strokeOutline(pts, r) {
+    const P = window.paper;
+    const kept = pts.filter((q, i) => i === 0 || i === pts.length - 1 || Math.hypot(q.x - pts[i - 1].x, q.y - pts[i - 1].y) > 0);
+    const step = [kept[0]];
+    kept.forEach(q => { const l = step[step.length - 1]; if (Math.hypot(q.x - l.x, q.y - l.y) >= r * .5) step.push(q); });
+    if (step[step.length - 1] !== kept[kept.length - 1]) step.push(kept[kept.length - 1]);
+    let res = new P.Path.Circle(new P.Point(step[0].x, step[0].y), r);
+    for (let i = 1; i < step.length; i++) {
+      const a = step[i - 1], b = step[i], L = Math.hypot(b.x - a.x, b.y - a.y) || 1, nx = -(b.y - a.y) / L * r, ny = (b.x - a.x) / L * r;
+      const quad = new P.Path({ segments: [[a.x + nx, a.y + ny], [b.x + nx, b.y + ny], [b.x - nx, b.y - ny], [a.x - nx, a.y - ny]], closed: true });
+      const dot = new P.Path.Circle(new P.Point(b.x, b.y), r);
+      const next = res.unite(quad).unite(dot);
+      [res, quad, dot].forEach(x => x.remove());
+      res = next;
+    }
+    return res;
+  }
+  // which objects a cutting stroke can change: filled, closed shapes and paths
+  const cuttable = o => editable(o) && !!o.fill && !isOpenPath(o);
+
+  async function eraseAlong(pts, r) {
+    await ensurePaper();
+    const cut = strokeOutline(pts, r), cb = cut.bounds;
+    let touched = 0;
+    cv.getObjects().slice().forEach(o => {
+      if (!cuttable(o) || !boxHit(o, cb)) return;
+      const item = paperOf(o);
+      if (!item) return;
+      const res = item.subtract(cut);
+      if (Math.abs(Math.abs(res.area) - Math.abs(item.area)) < .5) return;
+      touched++;
+      replaceObj(o, fromPaper(res, styleOf(o), o.name || "Path"));
+    });
+    window.paper.project.clear();
+    if (touched) { cv.discardActiveObject(); note("Erase"); changed(); refreshUI(); }
+    cv.requestRenderAll();
+  }
+  async function blobAlong(pts, r) {
+    await ensurePaper();
+    let shape = strokeOutline(pts, r);
+    const fill = toHex(isGrad(paint.fill) ? null : paint.fill) || toHex(paint.stroke) || "#000000";
+    // touching blobs of the same colour join the new one
+    const merge = cv.getObjects().filter(o => o.name === "Blob" && toHex(o.fill) === fill && editable(o) && boxHit(o, shape.bounds));
+    let at = cv.getObjects().length;
+    merge.forEach(o => {
+      const item = paperOf(o);
+      if (!item || !(item.intersects(shape) || item.contains(shape.interiorPoint) || shape.contains(item.interiorPoint))) return;
+      shape = shape.unite(item);
+      at = Math.min(at, cv.getObjects().indexOf(o));
+      hist.busy++; cv.remove(o); hist.busy--;
+    });
+    const out = fromPaper(shape, { fill, stroke: null, strokeWidth: 0 }, "Blob");
+    window.paper.project.clear();
+    hist.busy++;
+    out.forEach((n, k) => { applyToolState(n); cv.insertAt(n, at + k); n.setCoords(); });
+    hist.busy--;
+    note(tr("Draw") + " " + tr("Blob")); changed(); cv.requestRenderAll(); refreshUI();
+  }
+  async function knifeAlong(pts) {
+    if (pts.length < 2) return;
+    await ensurePaper();
+    const blade = strokeOutline(pts, .35 / zoom()), bb = blade.bounds;
+    let touched = 0;
+    cv.getObjects().slice().forEach(o => {
+      if (!cuttable(o) || !boxHit(o, bb)) return;
+      const item = paperOf(o);
+      if (!item || !item.intersects(blade)) return;
+      const pieces = fromPaper(item.subtract(blade), styleOf(o), o.name || "Path");
+      if (pieces.length < 2) return;
+      touched++;
+      replaceObj(o, pieces);
+    });
+    window.paper.project.clear();
+    if (touched) { cv.discardActiveObject(); note("Knife"); changed(); refreshUI(); } else toast(tr("Drag all the way across a filled shape to slice it."));
+    cv.requestRenderAll();
+  }
+
+  /* ---------- Shape Builder: merge or remove the areas where shapes overlap ---------- */
+  let sb = null;
+  async function sbStart(list = combinable()) {
+    sb = null;
+    if (list.length < 2) return false;
+    // objects inside a multiple selection report positions relative to it, so let it go first
+    if (cv.getActiveObject() && cv.getActiveObject().type === "activeSelection") cv.discardActiveObject();
+    await ensurePaper();
+    window.paper.project.clear();
+    sb = { shapes: list, items: list.map(o => window.paper.PathItem.create(sceneData(o))), hover: null, picks: null };
+    cv.requestRenderAll(); renderCtrl(); topRender();
+    return true;
+  }
+  function sbRegion(p) {
+    const P = window.paper, pt = new P.Point(p.x, p.y);
+    const inside = sb.items.map((it, i) => (it.contains(pt) ? i : -1)).filter(i => i > -1);
+    if (!inside.length) return null;
+    let r = sb.items[inside[0]].clone({ insert: false });
+    inside.slice(1).forEach(i => { r = r.intersect(sb.items[i], { insert: false }); });
+    sb.items.forEach((it, i) => { if (!inside.includes(i)) r = r.subtract(it, { insert: false }); });
+    return { key: inside.join(","), inside, path: r, d: r.pathData };
+  }
+  function sbFinish(remove) {
+    const picks = Object.values(sb.picks || {});
+    sb.picks = null;
+    if (!picks.length) return;
+    let area = picks[0].path;
+    picks.slice(1).forEach(r => { area = area.unite(r.path, { insert: false }); });
+    const order = cv.getObjects(), involved = [...new Set(picks.flatMap(r => r.inside))];
+    const top = involved.reduce((b, i) => (order.indexOf(sb.shapes[i]) > order.indexOf(sb.shapes[b]) ? i : b), involved[0]);
+    const kept = [];
+    let insertAt = order.indexOf(sb.shapes[top]) + 1;
+    sb.shapes.forEach((o, i) => {
+      if (!involved.includes(i)) { kept.push(o); return; }
+      const rest = fromPaper(sb.items[i].subtract(area, { insert: false }), styleOf(o), o.name || "Shape");
+      if (cv.getObjects().indexOf(o) < insertAt) insertAt += rest.length - 1;
+      replaceObj(o, rest);
+      kept.push(...rest);
+    });
+    if (!remove) {
+      const made = fromPaper(area, styleOf(sb.shapes[top]), "Shape");
+      hist.busy++;
+      made.forEach((n, k) => { applyToolState(n); cv.insertAt(n, Math.min(insertAt + k, cv.getObjects().length)); n.setCoords(); });
+      hist.busy--;
+      kept.push(...made);
+    }
+    note(remove ? "Shape Builder: Remove" : "Shape Builder: Merge"); changed();
+    sbStart(kept.filter(o => cv.getObjects().includes(o))).then(() => { refreshUI(); topRender(); });
+  }
+
+  /* ---------- Type on a path ---------- */
+  function typeOnPath(o) {
+    const d = o && !isText(o) && sceneData(o, true);
+    if (!d) { toast(tr("Click a path or shape to type along it.")); return; }
+    const path = new F.Path(d, { fill: null, stroke: null, strokeWidth: 0 });
+    const fill = toHex(paint.fill) && !["#ffffff", DEFAULT_PAINT.fill].includes(toHex(paint.fill)) ? paint.fill : "#0f0f0f";
+    const size = Math.max(12, Math.round(Math.min(64 * unit(), Math.max(path.width, path.height) / 8)));
+    const t = new F.IText(tr("Type along the path"), { fontFamily: charState.family, fontWeight: charState.weight, fontSize: size, fill, path, left: path.left, top: path.top, name: "Text on Path", kind: "text", charSpacing: 0 });
+    loadFont(charState.family, charState.weight).then(() => {
+      setTool("select");
+      addObject(t);
+      t.enterEditing(); t.selectAll();
+      refreshUI();
+    });
+  }
+
+  /* ---------- Free Distort: drag the four corners ---------- */
+  function startDistort(v) {
+    const xs = v.anchors.map(a => a.x), ys = v.anchors.map(a => a.y);
+    const x0 = Math.min(...xs), y0 = Math.min(...ys), x1 = Math.max(...xs), y1 = Math.max(...ys);
+    v.__dist = { x0, y0, w: Math.max(1e-6, x1 - x0), h: Math.max(1e-6, y1 - y0), a0: v.anchors.map(a => Object.assign({}, a)), c: [{ x: x0, y: y0 }, { x: x1, y: y0 }, { x: x1, y: y1 }, { x: x0, y: y1 }] };
+    const dist = v.__dist;
+    const map = (x, y) => {
+      const u = (x - dist.x0) / dist.w, w = (y - dist.y0) / dist.h, [a, b, c, d] = dist.c;
+      return { x: (1 - u) * (1 - w) * a.x + u * (1 - w) * b.x + u * w * c.x + (1 - u) * w * d.x, y: (1 - u) * (1 - w) * a.y + u * (1 - w) * b.y + u * w * c.y + (1 - u) * w * d.y };
+    };
+    const controls = {};
+    dist.c.forEach((cn, k) => {
+      controls["d" + k] = new F.Control({
+        positionHandler: (dim, m, obj) => F.util.transformPoint(new F.Point(dist.c[k].x - obj.pathOffset.x, dist.c[k].y - obj.pathOffset.y), F.util.multiplyTransformMatrices(obj.canvas.viewportTransform, obj.calcTransformMatrix())),
+        cursorStyle: "crosshair", actionName: "distort",
+        actionHandler: (e, tr2, x, y) => {
+          dist.c[k] = toLocal(v, x, y);
+          v.anchors = dist.a0.map(a => {
+            const p = map(a.x, a.y), i = map(a.x + a.ix, a.y + a.iy), q = map(a.x + a.ox, a.y + a.oy);
+            return A(p.x, p.y, i.x - p.x, i.y - p.y, q.x - p.x, q.y - p.y);
+          });
+          rebuild(v);
+          return true;
+        },
+        render: (ctx, left, top) => { ctx.save(); ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#1f7aff"; ctx.lineWidth = 1.5; ctx.fillRect(left - 4, top - 4, 8, 8); ctx.strokeRect(left - 4, top - 4, 8, 8); ctx.restore(); }
+      });
+    });
+    v.controls = controls; v.hasBorders = false; v.__direct = "distort";
+  }
+
+  /* ---------- Crop Image: drag the edges of a picture ---------- */
+  function cropControls(o) {
+    const el = o.getElement(), W = el.naturalWidth || el.width, H = el.naturalHeight || el.height;
+    const M = () => o.calcTransformMatrix();
+    const edges = { l: [-1, 0], r: [1, 0], t: [0, -1], b: [0, 1], tl: [-1, -1], tr: [1, -1], bl: [-1, 1], br: [1, 1] };
+    const controls = {};
+    Object.entries(edges).forEach(([key, [ex, ey]]) => {
+      controls["c" + key] = new F.Control({
+        x: ex / 2, y: ey / 2, cursorStyle: ex && ey ? (ex * ey > 0 ? "nwse-resize" : "nesw-resize") : ex ? "ew-resize" : "ns-resize", actionName: "crop",
+        actionHandler: (e, t, x, y) => {
+          const l = F.util.transformPoint(new F.Point(x, y), F.util.invertTransform(M()));
+          let dx = 0, dy = 0, cx = o.cropX || 0, cy = o.cropY || 0, w = o.width, h = o.height;
+          if (ex < 0) { const nl = clamp(l.x, -w / 2 - cx, w / 2 - 8); dx = nl + w / 2; cx += dx; w -= dx; }
+          if (ex > 0) { const nr = clamp(l.x, -w / 2 + 8, w / 2 + (W - cx - w)); dx = nr - w / 2; w += dx; }
+          if (ey < 0) { const nt = clamp(l.y, -h / 2 - cy, h / 2 - 8); dy = nt + h / 2; cy += dy; h -= dy; }
+          if (ey > 0) { const nb = clamp(l.y, -h / 2 + 8, h / 2 + (H - cy - h)); dy = nb - h / 2; h += dy; }
+          const c = F.util.transformPoint(new F.Point(dx / 2, dy / 2), M());
+          o.set({ cropX: cx, cropY: cy, width: w, height: h });
+          if (o.kindRadius) { const r = o.kindRadius / (o.scaleX || 1); o.set("clipPath", new F.Rect({ width: w, height: h, rx: r, ry: r, originX: "center", originY: "center" })); }
+          o.setPositionByOrigin(c, "center", "center");
+          o.setCoords();
+          return true;
+        },
+        render: (ctx, left, top) => {
+          ctx.save(); ctx.fillStyle = "#ffffff"; ctx.strokeStyle = "#1f7aff"; ctx.lineWidth = 1.5;
+          if (ex && ey) { ctx.fillRect(left - 4.5, top - 4.5, 9, 9); ctx.strokeRect(left - 4.5, top - 4.5, 9, 9); }
+          else { const w2 = ex ? 4 : 12, h2 = ex ? 12 : 4; ctx.fillRect(left - w2 / 2, top - h2 / 2, w2, h2); ctx.strokeRect(left - w2 / 2, top - h2 / 2, w2, h2); }
+          ctx.restore();
+        }
+      });
+    });
+    return controls;
+  }
+
+  /* ---------- Join, Simplify, Blend ---------- */
+  function joinPaths() {
+    const list = active().filter(o => editable(o) && isOpenPath(o));
+    if (list.length === 1) { const v = ensureVector(list[0]); v.closed = true; refreshPath(v); note("Join"); changed(); refreshUI(); return; }
+    if (list.length !== 2) { toast(tr("Select one or two open paths to join.")); return; }
+    cv.discardActiveObject();
+    const [v1, v2] = list.map(ensureVector);
+    let a = sceneAnchors(v1), b = sceneAnchors(v2);
+    const d = (p, q) => Math.hypot(p.x - q.x, p.y - q.y), ends = [[d(a[a.length - 1], b[0]), 0], [d(a[a.length - 1], b[b.length - 1]), 1], [d(a[0], b[0]), 2], [d(a[0], b[b.length - 1]), 3]].sort((x, y) => x[0] - y[0])[0];
+    if (ends[1] === 1) b = reversed(b);
+    if (ends[1] === 2) a = reversed(a);
+    if (ends[1] === 3) { a = reversed(a); b = reversed(b); }
+    const last = a[a.length - 1], first = b[0];
+    const pts = d(last, first) < 4 / zoom() ? [...a.slice(0, -1), A((last.x + first.x) / 2, (last.y + first.y) / 2, last.ix, last.iy, first.ox, first.oy), ...b.slice(1)] : [...a, ...b];
+    const out = vector(pts, false, Object.assign(styleOf(v1), { name: v1.name || "Path" }));
+    hist.busy++; cv.remove(v2); hist.busy--;
+    replaceObj(v1, [out]);
+    cv.setActiveObject(out); note("Join"); changed(); refreshUI();
+  }
+  async function simplifyPaths() {
+    const list = combinable();
+    if (!list.length) { toast(tr("Select a path to simplify.")); return; }
+    await ensurePaper();
+    cv.discardActiveObject();
+    const made = [];
+    list.forEach(o => {
+      const item = paperOf(o);
+      if (!item) return;
+      const tol = Math.max(.5, 2.5 / zoom());
+      (item.children || [item]).forEach(c => c.simplify && c.simplify(tol));
+      const out = fromPaper(item, styleOf(o), o.name || "Path");
+      if (out.length) { replaceObj(o, out); made.push(...out); }
+    });
+    window.paper.project.clear();
+    reselect(made); note("Simplify"); changed(); refreshUI();
+  }
+  const lerp = (a, b, t) => a + (b - a) * t;
+  const mixColour = (x, y, t) => {
+    const X = toHex(x), Y = toHex(y);
+    if (!X || !Y) return t < .5 ? x : y;
+    const p = new F.Color(X).getSource(), q = new F.Color(Y).getSource();
+    return "#" + new F.Color(`rgb(${[0, 1, 2].map(i => Math.round(lerp(p[i], q[i], t))).join(",")})`).toHex().toLowerCase();
+  };
+  // evenly spaced points round an outline, starting from its top-most point
+  function samplePoints(o, n) {
+    const P = window.paper, item = paperOf(o);
+    const path = item.children ? item.children[0] : item, L = path.length;
+    const pts = Array.from({ length: n }, (_, i) => path.getPointAt(L * i / n));
+    const s = pts.reduce((b, p, i) => (p.y < pts[b].y ? i : b), 0);
+    const out = [...pts.slice(s), ...pts.slice(0, s)].map(p => A(p.x, p.y));
+    return path.clockwise ? out : [out[0], ...out.slice(1).reverse()];
+  }
+  function blendDialog() {
+    if (active().length !== 2) { toast(tr("Select two objects to blend between.")); return; }
+    openDialog("Blend", `<div class="cx-form">${num("bl-steps", 6, { label: "Steps", min: 1, max: 100, d: 0, wide: true })}
+      <p class="cx-note">Makes the in-between steps from one object to the other: position, size, rotation, colour and, for shapes, the outline.</p></div>`, [["Cancel", "close-dialog"], ["Blend", "do-blend", true]]);
+  }
+  async function doBlend() {
+    const steps = clamp(+($('[data-k="bl-steps"]', dialog) || {}).value || 6, 1, 100);
+    closeDialog();
+    const [a, b] = cv.getObjects().filter(o => active().includes(o));
+    if (!a || !b) return;
+    cv.discardActiveObject();
+    const va = editable(a) && asVector(a), vb = editable(b) && asVector(b);
+    let sa = null, sb2 = null, closed = false;
+    if (va && vb && va.closed === vb.closed) {
+      closed = va.closed;
+      if (va.anchors.length === vb.anchors.length) { sa = sceneAnchors(va); sb2 = sceneAnchors(vb); }
+      else if (closed) { await ensurePaper(); sa = samplePoints(a, 72); sb2 = samplePoints(b, 72); window.paper.project.clear(); }
+    }
+    const ca = a.getCenterPoint(), cb = b.getCenterPoint(), made = [];
+    for (let k = 1; k <= steps; k++) {
+      const t = k / (steps + 1);
+      const look = { fill: mixColour(a.fill, b.fill, t), stroke: mixColour(a.stroke, b.stroke, t), strokeWidth: lerp(a.strokeWidth || 0, b.strokeWidth || 0, t), opacity: lerp(a.opacity ?? 1, b.opacity ?? 1, t) };
+      if (sa) {
+        const pts = sa.map((p, i) => { const q = sb2[i]; return A(lerp(p.x, q.x, t), lerp(p.y, q.y, t), lerp(p.ix, q.ix, t), lerp(p.iy, q.iy, t), lerp(p.ox, q.ox, t), lerp(p.oy, q.oy, t)); });
+        made.push(vector(pts, closed, Object.assign({ strokeUniform: !prefs.scaleStrokes, name: "Blend Step" }, look)));
+      } else {
+        const c = await new Promise(res => a.clone(res, PROPS));
+        c.set({ scaleX: lerp(a.scaleX, b.scaleX * (b.width / (a.width || 1)), t), scaleY: lerp(a.scaleY, b.scaleY * (b.height / (a.height || 1)), t), angle: lerp(a.angle, b.angle, t), opacity: look.opacity, name: "Blend Step" });
+        if (a.type !== "image" && a.type !== "group") c.set({ fill: look.fill, stroke: look.stroke });
+        c.setPositionByOrigin(new F.Point(lerp(ca.x, cb.x, t), lerp(ca.y, cb.y, t)), "center", "center");
+        made.push(c);
+      }
+    }
+    const i = cv.getObjects().indexOf(a);
+    hist.busy++;
+    made.forEach((n, k) => { applyToolState(n); cv.insertAt(n, i + 1 + k); n.setCoords(); });
+    hist.busy--;
+    reselect([a, ...made, b]);
+    group();
+    const g = cv.getActiveObject();
+    if (g && g.type === "group") g.set({ name: "Blend" });
+    note("Blend"); changed(); refreshUI();
+  }
+
+  /* ---------- Tools that draw on top or need their own state ---------- */
+  let t2 = null;   // the current drag of one of these tools
+  const pointInPoly = (p, poly) => { let inside = false; for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) { const a = poly[i], b = poly[j]; if ((a.y > p.y) !== (b.y > p.y) && p.x < (b.x - a.x) * (p.y - a.y) / (b.y - a.y) + a.x) inside = !inside; } return inside; };
+  const brushR = () => Math.max(.5, prefs.brush / 2);
+  const needActive = () => { const o = cv.getActiveObject(); if (!o) toast(tr("Select something first.")); return o; };
+  const TOOLS2 = {
+    lasso: {
+      down: p => { t2 = { pts: [p] }; },
+      move: p => { if (!t2) return; const l = t2.pts[t2.pts.length - 1]; if (Math.hypot(p.x - l.x, p.y - l.y) * zoom() > 2) { t2.pts.push(p); topRender(); } },
+      up: (p, e) => {
+        const poly = t2 ? t2.pts : []; t2 = null; topRender();
+        if (poly.length < 3) { cv.discardActiveObject(); cv.requestRenderAll(); refreshUI(); return; }
+        const hit = cv.getObjects().filter(o => {
+          if (o.visible === false || o.locked) return false;
+          const r = o.getBoundingRect(true, true), c = o.getCenterPoint();
+          return [c, { x: r.left, y: r.top }, { x: r.left + r.width, y: r.top }, { x: r.left, y: r.top + r.height }, { x: r.left + r.width, y: r.top + r.height }].some(q => pointInPoly(q, poly));
+        });
+        reselect(e.shiftKey ? [...new Set([...active(), ...hit])] : hit); refreshUI();
+      },
+      draw: (c, z) => { if (!t2) return; c.strokeStyle = "#1f7aff"; c.lineWidth = 1 / z; c.setLineDash([4 / z, 3 / z]); c.fillStyle = "rgba(31,122,255,.06)"; c.beginPath(); t2.pts.forEach((q, i) => (i ? c.lineTo(q.x, q.y) : c.moveTo(q.x, q.y))); c.closePath(); c.fill(); c.stroke(); c.setLineDash([]); }
+    },
+    "magic-wand": {
+      down: (p, e, opt) => {
+        const t = opt.target;
+        if (!t) { cv.discardActiveObject(); cv.requestRenderAll(); refreshUI(); return; }
+        const key = o => (o.kind === "icon" ? toHex(iconParts(o)[0].stroke) : toHex(isGrad(o.fill) ? null : o.fill) || "s:" + toHex(o.stroke));
+        const k = key(t);
+        const same = cv.getObjects().filter(o => o.visible !== false && !o.locked && key(o) === k);
+        reselect(e.shiftKey ? [...new Set([...active(), ...same])] : same); refreshUI();
+        toast(`${same.length} ${tr(same.length === 1 ? "object" : "objects")}`);
+      }
+    },
+    curvature: {
+      down: (p, e) => {
+        if (!curv) curv = { pts: [] };
+        const f = curv.pts[0];
+        if (f && curv.pts.length > 2 && Math.hypot(p.x - f.x, p.y - f.y) * zoom() < 9) { finishCurv(true); return; }
+        const q = snapPoint({ x: p.x, y: p.y });
+        curv.pts.push({ x: q.x, y: q.y, corner: e.altKey }); topRender();
+      },
+      move: p => {
+        if (!curv) return;
+        const f = curv.pts[0];
+        curv.closeHover = f && curv.pts.length > 2 && Math.hypot(p.x - f.x, p.y - f.y) * zoom() < 9;
+        curv.hover = curv.closeHover ? null : snapPoint({ x: p.x, y: p.y });
+        topRender();
+      },
+      draw: (c, z) => {
+        if (!curv || !curv.pts.length) return;
+        const pts = curv.hover ? [...curv.pts, curv.hover] : curv.pts;
+        c.strokeStyle = "#1f7aff"; c.lineWidth = 1.5 / z;
+        if (pts.length > 1) c.stroke(new Path2D(pathFrom(curvAnchors(pts, !!curv.closeHover), !!curv.closeHover)));
+        curv.pts.forEach((q, i) => { const s = (i === 0 && curv.closeHover ? 10 : 7) / z; c.fillStyle = "#ffffff"; c.beginPath(); c.arc(q.x, q.y, s / 2, 0, Math.PI * 2); c.fill(); c.stroke(); });
+      }
+    },
+    "add-anchor": { down: p => { addAnchorAt(p); t2 = { seg: segmentAt(p) }; topRender(); }, move: p => { t2 = { seg: segmentAt(p) }; topRender(); }, draw: (c, z) => drawHover(c, z, "seg") },
+    "del-anchor": { down: p => { deleteAnchorAt(p); t2 = { anc: anchorAt(p) }; topRender(); }, move: p => { t2 = { anc: anchorAt(p) }; topRender(); }, draw: (c, z) => drawHover(c, z, "anc") },
+    anchor: {
+      down: p => { const h = anchorAt(p); if (!h) return; const v = ensureVector(h.o); t2 = { conv: { v, i: h.i, moved: false } }; },
+      move: (p, e) => {
+        if (t2 && t2.conv) {
+          const { v, i } = t2.conv, a = v.anchors[i], l = toLocal(v, p.x, p.y);
+          if (!t2.conv.moved && Math.hypot(l.x - a.x, l.y - a.y) * zoom() < 3) return;
+          t2.conv.moved = true;
+          a.ox = l.x - a.x; a.oy = l.y - a.y; a.ix = -a.ox; a.iy = -a.oy;
+          rebuild(v); cv.requestRenderAll(); showMeasure(e, `${round(Math.hypot(a.ox, a.oy))} px`); return;
+        }
+        t2 = { anc: anchorAt(p) }; topRender();
+      },
+      up: () => { const cnv = t2 && t2.conv; t2 = null; if (!cnv) return; if (cnv.moved) { note("Convert Anchor Point"); changed(); } else toggleSmooth(cnv.v, cnv.i); refreshUI(); },
+      draw: (c, z) => drawHover(c, z, "anc")
+    },
+    scissors: { down: p => { cutAt(p); t2 = null; topRender(); }, move: p => { t2 = { seg: segmentAt(p) }; topRender(); }, draw: (c, z) => drawHover(c, z, "seg") },
+    eraser: brushTool(false),
+    blob: brushTool(true),
+    knife: {
+      down: p => { t2 = { pts: [p] }; },
+      move: p => { if (!t2) return; t2.pts.push(p); topRender(); },
+      up: () => { const pts = t2 ? t2.pts : []; t2 = null; topRender(); knifeAlong(pts); },
+      draw: (c, z) => { if (!t2) return; c.strokeStyle = "#ff3b30"; c.lineWidth = 1.25 / z; c.beginPath(); t2.pts.forEach((q, i) => (i ? c.lineTo(q.x, q.y) : c.moveTo(q.x, q.y))); c.stroke(); }
+    },
+    typepath: { down: (p, e, opt) => typeOnPath(opt.target) },
+    reflect: {
+      down: p => { const o = needActive(); if (!o) return; t2 = { o, c: o.getCenterPoint(), p }; },
+      move: (p, e) => { if (!t2) return; t2.p = p; t2.shift = e.shiftKey; const d = Math.hypot(p.x - t2.c.x, p.y - t2.c.y); if (d * zoom() > 4) showMeasure(e, `${round(axisAngle())}°`); topRender(); },
+      up: (p, e) => {
+        if (!t2) return;
+        const { o, c } = t2, phi = Math.hypot(p.x - c.x, p.y - c.y) * zoom() > 4 ? axisAngle() : 90;
+        t2 = null; topRender();
+        const go = target => { target.set({ flipY: !target.flipY, angle: (((2 * phi - target.angle) % 360) + 360) % 360 }); target.setPositionByOrigin(c, "center", "center"); target.setCoords(); cv.requestRenderAll(); cv.fire("object:modified", { target }); note("Reflect"); changed(); refreshUI(); };
+        if (e.altKey && o.type !== "activeSelection") o.clone(cp => { applyToolState(cp); hist.busy++; cv.insertAt(cp, cv.getObjects().indexOf(o) + 1); hist.busy--; cv.setActiveObject(cp); go(cp); }, PROPS);
+        else go(o);
+      },
+      draw: (c, z) => {
+        if (!t2 || Math.hypot(t2.p.x - t2.c.x, t2.p.y - t2.c.y) * zoom() < 4) return;
+        const a = axisAngle() * Math.PI / 180, L = 4000;
+        c.strokeStyle = "#1f7aff"; c.lineWidth = 1 / z; c.setLineDash([6 / z, 4 / z]);
+        c.beginPath(); c.moveTo(t2.c.x - Math.cos(a) * L, t2.c.y - Math.sin(a) * L); c.lineTo(t2.c.x + Math.cos(a) * L, t2.c.y + Math.sin(a) * L); c.stroke(); c.setLineDash([]);
+      }
+    },
+    shear: {
+      down: p => { const o = needActive(); if (!o) return; t2 = { o, p0: p, c: o.getCenterPoint(), sx: o.skewX || 0, sy: o.skewY || 0, w: o.getScaledWidth(), h: o.getScaledHeight() }; },
+      move: (p, e) => {
+        if (!t2) return;
+        const { o } = t2, dx = p.x - t2.p0.x, dy = p.y - t2.p0.y;
+        if (Math.abs(dx) >= Math.abs(dy)) o.set({ skewX: clamp(t2.sx + Math.atan2(dx, t2.h / 2) * 180 / Math.PI, -80, 80), skewY: t2.sy });
+        else o.set({ skewY: clamp(t2.sy + Math.atan2(dy, t2.w / 2) * 180 / Math.PI, -80, 80), skewX: t2.sx });
+        o.setPositionByOrigin(t2.c, "center", "center"); o.setCoords(); cv.requestRenderAll();
+        showMeasure(e, `${round(Math.abs(dx) >= Math.abs(dy) ? o.skewX : o.skewY, 1)}°`);
+      },
+      up: () => { if (!t2) return; const o = t2.o; t2 = null; cv.fire("object:modified", { target: o }); note("Shear"); changed(); refreshUI(); }
+    },
+    shapebuilder: {
+      down: (p, e) => { if (!sb) { toast(tr("Select two or more overlapping shapes, then use the Shape Builder.")); return; } sb.picks = {}; sb.remove = e.altKey; const r = sbRegion(p); if (r) sb.picks[r.key] = r; topRender(); },
+      move: (p, e) => {
+        if (!sb) return;
+        const r = sbRegion(p);
+        if (sb.picks) { if (r && !sb.picks[r.key]) sb.picks[r.key] = r; }
+        else sb.hover = r;
+        sb.alt = e.altKey;
+        topRender();
+      },
+      up: () => { if (sb && sb.picks) sbFinish(sb.remove); },
+      draw: (c, z) => {
+        if (!sb) return;
+        c.strokeStyle = "rgba(31,122,255,.7)"; c.lineWidth = 1 / z;
+        sb.items.forEach(it => c.stroke(new Path2D(it.pathData)));
+        const list = sb.picks ? Object.values(sb.picks) : sb.hover ? [sb.hover] : [];
+        const del = sb.picks ? sb.remove : sb.alt;
+        c.fillStyle = del ? "rgba(255,59,48,.28)" : "rgba(31,122,255,.28)"; c.strokeStyle = del ? "#ff3b30" : "#1f7aff"; c.lineWidth = 1.5 / z;
+        list.forEach(r => { if (!r.d) return; const p2 = new Path2D(r.d); c.fill(p2); c.stroke(p2); });
+      }
+    },
+    measure: {
+      down: p => { t2 = { p0: snapPoint({ x: p.x, y: p.y }), p1: null }; },
+      move: (p, e) => {
+        if (!t2 || t2.done) return;
+        const q = snapPoint({ x: p.x, y: p.y });
+        t2.p1 = q;
+        const dx = q.x - t2.p0.x, dy = q.y - t2.p0.y, d = Math.hypot(dx, dy), ang = ((-Math.atan2(dy, dx) * 180 / Math.PI) + 360) % 360;
+        t2.text = `${round(d, 1)} px · ${round(ang, 1)}° · W ${round(Math.abs(dx), 1)} · H ${round(Math.abs(dy), 1)}`;
+        showMeasure(e, `${round(d, 1)} px\n${round(ang, 1)}°`);
+        hintEl.innerHTML = `<b>${tr("Measure")}</b><span data-no-i18n>${t2.text}</span>`;
+        topRender();
+      },
+      up: () => { if (t2) t2.done = true; },
+      draw: (c, z) => {
+        if (!t2 || !t2.p1) return;
+        const { p0, p1 } = t2;
+        c.strokeStyle = "#ff3fa4"; c.lineWidth = 1 / z;
+        c.beginPath(); c.moveTo(p0.x, p0.y); c.lineTo(p1.x, p1.y); c.stroke();
+        [p0, p1].forEach(q => { c.beginPath(); c.arc(q.x, q.y, 3 / z, 0, Math.PI * 2); c.fillStyle = "#ff3fa4"; c.fill(); });
+      }
+    }
+  };
+  function axisAngle() {
+    let a = Math.atan2(t2.p.y - t2.c.y, t2.p.x - t2.c.x) * 180 / Math.PI;
+    if (t2.shift) a = Math.round(a / 45) * 45;
+    return a;
+  }
+  function brushTool(blob) {
+    return {
+      down: p => { t2 = { pts: [p] }; topRender(); },
+      move: p => { if (t2) { t2.pts.push(p); } else t2 = null; mouseBrush = p; topRender(); },
+      up: () => { const pts = t2 ? t2.pts : []; t2 = null; topRender(); if (pts.length) (blob ? blobAlong : eraseAlong)(pts, brushR()); },
+      draw: (c, z) => {
+        const r = brushR();
+        if (t2 && t2.pts.length) {
+          c.save(); c.lineCap = "round"; c.lineJoin = "round"; c.lineWidth = r * 2;
+          c.strokeStyle = blob ? (toHex(paint.fill) || "#000000") : "rgba(255,59,48,.35)"; c.globalAlpha = blob ? .55 : 1;
+          c.beginPath(); t2.pts.forEach((q, i) => (i ? c.lineTo(q.x, q.y) : c.moveTo(q.x, q.y))); if (t2.pts.length === 1) c.lineTo(t2.pts[0].x + .01, t2.pts[0].y); c.stroke(); c.restore();
+        }
+        if (mouseBrush) { c.strokeStyle = "rgba(127,127,127,.9)"; c.lineWidth = 1 / z; c.beginPath(); c.arc(mouseBrush.x, mouseBrush.y, r, 0, Math.PI * 2); c.stroke(); }
+      }
+    };
+  }
+  let mouseBrush = null;
+  // hover feedback for the anchor tools: the point on the path, or the anchor
+  function drawHover(c, z, what) {
+    const h = t2 && t2[what];
+    if (!h) return;
+    const v = h.o.kind === "vector" ? h.o : asVector(h.o);
+    if (v) { c.strokeStyle = "#1f7aff"; c.lineWidth = 1 / z; c.stroke(new Path2D(sceneData(v, true))); sceneAnchors(v).forEach(a => { const s = 6 / z; c.fillStyle = "#ffffff"; c.fillRect(a.x - s / 2, a.y - s / 2, s, s); c.strokeRect(a.x - s / 2, a.y - s / 2, s, s); }); }
+    const q = h.pt, s = 9 / z;
+    c.fillStyle = what === "anc" ? "#1f7aff" : "#ffffff"; c.strokeStyle = "#1f7aff"; c.lineWidth = 1.5 / z;
+    if (what === "anc") { c.fillRect(q.x - s / 2, q.y - s / 2, s, s); c.strokeRect(q.x - s / 2, q.y - s / 2, s, s); }
+    else { c.beginPath(); c.arc(q.x, q.y, 4 / z, 0, Math.PI * 2); c.fill(); c.stroke(); }
   }
 
   /* ---------- Mouse ---------- */
@@ -1252,6 +2021,12 @@ window.DSCanvas = function (kit) {
       t.clone(c => { applyToolState(c); hist.busy++; cv.insertAt(c, cv.getObjects().indexOf(t)); hist.busy--; }, PROPS);
     }
     if (tool === "zoom") { zoomAt(sp, zoom() * (e.altKey ? 1 / 1.6 : 1.6)); return; }
+    if (TOOLS2[tool]) {
+      const sel = cv.getActiveObject();
+      if (sel && sel.type === "activeSelection" && !["lasso", "magic-wand", "reflect", "shear", "shapebuilder"].includes(tool)) cv.discardActiveObject();
+      if (TOOLS2[tool].down) TOOLS2[tool].down(p, e, opt);
+      return;
+    }
     if (tool === "pen") {
       if (!pen) pen = { pts: [] };
       const first = pen.pts[0];
@@ -1313,6 +2088,7 @@ window.DSCanvas = function (kit) {
       topRender();
       return;
     }
+    if (TOOLS2[tool]) { if (TOOLS2[tool].move) TOOLS2[tool].move(p, e, opt); return; }
     if (!drag) return;
     if (SHAPE_TOOLS.includes(drag.kind)) {
       const q = snapPoint({ x: p.x, y: p.y });
@@ -1360,6 +2136,7 @@ window.DSCanvas = function (kit) {
       guideDrag = null; cv.selection = tool === "select" || tool === "direct"; note("Guide"); changed(); cv.requestRenderAll(); return;
     }
     if (tool === "pen" && pen) { pen.down = false; topRender(); return; }
+    if (TOOLS2[tool]) { if (TOOLS2[tool].up) TOOLS2[tool].up(cv.getPointer(e), e, opt); return; }
     if (smart.length) { smart = []; cv.requestRenderAll(); }
     if (!drag) return;
     const d = drag;
@@ -1402,6 +2179,7 @@ window.DSCanvas = function (kit) {
   });
   cv.on("mouse:dblclick", opt => {
     if (tool === "pen" && pen) { finishPen(false); return; }
+    if (tool === "curvature" && curv) { curv.pts.pop(); finishCurv(false); return; }
     const t = opt.target;
     if (tool === "select" && t && t.type === "group" && t.kind !== "icon") toast(tr(t.clipPath ? "Release the mask to edit what's inside." : "Ungroup to edit what's inside."));
     if (tool === "select" && t && t.kind === "vector") setTool("direct");
@@ -1430,8 +2208,8 @@ window.DSCanvas = function (kit) {
   }
 
   cv.on({
-    "selection:created": () => { if (tool === "direct") setDirectControls(); refreshUI(); },
-    "selection:updated": () => { if (tool === "direct") setDirectControls(); refreshUI(); },
+    "selection:created": () => { if (["direct", "distort", "crop-tool"].includes(tool)) setDirectControls(); if (tool === "shapebuilder") sbStart(); refreshUI(); },
+    "selection:updated": () => { if (["direct", "distort", "crop-tool"].includes(tool)) setDirectControls(); if (tool === "shapebuilder") sbStart(); refreshUI(); },
     "selection:cleared": () => { anchorSel = -1; setDirectControls(); refreshUI(); }
   });
   cv.on("object:modified", e => {
@@ -1468,6 +2246,7 @@ window.DSCanvas = function (kit) {
       cv.requestRenderAll(); if (done) { note("Artboard"); changed(); } return;
     }
     if (k === "pref-nudge") { prefs.nudge = Math.max(.1, +v); saveView(); return; }
+    if (k === "pref-brush") { prefs.brush = clamp(+v, 1, 2000); saveView(); topRender(); return; }
     if (k === "pref-strokes") { prefs.scaleStrokes = !!v; saveView(); cv.getObjects().forEach(x => x.set("strokeUniform", !prefs.scaleStrokes)); cv.requestRenderAll(); return; }
     if (k === "pref-grid") { prefs.gridSize = Math.max(2, +v); saveView(); cv.requestRenderAll(); return; }
     if (!list.length) {
@@ -1782,7 +2561,8 @@ window.DSCanvas = function (kit) {
       h += sec("image", "Image", `${num("imgRadius", o.kindRadius || 0, { label: "Corner radius", unit: "px", min: 0, wide: true, d: 0 })}
         ${rng("brightness", tr("Brightness"), val("Brightness", "brightness"))}${rng("contrast", tr("Contrast"), val("Contrast", "contrast"))}${rng("saturation", tr("Saturation"), val("Saturation", "saturation"))}
         <div class="cx-chips is-fx">${[["gray", "Black and White"], ["sepia", "Sepia"], ["invert", "Invert"], ["blur", "Blur"]].map(([f, l]) => `<button type="button" data-act="fx:${f}">${l}</button>`).join("")}</div>
-        <div class="cx-g2"><button type="button" class="cx-btn" data-act="replace-image">${ui("replace")}<span>Replace</span></button><button type="button" class="cx-btn" data-act="fx:clear">Reset</button></div>`);
+        <div class="cx-g2"><button type="button" class="cx-btn" data-act="crop-image">${ui("crop-tool")}<span>Crop</span></button><button type="button" class="cx-btn" data-act="replace-image">${ui("replace")}<span>Replace</span></button></div>
+        <button type="button" class="cx-btn" data-act="fx:clear">Reset Adjustments</button>`);
     }
     h += sec("actions", "Actions", `<div class="cx-actgrid">
       ${k === "group" ? `<button type="button" data-act="ungroup">${ui("ungroup")}<span>Ungroup</span></button>` : ""}
@@ -1808,6 +2588,20 @@ window.DSCanvas = function (kit) {
     const head = t => `<span class="cx-ctrl-k"${o && isText(o) ? " data-no-i18n" : ""}>${t}</span>`, sep = `<span class="cx-ctrl-sep"></span>`;
     const ib = (act, ic, label, key = "") => `<button type="button" class="cx-ib" data-act="${act}" aria-label="${label}" data-tip="${label}${key ? ` · ${keyLabel(key)}` : ""}">${ic}</button>`;
     let h;
+    if (tool === "eraser" || tool === "blob") {
+      ctrl.innerHTML = head(tr(TOOL_INFO[tool].name)) + sep + num("pref-brush", prefs.brush, { label: "Size", unit: "px", min: 1, d: 0 }) +
+        (tool === "blob" ? `<span class="cx-ctrl-paint"><span class="cx-lbl">Fill</span>${swatchIn("fill", paint.fill)}</span>` : "") +
+        `<span class="cx-ctrl-note">${tr("[ and ] change the size")}</span>`;
+      return;
+    }
+    if ((tool === "crop-tool" || tool === "distort") && o) {
+      ctrl.innerHTML = head(tr(TOOL_INFO[tool].name)) + sep + `<span class="cx-ctrl-note">${tr(TOOL_HINT[tool])}</span><button type="button" class="cx-cbtn" data-act="tool:select">Done</button>`;
+      return;
+    }
+    if (tool === "shapebuilder") {
+      ctrl.innerHTML = head(tr("Shape Builder")) + sep + `<span class="cx-ctrl-note">${tr(sb ? "Drag across areas to merge them. Hold Alt to remove areas." : "Select two or more overlapping shapes first.")}</span>`;
+      return;
+    }
     if (tool === "artboard") {
       const t = targetAb();
       h = head(esc(t.name)) + sep + presetSel(t) + sep + num("ab-w", t.w, { label: "W", min: 1, d: 0 }) + num("ab-h", t.h, { label: "H", min: 1, d: 0 }) +
@@ -1928,7 +2722,7 @@ window.DSCanvas = function (kit) {
     const el = e.target;
     if (!el.dataset.k) return;
     const k = el.dataset.k;
-    if (/^(rc|rp|qr|ex)-/.test(k)) return;
+    if (/^(rc|rp|qr|ex|bl)-/.test(k)) return;
     if (el.type === "number" && el.value === "") return;
     const v = el.type === "checkbox" ? el.checked : el.value;
     if (el.type === "color") { const lab = el.closest(".cx-sw"); if (lab) { lab.style.setProperty("--c", v); lab.classList.remove("is-none"); } }
@@ -2077,6 +2871,10 @@ window.DSCanvas = function (kit) {
     if (a.startsWith("case:") || a.startsWith("talign:") || a === "lorem") return flat(active()).some(isText);
     if (a === "fx:shadow" || a === "fx:noshadow") return n > 0;
     if (a.startsWith("fx:")) return active().some(x => x.type === "image");
+    if (a === "join") return active().some(x => editable(x) && isOpenPath(x));
+    if (a === "simplify") return combinable().length > 0;
+    if (a === "blend") return n === 2;
+    if (a === "crop-image") return !!(o && o.type === "image");
     if (a === "ab-delete") return doc.artboards.length > 1;
     return true;
   };
@@ -2692,6 +3490,11 @@ window.DSCanvas = function (kit) {
       case "recolor": recolorDialog(); break;
       case "do-recolor": doRecolor(); break;
       case "repeat": repeatDialog(); break;
+      case "join": joinPaths(); break;
+      case "simplify": simplifyPaths(); break;
+      case "blend": blendDialog(); break;
+      case "do-blend": doBlend(); break;
+      case "crop-image": setTool("crop-tool"); break;
       case "do-repeat": doRepeat(); break;
       case "doc-setup": docSetup(); break;
       case "edit-artboards": closeDialog(); setTool("artboard"); break;
@@ -2830,7 +3633,8 @@ window.DSCanvas = function (kit) {
   /* =====================================================================
      Keyboard
      ===================================================================== */
-  const TOOL_KEYS = { v: "select", a: "direct", p: "pen", n: "pencil", b: "brush", t: "type", "\\": "line", m: "rect", l: "ellipse", r: "rotate", s: "scale", i: "eyedropper", g: "gradient", h: "hand", z: "zoom" };
+  const TOOL_KEYS = { v: "select", a: "direct", q: "lasso", y: "magic-wand", p: "pen", "=": "add-anchor", "+": "add-anchor", "-": "del-anchor", n: "pencil", b: "brush", t: "type", "\\": "line", m: "rect", l: "ellipse",
+    c: "scissors", r: "rotate", o: "reflect", s: "scale", i: "eyedropper", g: "gradient", h: "hand", z: "zoom" };
   document.addEventListener("keydown", e => {
     if (!paletteEl.hidden) return;
     if (!modal.hidden) { if (e.key === "Escape") closeDialog(); if (e.key === "Enter" && !isTyping(e.target)) { const p = $("footer .is-blue", dialog); if (p) p.click(); } return; }
@@ -2849,12 +3653,16 @@ window.DSCanvas = function (kit) {
     if (e.key === " ") { e.preventDefault(); return; }
     if (e.key === "Escape") {
       if (pen) { finishPen(false); return; }
+      if (curv) { finishCurv(false); return; }
+      if (tool === "crop-tool" || tool === "distort") { setTool("select"); return; }
       if (!menuPop.hidden || pop) { closeMenus(); return; }
       if (view.hideUI) { toggle("ui"); return; }
       if (tool !== "select") { setTool("select"); return; }
       cv.discardActiveObject(); cv.requestRenderAll(); return;
     }
     if (e.key === "Enter" && pen) { finishPen(false); return; }
+    if (e.key === "Enter" && curv) { finishCurv(false); return; }
+    if (e.key === "Enter" && (tool === "crop-tool" || tool === "distort")) { setTool("select"); return; }
     const combos = {
       "z": () => (e.shiftKey ? step(1) : step(-1)), "y": () => step(1), "x": cut, "c": () => (e.shiftKey ? copyPng() : copy()), "v": () => paste(e.shiftKey), "d": duplicate,
       "a": () => act(e.shiftKey ? "deselect" : "select-all"), "g": () => (e.shiftKey ? ungroup() : group()),
@@ -2864,7 +3672,7 @@ window.DSCanvas = function (kit) {
       "p": () => (e.shiftKey ? act("place") : e.altKey ? act("doc-setup") : null), ",": () => act("prefs"), "/": () => act("shortcuts"),
       "=": () => act("zoom-in"), "+": () => act("zoom-in"), "-": () => act("zoom-out"), "1": () => act("actual"),
       "enter": () => act("present"), "\\": () => toggle("ui"),
-      "u": () => toggle("smart"), ";": () => toggle(e.altKey ? "lockGuides" : "guides"), "'": () => toggle(e.shiftKey ? "snapGrid" : "grid")
+      "u": () => toggle("smart"), "j": () => act("join"), "b": () => (e.altKey ? act("blend") : null), ";": () => toggle(e.altKey ? "lockGuides" : "guides"), "'": () => toggle(e.shiftKey ? "snapGrid" : "grid")
     };
     if (mod) {
       const codeMap = { BracketRight: e.shiftKey ? "}" : "]", BracketLeft: e.shiftKey ? "{" : "[", Digit1: "1", Digit2: "2", Digit3: "3", Digit7: "7", Backslash: "\\", Slash: "/", Comma: ",", Semicolon: ";", Quote: "'", Equal: "=", Minus: "-" };
@@ -2891,6 +3699,10 @@ window.DSCanvas = function (kit) {
       if (e.code === "Digit2") { act("fit"); return; }
       if (e.code === "Digit3") { act("fit-sel"); return; }
       if (k === "o") { setTool("artboard"); return; }
+      if (k === "e") { setTool("eraser"); return; }
+      if (k === "m") { setTool("shapebuilder"); return; }
+      if (k === "c") { setTool("anchor"); return; }
+      if (k === "b") { setTool("blob"); return; }
       if (k === "x") { swapPaint(); return; }
       if (k === "r") { toggle("rulers"); return; }
       if (k === "h") { act("flip-h"); return; }
@@ -2900,6 +3712,7 @@ window.DSCanvas = function (kit) {
     if (k === "x") { paint.focus = paint.focus === "fill" ? "stroke" : "fill"; syncPaint(); return; }
     if (k === "d") { defaultPaint(); return; }
     if (k === "/") { setPaint(paint.focus, null); refreshUI(); return; }
+    if ((k === "[" || k === "]") && (tool === "eraser" || tool === "blob")) { prefs.brush = clamp(prefs.brush + (k === "]" ? 1 : -1) * Math.max(2, Math.round(prefs.brush * .2)), 1, 2000); saveView(); topRender(); renderCtrl(); return; }
     if (TOOL_KEYS[k]) setTool(TOOL_KEYS[k]);
   });
   document.addEventListener("keyup", e => {
