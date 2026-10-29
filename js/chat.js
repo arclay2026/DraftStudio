@@ -60,7 +60,7 @@ window.DSChat = function (kit) {
   const TOPICS = [
     { k: ["site about", "this site", "this website", "what is draft studio", "what's draft studio", "whats draft studio", "what is this", "what's this", "whats this", "what do you do", "what do you offer", "what do you have", "tell me about", "about you", "about the site", "about draft studio",
           "propos", "ce site", "quoi ce", "que es", "de que trata", "este sitio", "esta web", "este site", "esse site", "o que e", "sobre o site", "عن الموقع", "ما هو", "这个网站", "是什么网站", "关于"],
-      a: () => ({ text: ["Draft Studio is a library of free design files: PSD mockups, editable logos, vectors and templates, plus 100 free icons.", "There are free tools too: a palette generator and QR Code Studio for custom QR codes. No sign-up, no watermark."],
+      a: () => ({ text: ["Draft Studio is a library of free design files: PSD mockups, editable logos, vectors and templates, plus 300 free icons.", "There are free tools too: a palette generator and QR Code Studio for custom QR codes. No sign-up, no watermark."],
         blocks: [{ type: "links", keys: ["browse", "icons", "palettes", "qr"] }] }) },
     { weak: true, k: ["what can you do", "how can you help", "who are you", "what are you", "help me", "can you help", "que peux-tu", "que puedes", "o que voce faz", "ماذا تستطيع", "你能做什么", "你是谁"],
       a: () => ({ text: [`I'm ${NAME}, the Draft Studio assistant. I can find files, icons and palettes, tell you which app opens a file, and answer license questions.`, "Try asking “show me logos” or “can I use this for a client?”"], blocks: [] }) },

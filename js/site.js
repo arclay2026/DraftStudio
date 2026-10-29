@@ -80,8 +80,14 @@
 
   /* ---------- Helpers ---------- */
   const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  // Library icons (the 100 free icons people download) keep their own line drawing
-  const libIcon = (id, cls = "") => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[id] || ""}</svg>`;
+  // Library icons (the free icons people download) keep their own line drawing.
+  // A few break a line with a <mask>, so every copy gets its own mask id.
+  let maskN = 0;
+  const libIcon = (id, cls = "") => {
+    let body = ICONS[id] || "";
+    if (body.includes("__ID__")) body = body.split("__ID__").join("ic" + (++maskN));
+    return `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${body}</svg>`;
+  };
   // Interface icons come from js/ui-icons.js (Phosphor, regular weight)
   const UI_ICONS = window.DS_UI_ICONS || {};
   const icon = (id, cls = "") => (UI_ICONS[id]
@@ -659,6 +665,7 @@
 
     $$("[data-item-count]").forEach(el => { el.textContent = items.length; });
     $$("[data-icon-total]").forEach(el => { el.textContent = DS.icons.length; });
+    $$("[data-icon-groups]").forEach(el => { el.textContent = new Set(DS.icons.map(i => i.group)).size; });
 
     // Shelves: file counts, and open a panel on hover / focus
     $$("[data-cat-count]").forEach(el => {
@@ -1724,7 +1731,7 @@
     groups.value = state.group;
 
     const svgFile = (ic, color, px) =>
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="0 0 24 24" fill="none" stroke="${color || "currentColor"}" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${ICONS[ic.id]}</svg>`;
+      `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="0 0 24 24" fill="none" stroke="${color || "currentColor"}" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${(ICONS[ic.id] || "").split("__ID__").join(ic.id + "-cut")}</svg>`;
 
     const drawInspector = () => {
       const ic = state.sel;
