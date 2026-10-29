@@ -679,3 +679,9 @@ body.sp-focus { padding-inline-start: 0; background: var(--bg); }
 .ua-box, .ua-feed .ic, .st-card, .st-nav a, .tbl, .hub-list, .au-note, .ty-hero, .ty-ok, .sp-tabs .n, .ua-tools .sp-input {
   corner-shape: superellipse(1.5);
 }
+
+/* Buttons match the main site: soft squircle pills (rounded ends with
+   superellipse corners), and squircle circles for icon-only buttons */
+.sp-btn, .sp-btn.is-sm, .sp-btn.is-xl, .co-express-btns .sp-btn, .ty-demo, .ty-demo button { border-radius: 999px; corner-shape: superellipse(1.5); }
+.ty-demo [data-ty-replay] { border-radius: 0 999px 999px 0; }
+.sp-eye, .sp-copy, .ty-dl, .wl-save, .pv-back { border-radius: 50%; corner-shape: superellipse(1.5); }
