@@ -734,7 +734,10 @@
         "cloud", "sun", "leaf", "map-pin", "plane", "car", "trophy", "lightbulb",
         "home", "search", "user", "bell", "mail", "chat", "share", "download",
         "cart", "bag", "wallet", "tag", "calendar", "clock", "lock", "smile"].map(id => DS.icons.find(i => i.id === id)).filter(Boolean);
-      const colours = [["White", "#ffffff"], ["Silver", "#d4d4d4"], ["Grey", "#8a8a8a"]];
+      // White, then the "Playground" palette from js/data.js
+      const play = ((DS.palettes || []).find(p => p.name === "Playground") || { colors: [] }).colors;
+      const NAMES = { "#ff595e": "Red", "#ffca3a": "Yellow", "#8ac926": "Green", "#1982c4": "Blue", "#6a4c93": "Purple" };
+      const colours = [["White", "#ffffff"]].concat(play.map(c => [NAMES[c] || c, c]));
       sw.innerHTML = colours.map(([n, c], i) => `<button type="button" style="--sw:${c}" aria-label="${n}" aria-pressed="${i === 0}" data-c="${c}"></button>`).join("");
       grid.innerHTML = picks.map(i => `<a href="icons.html#${i.id}" data-id="${i.id}" aria-label="${esc(i.name)} icon">${libIcon(i.id)}</a>`).join("");
       const show = ic => {
