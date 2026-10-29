@@ -5,14 +5,14 @@
    • a built-in brain that answers from the site's own data otherwise,
      so the chat always works, even with no server or after the AI's
      free daily allowance runs out.
-   Answers can carry rich cards: files, icons, palettes and links. The AI
+   Answers can carry rich cards: files, palettes and links. The AI
    asks for them with tokens like [[file:mato-logo]] in its reply.
    site.js calls window.DSChat(kit) with the shared helpers.
    ===================================================================== */
 window.DSChat = function (kit) {
   // Drafty's avatar: the official mark, white on the dark tile (black in dark mode, where the tile is light)
   const AV_MARK = '<img class="ch-av-w" src="assets/logo-mark-dark.svg" alt=""><img class="ch-av-k" src="assets/logo-mark.svg" alt="">';
-  const { $, $$, esc, icon, libIcon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG } = kit;
+  const { $, $$, esc, icon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG } = kit;
   const KEY = "ds-chat";
   const NAME = "Drafty";
   const endpoint = (DS.site && DS.site.chatEndpoint) || "";
@@ -30,7 +30,6 @@ window.DSChat = function (kit) {
     price: ["free", "price", "cost", "pay", "how much", "gratuit", "gratis", "prix", "precio", "preco", "مجان", "سعر", "免费", "价格", "多少钱"],
     qr: ["qr"],
     palette: ["palette", "colour", "color", "paleta", "couleur", "cores", "لون", "ألوان", "配色", "颜色", "调色"],
-    icon: ["icon", "icone", "icono", "أيقون", "图标"],
     open: ["open", "what is", "which app", "what app", "edit", "ouvr", "abr", "edit", "يفت", "فتح", "تعديل", "打开", "编辑", "什么是"]
   };
   const CAT_WORDS = {
@@ -60,10 +59,10 @@ window.DSChat = function (kit) {
   const TOPICS = [
     { k: ["site about", "this site", "this website", "what is draft studio", "what's draft studio", "whats draft studio", "what is this", "what's this", "whats this", "what do you do", "what do you offer", "what do you have", "tell me about", "about you", "about the site", "about draft studio",
           "propos", "ce site", "quoi ce", "que es", "de que trata", "este sitio", "esta web", "este site", "esse site", "o que e", "sobre o site", "عن الموقع", "ما هو", "这个网站", "是什么网站", "关于"],
-      a: () => ({ text: ["Draft Studio is a library of free design files: PSD mockups, editable logos, vectors and templates, plus 300 free icons.", "There are free tools too: a palette generator and QR Code Studio for custom QR codes. No sign-up, no watermark."],
-        blocks: [{ type: "links", keys: ["browse", "icons", "palettes", "qr"] }] }) },
+      a: () => ({ text: ["Draft Studio is a library of free design files: PSD mockups, editable logos, vectors and templates.", "There are free tools too: a palette generator and QR Code Studio for custom QR codes. No sign-up, no watermark."],
+        blocks: [{ type: "links", keys: ["browse", "palettes", "qr"] }] }) },
     { weak: true, k: ["what can you do", "how can you help", "who are you", "what are you", "help me", "can you help", "que peux-tu", "que puedes", "o que voce faz", "ماذا تستطيع", "你能做什么", "你是谁"],
-      a: () => ({ text: [`I'm ${NAME}, the Draft Studio assistant. I can find files, icons and palettes, tell you which app opens a file, and answer license questions.`, "Try asking “show me logos” or “can I use this for a client?”"], blocks: [] }) },
+      a: () => ({ text: [`I'm ${NAME}, the Draft Studio assistant. I can find files and palettes, tell you which app opens a file, and answer license questions.`, "Try asking “show me logos” or “can I use this for a client?”"], blocks: [] }) },
     { k: ["who made", "who owns", "who runs", "who created", "who is behind", "who are the", "qui a cree", "quien hizo", "quem fez", "من صنع", "谁做的"],
       a: () => ({ text: ["Draft Studio is made by a small design team.", "You can reach them directly on WhatsApp or email."], blocks: [{ type: "contact" }] }) },
     { k: ["sign up", "signup", "account", "register", "login", "log in", "inscription", "cuenta", "registr", "conta", "cadastro", "حساب", "تسجيل", "注册", "账号", "登录"],
@@ -79,7 +78,7 @@ window.DSChat = function (kit) {
     { weak: true, k: ["new", "latest", "recent", "nouveau", "nuevo", "novo", "جديد", "最新"],
       a: () => ({ text: ["Here are the latest drops:"], blocks: [{ type: "files", ids: items.slice(0, 4).map(i => i.id) }, { type: "links", keys: ["browse"] }] }) },
     { k: ["how many", "combien", "cuantos", "quantos", "كم عدد", "多少个"],
-      a: () => ({ text: [`Right now there are ${items.length} designs, ${DS.icons.length} icons and ${palettes.length} palettes, and new drops land regularly.`], blocks: [{ type: "links", keys: ["browse"] }] }) },
+      a: () => ({ text: [`Right now there are ${items.length} designs and ${palettes.length} palettes, and new drops land regularly.`], blocks: [{ type: "links", keys: ["browse"] }] }) },
     { k: ["dark mode", "light mode", "language", "text size", "setting", "mode sombre", "modo oscuro", "modo escuro", "idioma", "langue", "الوضع الداكن", "اللغة", "深色", "语言", "设置"],
       a: () => ({ text: ["Open Settings at the bottom of the side menu. You can switch the theme (Light, Dark or Device), the language and the text size there."], blocks: [] }) },
     { weak: true, k: ["format", "file type", "which file", "difference between", "formats", "tipo de archivo", "صيغ", "格式"],
@@ -128,35 +127,27 @@ window.DSChat = function (kit) {
       const pick = palettes.filter(p => q.includes(fold(p.mood)) || q.includes(fold(p.name)));
       return say("Here are some palettes you can copy as CSS or download as PNG:", [{ type: "palettes", list: (pick.length ? pick : palettes).slice(0, 3).map(p => palettes.indexOf(p)) }, { type: "links", keys: ["palettes"] }]);
     }
-    if (has(q, KW.icon)) {
-      const words = q.split(/[^\p{L}\p{N}]+/u).filter(w => w.length > 2 && !STOP.has(w) && !KW.icon.some(k => w.startsWith(k)));
-      let ics = DS.icons.filter(i => words.some(w => fold([i.name, i.group, i.tags.join(" ")].join(" ")).includes(w)));
-      if (!ics.length) ics = DS.icons.slice(0, 12);
-      return say("Here are some icons. Open one to recolour it and download SVG or PNG:", [{ type: "icons", ids: ics.slice(0, 12).map(i => i.id) }, { type: "links", keys: ["icons"] }]);
-    }
     const empty = Object.keys(CAT_WORDS).find(c => has(q, CAT_WORDS[c]) && !items.some(it => it.category === c));
     if (empty) return say([`No ${empty.toLowerCase()} yet. They're on the way.`, "Want something specific? Ask the team and they can design it for you."], [{ type: "links", keys: ["browse"] }, { type: "contact" }]);
     const found = searchItems(q);
     if (found.length) return say(found.length === 1 ? "Found one for you:" : "Here's what I found:", [{ type: "files", ids: found.slice(0, 4).map(i => i.id) }, ...(found.length > 4 ? [{ type: "links", keys: ["browse"] }] : [])]);
-    return say(["Hmm, I'm not sure about that one.", "I'm best at finding files, icons and palettes, explaining file formats and answering license questions. You can also ask the team directly."], [{ type: "links", keys: ["browse"] }, { type: "contact" }]);
+    return say(["Hmm, I'm not sure about that one.", "I'm best at finding files and palettes, explaining file formats and answering license questions. You can also ask the team directly."], [{ type: "links", keys: ["browse"] }, { type: "contact" }]);
   }
   const greeting = () => ({ text: [`Hi, I'm ${NAME}.`, "I can find files, explain file formats and answer license questions. What are you working on?"], blocks: [] });
 
   /* ---------- AI brain (optional) ---------- */
   const TOKEN = /\[\[(file|icon|palette|link):([^\]]+)\]\]/g;
   const fromAI = reply => {
-    const files = [], ics = [], pals = [], links = [];
+    const files = [], pals = [], links = [];
     const text = String(reply || "").replace(TOKEN, (_, kind, val) => {
       val = val.trim();
       if (kind === "file" && items.some(i => i.id === val)) files.push(val);
-      if (kind === "icon" && DS.icons.some(i => i.id === val)) ics.push(val);
       if (kind === "palette") { const n = palettes.findIndex(p => fold(p.name) === fold(val)); if (n > -1) pals.push(n); }
       if (kind === "link" && LINKS[val]) links.push(val);
       return "";
     }).replace(/[ \t]+\n/g, "\n").trim();
     const blocks = [];
     if (files.length) blocks.push({ type: "files", ids: [...new Set(files)].slice(0, 4) });
-    if (ics.length) blocks.push({ type: "icons", ids: [...new Set(ics)].slice(0, 12) });
     if (pals.length) blocks.push({ type: "palettes", list: [...new Set(pals)].slice(0, 3) });
     if (links.length) blocks.push({ type: "links", keys: [...new Set(links)].slice(0, 3) });
     return { text: text.split(/\n{2,}/).map(s => s.trim()).filter(Boolean), blocks, ai: true };
@@ -175,7 +166,6 @@ window.DSChat = function (kit) {
   /* ---------- Rich blocks ---------- */
   const LINKS = {
     browse: ["browse.html", "Browse all files", "grid"],
-    icons: ["icons.html", "Open the icon set", "smile"],
     palettes: ["palettes.html", "Explore palettes", "palette"],
     qr: ["qr.html", "Open QR Code Studio", "ui-qr"],
     license: ["license.html", "Read the license", "file"],
@@ -191,7 +181,6 @@ window.DSChat = function (kit) {
         <em class="ch-price${it.price ? " is-paid" : ""}">${it.price ? (it.sold ? "Sold" : (it.priceFrom ? "From " : "") + esc(it.price)) : "Free"}</em>
         ${icon("chevron-right")}
       </a>`).join("")}</div>`;
-    if (b.type === "icons") return `<div class="ch-icons">${b.ids.map(id => `<a href="icons.html#${id}" data-tip="${esc((DS.icons.find(i => i.id === id) || {}).name || id)}">${libIcon(id)}</a>`).join("")}</div>`;
     if (b.type === "palettes") return `<div class="ch-pals">${b.list.map(n => palettes[n]).filter(Boolean).map(p => `
       <a class="ch-pal" href="palettes.html"><span class="ch-sw">${p.colors.map(c => `<i style="background:${c}"></i>`).join("")}</span><small><b data-no-i18n>${esc(p.name)}</b> · ${esc(p.mood)}</small></a>`).join("")}</div>`;
     if (b.type === "apps") { const f = FORMATS.find(x => x.ext === b.ext); return f ? `<p class="ch-apps"><span>Opens in</span>${f.apps.map(a => `<b>${esc(APPS[a].name)}</b>${APPS[a].free ? ` <em>Free</em>` : ""}`).join(", ")}</p>` : ""; }

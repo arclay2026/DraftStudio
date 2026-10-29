@@ -1,17 +1,16 @@
 # Draft Studio
 
-Free design files: **PSD mockups**, **vectors**, **logos in AI & SVG**, **design templates**
-and a **free icon set**. A plain static site with no build step and no database. It runs on
+Free design files: **PSD mockups**, **vectors**, **logos in AI & SVG**, **design templates**,
+plus free tools. A plain static site with no build step and no database. It runs on
 GitHub Pages or any web host.
 
 ## Pages
 
 | Page | What it does |
 |------|--------------|
-| `index.html` | Home: a grey rounded hero panel with the headline, highlighted keywords, two buttons, a photo card and a dark dot card; then category shelves, fresh drops and the icon wall |
+| `index.html` | Home: a grey rounded hero panel with the headline, highlighted keywords, two buttons, a photo card and a dark dot card; then category shelves, fresh drops |
 | `browse.html` | Every file, with category tabs, format filters, search and sort. Links like `browse.html?cat=logos` or `browse.html?q=hoodie` open pre-filtered |
 | `item.html?id=…` | One design: large zoomable preview, specs, downloads (or a WhatsApp buy button for paid logos), share and related designs |
-| `icons.html` | The icon set: search, filter, recolour, download SVG/PNG or copy the code |
 | `palettes.html` | Colour palettes: a palette generator (harmonies, locks, base colour, shareable link) and 36 hand-picked palettes, each downloadable as PNG or copyable as CSS. Add palettes in `js/data.js` under `palettes` |
 | `qr.html` | QR Code Studio: a QR code designer (8 content types, 10 dot patterns, corner frames and centres, solid or gradient colour, icon or uploaded logo, labels, presets, Surprise me). Every design is scan-checked live with jsQR; downloads as SVG, PNG or JPG. Libraries in `js/vendor/` (qrcode-generator, MIT; jsQR, Apache-2.0) |
 | `canvas.html` | Canvas: Draft Studio's design studio. A full-bleed pasteboard with floating glass panels (Layers, Assets and History on the left; an inspector for layout, text, fill and stroke, effects, image and actions on the right), a tool dock along the bottom (Move, Edit Points, Artboard, Rectangle, Rounded Rectangle, Ellipse, Polygon, Star, Line, Pen, Pencil, Brush, Text, Eyedropper, Gradient, Rotate, Scale, Hand, Zoom, fill and stroke, zoom), a toolbar that follows the selection, a ⌘K command palette, a minimap that appears while you move around, rulers with guides, smart guides, grid snapping, several artboards, a full-screen preview and a dark or light interface. Extra tools: combine shapes (union, subtract, intersect, exclude, using paper.js loaded on demand from `js/vendor/paper-core.min.js`, MIT), clipping masks, recolour artwork with any site palette, repeat grids, vector QR codes, blend modes, image adjustments and replacing images, copy as PNG or SVG code, and a history you can jump back through. Assets: 12 practice briefs, 6 templates, font pairs, a shape library, the site's icons and your images. Designs autosave on the visitor's device (IndexedDB) and export as PNG, JPG or SVG (one or all artboards) or as a project file. Nothing is uploaded. Built on Fabric.js (`js/vendor/fabric.min.js`, MIT) in `js/canvas.js` |
@@ -20,7 +19,7 @@ GitHub Pages or any web host.
 
 Everywhere: press `/` to search (on the home page it jumps to the big search bar).
 
-**Drafty**, the chat bubble in the corner of every page (`js/chat.js`), finds files, icons and palettes, explains formats and answers license questions. On its own it answers from the site's data; connect the free AI server in `worker/` (see `worker/README.md`) and it becomes a real AI assistant.
+**Drafty**, the chat bubble in the corner of every page (`js/chat.js`), finds files and palettes, explains formats and answers license questions. On its own it answers from the site's data; connect the free AI server in `worker/` (see `worker/README.md`) and it becomes a real AI assistant.
 
 ## Adding a design
 
@@ -34,10 +33,10 @@ Everywhere: press `/` to search (on the home page it jumps to the big search bar
 
 The category shelves, counts, search, filters and "Coming soon" labels all update by themselves.
 
-## Adding an icon
+## Line icons (Canvas and QR Code Studio)
 
-Upload a 24×24 SVG that uses `stroke="currentColor"` to `files/icons/`, add a line for it in the
-`icons` list in `js/data.js`, then run `node tools/build-icons.js` to refresh `js/icons.js`.
+The 24×24 line icons in `files/icons/` are bundled into `js/icons.js` by `node tools/build-icons.js`.
+Canvas offers them under Assets › Icons, and QR Code Studio uses some as centre logos.
 
 ## Customising the look
 

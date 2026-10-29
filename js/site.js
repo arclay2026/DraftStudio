@@ -372,7 +372,7 @@
   // Diagonal arrow used in the round badge on dark pill buttons
   const ARR = icon("arrow-up-right");
 
-  // Extra glyphs for the side menu that the icon set doesn't have
+  // Extra glyphs for the side menu that the line icons don't have
   Object.assign(ICONS, {
     "ui-qr": '<rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><path d="M14 14h3v3h-3zM20 14v.01M14 20h.01M17 17h4v4h-4"/>',
     "ui-side": '<rect x="3" y="4" width="18" height="16" rx="3"/><path d="M9 4v16"/>'
@@ -387,7 +387,6 @@
     "vectors": "M480-720h80v-80h-80v80ZM200-400h80v-80h-80v80Zm480 240h80v-80h-80v80ZM520-760ZM240-440Zm480 240Zm-120 40v-20L320-320H200q-33 0-56.5-23.5T120-400v-80q0-33 23.5-56.5T200-560h92l108-124v-116q0-33 23.5-56.5T480-880h80q33 0 56.5 23.5T640-800v80q0 33-23.5 56.5T560-640h-92L360-516v126l245 122q8-23 28.5-37.5T680-320h80q33 0 56.5 23.5T840-240v80q0 33-23.5 56.5T760-80h-80q-33 0-56.5-23.5T600-160Z",
     "logos": "M200 -120Q183 -120 171.5 -131.5Q160 -143 160 -160V-257Q160 -273 166 -287.5Q172 -302 183 -313L687 -816Q699 -828 714 -834Q729 -840 744 -840Q760 -840 774.5 -834Q789 -828 800 -816L856 -760Q868 -749 874 -734.5Q880 -720 880 -704Q880 -689 874 -674Q868 -659 856 -647L353 -143Q342 -132 327.5 -126Q313 -120 297 -120ZM240 -200H296L689 -592L661 -621L632 -649L240 -256ZM800 -703 743 -760ZM661 -621 632 -649 689 -592ZM560 -120Q634 -120 697 -157Q760 -194 760 -260Q760 -292 744 -315.5Q728 -339 702 -359Q688 -369 672 -369Q656 -369 645 -357Q634 -345 634 -327.5Q634 -310 648 -300Q662 -289 671 -280Q680 -271 680 -260Q680 -237 643.5 -218.5Q607 -200 560 -200Q543 -200 531.5 -188.5Q520 -177 520 -160Q520 -143 531.5 -131.5Q543 -120 560 -120ZM360 -720Q360 -706 342.5 -694.5Q325 -683 262 -654Q182 -619 151 -590.5Q120 -562 120 -520Q120 -494 132 -474Q144 -454 163 -439Q176 -428 192 -429.5Q208 -431 219 -444Q230 -457 229 -473Q228 -489 215 -500Q208 -505 204 -510Q200 -515 200 -520Q200 -532 218 -544Q236 -556 294 -581Q382 -619 411 -650Q440 -681 440 -720Q440 -775 396 -807.5Q352 -840 280 -840Q235 -840 199.5 -824Q164 -808 145 -785Q134 -772 136 -756Q138 -740 151 -730Q164 -719 180 -721Q196 -723 207 -734Q221 -748 238 -754Q255 -760 280 -760Q321 -760 340.5 -748Q360 -736 360 -720Z",
     "templates": "M120-440v-320q0-33 23.5-56.5T200-840h240v400H120Zm240-80Zm160-320h240q33 0 56.5 23.5T840-760v160H520v-240Zm0 720v-400h320v320q0 33-23.5 56.5T760-120H520ZM120-360h320v240H200q-33 0-56.5-23.5T120-200v-160Zm240 80Zm240-400Zm0 240Zm-400-80h160v-240H200v240Zm400-160h160v-80H600v80Zm0 240v240h160v-240H600ZM200-280v80h160v-80H200Z",
-    "icons": "m297-581 149-243q6-10 15-14.5t19-4.5q10 0 19 4.5t15 14.5l149 243q6 10 6 21t-5 20q-5 9-14 14.5t-21 5.5H331q-12 0-21-5.5T296-540q-5-9-5-20t6-21ZM700-80q-75 0-127.5-52.5T520-260q0-75 52.5-127.5T700-440q75 0 127.5 52.5T880-260q0 75-52.5 127.5T700-80Zm-580-60v-240q0-17 11.5-28.5T160-420h240q17 0 28.5 11.5T440-380v240q0 17-11.5 28.5T400-100H160q-17 0-28.5-11.5T120-140Zm580-20q42 0 71-29t29-71q0-42-29-71t-71-29q-42 0-71 29t-29 71q0 42 29 71t71 29Zm-500-20h160v-160H200v160Zm202-420h156l-78-126-78 126Zm78 0ZM360-340Zm340 80Z",
     "palettes": "M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 32.5-156t88-127Q256-817 330-848.5T488-880q80 0 151 27.5t124.5 76q53.5 48.5 85 115T880-518q0 115-70 176.5T640-280h-74q-9 0-12.5 5t-3.5 11q0 12 15 34.5t15 51.5q0 50-27.5 74T480-80Zm0-400Zm-177 23q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm120-160q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm200 0q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm120 160q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17ZM480-160q9 0 14.5-5t5.5-13q0-14-15-33t-15-57q0-42 29-67t71-25h70q66 0 113-38.5T800-518q0-121-92.5-201.5T488-800q-136 0-232 93t-96 227q0 133 93.5 226.5T480-160Z",
     "qr": "M120-560v-240q0-17 11.5-28.5T160-840h240q17 0 28.5 11.5T440-800v240q0 17-11.5 28.5T400-520H160q-17 0-28.5-11.5T120-560Zm80-40h160v-160H200v160Zm-80 440v-240q0-17 11.5-28.5T160-440h240q17 0 28.5 11.5T440-400v240q0 17-11.5 28.5T400-120H160q-17 0-28.5-11.5T120-160Zm80-40h160v-160H200v160Zm320-360v-240q0-17 11.5-28.5T560-840h240q17 0 28.5 11.5T840-800v240q0 17-11.5 28.5T800-520H560q-17 0-28.5-11.5T520-560Zm80-40h160v-160H600v160Zm160 480v-80h80v80h-80ZM520-360v-80h80v80h-80Zm80 80v-80h80v80h-80Zm-80 80v-80h80v80h-80Zm80 80v-80h80v80h-80Zm80-80v-80h80v80h-80Zm0-160v-80h80v80h-80Zm80 80v-80h80v80h-80Z",
     "canvas": "M440-80q-33 0-56.5-23.5T360-160v-160H240q-33 0-56.5-23.5T160-400v-280q0-66 47-113t113-47h440q17 0 28.5 11.5T800-800v400q0 33-23.5 56.5T720-320H600v160q0 33-23.5 56.5T520-80h-80ZM240-560h480v-200h-40v120q0 17-11.5 28.5T640-600q-17 0-28.5-11.5T600-640v-120h-40v40q0 17-11.5 28.5T520-680q-17 0-28.5-11.5T480-720v-40H320q-33 0-56.5 23.5T240-680v120Zm0 160h480v-80H240v80Zm0 0v-80 80Z",
@@ -407,7 +406,7 @@
     const GROUPS = [
       { items: [["index.html", "Home", "home", "home"], ["browse.html", "Browse all", "browse", "browse-all"]] },
       { title: "Files", items: [["browse.html?cat=mockups", "Mockups", "mockups", "mockups"], ["browse.html?cat=vectors", "Vectors", "vectors", "vectors"],
-        ["browse.html?cat=logos", "Logos", "logos", "logos"], ["browse.html?cat=templates", "Templates", "templates", "templates"], ["icons.html", "Icons", "icons", "icons"]] },
+        ["browse.html?cat=logos", "Logos", "logos", "logos"], ["browse.html?cat=templates", "Templates", "templates", "templates"]]  },
       { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palettes"], ["qr.html", "QR Code Studio", "qr", "qr", true], ["canvas.html", "Canvas", "canvas", "canvas", true]] },
       { title: "Studio", items: [["websites.html", "Websites", "websites", "websites", true]]
         .concat((DS.clientLogos || []).length ? [["portfolio.html", "Portfolio", "portfolio", "portfolio", true]] : [])
@@ -461,7 +460,7 @@
             </div>
             <nav class="f-links" aria-label="Files">
               <h2>Files</h2>
-              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="icons.html">Icons</a></li><li><a href="palettes.html">Palettes</a></li><li><a href="qr.html">QR Code Studio</a></li><li><a href="canvas.html">Canvas</a></li></ul>
+              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="palettes.html">Palettes</a></li><li><a href="qr.html">QR Code Studio</a></li><li><a href="canvas.html">Canvas</a></li></ul>
             </nav>
             <nav class="f-links" aria-label="Studio">
               <h2>Studio</h2>
@@ -490,26 +489,22 @@
   }
 
   /* ---------- Search overlay ---------- */
-  // Search results for a query: files, icons and categories (search pop-up and home search)
+  // Search results for a query: files and categories (search pop-up and home search)
   function searchHtml(raw) {
     const input = { value: raw };
     const q = input.value.trim().toLowerCase();
     const hit = x => x.toLowerCase().includes(q);
     const its = items.filter(it => !q || hit([it.title, it.category, (it.tags || []).join(" "), formatsOf(it).join(" ")].join(" "))).slice(0, 6);
-    const ics = q ? DS.icons.filter(i => hit([i.name, i.group, i.tags.join(" ")].join(" "))).slice(0, 6) : [];
     const cats = CATS.filter(c => !q || hit(c.name + " " + c.formats.join(" ")));
     let html = "";
     if (its.length) html += `<div class="group">Files</div>` + its.map(it => `
       <a href="${itemUrl(it)}"><span class="thumb"><img ${imgSrc(it.preview, "sm")} alt="" loading="lazy"></span>
         <span><span class="t">${esc(it.title)}</span><br><span class="s">${esc(it.category)} · ${formatsOf(it).join(", ")}</span></span></a>`).join("");
-    if (ics.length) html += `<div class="group">Icons</div>` + ics.map(i => `
-      <a href="icons.html#${i.id}"><span class="thumb">${libIcon(i.id)}</span>
-        <span><span class="t">${esc(i.name)}</span><br><span class="s">Icon · ${esc(i.group)}</span></span></a>`).join("");
     if (cats.length) html += `<div class="group">Categories</div>` + cats.map(c => `
       <a href="browse.html?cat=${c.slug}"><span class="thumb">${icon("folder")}</span>
         <span><span class="t">${c.name}</span><br><span class="s">${c.formats.join(" · ")}</span></span></a>`).join("");
     if (q) html += `<a href="browse.html?q=${encodeURIComponent(input.value.trim())}"><span class="thumb">${icon("arrow-right")}</span><span><span class="t">See all results for “${esc(input.value.trim())}”</span></span></a>`;
-    if (!its.length && !ics.length && !cats.length) html = `<div class="none">Nothing matches “${esc(input.value)}” yet.<br>Press Enter to search all files.</div>`;
+    if (!its.length && !cats.length) html = `<div class="none">Nothing matches “${esc(input.value)}” yet.<br>Press Enter to search all files.</div>`;
     return html;
   }
 
@@ -564,7 +559,7 @@
     wrap.innerHTML = `
       <div class="search-box" role="dialog" aria-modal="true" aria-label="Search">
         <label class="search-field">${icon("search")}<span class="sr-only">Search</span>
-          <input type="search" placeholder="Search mockups, logos, icons…" autocomplete="off">
+          <input type="search" placeholder="Search mockups, logos, templates…" autocomplete="off">
           <span class="kbd">Esc</span>
         </label>
         <div class="search-results"></div>
@@ -675,8 +670,6 @@
     heroSearch();
 
     $$("[data-item-count]").forEach(el => { el.textContent = items.length; });
-    $$("[data-icon-total]").forEach(el => { el.textContent = DS.icons.length; });
-    $$("[data-icon-groups]").forEach(el => { el.textContent = new Set(DS.icons.map(i => i.group)).size; });
 
     // Shelves: file counts, and open a panel on hover / focus
     $$("[data-cat-count]").forEach(el => {
@@ -743,38 +736,6 @@
 
     const qt = $("[data-qt]");
     if (qt) qrTeaser(qt);
-
-    const ix = $("[data-ix]");
-    if (ix) {
-      const grid = $("[data-ix-grid]", ix), sw = $("[data-ix-swatches]", ix);
-      const picks = ["pen-tool", "brush", "palette", "layers", "magic", "camera", "image", "crop",
-        "rocket", "bolt", "heart", "star", "globe", "music", "coffee", "gift",
-        "cloud", "sun", "leaf", "map-pin", "plane", "car", "trophy", "lightbulb",
-        "home", "search", "user", "bell", "mail", "chat", "share", "download",
-        "cart", "bag", "wallet", "tag", "calendar", "clock", "lock", "smile"].map(id => DS.icons.find(i => i.id === id)).filter(Boolean);
-      // White, then the "Playground" palette from js/data.js
-      const play = ((DS.palettes || []).find(p => p.name === "Playground") || { colors: [] }).colors;
-      const NAMES = { "#ff595e": "Red", "#ffca3a": "Yellow", "#8ac926": "Green", "#1982c4": "Blue", "#6a4c93": "Purple" };
-      const colours = [["White", "#ffffff"]].concat(play.map(c => [NAMES[c] || c, c]));
-      sw.innerHTML = colours.map(([n, c], i) => `<button type="button" style="--sw:${c}" aria-label="${n}" aria-pressed="${i === 0}" data-c="${c}"></button>`).join("");
-      grid.innerHTML = picks.map(i => `<a href="icons.html#${i.id}" data-id="${i.id}" aria-label="${esc(i.name)} icon">${libIcon(i.id)}</a>`).join("");
-      const show = ic => {
-        $("[data-ix-big]", ix).innerHTML = libIcon(ic.id);
-        $("[data-ix-name]", ix).textContent = ic.name;
-        $("[data-ix-group]", ix).textContent = ic.group + " icon";
-        $("[data-ix-link]", ix).href = `icons.html#${ic.id}`;
-        $$("a", grid).forEach(a => a.classList.toggle("is-on", a.dataset.id === ic.id));
-      };
-      grid.addEventListener("mouseover", e => { const a = e.target.closest("[data-id]"); if (a) show(DS.icons.find(i => i.id === a.dataset.id)); });
-      grid.addEventListener("focusin", e => { const a = e.target.closest("[data-id]"); if (a) show(DS.icons.find(i => i.id === a.dataset.id)); });
-      sw.addEventListener("click", e => {
-        const b = e.target.closest("[data-c]"); if (!b) return;
-        ix.style.setProperty("--ic", b.dataset.c);
-        ix.classList.add("is-tinted");
-        $$("button", sw).forEach(x => x.setAttribute("aria-pressed", x === b));
-      });
-      show(picks[0]);
-    }
 
     // CTA links
     $$("[data-wa]").forEach(a => { a.href = waLink(a.dataset.wa); a.target = "_blank"; a.rel = "noopener"; });
@@ -1360,7 +1321,7 @@
     const paintLetter = () => {
       $("[data-letter-label]").innerHTML = state.letter
         ? `<i class="lt-chip" data-no-i18n>${state.letter}</i>Letter ${state.letter}`
-        : "Any letter";
+        : `${icon("type", "sel-shape")}Any letter`;
       lmenu.innerHTML = `<div class="lt-grid" data-no-i18n>${LETTERS.map(l =>
         `<button type="button" class="lt" data-letter="${l}" aria-pressed="${state.letter === l}" aria-label="Letter ${l}"${hasLetter.has(l) ? "" : " disabled"}>${l}</button>`).join("")}</div>
         <button type="button" class="sw-clear" data-letter=""${state.letter ? "" : " disabled"}>Any letter</button>`;
@@ -1704,8 +1665,8 @@
     if (!document.body.animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const springOK = (() => { try { return CSS.supports("transition-timing-function", "linear(0, 1)"); } catch (e) { return false; } })();
     const SEL = [".btn", ".card", ".drop-card", ".drop-req", ".pal", ".qs-tile", ".qs-type", ".qs-look", ".qs-ico", ".qs-seg-btn", ".qs-iconbtn", ".qs-upload",
-      ".pal-btn", ".pt-rows button", ".pt-swatches button", ".glass-btn", ".qv-btn", ".icon-btn", ".icon-cell", ".swatch", ".sel-btn", ".dd-btn",
-      ".side-link", ".hsearch-go", ".fx-row", ".lx-uses button", ".chip", ".seg button", ".ix-grid a", ".ps-tool", ".ps-theme button",
+      ".pal-btn", ".pt-rows button", ".pt-swatches button", ".glass-btn", ".qv-btn", ".icon-btn", ".sel-btn", ".dd-btn",
+      ".side-link", ".hsearch-go", ".fx-row", ".lx-uses button", ".chip", ".seg button", ".ps-tool", ".ps-theme button",
       ".pg-base", ".cp-drop", ".cp-recent button", ".shelves > *", ".logo", ".pg-hexes button", ".qt-dots i", ".pt-dots i"].join(",");
     const scaleOf = el => { const w = el.offsetWidth; return w > 420 ? .985 : w > 200 ? .97 : w > 64 ? .95 : .9; };
     const anim = (el, to, down) => {
@@ -1724,104 +1685,6 @@
       const up = () => { anim(el, 1, false); removeEventListener("pointerup", up); removeEventListener("pointercancel", up); el.removeEventListener("pointerleave", up); };
       addEventListener("pointerup", up); addEventListener("pointercancel", up); el.addEventListener("pointerleave", up);
     }, { passive: true });
-  }
-
-  /* ---------- Icons ---------- */
-  function icons() {
-    const grid = $("[data-icons]"), groups = $("[data-groups]"), q = $("[data-q]"), insp = $("[data-inspector]");
-    const names = ["All"].concat(DS.icons.map(i => i.group).filter((g, i, a) => a.indexOf(g) === i));
-    const state = { group: "All", q: "", color: "", size: 28, sel: null };
-    const swatches = [
-      { c: "", label: "Black (default)" }, { c: "#8a8a8a", label: "Grey" }, { c: "#31a8ff", label: "Blue" },
-      { c: "#ff6b5c", label: "Coral" }, { c: "#ff9a00", label: "Orange" }, { c: "#b98cff", label: "Violet" }
-    ];
-
-    groups.innerHTML = names.map(g => `<option value="${esc(g)}">${g === "All" ? "All icons" : esc(g)}</option>`).join("");
-    groups.value = state.group;
-
-    const svgFile = (ic, color, px) =>
-      `<svg xmlns="http://www.w3.org/2000/svg" width="${px}" height="${px}" viewBox="0 0 24 24" fill="none" stroke="${color || "currentColor"}" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">${(ICONS[ic.id] || "").split("__ID__").join(ic.id + "-cut")}</svg>`;
-
-    const drawInspector = () => {
-      const ic = state.sel;
-      if (!ic) return;
-      // Settings > Default download picks which button leads
-      const pngFirst = pref("format") === "png" || pref("format") === "jpg";
-      const dlSvg = `<a class="btn${pngFirst ? "" : " btn-dl"}" data-dl-svg>${icon("download")} Download SVG</a>`;
-      const dlPng = `<button class="btn${pngFirst ? " btn-dl" : ""}" type="button" data-dl-png>${icon(pngFirst ? "download" : "image")} Download PNG · 512px</button>`;
-      insp.innerHTML = `
-        <div class="big" style="--ic:${state.color || "var(--fg)"}">${libIcon(ic.id)}</div>
-        <span class="mono mute">${esc(ic.group)}</span>
-        <h3>${esc(ic.name)}</h3>
-        <div class="opts">
-          <label>Colour
-            <div class="swatches">
-              ${swatches.map(s => `<button class="swatch" type="button" data-c="${s.c}" aria-label="${s.label}" aria-pressed="${state.color === s.c}" style="background:${s.c || "var(--fg)"}"></button>`).join("")}
-              <span class="swatch custom" data-tip="Custom colour"><input type="color" aria-label="Custom colour" value="${state.color || "#0f0f0f"}"></span>
-            </div>
-          </label>
-          <label>Preview size · <span data-size-label>${state.size}px</span>
-            <input type="range" min="16" max="48" step="any" value="${state.size}" data-size>
-          </label>
-        </div>
-        <div class="btns">
-          ${pngFirst ? dlPng + dlSvg : dlSvg + dlPng}
-          <button class="btn" type="button" data-copy>${icon("copy")} Copy SVG code</button>
-        </div>`;
-      const svgText = svgFile(ic, state.color, 24);
-      const a = $("[data-dl-svg]", insp);
-      a.href = URL.createObjectURL(new Blob([svgText], { type: "image/svg+xml" }));
-      a.download = ic.id + ".svg";
-      $("[data-copy]", insp).addEventListener("click", () => copy(svgText, "SVG code copied"));
-      $("[data-dl-png]", insp).addEventListener("click", () => {
-        const img = new Image();
-        const src = svgFile(ic, state.color || "#0f0f0f", 512);
-        img.onload = () => {
-          const cv = document.createElement("canvas"); cv.width = cv.height = 512;
-          cv.getContext("2d").drawImage(img, 0, 0, 512, 512);
-          cv.toBlob(b => { const l = document.createElement("a"); l.href = URL.createObjectURL(b); l.download = ic.id + ".png"; l.click(); toast("PNG downloaded"); });
-        };
-        img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(src);
-      });
-      $$("[data-c]", insp).forEach(b => b.addEventListener("click", () => { state.color = b.dataset.c; apply(); }));
-      const ci = $("input[type=color]", insp);
-      ci.addEventListener("input", () => { // live while picking; rebuild (download links) when the picker closes
-        state.color = ci.value;
-        grid.style.setProperty("--ic", state.color); $(".big", insp).style.setProperty("--ic", state.color);
-        $$("[data-c]", insp).forEach(x => x.setAttribute("aria-pressed", "false"));
-      });
-      ci.addEventListener("change", apply);
-      $("[data-size]", insp).addEventListener("input", e => { const v = +e.target.value; state.size = Math.round(v); $("[data-size-label]", insp).textContent = state.size + "px"; grid.style.setProperty("--isz", v + "px"); });
-    };
-
-    const apply = () => { grid.style.setProperty("--ic", state.color || "var(--fg)"); drawInspector(); };
-    document.addEventListener("ds-pref", e => { if (e.detail.name === "format") drawInspector(); });
-
-    const select = (ic, scroll) => {
-      state.sel = ic;
-      $$("[data-id]", grid).forEach(b => b.setAttribute("aria-pressed", b.dataset.id === ic.id));
-      history.replaceState(null, "", "#" + ic.id);
-      drawInspector();
-      if (scroll && innerWidth <= 1100) insp.scrollIntoView({ behavior: "smooth", block: "start" });
-    };
-
-    const draw = () => {
-      const ql = state.q.toLowerCase();
-      const list = DS.icons.filter(i => (state.group === "All" || i.group === state.group) &&
-        (!ql || [i.name, i.group, i.tags.join(" ")].join(" ").toLowerCase().includes(ql)));
-      $("[data-count]").textContent = `${list.length} icon${list.length === 1 ? "" : "s"}`;
-      grid.innerHTML = list.length ? list.map(i => `<button class="icon-cell" type="button" data-id="${i.id}" aria-pressed="${state.sel && state.sel.id === i.id}">${libIcon(i.id)}<span>${esc(i.name)}</span></button>`).join("")
-        : `<div class="empty"><h3>No icon called that yet.</h3><p>Ask for it and we'll draw it.</p><a class="btn btn-dark" href="${waLink("Hi Draft Studio, could you add an icon for: " + state.q)}" target="_blank" rel="noopener">${icon("chat")} Request an icon</a></div>`;
-    };
-
-    groups.addEventListener("change", () => { state.group = groups.value; draw(); });
-    q.addEventListener("input", () => { state.q = q.value.trim(); draw(); });
-    grid.addEventListener("click", e => { const b = e.target.closest("[data-id]"); if (b) select(DS.icons.find(i => i.id === b.dataset.id), true); });
-
-    draw();
-    const fromHash = DS.icons.find(i => i.id === location.hash.slice(1));
-    select(fromHash || DS.icons[0], false);
-    if (fromHash) setTimeout(() => { const b = $(`[data-id="${fromHash.id}"]`, grid); b && b.scrollIntoView({ block: "center" }); }, 50);
   }
 
   /* ---------- Colour palettes ---------- */
@@ -2128,10 +1991,18 @@
       sel.tabIndex = -1;
       const label = $(".sel-txt b", wrap), menu = $(".sel-menu", wrap), toggle = $(".sel-toggle", wrap);
       const tick = icon("check");
+      // Options may carry data-shape="horizontal|vertical|square|panoramic|any" for a small outline icon
+      const SHAPES = { horizontal: [18, 12], vertical: [12, 18], square: [14, 14], panoramic: [20, 9] };
+      const shape = o => {
+        const k = o && o.dataset.shape; if (!k) return "";
+        if (k === "any") return `<svg class="sel-shape" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="M12 3v18M3 12h9"/></svg>`;
+        const [w, h] = SHAPES[k];
+        return `<svg class="sel-shape" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" aria-hidden="true"><rect x="${(24 - w) / 2}" y="${(24 - h) / 2}" width="${w}" height="${h}" rx="2.5"/></svg>`;
+      };
       const render = () => {
         const cur = sel.options[sel.selectedIndex];
-        label.innerHTML = cur ? esc(cur.text) : "";
-        menu.innerHTML = Array.from(sel.options).map(o => `<button type="button" role="option" data-v="${esc(o.value)}" aria-selected="${o.value === sel.value}"><span>${esc(o.text)}</span>${tick}</button>`).join("");
+        label.innerHTML = cur ? shape(cur) + esc(cur.text) : "";
+        menu.innerHTML = Array.from(sel.options).map(o => `<button type="button" role="option" data-v="${esc(o.value)}" aria-selected="${o.value === sel.value}"><span>${shape(o)}${esc(o.text)}</span>${tick}</button>`).join("");
       };
       const setOpen = open => { wrap.classList.toggle("is-open", open); toggle.setAttribute("aria-expanded", open); };
       toggle.addEventListener("click", e => { e.stopPropagation(); render(); const open = !wrap.classList.contains("is-open"); if (open) closeDropdowns(); setOpen(open); });
@@ -2247,7 +2118,7 @@
       text: { default: "The size the site was designed at", large: "A little bigger, easier to read", larger: "Biggest, for small or far-away screens" },
       open: { quick: "A big preview sheet; flip through files without leaving the page", page: "Go straight to the file's own page" },
       lang: { auto: "Matches your browser's language", en: "English (original)", fr: "French", es: "Spanish", pt: "Portuguese", ar: "Arabic · right to left", zh: "Chinese (Simplified)" },
-      format: { auto: "SVG for icons, PNG for QR codes", png: "Pixels, works everywhere", svg: "Vector, stays sharp at any size", jpg: "Smallest file, no transparency (QR codes; icons use PNG)" }
+      format: { auto: "PNG for QR codes", png: "Pixels, works everywhere", svg: "Vector, stays sharp at any size", jpg: "Smallest file, no transparency" }
     };
     const TITLES = { lang: "Language", appearance: "Appearance", text: "Text size", open: "Open files in", format: "Default download" };
 
@@ -2312,7 +2183,7 @@
       <div class="set-view" data-view="format">
         ${head("Default download", true)}
         ${list("format")}
-        <p class="set-note">Used by QR Code Studio and the icon set. Palettes and design files keep their own formats.</p>
+        <p class="set-note">Used by QR Code Studio. Palettes and design files keep their own formats.</p>
       </div>`;
     document.body.appendChild(el);
 
@@ -2517,7 +2388,7 @@
   footer();
   chrome();
   settings();
-  ({ home, browse, item, icons, palettes, qr, learn, license, canvas }[page] || (() => {}))();
+  ({ home, browse, item, palettes, qr, learn, license, canvas }[page] || (() => {}))();
   enhanceSelects();
   sliders();
   tooltips();

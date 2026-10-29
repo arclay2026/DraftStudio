@@ -1,5 +1,5 @@
 // Builds chat-knowledge.json: what the AI chat server (worker/) knows about
-// the site — every design, the icon and palette names, the file-format guide
+// the site — every design, the palette names, the file-format guide
 // and the license. tools/bump.sh runs this, so it stays in step with js/data.js.
 //
 // Run: node tools/build-chat.js
@@ -31,9 +31,8 @@ const out = {
     description: it.description, specs: it.specs || "", tags: it.tags || [],
     price: it.price || "free", sold: !!it.sold, requires: it.requires || ""
   })),
-  icons: DS.icons.map(i => i.id),
   palettes: (DS.palettes || []).map(p => `${p.name} (${p.mood})`),
   formats: FORMATS.map(f => ({ ext: f.ext, what: f.desc, opensIn: f.apps.map(a => APPS[a].name + (APPS[a].free ? " (free)" : "")) }))
 };
 fs.writeFileSync(path.join(root, "chat-knowledge.json"), JSON.stringify(out, null, 1) + "\n");
-console.log(`chat-knowledge.json: ${out.files.length} files, ${out.icons.length} icons, ${out.palettes.length} palettes`);
+console.log(`chat-knowledge.json: ${out.files.length} files, ${out.palettes.length} palettes`);
