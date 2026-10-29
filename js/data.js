@@ -160,6 +160,7 @@ window.DS = {
     { id: "mabs-tech", client: "Mabs Tech", industry: "E-commerce", file: "assets/work/logos/mabs-tech.svg" },
     { id: "webgraphs", client: "WebGraphs", industry: "Tech", file: "assets/work/logos/webgraphs.svg" },
     { id: "vorne", client: "Vorne", industry: "Clothing", file: "assets/work/logos/vorne.svg" },
+    { id: "orbi-crm", client: "Orbi CRM", industry: "CRM software", file: "assets/work/logos/orbi-crm.svg" },
   ],
 
   // WEBSITES we designed and built, shown as cards on websites.html.
