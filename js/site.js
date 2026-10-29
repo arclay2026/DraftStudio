@@ -401,7 +401,7 @@
         ["browse.html?cat=logos", "Logos", "logos", "pen-tool"], ["browse.html?cat=templates", "Templates", "templates", "layout-template"], ["icons.html", "Icons", "icons", "shapes"]] },
       { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palette"], ["qr.html", "QR Code Studio", "qr", "qr-code", true], ["canvas.html", "Canvas", "canvas", "paintbrush", true]] },
       { title: "Studio", items: [["websites.html", "Websites", "websites", "app-window", true]]
-        .concat((DS.clientLogos || []).length ? [["logo-design.html", "Logo design", "logo-design", "pen-tool", true]] : [])
+        .concat((DS.clientLogos || []).length ? [["portfolio.html", "Portfolio", "portfolio", "shapes", true]] : [])
         .concat([["pricing.html", "Pricing", "pricing", "tag"]]) },
       { title: "Help", items: [["learn.html", "Learn", "learn", "lightbulb"], ["license.html", "License", "license", "file-text"]] }
     ];

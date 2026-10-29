@@ -59,13 +59,13 @@
       </article>`).join("");
   });
 
-  /* ---------- Client logos (logo-design.html) ---------- */
+  /* ---------- Client logos (portfolio.html) ---------- */
   const LOGOS = DS.clientLogos || [];
   $$("[data-client-logos]").forEach(grid => {
     grid.innerHTML = LOGOS.length ? LOGOS.map(l => `
-      <figure class="lw${l.dark ? " is-dark" : ""}"${l.bg ? ` style="--lw-bg:${esc(l.bg)}"` : ""}>
+      <figure class="lw" tabindex="0">
         <div class="lw-stage"><img src="${esc(l.file)}" alt="${esc(l.client)} logo" loading="lazy" decoding="async"></div>
-        <figcaption><b>${esc(l.client)}</b><span>${esc([l.industry, l.year].filter(Boolean).join(" · "))}</span></figcaption>
+        <figcaption>${esc(l.client)}${l.industry ? `<span>${esc(l.industry)}</span>` : ""}</figcaption>
       </figure>`).join("")
       : `<p class="lw-empty">New work is on its way.</p>`;
   });

@@ -152,14 +152,13 @@ window.DS = {
     }
   ],
 
-  // CLIENT LOGOS we designed, shown on logo-design.html (newest first). The page
+  // CLIENT LOGOS we designed, shown on portfolio.html (newest first). The page
   // joins the side menu as soon as there is at least one.
-  //   file      the SVG, saved in assets/work/logos/
-  //   bg        the card colour behind the logo (the client's brand colour works well);
-  //             leave it out for a plain light card
-  //   dark      true when bg is dark, so the name strip below reads right
+  //   file      the SVG, saved in assets/work/logos/ (cropped to the artwork, no background)
+  //   client    shown when the card is hovered
   clientLogos: [
-    // { id: "acme", client: "Acme Coffee", industry: "Coffee roastery", year: 2026, file: "assets/work/logos/acme.svg", bg: "#1f3a2e", dark: true },
+    { id: "mabs-tech", client: "Mabs Tech", file: "assets/work/logos/mabs-tech.svg" },
+    { id: "webgraphs", client: "WebGraphs", file: "assets/work/logos/webgraphs.svg" },
   ],
 
   // WEBSITES we designed and built, shown as cards on websites.html.
