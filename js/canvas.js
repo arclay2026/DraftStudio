@@ -50,7 +50,7 @@ window.DSCanvas = function (kit) {
     typepath: '<path d="M3 20C7 13 17 13 21 20"/><path d="M8 3.5h8M12 3.5v8"/>'
   };
   const PH = window.DS_UI_ICONS || {};
-  const ui = (id, cls = "") => (PH[id]
+  const ui = (id, cls = "") => (window.DS_MAT_SVG && window.DS_MAT_SVG(id, cls)) || (PH[id]
     ? `<svg class="${cls}" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">${PH[id]}</svg>`
     : UI[id]
       ? `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${UI[id]}</svg>`

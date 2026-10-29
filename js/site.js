@@ -90,7 +90,8 @@
   };
   // Interface icons come from js/ui-icons.js (Phosphor, regular weight)
   const UI_ICONS = window.DS_UI_ICONS || {};
-  const icon = (id, cls = "") => (UI_ICONS[id]
+  const MAT = window.DS_MAT_SVG || (() => "");
+  const icon = (id, cls = "") => MAT(id, cls) || (UI_ICONS[id]
     ? `<svg class="${cls}" viewBox="0 0 256 256" fill="currentColor" aria-hidden="true">${UI_ICONS[id]}</svg>`
     : libIcon(id, cls));
   const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-");

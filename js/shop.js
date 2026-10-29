@@ -193,7 +193,7 @@
       const items = DS.items.slice().sort((a, b) => (b.date || "").localeCompare(a.date || ""));
       const sm = src => src.replace(/^previews\//, "previews/sm/").replace(/\.(jpe?g|png)$/i, ".webp");
       const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
-      const SAVED = '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M17 3a2 2 0 0 1 2 2v15a1 1 0 0 1-1.496.868l-4.512-2.578a2 2 0 0 0-1.984 0l-4.512 2.578A1 1 0 0 1 5 20V5a2 2 0 0 1 2-2z"/></svg>';
+      const SAVED = '<svg class="mi" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m480-240-168 72q-40 17-76-6.5T200-241v-519q0-33 23.5-56.5T280-840h400q33 0 56.5 23.5T760-760v519q0 43-36 66.5t-76 6.5l-168-72Z"/></svg>';
       wl.innerHTML = items.map(it => {
         const sold = it.id === "mato-logo"; // example of how a sold logo looks
         const paid = !!it.price;

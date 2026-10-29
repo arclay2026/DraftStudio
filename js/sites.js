@@ -30,7 +30,7 @@
     "gauge": '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
     "app-window": '<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v4"/><path d="M2 8h20"/><path d="M6 4v4"/>'
   };
-  const ic = (id, sw = 2) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[id] || ""}</svg>`;
+  const ic = (id, sw = 2) => (window.DS_MAT_SVG && window.DS_MAT_SVG(id)) || `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${sw}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[id] || ""}</svg>`;
   const SITES = (window.DS && DS.sites) || [];
   const byId = id => SITES.find(s => s.id === id) || SITES[0];
   const host = u => u.replace(/^https?:\/\//, "").replace(/\/$/, "");

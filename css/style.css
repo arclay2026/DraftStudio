@@ -448,6 +448,8 @@ h2 .soft { color: var(--soft); }
 .card-save { right: 11px; top: 11px; opacity: 0; transform: scale(.85); }
 .card:hover .card-cta, .card:focus-within .card-cta, .card:hover .card-save, .card:focus-within .card-save, .card-save[aria-pressed="true"] { transform: none; opacity: 1; }
 .card-save[aria-pressed="true"] svg { fill: currentColor; }
+svg.mi .mi-on { display: none; }
+[aria-pressed="true"] svg.mi .mi-on { display: inline; }
 /* Logo previews are white, so their buttons are solid brand black */
 .card.is-logo .glass-btn, .card.is-logo .glass-btn:hover { background: var(--fg); color: var(--on-fg); }
 @media (hover: none) { .card-cta, .card-save { transform: none; opacity: 1; } }
@@ -2810,7 +2812,7 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
   background-color: var(--x-in); color: var(--x-txt); font: 500 12px var(--font-body); transition: border-color .15s, background-color .15s;
 }
 .cx-select { padding-right: 26px; -webkit-appearance: none; appearance: none; cursor: pointer; text-overflow: ellipsis;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238e8e93' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 -960 960 960' fill='%238e8e93'%3E%3Cpath transform='rotate(90 480 -480)' d='M579-480 285-774q-15-15-14.5-35.5T286-845q15-15 35.5-15t35.5 15l307 308q12 12 18 27t6 30q0 15-6 30t-18 27L356-115q-15 15-35 14.5T286-116q-15-15-15-35.5t15-35.5l293-293Z'/%3E%3C/svg%3E");
   background-repeat: no-repeat; background-position: right 8px center; background-size: 12px; }
 .cx-select:hover, .cx-text:hover { background-color: var(--x-hover); }
 .cx-select:focus, .cx-text:focus { border-color: var(--x-blue); }
@@ -3487,3 +3489,9 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
    made the site stutter) and the boxes that frame a picture. */
 div { corner-shape: superellipse(1.5); }
 .shell, .hero-panel, .hero-photo, .card-media, .cx-miniwrap, .ax-m-photo, .wl-img, .co-prod-img, .co-shot { corner-shape: round; }
+
+/* Material interface icons (js/mat-icons.js) are filled shapes: older rules that
+   stroke or unfill an icon must not reach them */
+svg.mi, svg.mi path { fill: currentColor !important; stroke: none !important; }
+/* the double arrow in round badges reads small at weight 400 */
+.arr svg.mi, .card-cta svg.mi, .go svg.mi, .wsv-cap svg.mi { transform: scale(1.3); }
