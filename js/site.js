@@ -1234,14 +1234,13 @@
     const allFmts = ["PSD", "AI", "SVG", "EPS", "PDF", "PNG"];
 
     // Category dropdown
-    const CAT_ICON = { all: "grid", mockups: "t-shirt", vectors: "pen-tool", logos: "vector", templates: "file", saved: "bookmark" };
     const options = [{ name: "All files", slug: "all" }].concat(CATS, [{ name: "Saved", slug: "saved" }]);
     const countOf = c => c.slug === "all" ? items.length : c.slug === "saved" ? saved.length : items.filter(it => slug(it.category) === c.slug).length;
     const menu = $("[data-dd-menu]", cats), ddBtn = $("[data-dd-btn]", cats);
     const renderMenu = () => {
       menu.innerHTML = options.map((c, i) => `${c.slug === "saved" ? '<span class="dd-sep"></span>' : ""}
         <button type="button" role="option" data-cat="${c.slug}" aria-selected="${state.cat === c.slug}">
-          <span class="dd-ico">${icon(CAT_ICON[c.slug] || "folder")}</span><span class="dd-name">${c.name}</span>
+          <span class="dd-name">${c.name}</span>
           ${c.slug === "saved" ? `<span class="dd-n" data-saved-n>${countOf(c)}</span>` : ""}
           ${icon("check", "dd-tick")}
         </button>`).join("");
@@ -1284,7 +1283,6 @@
       const cur = options.find(o => o.slug === state.cat) || options[0];
       renderMenu();
       $("[data-dd-label]", cats).textContent = cur.name;
-      $("[data-dd-ico]", cats).innerHTML = icon(CAT_ICON[cur.slug] || "folder");
       // Only the Saved view shows a count
       const n = $("[data-dd-n]", cats);
       n.textContent = cur.slug === "saved" ? countOf(cur) : "";
