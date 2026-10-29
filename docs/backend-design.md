@@ -20,6 +20,7 @@ Stack: **PHP 8.3 + MySQL 8 on Hostinger Premium**, no framework. The site stays 
 | D7 | `js/data.js` stays the catalogue the site shows; **the database is the authority for price and stock** | The site keeps working as now; the browser is never trusted for a price | Agreed |
 | D8 | Money is stored as **whole cents** (`45000` = R450.00) | No rounding errors | Agreed |
 | D9 | One dependency: **PHPMailer** for sending email over Hostinger SMTP | PHP's `mail()` lands in spam; everything else is plain PHP | Recommended |
+| D10 | Exclusive logos come with a signed **copyright transfer PDF** in the buyer's name, not a decorative certificate | South African copyright law expects a transfer to be in writing and signed; a lawyer should check the wording once | Agreed |
 
 ---
 
@@ -129,7 +130,7 @@ CREATE TABLE products (
   title           VARCHAR(200) NOT NULL,
   kind            ENUM('exclusive','pack') NOT NULL,
   price_cents     INT UNSIGNED NOT NULL,          -- the price actually charged
-  price_from      BOOLEAN NOT NULL DEFAULT FALSE, -- "From R450": see 5.4
+  price_from      BOOLEAN NOT NULL DEFAULT FALSE, -- "From R450": see 5.5
   currency        CHAR(3) NOT NULL DEFAULT 'ZAR',
   status          ENUM('draft','available','held','sold','retired') NOT NULL DEFAULT 'draft',
   held_until      DATETIME NULL,                  -- exclusive logos only
@@ -284,11 +285,15 @@ All of this is first built against **PayFast's sandbox**, with a switch in `conf
 - The file is streamed in chunks from `app/storage/products/` with `Content-Disposition: attachment`, and nothing is cached publicly.
 - Signed-in buyers can always get fresh links from "My purchases", so expired emails aren't a problem.
 
-### 5.4 "From R450" prices
+### 5.4 Copyright transfer (exclusive logos)
+
+When an exclusive logo is paid, the ITN step also fills in a one-page PDF from a fixed template: buyer name, logo, order number, date, price and Draft Studio's signature image. It's saved with the order and listed with the other files, so it shows on the order page, in the email and under My purchases. One small PDF library (for example FPDF, no other dependencies) does this.
+
+### 5.5 "From R450" prices
 
 Wiltz and Mato are "From R450": the base logo is R450 and extra work costs more. Version 1 charges the base price online, and the receipt invites the buyer to WhatsApp for extras. **Confirm this is what "From" means.**
 
-### 5.5 Accounts
+### 5.6 Accounts
 
 - **Sign up:** email, password (at least 10 characters, checked against a list of common passwords), name. A verification email is sent. Buying works before verification; viewing past orders needs it.
 - **Sign in:** same error for a wrong email or a wrong password, so nobody can test which emails exist.
