@@ -265,6 +265,12 @@
     };
     const place = () => {
       const r = target.getBoundingClientRect(), w = pk.offsetWidth, h = pk.offsetHeight;
+      // A swatch in a side column (Canvas tools) opens beside it, where it covers nothing
+      if (target.closest("[data-cp-side]") && r.right + 10 + w < innerWidth) {
+        pk.style.left = r.right + 10 + scrollX + "px";
+        pk.style.top = Math.max(8, Math.min(innerHeight - h - 8, r.top + r.height / 2 - h / 2)) + scrollY + "px";
+        return;
+      }
       const below = r.bottom + 10 + h < innerHeight || r.top - h - 10 < 0;
       pk.style.left = Math.max(8, Math.min(innerWidth - w - 8, r.left + r.width / 2 - w / 2)) + scrollX + "px";
       pk.style.top = (below ? r.bottom + 10 : r.top - h - 10) + scrollY + "px";

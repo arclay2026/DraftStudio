@@ -1917,7 +1917,8 @@
   "Script": "يدوي",
   "Mono": "أحادي المسافة",
   "Thin": "رفيع",
-  "Extra light": "خفيف جدًا"
+  "Extra light": "خفيف جدًا",
+  "Fill and stroke · X switches": "التعبئة والحد · X للتبديل"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",

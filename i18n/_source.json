@@ -1860,7 +1860,8 @@
   "Script",
   "Mono",
   "Thin",
-  "Extra light"
+  "Extra light",
+  "Fill and stroke · X switches"
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",

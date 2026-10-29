@@ -264,7 +264,7 @@ window.DSCanvas = function (kit) {
       <nav class="cx-dock" data-dock aria-label="Tools">
         ${TOOL_GROUPS.map(g => (g === "|" ? `<span class="cx-dock-sep"></span>` : dockBtn(g))).join("")}
         <span class="cx-dock-sep"></span>
-        <div class="cx-paint" data-paint data-tip="Fill and stroke for new shapes · X switches">
+        <div class="cx-paint" data-paint data-cp-side data-tip="Fill and stroke · X switches">
           <label class="cx-paint-s"><input type="color" data-paintin="stroke" aria-label="Stroke colour"></label>
           <label class="cx-paint-f"><input type="color" data-paintin="fill" aria-label="Fill colour"></label>
         </div>
@@ -1107,19 +1107,27 @@ window.DSCanvas = function (kit) {
   }
   function syncPaint() {
     const f = $(".cx-paint-f", root), s = $(".cx-paint-s", root);
-    f.style.setProperty("--c", paintCss(paint.fill)); f.classList.toggle("is-none", !paint.fill);
-    s.style.setProperty("--c", paintCss(paint.stroke)); s.classList.toggle("is-none", !paint.stroke);
-    $("[data-paintin=fill]", root).value = toHex(isGrad(paint.fill) ? paint.fill.colorStops[0].color : paint.fill) || "#ffffff";
-    $("[data-paintin=stroke]", root).value = toHex(isGrad(paint.stroke) ? paint.stroke.colorStops[0].color : paint.stroke) || "#000000";
+    // with a selection the swatches show its colours, otherwise the colours for new shapes
+    const sel = active().length > 0, fill = sel ? firstOf("fill") : paint.fill, stroke = sel ? firstOf("stroke") : paint.stroke;
+    f.style.setProperty("--c", paintCss(fill)); f.classList.toggle("is-none", !fill);
+    s.style.setProperty("--c", paintCss(stroke)); s.classList.toggle("is-none", !stroke);
+    $("[data-paintin=fill]", root).value = toHex(isGrad(fill) ? fill.colorStops[0].color : fill) || "#ffffff";
+    $("[data-paintin=stroke]", root).value = toHex(isGrad(stroke) ? stroke.colorStops[0].color : stroke) || "#000000";
     $("[data-paint]", root).dataset.focus = paint.focus;
   }
-  $("[data-paint]", root).addEventListener("input", e => {
+  // The swatches recolour the selection live (one undo step when the picker closes),
+  // or set the colours for the next shapes when nothing is selected
+  const paintIn = (e, done) => {
     const k = e.target.dataset.paintin;
     if (!k) return;
-    paint[k] = e.target.value; paint.focus = k;
+    paint.focus = k;
+    if (active().length) { setPaint(k, e.target.value, done); if (done) refreshUI(); return; }
+    paint[k] = e.target.value;
     if (k === "stroke" && !paint.strokeWidth) paint.strokeWidth = 2;
     syncPaint();
-  });
+  };
+  $("[data-paint]", root).addEventListener("input", e => paintIn(e, false));
+  $("[data-paint]", root).addEventListener("change", e => paintIn(e, true));
   const swapPaint = () => {
     const f = firstOf("fill"), s = firstOf("stroke");
     if (!active().length) { paint.fill = s; paint.stroke = f; syncPaint(); return; }

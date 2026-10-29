@@ -1917,7 +1917,8 @@
   "Script": "手写",
   "Mono": "等宽",
   "Thin": "极细",
-  "Extra light": "特细"
+  "Extra light": "特细",
+  "Fill and stroke · X switches": "填充和描边 · 按 X 切换"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",

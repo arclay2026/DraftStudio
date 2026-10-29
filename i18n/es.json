@@ -1917,7 +1917,8 @@
   "Script": "Manuscrita",
   "Mono": "Mono",
   "Thin": "Fina",
-  "Extra light": "Extra ligera"
+  "Extra light": "Extra ligera",
+  "Fill and stroke · X switches": "Relleno y trazo · X los intercambia"
  },
  "patterns": {
   "^(\\d+) files$": "$1 archivos",
