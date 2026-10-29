@@ -1,0 +1,75 @@
+DESIGN BASICS · LESSON 5 · LOGOS
+Narration script for ElevenLabs. 1 part.
+Paste only the text between the lines into ElevenLabs, one part at a time.
+
+────────────────────────────────────────────────────────────
+PART 1 OF 1  ·  save as: logos-1.mp3  ·  3,923 characters
+────────────────────────────────────────────────────────────
+
+Design Basics, lesson five. Logos.
+
+A logo is a signature: a small mark people use to recognise a brand at a glance. The best logos are surprisingly simple; you could draw most famous ones from memory. In this lesson you'll learn the five kinds of logo, how designers build marks from simple shapes, and the tests every logo has to pass.
+
+Part one: The five kinds of logo.
+
+Wordmarks are the brand name set in a chosen or custom-drawn font. They're the simplest and the best way to make a new name memorable. Lettermarks use just the initials, which helps when the full name is long.
+
+Symbols (or pictorial marks) are pictures with no words, like a bird or an apple. They're powerful but only work once people already know the brand. Combination marks put a symbol and a wordmark together, and can be split apart later. They're the most common kind. Emblems place the words inside a shape, like a badge or seal, and suit traditional brands, schools and sports clubs.
+
+For a new, small business, a wordmark or combination mark is almost always the right start.
+
+Figure one: Five kinds of logo, all for an imaginary brand called Nova.
+
+Part two: Build the mark from simple shapes.
+
+Professional marks are rarely drawn freehand. Designers construct them from basic geometry (circles, squares and straight lines) placed on a grid, so every curve is smooth and every proportion is deliberate.
+
+The Nova mark below is just one big circle, a smaller circle cut out of it, and a dot. Because the sizes relate (the small circle is 0.62 of the big one), it feels balanced even though most people would never measure it.
+
+Simple shapes also make a logo easy to remember, easy to reproduce, and sharp at any size.
+
+Figure two: Construction circles (dashed) on a grid, and the finished mark.
+
+Part three: One colour first, then colour.
+
+A logo has to work in many places: on a white website, a dark app screen, a black-and-white invoice, embroidered on a cap. So design it in black first. If the shape is strong in one flat colour, it will work everywhere.
+
+Then prepare a small set of versions: full colour for normal use, one colour (black) for print, reversed (white) for dark backgrounds, and one that sits on the brand colour. Keep each version as a separate file so nobody has to improvise.
+
+Choose the brand colour for meaning, not personal taste: think back to warm versus cool in the Colour lesson.
+
+Figure three: Four versions of one logo. The shape does the work; colour adds feeling.
+
+Part four: Clear space and the small-size test.
+
+Clear space is a protected zone around the logo where nothing else may go: no text, no edges, no other logos. It's usually measured with a part of the logo itself (here, the dot's circle, called x), so it scales with the logo.
+
+Then do the small-size test. Shrink the logo to the size of an app icon or a browser tab, about 16 to 32 pixels. Thin lines, tiny details and small text vanish first. If the logo turns into a smudge, simplify it. A great logo is still recognisable when it's tiny, blurred or seen from across the street.
+
+Figure four: Clear space measured with x, and the logo shrunk to four small sizes.
+
+Common mistakes.
+
+Too many details, colours or effects that vanish when small.
+
+Using a trendy font that will look dated next year.
+
+A picture that literally shows the product (a cake for a bakery) instead of something distinctive.
+
+Only ever designing the full-colour version.
+
+Stretching or squashing the logo to fit a space.
+
+Recap.
+
+Start with a wordmark or combination mark for new brands.
+
+Build marks from simple shapes on a grid.
+
+Design in black first; then make colour, one-colour and reversed versions.
+
+Protect a clear space around the logo.
+
+Test it at 16 to 32 pixels and simplify until it survives.
+
+Practise it: Open one of the free vector logos in Illustrator, Inkscape or Figma and look at how it's built from simple shapes. That's the end of this lesson.

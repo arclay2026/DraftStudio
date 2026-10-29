@@ -1,0 +1,91 @@
+DESIGN BASICS · LESSON 3 · LAYOUT
+Narration script for ElevenLabs. 2 parts.
+Paste only the text between the lines into ElevenLabs, one part at a time.
+
+────────────────────────────────────────────────────────────
+PART 1 OF 2  ·  save as: layout-1.mp3  ·  2,558 characters
+────────────────────────────────────────────────────────────
+
+Design Basics, lesson three. Layout.
+
+Layout is where things go on the page. A good layout feels calm and obvious, as if nothing could be anywhere else. That feeling doesn't come from talent; it comes from a few tools designers use on every project: grids, a spacing scale, alignment, grouping and white space.
+
+Part one: Grids: margins, columns and gutters.
+
+A grid is a set of invisible columns that you place content on. It's the main reason professional layouts look tidy: every edge lands on a line the others share.
+
+A grid has three parts. The margins are the empty space on the left and right of the page. The columns are the vertical strips content sits in. The gutters are the gaps between columns. Websites often use 12 columns, because 12 divides neatly into halves, thirds, quarters and sixths.
+
+To use a grid, make each element span a whole number of columns. An image could span 7 columns and the text beside it 5. Never stop halfway across a column or a gutter.
+
+Figure one: A 12-column grid. The image takes 7 columns, the text 5, and the header all 12.
+
+Part two: A spacing scale.
+
+Just as with font sizes, picking every gap by eye (13 pixels here, 18 pixels there) makes a design feel slightly off. Instead, choose a spacing scale: a short list of numbers, usually multiples of 4 or 8, such as 4, 8, 16, 24, 32, 48 and 64.
+
+Use only these numbers for padding, margins and gaps. Small numbers (4, 8) go between things that belong tightly together, like an icon and its label. Middle numbers (16, 24) go inside cards and between paragraphs. Big numbers (48, 64) separate whole sections.
+
+Design tools like Figma, and the Canvas here, let you nudge objects by exact amounts, which makes a scale easy to stick to.
+
+Figure two: A spacing scale, and a card where every gap is 16 or 24.
+
+Part three: Alignment.
+
+Alignment means lining elements up along a shared edge or centre. Our eyes notice edges that almost line up even more than edges that are far apart, so small misalignments make a design feel careless.
+
+Pick one alignment and stick to it. Left alignment is the safest choice for most designs, because it's how we read (in left-to-right languages) and it creates one strong, straight edge. Centre alignment works for short, formal pieces like invitations, but becomes hard to read for longer text.
+
+Don't trust your eye. Use the snapping guides and the align buttons in your design tool, which line things up perfectly in one click.
+
+Figure three: Four slightly different edges on the left. One red line through everything on the right.
+
+────────────────────────────────────────────────────────────
+PART 2 OF 2  ·  save as: layout-2.mp3  ·  2,035 characters
+────────────────────────────────────────────────────────────
+
+Part four: Proximity: group what belongs together.
+
+People assume that things close together are related. This is called proximity, and it lets you organise information without drawing a single box or line.
+
+Put related items close together, and leave more space between unrelated groups. A heading should sit closer to the paragraph it introduces than to the paragraph above it. A price should sit next to the product it belongs to.
+
+When every gap is the same, the reader has to work out the groups for themselves. When the gaps differ on purpose, the structure is obvious at a glance.
+
+Figure four: Six identical items. On the right, one bigger gap creates two clear groups.
+
+Part five: White space.
+
+White space (or negative space) is the empty area around and between elements. It doesn't have to be white; it's simply space with nothing in it.
+
+Beginners often see empty space as wasted and fill it. But space is what lets each element breathe and be noticed. Cramped designs feel cheap and stressful; roomy designs feel calm and premium. Think of a luxury shop window with three products, compared to a market stall piled high.
+
+If a design feels busy, the fix is usually not to make things smaller. Remove something, and give what's left more room.
+
+Figure five: The same flyer, crammed and then given room. Less content, more impact.
+
+Common mistakes.
+
+Placing elements by eye instead of on a grid.
+
+Using a different gap size everywhere.
+
+Mixing left, centre and right alignment in one design.
+
+Filling every empty space with more content.
+
+Text running right up to the edge of the page or a card.
+
+Recap.
+
+Place content on columns; respect the margins and gutters.
+
+Choose gaps from a spacing scale, like 4, 8, 16, 24, 32, 48, 64.
+
+Line things up along one shared edge.
+
+Small gaps inside groups, big gaps between them.
+
+White space makes designs feel calm and premium.
+
+Practise it: Turn on the grid and smart guides from the View menu, then lay out a simple poster where every edge lines up. That's the end of this lesson.

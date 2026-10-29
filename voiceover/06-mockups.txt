@@ -1,0 +1,75 @@
+DESIGN BASICS · LESSON 6 · MOCKUPS
+Narration script for ElevenLabs. 1 part.
+Paste only the text between the lines into ElevenLabs, one part at a time.
+
+────────────────────────────────────────────────────────────
+PART 1 OF 1  ·  save as: mockups-1.mp3  ·  3,964 characters
+────────────────────────────────────────────────────────────
+
+Design Basics, lesson six. Mockups.
+
+A mockup shows a design on a real object (a T-shirt, a phone, a coffee cup) so people can picture it in real life. Clients rarely get excited by a flat logo on a white page, but show the same logo on a shop sign or a hoodie and they understand it instantly. This lesson explains how mockups work and how to present your designs well.
+
+Part one: Why mockups matter.
+
+Most clients aren't designers. Looking at a flat file, they have to imagine how it will look on their product, and most people can't. A mockup does the imagining for them.
+
+Mockups also catch problems before money is spent on printing: a logo that's too small on a sign, a colour that disappears on a dark bag, text that's unreadable from a distance.
+
+A good mockup is realistic but not distracting. The design should be the hero, not the fancy background.
+
+Figure one: The same artwork, flat and in a T-shirt mockup.
+
+Part two: How smart objects work.
+
+Most professional mockups are Photoshop files (P S D) built with smart objects. A smart object is a container layer: a box that holds your design inside the mockup.
+
+To use it: Step one. In the Layers panel, find the layer marked as a smart object (it's usually called “Your design” or “Place design here”) and double-click its thumbnail. Step two. A new document opens. Paste or place your artwork there, then save it with Control S, or Command S on a Mac and close it. Step three. Back in the mockup, your design now appears on the object, already bent, shaded and lit to match the photo.
+
+It works because the mockup's layers of shadows and folds sit above the smart object. Your design is printed onto the scene, not just pasted on top. If you don't have Photoshop, the free web app Photopea opens P S D mockups and handles smart objects the same way.
+
+Figure two: Double-click the smart object, replace the art, save: the scene updates.
+
+Part three: Choose the right scene.
+
+Match the mockup to where the client's customers will really see the design. A café cares about cups, bags and menus. A clothing brand needs T-shirts, hoodies and labels. A tech startup wants phones, laptops and app icons.
+
+Also match the mood. A luxury brand looks wrong on a cluttered, brightly lit desk; a playful brand looks dull on grey concrete. Pay attention to lighting, colours and props, and choose scenes whose style fits the brand.
+
+Figure three: Six kinds of business, and the mockups that suit them.
+
+Part four: Present work like a professional.
+
+When you show your work, make a presentation board (or a few slides) instead of sending loose files. Put one strong mockup first, as the hero. Then show the logo flat on light and dark backgrounds, the colour palette with its codes, and the fonts.
+
+Explain your thinking in a sentence or two for each choice: why this colour, why this font. Clients trust decisions they understand. Show two or three strong options at most; ten options suggests you aren't sure, and makes the client do your job.
+
+Finally, export at a good size (at least 2000 pixels wide for images) so nothing looks blurry on a large screen.
+
+Figure four: A simple presentation board: hero mockup, logo versions, palette and type.
+
+Common mistakes.
+
+Using a low-resolution or obviously fake-looking mockup.
+
+Picking a scene that doesn't match the brand or its customers.
+
+Showing only mockups and never the flat logo files.
+
+Sending ten options instead of two or three considered ones.
+
+Forgetting to check the design at the size it will really be used.
+
+Recap.
+
+Mockups help clients picture the design in real life.
+
+Smart objects: double-click, place your art, save.
+
+Choose scenes where the brand's customers will see it.
+
+Present on a board: hero mockup, flat logo, palette, fonts.
+
+Explain your choices and keep options few.
+
+Practise it: Download a free P S D mockup, open it in Photoshop or the free Photopea, and replace the smart object with your own design. That's the end of this lesson.

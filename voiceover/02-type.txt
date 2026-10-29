@@ -1,0 +1,105 @@
+DESIGN BASICS · LESSON 2 · TYPOGRAPHY
+Narration script for ElevenLabs. 2 parts.
+Paste only the text between the lines into ElevenLabs, one part at a time.
+
+────────────────────────────────────────────────────────────
+PART 1 OF 2  ·  save as: type-1.mp3  ·  2,713 characters
+────────────────────────────────────────────────────────────
+
+Design Basics, lesson two. Typography.
+
+Typography is the art of arranging text so it's easy and pleasant to read. Most designs are mostly words, so good typography does more for your work than any other single skill. This lesson covers how letters are built, the main kinds of font, and the sizing and spacing rules that make text look professional.
+
+Part one: The anatomy of a letter.
+
+Every letter in a font sits on the same set of invisible lines. Knowing their names helps you compare fonts and talk to other designers.
+
+The baseline is the line letters stand on. The x-height is the height of a lowercase x, which is roughly the height of most lowercase letters. The cap height is the height of capital letters. Tall lowercase letters like d, h and k rise to the ascender line, and letters with tails like g, p and y drop to the descender line.
+
+The x-height matters most in everyday use. Fonts with a large x-height look bigger and stay readable at small sizes, which is why they are popular for screens and captions.
+
+Figure one: Five guide lines, measured from the real font. The blue band is the x-height.
+
+Part two: The main kinds of font.
+
+Serif fonts have small strokes, called serifs, at the ends of letters. They feel classic, literary and trustworthy, and suit books, newspapers and luxury brands. Sans-serif fonts (sans means “without”) have clean strokes with no feet. They feel modern and neutral, and they're the default for apps, websites and signs.
+
+Monospace fonts give every letter exactly the same width, like an old typewriter. Use them for code, numbers in tables, or a technical look. Display fonts are drawn to be used big: heavy, condensed or decorative. They make great headlines and are tiring to read in paragraphs.
+
+A word about the word: a typeface is the design (say, Inter), and a font is one style of it (Inter Bold). In everyday talk, people use both to mean the same thing.
+
+Figure two: The same two letters in four kinds of typeface. Monospace letters each fill an equal box.
+
+Part three: Size and a type scale.
+
+Beginners often pick font sizes by eye (17, 22, 29) and end up with a page where nothing quite relates. Professionals use a type scale: a short list of sizes where each one is the previous size multiplied by the same number.
+
+A popular ratio is 1.25. Starting from 16 pixels body text, that gives 20, 25, 31, 39 and 49 pixels for bigger text, and 12.8 pixels for captions. Use only sizes from your scale, and your design will feel orderly even if nobody knows why.
+
+For body text on screens, 16 pixels is a sensible minimum. For printed body text, 9 to 12 point is typical.
+
+Figure three: A 1.25 type scale. Seven sizes cover captions to the biggest headline.
+
+────────────────────────────────────────────────────────────
+PART 2 OF 2  ·  save as: type-2.mp3  ·  3,486 characters
+────────────────────────────────────────────────────────────
+
+Part four: Weight: from light to black.
+
+Weight is how thick the strokes are. Most modern font families come in several weights, from Thin and Light through Regular and Medium to Bold and Black, often numbered 100 to 900.
+
+Weight is the easiest way to create contrast without adding a second font. Bold headings over Regular body text already look designed. A common, safe set is three weights: Regular (400) for reading, Medium or Semibold (500 to 600) for buttons and labels, and Bold (700 or more) for headings.
+
+Figure four: Six weights of one family. Each number is the weight you choose in a design tool.
+
+Part five: Line height and line length.
+
+Line height (also called leading) is the distance from one line of text to the next. When lines are too close, the eye slips onto the wrong line. For body text, set line height to about 1.4 to 1.6 times the font size. Big headlines need less, around 1.0 to 1.2, or the lines drift apart.
+
+Line length (the measure) is how many characters fit on one line. Lines that are too long make it hard to find the start of the next one; lines that are too short break the flow. Aim for 45 to 75 characters per line, about 10 to 12 words. On a wide screen, that means a narrow text column, not text from edge to edge.
+
+Figure five: The same paragraph cramped and comfortable, and the ideal range for line length.
+
+Part six: Letter spacing.
+
+Letter spacing, or tracking, adds or removes space between all the letters in a block of text. Font designers already spaced the letters perfectly for normal reading sizes, so leave body text at 0.
+
+Adjust it at the extremes. Big headlines look better slightly tighter, about minus 1 percent to minus 3 percent, because the gaps grow with the size. Small uppercase labels look better opened up, about plus 5 percent to plus 12 percent, because capitals are designed to sit next to lowercase letters. Never spread out lowercase body text: words start to fall apart.
+
+Figure six: Tighten big type, open up small capitals, leave body text alone.
+
+Part seven: Pairing two fonts.
+
+Most designs need only two fonts: one for headings and one for body text. Many need just one family in two weights.
+
+The secret of a good pair is clear contrast. A serif heading with a sans-serif body is a classic for a reason: the shapes are obviously different, so it looks intentional. Two fonts that are almost the same (two similar sans-serifs, or Medium next to Regular) look like a mistake, as if you meant to use one font and slipped.
+
+If you're not sure, use one family and let size and weight do the work.
+
+Figure seven: Two pairs that work and one that's too similar to read as a choice.
+
+Common mistakes.
+
+Using three or more fonts in one design.
+
+Body text smaller than 16 pixels on a screen.
+
+Paragraphs stretched across the whole width of a wide screen.
+
+Writing headlines in ALL CAPS with no extra letter spacing.
+
+Centring long paragraphs: centred text is fine for one or two lines only.
+
+Recap.
+
+Learn the five guide lines: ascender, cap height, x-height, baseline, descender.
+
+Serif feels classic, sans-serif modern, monospace technical, display loud.
+
+Pick sizes from a type scale, with 16 pixels body text.
+
+Set body line height to about 1.5 and keep lines to 45 to 75 characters.
+
+Pair two clearly different fonts, or one family in two weights.
+
+Practise it: Add a heading and a paragraph, then try different fonts from the font menu. Aim for clear contrast between the two. That's the end of this lesson.
