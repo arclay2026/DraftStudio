@@ -406,11 +406,11 @@
     const GROUPS = [
       { items: [["index.html", "Home", "home", "home"], ["browse.html", "Browse all", "browse", "browse-all"]] },
       { title: "Files", items: [["browse.html?cat=mockups", "Mockups", "mockups", "mockups"], ["browse.html?cat=vectors", "Vectors", "vectors", "vectors"],
-        ["browse.html?cat=logos", "Logos", "logos", "logos"], ["browse.html?cat=templates", "Templates", "templates", "templates"]]  },
-      { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palettes"], ["qr.html", "QR Code Studio", "qr", "qr", true], ["canvas.html", "Canvas", "canvas", "canvas", true]] },
+        ["browse.html?cat=logos", "Logos", "logos", "logos"], ["browse.html?cat=templates", "Templates", "templates", "templates"]] },
       { title: "Studio", items: [["websites.html", "Websites", "websites", "websites", true]]
         .concat((DS.clientLogos || []).length ? [["portfolio.html", "Portfolio", "portfolio", "portfolio", true]] : [])
         .concat([["pricing.html", "Pricing", "pricing", "pricing"]]) },
+      { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palettes"], ["qr.html", "QR Code Studio", "qr", "qr", true], ["canvas.html", "Canvas", "canvas", "canvas", true]] },
       { title: "Help", items: [["learn.html", "Learn", "learn", "learn"], ["license.html", "License", "license", "license"]] }
     ];
     // A fifth `true` marks a page as new: it gets a NEW badge (a dot when the menu is folded)
