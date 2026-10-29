@@ -300,19 +300,17 @@ p { margin: 0; }
 .hero-photo .tag .arr svg { width: 11px; height: 11px; }
 [data-slide-title] { display: inline-block; animation: fx-in .5s var(--ease); }
 
+/* Always night: the neon sign (site.js) needs the dark, whatever the theme */
 .hero-dots {
-  position: relative; border-radius: 22.5px; background: var(--forest); color: #fff; padding: 9px; display: flex; height: 100%; min-height: 0;
+  position: relative; border-radius: 22.5px; color: #fff; padding: 9px; display: flex; height: 100%; min-height: 0; overflow: hidden;
+  background: radial-gradient(120% 90% at 50% 30%, #10141b 0%, #090b0f 60%, #050608 100%);
 }
 .hero-dots-in {
   flex: 1; min-height: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 16px;
   border: 1px solid rgba(255, 255, 255, .08); border-radius: 16px; padding: clamp(16px, 1.8vw, 25px);
 }
-.dots { flex: 1; min-height: 0; container-type: size; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); grid-template-rows: repeat(5, minmax(0, 1fr)); place-items: center; }
-.dots i { width: min(calc(100cqw / 7 - 7px), calc(100cqh / 5 - 7px)); aspect-ratio: 1; border-radius: 50%; background: var(--forest-2); }
-.dots i { transition: background .18s, transform .3s var(--ease); }
-.dots { --neon: #1fe36c; }  /* neon green on the dark card (light mode), site blue on the white card (dark mode) */
-.dots i.on { background: var(--neon); transform: scale(1.04); box-shadow: 0 0 16px -1px color-mix(in srgb, var(--neon) 70%, transparent); }
-.dots i.trail { background: color-mix(in srgb, var(--neon) 40%, var(--forest-2)); }
+.dots { position: relative; flex: 1; min-height: 0; margin: -6px; }
+.dots canvas { position: absolute; inset: -48px; width: calc(100% + 96px); height: calc(100% + 96px); pointer-events: none; }
 .hero-dots .big { font: 600 clamp(32.5px, 3.5vw, 62.5px)/1 var(--font-display); letter-spacing: var(--tight); white-space: nowrap; }
 .hero-dots p { color: rgba(255, 255, 255, .62); font-size: calc(12px * var(--ts)); margin-top: 7px; }
 .hero-dots p b { color: #fff; font-weight: 500; }
@@ -3058,11 +3056,6 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
 :root[data-theme="dark"] .logo .logo-d { display: block; }
 :root[data-theme="dark"] .fx-doc { --c: #0f0f0f; }
 /* the "100% free" card turns white; its dots stay hot pink */
-:root[data-theme="dark"] .hero-dots { --forest: #ffffff; --forest-2: #ececec; color: #0f0f0f; box-shadow: none; }
-:root[data-theme="dark"] .hero-dots-in { border-color: rgba(15, 15, 15, .08); }
-:root[data-theme="dark"] .hero-dots p { color: rgba(15, 15, 15, .6); }
-:root[data-theme="dark"] .hero-dots p b { color: #0f0f0f; }
-:root[data-theme="dark"] .dots { --neon: var(--dl); }
 /* settings floats above the page like an iOS sheet */
 :root[data-theme="dark"] .set { --surface: #1c1c1c; --fill: #282828; --fill-2: #323232; --border: #343434; box-shadow: 0 30px 80px -18px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .04); }
 :root[data-theme="dark"] { --side-bg: #121212; }  /* Graphite, neutral */
@@ -3079,11 +3072,6 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
   :root:not([data-theme="light"]) .logo .logo-d { display: block; }
   :root:not([data-theme="light"]) .fx-doc { --c: #0f0f0f; }
   /* the "100% free" card turns white; its dots stay hot pink */
-  :root:not([data-theme="light"]) .hero-dots { --forest: #ffffff; --forest-2: #ececec; color: #0f0f0f; box-shadow: none; }
-  :root:not([data-theme="light"]) .hero-dots-in { border-color: rgba(15, 15, 15, .08); }
-  :root:not([data-theme="light"]) .hero-dots p { color: rgba(15, 15, 15, .6); }
-  :root:not([data-theme="light"]) .hero-dots p b { color: #0f0f0f; }
-  :root:not([data-theme="light"]) .dots { --neon: var(--dl); }
   /* settings floats above the page like an iOS sheet */
   :root:not([data-theme="light"]) .set { --surface: #1c1c1c; --fill: #282828; --fill-2: #323232; --border: #343434; box-shadow: 0 30px 80px -18px rgba(0, 0, 0, .9), 0 0 0 1px rgba(255, 255, 255, .04); }
   :root:not([data-theme="light"]) { --side-bg: #121212; }
@@ -3134,3 +3122,5 @@ div { corner-shape: superellipse(1.5); }
 svg.mi, svg.mi path { fill: currentColor !important; stroke: none !important; }
 /* the double arrow in round badges reads small at weight 400 */
 .arr svg.mi, .card-cta svg.mi, .go svg.mi, .wsv-cap svg.mi { transform: scale(1.3); }
+:root[data-theme="dark"] .hero-dots { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hero-dots { box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .07); } }

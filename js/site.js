@@ -820,29 +820,112 @@
       }
     }
 
-    // Dot card: a pixel download arrow falls through the grid; "100%" counts up
+    // Dot card: a neon dot sign at night. The Draft Studio mark lights up petal by petal
+    // (each petal is one tube that stutters as it strikes), hums, then powers off with
+    // an afterglow. Drawn on a canvas; still and lit when motion is reduced.
     const dots = $("[data-dots]");
     if (dots) {
-      const COLS = 7, ROWS = 5;
-      dots.innerHTML = Array.from({ length: COLS * ROWS }, () => "<i></i>").join("");
-      const cells = $$("i", dots);
-      const ARROW = ["...X...", "...X...", ".X.X.X.", "..XXX..", "...X..."];
-      const period = ROWS + ARROW.length + 2;
-      let step = 0, timer = null;
-      const paint = () => {
-        cells.forEach((c, k) => {
-          const r = Math.floor(k / COLS), col = k % COLS;
-          const ar = r - (step - ARROW.length);
-          const lit = ar >= 0 && ar < ARROW.length && ARROW[ar][col] === "X";
-          const trail = !lit && ar - 1 >= 0 && ar - 1 < ARROW.length && ARROW[ar - 1][col] === "X";
-          c.className = lit ? "on" : trail ? "trail" : "";
-        });
+      const MARK = [  // assets/logo-mark.svg, viewBox 174 174 652 652; the last petal is the blue one
+        "M490.41,179.21h0c-171.87,0-311.2,139.33-311.2,311.2h0q311.2,0,311.2-311.2Z",
+        "M490.41,820.79h0c-171.87,0-311.2-139.33-311.2-311.2h0q311.2,0,311.2,311.2Z",
+        "M509.59,820.79h0c171.87,0,311.2-139.33,311.2-311.2h0q-311.2,0-311.2,311.2Z",
+        "M509.59,179.21h0c171.87,0,311.2,139.33,311.2,311.2h0q-311.2,0-311.2-311.2Z"
+      ];
+      // tube colours: three ice-white petals and one electric blue
+      const TUBE = [[196, 222, 255], [196, 222, 255], [196, 222, 255], [40, 132, 255]], HALO = [.07, .07, .07, .16];
+      const LOOP = 8.4, ON = [.5, .95, 1.35, 1.95], OFF = 6.2, BLEED = 48;
+      const cv = document.createElement("canvas"), x = cv.getContext("2d");
+      dots.appendChild(cv);
+      let W = 0, H = 0, dpr = 1, cell = 12, cols = 0, rows = 0, ox = 0, oy = 0, lit = [], base = null, sprites = [], t0 = 0, raf = 0;
+      const hash = n => { n = Math.sin(n * 127.1 + 311.7) * 43758.5453; return n - Math.floor(n); };
+      const sprite = (rad, stops) => {
+        const c = document.createElement("canvas"); c.width = c.height = Math.ceil(rad * 2);
+        const g = c.getContext("2d"), gr = g.createRadialGradient(rad, rad, 0, rad, rad, rad);
+        stops.forEach(([o, col]) => gr.addColorStop(o, col)); g.fillStyle = gr; g.fillRect(0, 0, c.width, c.height);
+        return c;
       };
-      if (calm) { step = ARROW.length; paint(); }
-      else onScreen(dots, vis => {
-        clearInterval(timer); timer = null;
-        if (vis) timer = setInterval(() => { step = (step + 1) % period; paint(); }, 160);
-      });
+      const layout = () => {
+        const r = dots.getBoundingClientRect(), gw = r.width, gh = r.height;
+        if (!gw || !gh) return false;
+        W = gw + BLEED * 2; H = gh + BLEED * 2;
+        dpr = Math.min(2, devicePixelRatio || 1);
+        cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
+        cell = Math.max(9, Math.min(15, Math.min(gw, gh) / 19));
+        cols = Math.floor(gw / cell); rows = Math.floor(gh / cell);
+        ox = BLEED + (gw - cols * cell) / 2 + cell / 2; oy = BLEED + (gh - rows * cell) / 2 + cell / 2;
+        const dot = cell * .36;
+        // the mark, rasterised at one pixel per dot (supersampled), one colour channel per petal
+        const n = Math.min(cols, rows) - 4, S = 4, m = document.createElement("canvas");
+        m.width = cols * S; m.height = rows * S;
+        const g = m.getContext("2d"), k = n * S / 652;
+        g.setTransform(k, 0, 0, k, ((cols - n) / 2) * S - 174 * k, ((rows - n) / 2) * S - 174 * k);
+        const data = MARK.map(d => { g.clearRect(-1e4, -1e4, 2e4, 2e4); g.fillStyle = "#fff"; g.fill(new Path2D(d)); return g.getImageData(0, 0, m.width, m.height).data; });
+        lit = [];
+        for (let rr = 0; rr < rows; rr++) for (let cc = 0; cc < cols; cc++) {
+          data.forEach((px, p) => {
+            let a = 0;
+            for (let yy = 0; yy < S; yy++) for (let xx = 0; xx < S; xx++) a += px[((rr * S + yy) * m.width + cc * S + xx) * 4 + 3];
+            a /= S * S * 255;
+            if (a > .3) lit.push({ x: ox + cc * cell, y: oy + rr * cell, p, a: Math.min(1, a * 1.15), v: .9 + hash(rr * 97 + cc) * .1 });
+          });
+        }
+        // the unlit board: dark glass bulbs with a faint rim
+        base = document.createElement("canvas"); base.width = cv.width; base.height = cv.height;
+        const b = base.getContext("2d"); b.scale(dpr, dpr);
+        for (let rr = 0; rr < rows; rr++) for (let cc = 0; cc < cols; cc++) {
+          const cx = ox + cc * cell, cy = oy + rr * cell, gr = b.createRadialGradient(cx - dot * .3, cy - dot * .35, 0, cx, cy, dot);
+          gr.addColorStop(0, "#2a2d33"); gr.addColorStop(.7, "#17191d"); gr.addColorStop(1, "#111316");
+          b.fillStyle = gr; b.beginPath(); b.arc(cx, cy, dot, 0, Math.PI * 2); b.fill();
+        }
+        // glow sprites per tube colour: a wide soft halo, a tight bloom and a white-hot core
+        sprites = TUBE.map(([R, G, B], p) => ({
+          halo: sprite(cell * 3.4 * dpr, [[0, `rgba(${R},${G},${B},${HALO[p]})`], [.3, `rgba(${R},${G},${B},${HALO[p] * .4})`], [1, `rgba(${R},${G},${B},0)`]]),
+          bloom: sprite(cell * .85 * dpr, [[0, `rgba(${R},${G},${B},.75)`], [.5, `rgba(${R},${G},${B},.28)`], [1, `rgba(${R},${G},${B},0)`]]),
+          core: sprite(dot * 1.05 * dpr, [[0, "rgba(255,255,255,1)"], [.55, `rgba(${Math.min(255, R + 40)},${Math.min(255, G + 30)},255,.95)`], [.85, `rgba(${R},${G},${B},.7)`], [1, `rgba(${R},${G},${B},0)`]])
+        }));
+        return true;
+      };
+      // How bright a petal's tube is at time t (0 to 1): strike stutter, steady hum, power-off afterglow
+      const level = (p, t, loop) => {
+        const on = ON[p], off = OFF + (3 - p) * .12;
+        if (t < on) return 0;
+        if (t < on + .55) {  // striking: a few hard flickers, faster as the gas catches
+          const u = (t - on) / .55, seg = Math.floor(u * 14);
+          return hash(seg * 13 + p * 7 + loop * 3) < .35 + u * .6 ? .35 + u * .65 : .06;
+        }
+        if (t < off) {
+          let v = .96 + .04 * Math.sin(t * 9 + p) * Math.sin(t * 23 + p * 2);  // gentle hum
+          if (p === 3 && Math.abs(t - 4.6) < .06) v *= .45;  // the blue tube blinks once, like an old sign
+          return v;
+        }
+        const d = t - off;  // power off: a drop, then the phosphor afterglow fades
+        return d < .05 ? .9 : Math.max(0, .4 * Math.exp(-d * 5));
+      };
+      const draw = now => {
+        const t = ((now - t0) / 1000) % LOOP, loop = Math.floor((now - t0) / 1000 / LOOP);
+        x.setTransform(1, 0, 0, 1, 0, 0);
+        x.globalCompositeOperation = "source-over";
+        x.clearRect(0, 0, cv.width, cv.height);
+        x.drawImage(base, 0, 0);
+        const lv = [0, 1, 2, 3].map(p => (calm ? 1 : level(p, t, loop)));
+        x.globalCompositeOperation = "lighter";
+        for (const pass of ["halo", "bloom", "core"]) {
+          for (const d of lit) {
+            const v = lv[d.p] * d.a * d.v;
+            if (v < .01) continue;
+            const sp = sprites[d.p][pass], w = sp.width;
+            x.globalAlpha = Math.min(1, pass === "halo" ? v * .9 : v);
+            x.drawImage(sp, d.x * dpr - w / 2, d.y * dpr - w / 2);
+          }
+        }
+        x.globalAlpha = 1;
+      };
+      const loopFn = now => { draw(now); raf = requestAnimationFrame(loopFn); };
+      const start = () => { if (!raf && layout()) { if (!t0) t0 = performance.now(); raf = requestAnimationFrame(loopFn); } };
+      const stop = () => { cancelAnimationFrame(raf); raf = 0; };
+      if ("ResizeObserver" in window) new ResizeObserver(() => { if (layout()) draw(performance.now()); }).observe(dots);
+      if (calm) { if (layout()) draw(0); }
+      else onScreen(dots, vis => (vis ? start() : stop()));
       const num = $("[data-count-to]");
       if (num && !calm) {
         let done = false;
