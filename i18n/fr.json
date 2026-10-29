@@ -1835,7 +1835,9 @@
   "Development": "Développement",
   "Nature": "Nature",
   "Food": "Alimentation",
-  "Education": "Éducation"
+  "Education": "Éducation",
+  "Control bar": "Barre de contrôle",
+  "Stroke weight": "Épaisseur du contour"
  },
  "patterns": {
   "^(\\d+) files$": "$1 fichiers",

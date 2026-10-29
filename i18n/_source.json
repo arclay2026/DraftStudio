@@ -1778,7 +1778,9 @@
   "Development",
   "Nature",
   "Food",
-  "Education"
+  "Education",
+  "Control bar",
+  "Stroke weight"
  ],
  "patterns": {
   "^(\\d+) files$": "$1 files",

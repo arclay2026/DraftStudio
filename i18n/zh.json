@@ -1835,7 +1835,9 @@
   "Development": "开发",
   "Nature": "自然",
   "Food": "美食",
-  "Education": "教育"
+  "Education": "教育",
+  "Control bar": "控制栏",
+  "Stroke weight": "描边粗细"
  },
  "patterns": {
   "^(\\d+) files$": "$1 个文件",

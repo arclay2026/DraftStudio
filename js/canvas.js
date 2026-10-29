@@ -1,8 +1,9 @@
 /* =====================================================================
    CANVAS — Draft Studio's free design studio (canvas.html)
-   An infinite pasteboard with artboards, floating glass panels, a tool
-   dock, a toolbar that follows the selection, a ⌘K command palette and
-   a minimap. Vector paths with editable anchors, shape combining
+   A desktop-style workspace: a menu bar, a control bar for the selection,
+   a tool column, docked Layers/Assets and Properties panels, a status bar
+   with zoom, artboard and cursor position, a ⌘K command palette and a
+   minimap. Vector paths with editable anchors, shape combining
    (paper.js, loaded on demand), clipping masks, recolouring, repeat
    grids, QR codes, blend modes, history and full-screen preview.
    Built on Fabric.js 5 (js/vendor/fabric.min.js, MIT licence).
@@ -181,20 +182,23 @@ window.DSCanvas = function (kit) {
   };
   root.innerHTML = `
     <header class="cx-top">
-      <div class="cx-top-l">
-        <button type="button" class="cx-brand" data-act="main-menu" aria-haspopup="true" aria-label="Main menu">${MARK_SVG}<span data-no-i18n>Drafty</span>${ui("chev")}</button>
-        <span class="cx-vr"></span>
-        <input class="cx-docname" data-name value="" aria-label="Design name" spellcheck="false" maxlength="60">
-        <span class="cx-saved" data-saved><i></i><em></em></span>
+      <div class="cx-bar">
+        <div class="cx-top-l">
+          <button type="button" class="cx-brand" data-act="main-menu" aria-haspopup="true" aria-label="Main menu">${MARK_SVG}</button>
+          <nav class="cx-mbar" data-mbar aria-label="Menu">${MENUS.map(([m], i) => `<button type="button" data-act="menu:${i}" aria-haspopup="true">${m}</button>`).join("")}</nav>
+        </div>
+        <div class="cx-top-c">
+          <input class="cx-docname" data-name value="" aria-label="Design name" spellcheck="false" maxlength="60">
+          <span class="cx-saved" data-saved><i></i><em></em></span>
+        </div>
+        <div class="cx-top-r">
+          <button type="button" class="cx-search" data-act="palette" aria-label="Command palette" data-tip="Command palette · ${keyLabel("mod+K")}">${ui("command")}<span>Search</span><kbd>${keyLabel("mod+K")}</kbd></button>
+          <span class="cx-pair2"><button type="button" class="cx-ico" data-act="undo" aria-label="Undo" data-tip="Undo · ${keyLabel("mod+Z")}">${ui("undo")}</button><button type="button" class="cx-ico" data-act="redo" aria-label="Redo" data-tip="Redo · ${keyLabel("mod+shift+Z")}">${ui("redo")}</button></span>
+          <button type="button" class="cx-ico" data-act="present" aria-label="Preview" data-tip="Preview · ${keyLabel("mod+enter")}">${ui("play")}</button>
+          <button type="button" class="cx-primary" data-act="export">${ui("export")}<span>Export</span></button>
+        </div>
       </div>
-      <div class="cx-top-c"><button type="button" class="cx-abchip" data-act="ab-menu" aria-haspopup="true"><span data-abchip></span>${ui("chev")}</button></div>
-      <div class="cx-top-r">
-        <button type="button" class="cx-search" data-act="palette" aria-label="Command palette">${ui("command")}<span>Search actions</span><kbd>${keyLabel("mod+K")}</kbd></button>
-        <span class="cx-pair2"><button type="button" class="cx-ico" data-act="undo" aria-label="Undo" data-tip="Undo · ${keyLabel("mod+Z")}">${ui("undo")}</button><button type="button" class="cx-ico" data-act="redo" aria-label="Redo" data-tip="Redo · ${keyLabel("mod+shift+Z")}">${ui("redo")}</button></span>
-        <button type="button" class="cx-ico" data-act="toggle:light" aria-label="Light or dark interface" data-tip="Light or dark interface" data-themebtn></button>
-        <button type="button" class="cx-ghost" data-act="present" data-tip="Preview · ${keyLabel("mod+enter")}">${ui("play")}<span>Preview</span></button>
-        <button type="button" class="cx-primary" data-act="export">${ui("export")}<span>Export</span></button>
-      </div>
+      <div class="cx-ctrl" data-ctrl aria-label="Control bar"></div>
     </header>
     <div class="cx-body" data-body>
       <div class="cx-stage" data-stage><canvas></canvas></div>
@@ -217,19 +221,23 @@ window.DSCanvas = function (kit) {
           <label class="cx-paint-f"><input type="color" data-paintin="fill" aria-label="Fill colour"></label>
         </div>
         <button type="button" class="cx-tool" data-act="place" aria-label="Place image" data-tip="Place image · ${keyLabel("mod+shift+P")}">${ui("image")}</button>
-        <span class="cx-dock-sep"></span>
+      </nav>
+      <footer class="cx-status" data-status>
         <div class="cx-navcard" data-navcard>
           <div class="cx-miniwrap"><canvas class="cx-minimap" data-mini aria-label="Minimap"></canvas></div>
           <div class="cx-zoomrow">
-            <button type="button" data-act="zoom-out" aria-label="Zoom out">${ui("minus")}</button>
+            <button type="button" data-act="zoom-out" aria-label="Zoom out" data-tip="Zoom out · ${keyLabel("mod+-")}">${ui("minus")}</button>
             <button type="button" class="cx-zoomval" data-act="zoom-menu" data-zoomval aria-label="Zoom presets">100%</button>
-            <button type="button" data-act="zoom-in" aria-label="Zoom in">${ui("plus")}</button>
+            <button type="button" data-act="zoom-in" aria-label="Zoom in" data-tip="Zoom in · ${keyLabel("mod+=")}">${ui("plus")}</button>
             <button type="button" data-act="fit" aria-label="Zoom to artboard" data-tip="Zoom to artboard · ${keyLabel("shift+2")}">${ui("fit")}</button>
           </div>
         </div>
-      </nav>
-      <div class="cx-selbar" data-selbar hidden></div>
-      <div class="cx-hint" data-hint></div>
+        <span class="cx-st-sep"></span>
+        <button type="button" class="cx-abchip" data-act="ab-menu" aria-haspopup="true" aria-label="Artboards"><span data-abchip></span>${ui("chev")}</button>
+        <span class="cx-st-sep"></span>
+        <span class="cx-hint" data-hint></span>
+        <span class="cx-st-xy" data-xy data-no-i18n></span>
+      </footer>
       <div class="cx-measure" data-measure data-no-i18n hidden></div>
       <div class="cx-drop" data-drop><span>${ui("upload")}Drop images to place them</span></div>
       <div class="cx-toast" data-toast role="status"></div>
@@ -248,7 +256,7 @@ window.DSCanvas = function (kit) {
 
   const stage = $("[data-stage]", root), body = $("[data-body]", root);
   const leftP = $("[data-left]", root), rightP = $("[data-right]", root), lBody = $("[data-lbody]", root), rBody = $("[data-rbody]", root);
-  const lTabs = $("[data-ltabs]", root), iHead = $("[data-ihead]", root), dock = $("[data-dock]", root), selbar = $("[data-selbar]", root);
+  const lTabs = $("[data-ltabs]", root), iHead = $("[data-ihead]", root), dock = $("[data-dock]", root), ctrl = $("[data-ctrl]", root), mbar = $("[data-mbar]", root);
   const menuPop = $("[data-menupop]", root), modal = $("[data-modal]", root), dialog = $("[data-dialog]", root);
   const paletteEl = $("[data-palette]", root), pq = $("[data-pq]", root), plist = $("[data-plist]", root);
   const measureEl = $("[data-measure]", root), toastEl = $("[data-toast]", root), hintEl = $("[data-hint]", root);
@@ -260,7 +268,7 @@ window.DSCanvas = function (kit) {
      ===================================================================== */
   F.Object.prototype.set({
     transparentCorners: false, cornerColor: "#ffffff", cornerStrokeColor: "#1f7aff", borderColor: "#1f7aff",
-    cornerSize: 9, cornerStyle: "circle", borderScaleFactor: 1.4, padding: 0, borderOpacityWhenMoving: .6
+    cornerSize: 7, cornerStyle: "rect", borderScaleFactor: 1, padding: 0, borderOpacityWhenMoving: .6
   });
   F.IText.prototype.set({ editingBorderColor: "#1f7aff", cursorColor: "#1f7aff", selectionColor: "rgba(31, 122, 255, .3)" });
   if (F.Canvas2dFilterBackend) F.filterBackend = new F.Canvas2dFilterBackend();
@@ -273,7 +281,7 @@ window.DSCanvas = function (kit) {
   /* ---------- Document state ---------- */
   const GUIDE = "#24c1ff", SMART = "#ff3fa4";
   const doc = { name: tr("Untitled design"), artboards: [], active: 0, guides: { v: [], h: [] } };
-  const view = { rulers: false, smart: true, guides: true, lockGuides: false, grid: false, snapGrid: false, pixel: true, names: true, mini: true, light: false, hideUI: false };
+  const view = { rulers: true, smart: true, guides: true, lockGuides: false, grid: false, snapGrid: false, pixel: true, names: true, mini: true, light: false, hideUI: false };
   const prefs = { nudge: 1, scaleStrokes: false, gridSize: 20 };
   const DEFAULT_PAINT = { fill: "#1f7aff", stroke: null, strokeWidth: 2 };
   const paint = Object.assign({ focus: "fill" }, DEFAULT_PAINT);
@@ -291,10 +299,12 @@ window.DSCanvas = function (kit) {
     root.classList.toggle("no-mini", !view.mini);
     root.classList.toggle("hide-ui", !!view.hideUI);
     root.classList.toggle("is-present", present);
-    $("[data-themebtn]", root).innerHTML = ui(view.light ? "moon" : "sun");
+    // the pasteboard colour comes from the theme (--x-paste in style.css)
+    pasteCol = getComputedStyle(root).getPropertyValue("--x-paste").trim() || (view.light ? "#d9d9d9" : "#1b1b1b");
   };
+  let pasteCol = "";
   applyViewClasses();
-  const pasteColour = () => (view.light ? "#e9e9ee" : "#111113");
+  const pasteColour = () => pasteCol;
 
   /* =====================================================================
      Pasteboard, artboards, grid (drawn under the artwork)
@@ -305,14 +315,6 @@ window.DSCanvas = function (kit) {
     const v = this.viewportTransform;
     if (!exporting()) {
       ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.fillStyle = present ? "#000000" : pasteColour(); ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-      // a faint dot grid on the pasteboard
-      const step = 24;
-      if (!present) {
-        const d = window.devicePixelRatio || 1;
-        ctx.fillStyle = view.light ? "rgba(0,0,0,.10)" : "rgba(255,255,255,.06)";
-        const ox = ((v[4] % step) + step) % step, oy = ((v[5] % step) + step) % step;
-        for (let x = ox; x < ctx.canvas.width / d; x += step) for (let y = oy; y < ctx.canvas.height / d; y += step) ctx.fillRect(x * d, y * d, d * 1.25, d * 1.25);
-      }
       ctx.restore();
     }
     ctx.save();
@@ -320,7 +322,8 @@ window.DSCanvas = function (kit) {
     doc.artboards.forEach((a, i) => {
       if (exporting() && !exportBg) return;
       if (present && i !== doc.active) return;
-      if (!exporting()) { ctx.shadowColor = view.light ? "rgba(0,0,0,.14)" : "rgba(0,0,0,.5)"; ctx.shadowBlur = 36 * (window.devicePixelRatio || 1); ctx.shadowOffsetY = 6 * (window.devicePixelRatio || 1); }
+      // a tight, crisp shadow, like a sheet of paper on the desk
+      if (!exporting()) { ctx.shadowColor = view.light ? "rgba(0,0,0,.22)" : "rgba(0,0,0,.6)"; ctx.shadowBlur = 4 * (window.devicePixelRatio || 1); ctx.shadowOffsetY = 1 * (window.devicePixelRatio || 1); }
       ctx.fillStyle = a.bg || "#ffffff";
       ctx.fillRect(a.x, a.y, a.w, a.h);
       ctx.shadowColor = "transparent";
@@ -435,6 +438,19 @@ window.DSCanvas = function (kit) {
     if (first) fitArtboard(); else afterView();
   };
   if ("ResizeObserver" in window) new ResizeObserver(resize).observe(stage);
+  // Status bar: the pointer's position, measured from the active artboard's top-left corner
+  const xyEl = $("[data-xy]", root);
+  let xyRaf = 0, xyEv = null;
+  stage.addEventListener("pointermove", e => {
+    xyEv = e;
+    if (xyRaf) return;
+    xyRaf = requestAnimationFrame(() => {
+      xyRaf = 0;
+      const r = stage.getBoundingClientRect(), p = F.util.transformPoint(new F.Point(xyEv.clientX - r.left, xyEv.clientY - r.top), F.util.invertTransform(cv.viewportTransform)), a = ab();
+      xyEl.innerHTML = `<span>X</span>${Math.round(p.x - a.x)}<span>Y</span>${Math.round(p.y - a.y)}`;
+    });
+  });
+  stage.addEventListener("pointerleave", () => { xyEl.textContent = ""; });
   stage.addEventListener("wheel", e => {
     e.preventDefault();
     if (e.ctrlKey || e.metaKey || e.altKey) {
@@ -1050,13 +1066,8 @@ window.DSCanvas = function (kit) {
     cv.requestRenderAll();
     if (!temp) refreshUI();
   }
-  let hintT = 0, hintFirst = true;
-  const showHint = () => {
-    if (hintFirst) { hintFirst = false; return; }
-    hintEl.innerHTML = `<b>${tr(TOOL_INFO[tool].name)}</b><span>${tr(TOOL_HINT[tool])}</span>`;
-    hintEl.classList.add("is-on");
-    clearTimeout(hintT); hintT = setTimeout(() => hintEl.classList.remove("is-on"), tool === "select" ? 1800 : 4200);
-  };
+  // the status bar names the current tool and how to use it
+  const showHint = () => { hintEl.innerHTML = `<b>${tr(TOOL_INFO[tool].name)}</b><span>${tr(TOOL_HINT[tool])}</span>`; };
   dock.addEventListener("click", e => {
     const more = e.target.closest("[data-more]");
     if (more) { openFlyout(more.previousElementSibling); return; }
@@ -1136,7 +1147,7 @@ window.DSCanvas = function (kit) {
   });
   cv.on("object:scaling", e => { const o = e.target; showMeasure(e.e, `W  ${round(o.getScaledWidth())}\nH  ${round(o.getScaledHeight())}`); });
   cv.on("object:rotating", e => { showMeasure(e.e, `${round(e.target.angle, 1)}°`); });
-  cv.on("before:transform", e => { const o = e.transform.target; o.__start = { left: o.left, top: o.top }; selbar.classList.add("is-busy"); });
+  cv.on("before:transform", e => { const o = e.transform.target; o.__start = { left: o.left, top: o.top }; });
   cv.on("before:render", () => { if (cv.contextTop && !cv.isDrawingMode) cv.clearContext(cv.contextTop); });
   cv.on("after:render", () => drawTop());
   function drawTop() {
@@ -1343,7 +1354,6 @@ window.DSCanvas = function (kit) {
   cv.on("mouse:up", opt => {
     const e = opt.e;
     hideMeasure();
-    selbar.classList.remove("is-busy");
     if (panning) { panning = null; cv.setCursor(cv.defaultCursor); return; }
     if (guideDrag && !guideDrag.ruler) {
       if (!stagePt(e).inside) doc.guides[guideDrag.axis].splice(guideDrag.index, 1);
@@ -1728,12 +1738,7 @@ window.DSCanvas = function (kit) {
         sec("canvas", "Canvas", `<div class="cx-toggles">
           ${[["rulers", "rulers", "Rulers"], ["grid", "grid-lines", "Grid"], ["snapGrid", "snapgrid", "Snap to Grid"], ["smart", "smart", "Smart Guides"], ["guides", "guides", "Guides"], ["pixel", "pixel", "Whole Pixels"]]
             .map(([f, ic, l]) => `<button type="button" class="cx-toggle${view[f] ? " is-on" : ""}" data-act="toggle:${f}" aria-pressed="${!!view[f]}">${ui(ic)}<span>${l}</span></button>`).join("")}</div>
-          <div class="cx-g2">${num("pref-grid", prefs.gridSize, { label: "Grid", unit: "px", min: 2, d: 0 })}${num("pref-nudge", prefs.nudge, { label: "Nudge", unit: "px", min: .1 })}</div>`) +
-        sec("start", "Get started", `<div class="cx-quick">
-          <button type="button" data-act="assets:brief">${ui("target")}<b>Practice brief</b><span>A real client task</span></button>
-          <button type="button" data-act="assets:templates">${ui("grid")}<b>Templates</b><span>Start from a layout</span></button>
-          <button type="button" data-act="palette">${ui("command")}<b>Command palette</b><span>${keyLabel("mod+K")} finds everything</span></button>
-          <button type="button" data-act="shortcuts">${ui("fonts")}<b>Shortcuts</b><span>Work faster</span></button></div>`);
+          <div class="cx-g2">${num("pref-grid", prefs.gridSize, { label: "Grid", unit: "px", min: 2, d: 0 })}${num("pref-nudge", prefs.nudge, { label: "Nudge", unit: "px", min: .1 })}</div>`);
     }
     const b = o.getBoundingRect(true, true);
     const fill = firstOf("fill"), stroke = firstOf("stroke"), target = o.type === "activeSelection" ? o.getObjects()[0] : o;
@@ -1794,37 +1799,48 @@ window.DSCanvas = function (kit) {
     return h;
   }
 
-  /* ---------- Selection toolbar (floats over the selection) ---------- */
-  function renderSelbar() {
-    const o = cv.getActiveObject();
-    if (!o || o.isEditing || present || view.hideUI || !(tool === "select" || tool === "direct") || innerWidth < 900) { selbar.hidden = true; return; }
-    const k = kindOf(o), fill = firstOf("fill"), stroke = firstOf("stroke");
-    let h = "";
-    if (k !== "image" && k !== "masked") h += `<span class="cx-sb-chips">${swatchIn("fill", fill)}${k !== "text" && k !== "icon" ? `<span class="cx-sb-stroke">${swatchIn("stroke", stroke)}</span>` : ""}</span><span class="cx-sb-sep"></span>`;
-    if (k === "text") h += `${fontBtn(o)}${num("fontSize", o.fontSize, { min: 1, d: 0 })}<span class="cx-sb-sep"></span>`;
-    if (k === "multi" && combinable().length > 1) h += boolRow() + `<span class="cx-sb-sep"></span>`;
-    if (k === "multi") h += `<button type="button" class="cx-ib" data-act="group" aria-label="Group" data-tip="Group · ${keyLabel("mod+G")}">${ui("group")}</button><button type="button" class="cx-ib" data-act="mask" aria-label="Make Clipping Mask" data-tip="Mask · ${keyLabel("mod+7")}">${ui("mask")}</button>`;
-    if (k === "group") h += `<button type="button" class="cx-ib" data-act="ungroup" aria-label="Ungroup" data-tip="Ungroup · ${keyLabel("mod+shift+G")}">${ui("ungroup")}</button>`;
-    if (k === "masked") h += `<button type="button" class="cx-ib" data-act="unmask" aria-label="Release Clipping Mask" data-tip="Release Mask · ${keyLabel("mod+alt+7")}">${ui("mask")}</button>`;
-    h += `<button type="button" class="cx-ib" data-act="align-pop" aria-label="Align" data-tip="Align">${ui("al-center")}</button>
-      <button type="button" class="cx-ib" data-act="duplicate" aria-label="Duplicate" data-tip="Duplicate · ${keyLabel("mod+D")}">${ui("copy")}</button>
-      <button type="button" class="cx-ib" data-act="lock" aria-label="Lock" data-tip="Lock · ${keyLabel("mod+2")}">${ui(o.locked ? "lock" : "unlock")}</button>
-      <button type="button" class="cx-ib" data-act="delete" aria-label="Delete" data-tip="Delete">${icon("trash")}</button>
-      <button type="button" class="cx-ib" data-act="more" aria-label="More" data-tip="More">${ui("more")}</button>`;
-    selbar.innerHTML = h;
-    selbar.hidden = false;
-    positionSelbar();
-  }
-  function positionSelbar() {
-    const o = cv.getActiveObject();
-    if (!o || selbar.hidden) return;
-    if (o.isEditing) { selbar.hidden = true; return; }
-    const r = o.getBoundingRect(), p = insets(), W = selbar.offsetWidth, H = selbar.offsetHeight;
-    let x = r.left + r.width / 2 - W / 2, y = r.top - H - 16;
-    if (y < p.t - 20) y = r.top + r.height + 16;
-    if (y + H > cv.height - p.b + 20) y = Math.max(p.t - 20, r.top + 16);
-    x = clamp(x, p.l - 8, Math.max(p.l - 8, cv.width - p.r + 8 - W));
-    selbar.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+  /* ---------- Control bar (under the menu bar): the main settings of what's selected ---------- */
+  function renderCtrl() {
+    // don't rebuild while someone is typing a value into it
+    const f = document.activeElement;
+    if (f && ctrl.contains(f) && f.matches("input")) return;
+    const o = cv.getActiveObject(), k = kindOf(o), a = ab();
+    const head = t => `<span class="cx-ctrl-k"${o && isText(o) ? " data-no-i18n" : ""}>${t}</span>`, sep = `<span class="cx-ctrl-sep"></span>`;
+    const ib = (act, ic, label, key = "") => `<button type="button" class="cx-ib" data-act="${act}" aria-label="${label}" data-tip="${label}${key ? ` · ${keyLabel(key)}` : ""}">${ic}</button>`;
+    let h;
+    if (tool === "artboard") {
+      const t = targetAb();
+      h = head(esc(t.name)) + sep + presetSel(t) + sep + num("ab-w", t.w, { label: "W", min: 1, d: 0 }) + num("ab-h", t.h, { label: "H", min: 1, d: 0 }) +
+        num("ab-x", t.x, { label: "X", d: 0 }) + num("ab-y", t.y, { label: "Y", d: 0 }) + sep +
+        ib("ab-new", ui("plus"), "New Artboard") + ib("ab-dup", ui("copy"), "Duplicate Artboard") + ib("ab-fit", ui("fit"), "Fit to Artwork Bounds") +
+        `<button type="button" class="cx-cbtn" data-act="tool:select">Done</button>`;
+    } else if (!o) {
+      h = head(tr("No Selection")) + sep + `<button type="button" class="cx-cbtn" data-act="doc-setup">Document Setup</button><button type="button" class="cx-cbtn" data-act="prefs">Preferences</button>` +
+        sep + presetSel(a) + num("ab-w", a.w, { label: "W", min: 1, d: 0 }) + num("ab-h", a.h, { label: "H", min: 1, d: 0 });
+    } else {
+      const b = o.getBoundingRect(true, true), fill = firstOf("fill"), stroke = firstOf("stroke"), target = o.type === "activeSelection" ? o.getObjects()[0] : o;
+      h = head(esc(o.type === "activeSelection" ? `${o.getObjects().length} ${tr("selected")}` : typeName(o))) + sep;
+      if (k !== "image" && k !== "masked") {
+        h += `<span class="cx-ctrl-paint"><span class="cx-lbl">Fill</span>${swatchIn("fill", fill)}</span>`;
+        if (k !== "text" && k !== "icon") h += `<span class="cx-ctrl-paint"><span class="cx-lbl">Stroke</span>${swatchIn("stroke", stroke)}</span>`;
+        if (stroke || k === "icon") h += num("strokeWidth", (target.kind === "icon" ? iconParts(target)[0].strokeWidth : target.strokeWidth) || 0, { unit: "px", min: 0, step: .5, tip: "Stroke weight" });
+        h += sep;
+      }
+      if (k === "text") h += fontBtn(o) + sel("fontWeight", o.fontWeight, (FONTS[o.fontFamily] || [400, 700]).map(w => [w, WEIGHT_NAMES[w]]), "Font style") + num("fontSize", o.fontSize, { unit: "px", min: 1, tip: "Font size" }) + sep;
+      h += num("opacity", round((o.opacity ?? 1) * 100), { label: "Opacity", unit: "%", min: 0, max: 100, d: 0 }) + sep;
+      h += num("x", b.left - a.x, { label: "X" }) + num("y", b.top - a.y, { label: "Y" });
+      if (k !== "multi") h += num("w", o.getScaledWidth(), { label: "W", min: 1 }) + num("h", o.getScaledHeight(), { label: "H", min: 1 });
+      h += sep + alignRow();
+      if (k === "multi") h += ib("dist:h", ui("dist-h"), "Distribute Horizontally") + ib("dist:v", ui("dist-v"), "Distribute Vertically");
+      h += sep;
+      if (k === "multi" && combinable().length > 1) h += boolRow() + sep;
+      if (k === "multi") h += ib("group", ui("group"), "Group", "mod+G") + ib("mask", ui("mask"), "Make Clipping Mask", "mod+7");
+      if (k === "group") h += ib("ungroup", ui("ungroup"), "Ungroup", "mod+shift+G");
+      if (k === "masked") h += ib("unmask", ui("mask"), "Release Clipping Mask", "mod+alt+7");
+      h += ib("duplicate", ui("copy"), "Duplicate", "mod+D") + ib("lock", ui(o.locked ? "lock" : "unlock"), o.locked ? "Unlock" : "Lock", "mod+2") +
+        ib("delete", icon("trash"), "Delete") + ib("more", ui("more"), "More");
+    }
+    ctrl.innerHTML = h;
   }
 
   /* ---------- Minimap ---------- */
@@ -1876,7 +1892,6 @@ window.DSCanvas = function (kit) {
     if (overlayRaf) return;
     overlayRaf = requestAnimationFrame(() => {
       overlayRaf = 0;
-      positionSelbar();
       const now = performance.now();
       if (now - miniT > 80) { miniT = now; drawMini(); }
     });
@@ -1900,7 +1915,7 @@ window.DSCanvas = function (kit) {
       renderTop();
       // asset lists don't change with the selection, so they keep their scroll and search
       if (ltab !== "assets" || assetTab === "colours" || leftKey !== ltab + ":" + assetTab) renderLeft();
-      renderRight(); renderSelbar(); syncPaint();
+      renderRight(); renderCtrl(); syncPaint();
       afterView();
     });
   }
@@ -1960,7 +1975,7 @@ window.DSCanvas = function (kit) {
     }
     if (t.dataset.act) act(t.dataset.act, t, e);
   };
-  [leftP, rightP, selbar, dialog].forEach(box => {
+  [leftP, rightP, ctrl, dialog].forEach(box => {
     box.addEventListener("input", e => onInput(e, false));
     box.addEventListener("change", e => onInput(e, true));
     box.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches("input")) e.target.blur(); });
@@ -1968,7 +1983,7 @@ window.DSCanvas = function (kit) {
   });
   // the top bar, navigator, preview bar and panels button
   [$(".cx-top", root), body].forEach(box => box.addEventListener("click", e => {
-    if (e.target.closest(".cx-dock, .cx-panel, .cx-selbar")) return;
+    if (e.target.closest(".cx-dock, .cx-panel, .cx-ctrl")) return;
     const b = e.target.closest("[data-act]");
     if (b) act(b.dataset.act, b, e);
   }));
@@ -2094,7 +2109,19 @@ window.DSCanvas = function (kit) {
     menuPop.style.left = clamp(e.clientX - R.left, 6, R.width - menuPop.offsetWidth - 6) + "px";
     menuPop.style.top = clamp(e.clientY - R.top, 6, R.height - menuPop.offsetHeight - 6) + "px";
   }
-  const closeMenus = () => { menuPop.hidden = true; closePop(); $(".cx-brand", root).classList.remove("is-open"); };
+  const closeMenus = () => { menuPop.hidden = true; closePop(); $$(".cx-brand, .cx-mbar button", root).forEach(b => b.classList.remove("is-open")); };
+  // Menu bar: click opens a menu; while one is open, hovering the others switches to them
+  function openBarMenu(i, el) {
+    if (!menuPop.hidden && menuPop.dataset.mode === "bar" + i) { closeMenus(); return; }
+    closeMenus();
+    el.classList.add("is-open");
+    openMenuAt(el, menuItems(MENUS[i][1]), "bar" + i);
+    menuPop.style.top = (el.getBoundingClientRect().bottom - root.getBoundingClientRect().top + 2) + "px";
+  }
+  mbar.addEventListener("pointerover", e => {
+    const b = e.target.closest("[data-act^='menu:']");
+    if (b && !menuPop.hidden && /^bar/.test(menuPop.dataset.mode) && menuPop.dataset.mode !== "bar" + b.dataset.act.split(":")[1]) openBarMenu(+b.dataset.act.split(":")[1], b);
+  });
   menuPop.addEventListener("click", e => {
     const f = e.target.closest("[data-fly]");
     if (f) { setTool(f.dataset.fly); closeMenus(); return; }
@@ -2104,8 +2131,8 @@ window.DSCanvas = function (kit) {
   menuPop.addEventListener("contextmenu", e => e.preventDefault());
   document.addEventListener("pointerdown", e => {
     if (e.button === 2 && stage.contains(e.target)) return;
-    if (pop && !pop.contains(e.target) && !e.target.closest("[data-act^='swatch-pop'], [data-act='font-menu'], [data-act='zoom-menu'], [data-act='ab-menu'], [data-act='align-pop'], [data-act='dd']")) closePop();
-    if (!menuPop.hidden && !menuPop.contains(e.target) && !e.target.closest("[data-act='main-menu'], [data-act='more'], [data-more]")) closeMenus();
+    if (pop && !pop.contains(e.target) && !e.target.closest("[data-act^='swatch-pop'], [data-act='font-menu'], [data-act='zoom-menu'], [data-act='ab-menu'], [data-act='dd']")) closePop();
+    if (!menuPop.hidden && !menuPop.contains(e.target) && !e.target.closest("[data-act='main-menu'], [data-act^='menu:'], [data-act='more'], [data-more]")) closeMenus();
   });
 
   /* =====================================================================
@@ -2640,6 +2667,7 @@ window.DSCanvas = function (kit) {
     if (!a) return;
     const [name, arg] = a.split(":");
     switch (name) {
+      case "menu": openBarMenu(+arg, el); break;
       case "main-menu": {
         if (!menuPop.hidden && menuPop.dataset.mode === "main") { closeMenus(); break; }
         $(".cx-brand", root).classList.add("is-open");
@@ -2686,7 +2714,6 @@ window.DSCanvas = function (kit) {
       case "reset-scale": active().forEach(o => { const c = o.getCenterPoint(); o.set({ scaleX: 1, scaleY: 1 }); o.setPositionByOrigin(c, "center", "center"); o.setCoords(); }); cv.requestRenderAll(); note("Reset Size"); changed(); refreshUI(); break;
       case "front": case "back": case "forward": case "backward": arrange(name); break;
       case "align": align(arg); break;
-      case "align-pop": openPop(el, `<div class="cx-pop-title">${tr(active().length > 1 ? "Align to each other" : "Align to artboard")}</div>${alignRow()}${active().length > 2 ? `<div class="cx-iconrow"><button type="button" class="cx-ib" data-act="dist:h" aria-label="Distribute Horizontally">${ui("dist-h")}</button><button type="button" class="cx-ib" data-act="dist:v" aria-label="Distribute Vertically">${ui("dist-v")}</button></div>` : ""}`, "is-narrow", true); break;
       case "more": { const r = el.getBoundingClientRect(); openContext({ clientX: r.left, clientY: r.bottom + 8 }, null); break; }
       case "dist": distribute(arg); break;
       case "bool": combine(arg); break;
@@ -2896,7 +2923,6 @@ window.DSCanvas = function (kit) {
     .catch(() => {
       fitArtboard();
       hist.stack = [snapshot()]; hist.meta = [{ label: "New Design", time: Date.now() }]; hist.i = 0;
-      ltab = "assets"; assetTab = "brief";
       refreshUI();
     });
   refreshUI();

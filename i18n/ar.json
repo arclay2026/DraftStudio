@@ -1835,7 +1835,9 @@
   "Development": "التطوير",
   "Nature": "الطبيعة",
   "Food": "الطعام",
-  "Education": "التعليم"
+  "Education": "التعليم",
+  "Control bar": "شريط التحكم",
+  "Stroke weight": "سُمك الحد"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",
