@@ -506,7 +506,7 @@ function contrast() {
   // the text colour follows K.l (a dark ink, lighter and lighter); later the card switches to red on green
   hooks.push(t => {
     if (!live(a, b)(t)) return;
-    if (t < T("redgreen") - .3) { const c = `hsl(222 18% ${K.l}%)`; $("#k-aa").style.color = c; $("#k-cap").style.color = c; }
+    if (t < T("huefail") - .3) { const c = `hsl(222 18% ${K.l}%)`; $("#k-aa").style.color = c; $("#k-cap").style.color = c; }
     const cs = getComputedStyle(card), r = ratioOf(rgbOf(getComputedStyle($("#k-aa")).color), rgbOf(cs.backgroundColor));
     num.textContent = r.toFixed(1) + " : 1";
     const ok = r >= 4.5;
@@ -517,11 +517,13 @@ function contrast() {
   });
   tl.from(card, { y: 60, opacity: 0, duration: 1.3 }, a);
   fadeIn(["#k-k", "#k-num", "#k-pill"], a + .3, { y: 30, st: .1 });
-  tl.to(K, { l: 10, duration: 2.6, ease: "glide" }, T("measured") - .2);
+  tl.to(K, { l: 10, duration: 2.1, ease: "glide" }, T("measured") - .2);
   gsap.set(["#k-meter", "#k-note", "#k-hue", "#k-check", "#k-every"], { autoAlpha: 0 });
   fadeIn("#k-meter", T("ratio") - .2, { y: 20 }); fadeIn("#k-note", T("ratio"), { y: 20 });
-  tl.to(K, { l: 62, duration: 1.6, ease: "glide" }, T("ratio") + 1.6);
-  tl.to(K, { l: 24, duration: 1.4, ease: "glide" }, T("ratio") + 3.6);
+  // too light (fails), then back to a safe dark, before the red-on-green example
+  const gap = T("huefail") - T("ratio");
+  tl.to(K, { l: 62, duration: gap * .3, ease: "glide" }, T("ratio") + gap * .25);
+  tl.to(K, { l: 24, duration: gap * .25, ease: "glide" }, T("ratio") + gap * .6);
   // red on green: vivid, then drained of colour it all but disappears
   tl.to(card, { backgroundColor: "#2f9a48", duration: 1.1, ease: "glide" }, T("huefail") - .3);
   tl.to(["#k-aa", "#k-cap"], { color: "#e8423c", duration: 1.1, ease: "glide" }, T("huefail") - .3);

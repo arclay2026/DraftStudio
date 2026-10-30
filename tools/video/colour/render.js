@@ -60,7 +60,9 @@ async function renderPart(a, b, file) {
   fs.writeFileSync(path.join(tmp, "list.txt"), parts.sort().map(p => `file '${p}'`).join("\n"));
   const ff = ["-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", path.join(tmp, "list.txt")];
   // the voice starts as the logo intro hands over to the title
-  if (audio) ff.push("-itsoffset", String(Math.max(0, INTRO - from)), "-i", path.resolve(audio), "-map", "0:v", "-map", "1:a", "-c:a", "aac", "-b:a", "256k", "-af", "apad", "-shortest");
+  // (padded with real silence rather than offset, so every player and YouTube keep it in sync)
+  if (audio) ff.push("-i", path.resolve(audio), "-map", "0:v", "-map", "1:a", "-c:a", "aac", "-b:a", "256k",
+    "-af", `adelay=${Math.round(Math.max(0, INTRO - from) * 1000)}:all=1,apad`, "-shortest");
   ff.push("-c:v", "copy", "-movflags", "+faststart", out);
   const r = spawnSync("ffmpeg", ff, { stdio: "inherit" });
   fs.rmSync(tmp, { recursive: true, force: true });
