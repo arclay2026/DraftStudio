@@ -1,0 +1,31 @@
+Colour is the first thing people notice, often before they read a single word. It sets the mood, tells people who you are, and guides their eyes to what matters.
+
+The good news? You don't need "an eye for colour". You need a few simple rules. In the next few minutes, you'll learn all of them.
+
+Part one: the colour wheel.
+
+The colour wheel arranges the pure colours, red, orange, yellow, green, blue and violet, in a circle. Colours side by side are neighbours. They share a base, so they always blend smoothly. Colours straight across are opposites. They're as different as two colours can be, so together they create contrast and energy.
+
+The wheel also splits in two. Warm colours, reds, oranges and yellows, feel energetic and urgent. That's why food brands love them. Cool colours, greens, blues and violets, feel calm and trustworthy. That's why banks and tech companies lean blue.
+
+Part two: hue, saturation and lightness.
+
+Every colour on a screen can be described with three numbers. Hue is which colour it is: a position on the wheel, from zero to three hundred and sixty degrees. Saturation is how strong it is, from flat grey to fully vivid. And lightness is how light or dark it is, from black to white.
+
+Here's the trick professionals use: keep the hue, and change the other two. One brand blue becomes a soft background, a bright button, and deep, dark text. They all match, because they belong to the same colour family.
+
+Part three: colour harmonies.
+
+A harmony is a recipe for picking colours that work together, based on where they sit on the wheel. Complementary uses two opposites, like blue and orange. Bold and eye-catching. Analogous uses three neighbours, like blue, teal and green. Calm and natural. Triadic uses three hues, spaced evenly around the wheel. Playful, but balanced. Pick a recipe, and the wheel does the hard work for you.
+
+Part four: the sixty, thirty, ten rule.
+
+Even a perfect palette looks messy if every colour is used equally. So give sixty percent to a dominant colour: the background and large areas. Thirty percent goes to a secondary colour, for structure. And just ten percent goes to an accent, for buttons and the things you want people to notice. Uneven amounts are what make a design feel calm and clear.
+
+Part five: contrast keeps text readable.
+
+Contrast is the difference in lightness between text and its background, measured as a ratio. For body text, aim for at least four point five to one. And remember: hue doesn't count, only lightness. Red text on a green background looks vivid, but it's hard to read. So check every text colour you use.
+
+Let's recap. Colours sit on a wheel: neighbours blend, opposites contrast. Describe colours with hue, saturation and lightness. Use a harmony to pick a palette. Share space sixty, thirty, ten. And keep text contrast at four point five to one or more.
+
+That's colour. Now try it yourself on Draft Studio, and I'll see you in the next lesson.

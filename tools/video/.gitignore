@@ -1,0 +1,3 @@
+# rendered videos are big: upload them to YouTube, keep them out of the repo
+*.mp4
+*.mov
