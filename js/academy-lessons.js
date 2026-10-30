@@ -1,10 +1,7 @@
 /* =====================================================================
    DESIGN BASICS — the lesson text, shared by the Learn page (js/academy.js)
-   and the narration scripts (tools/build-voiceover.js).
+   and tools/build-learn.js, which writes the lesson list into learn.html.
    Paragraphs are our own trusted HTML (<b>, <em> only).
-   DS_LESSON_SCRIPT(lesson) turns a lesson into what is read aloud: one entry per
-   highlighted block on the page, in page order, worded for speaking, and grouped
-   into parts short enough for one ElevenLabs generation (audio/<key>-<part>.mp3).
    ===================================================================== */
 (function () {
   const LESSONS = [
@@ -335,47 +332,5 @@
   }
 ];
 
-  // Written text -> spoken text: units, ratios and abbreviations a voice would stumble on
-  const NUM = ["zero", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten"];
-  const spoken = html => html
-    .replace(/<b>(\d)\.<\/b>/g, (m, n) => `Step ${NUM[n]}.`)
-    .replace(/<[^>]+>/g, "")
-    .replace(/&amp;/g, "and").replace(/ & /g, " and ")
-    .replace(/60-30-10/g, "sixty, thirty, ten")
-    .replace(/Ctrl\+S \(⌘\+S on a Mac\)/g, "Control S, or Command S on a Mac")
-    .replace(/(\d+(?:\.\d+)?):(\d+)/g, "$1 to $2")
-    .replace(/−(\d)/g, "minus $1").replace(/\+(\d)/g, "plus $1")
-    .replace(/(\d)\s?px\b/g, "$1 pixels")
-    .replace(/(\d)°/g, "$1 degrees")
-    .replace(/(\d)%/g, "$1 percent")
-    .replace(/\bWCAG\b/g, "W C A G").replace(/\bHSL\b/g, "H S L").replace(/\bPSD\b/g, "P S D").replace(/\bPNG\b/g, "P N G")
-    .replace(/\s+/g, " ").trim();
-  const LIMIT = 4500;  // characters per ElevenLabs generation, with room to spare
-
   window.DS_LESSONS = LESSONS;
-  window.DS_LESSON_SCRIPT = (l, i) => {
-    const blocks = [];
-    const add = (text, part) => blocks.push({ text, newPart: !!part });
-    add(`Design Basics, lesson ${NUM[i + 1] || i + 1}. ${l.title}.`, true);
-    add(spoken(l.intro));
-    l.sections.forEach((s, k) => {
-      add(`Part ${NUM[k + 1] || k + 1}: ${spoken(s.h)}.`, true);
-      s.body.forEach(p => add(spoken(p)));
-      add(`Figure ${NUM[k + 1] || k + 1}: ${spoken(s.caption)}`);
-      if (s.tip) add("Pro tip: " + spoken(s.tip));
-    });
-    add("Common mistakes.", true);
-    l.mistakes.forEach(m => add(spoken(m)));
-    add("Recap.");
-    l.recap.forEach(m => add(spoken(m)));
-    add(`Practise it: ${spoken(l.practise[2])} That's the end of this lesson.`);
-    // group into as few parts as fit, of similar length, starting each part at a heading
-    const total = blocks.reduce((n, b) => n + b.text.length + 2, 0), count = Math.ceil(total / LIMIT), target = total / count;
-    const parts = [];
-    blocks.forEach((b, k) => {
-      const cur = parts[parts.length - 1], len = cur ? cur.reduce((n, j) => n + blocks[j].text.length + 2, 0) : 0;
-      if (!cur || (b.newPart && parts.length < count && len >= target * .8) || len + b.text.length > LIMIT) parts.push([k]); else cur.push(k);
-    });
-    return { blocks: blocks.map(b => b.text), parts, file: n => `audio/${l.key}-${n + 1}.mp3` };
-  };
 })();
