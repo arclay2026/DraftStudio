@@ -50,7 +50,7 @@ window.DSAcademy = function (kit) {
   const panel = $(".ac-panel", reader), scroller = $("[data-ac-scroll]", reader), doc = $("[data-ac-doc]", reader);
   let cur = 0, lastCard = null;
 
-  const figure = (name, caption, n) => `<figure class="ac-fig">${FIG.fig[name] ? FIG.fig[name]() : ""}<figcaption><b>Figure ${n}</b> ${esc(caption)}</figcaption></figure>`;
+  const figure = (name, caption, n) => `<figure class="ac-fig" data-fig="${name}">${FIG.fig[name] ? FIG.fig[name]() : ""}<figcaption><b>Figure ${n}</b> ${esc(caption)}</figcaption></figure>`;
   const lessonHtml = (l, i) => {
     const next = LESSONS[(i + 1) % LESSONS.length];
     return `
@@ -134,5 +134,10 @@ window.DSAcademy = function (kit) {
   addEventListener("hashchange", () => { if (reader.hidden) fromHash(); });
 
   // The type figures measure real fonts: draw again once the web fonts have arrived
-  if (document.fonts && document.fonts.status !== "loaded") document.fonts.ready.then(() => { drawCards(); if (!reader.hidden) { const y = scroller.scrollTop; fill(cur); scroller.scrollTop = y; } });
+  // Only the drawings are replaced: redrawing the cards themselves would leave them invisible,
+  // because the page's fade-in has already started watching the first ones
+  if (document.fonts && document.fonts.status !== "loaded") document.fonts.ready.then(() => {
+    $$(".ac-card .ac-stage", root).forEach((st, k) => { st.innerHTML = cover(LESSONS[k]); });
+    if (!reader.hidden) $$(".ac-fig", doc).forEach(f => { const sv = f.querySelector("svg"), name = f.dataset.fig; if (sv && name && FIG.fig[name]) sv.outerHTML = FIG.fig[name](); });
+  });
 };
