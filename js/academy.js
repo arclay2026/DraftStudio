@@ -53,19 +53,20 @@ window.DSAcademy = function (kit) {
   /* ---------- Voice note: a narrated lesson, played like a chat voice message ----------
      The recording (audio/<key>.mp3) comes with audio/<key>.json: its length, a waveform
      (one height per bar) and the second each highlighted paragraph starts. */
-  const BARS = 64, RATES = [1, 1.5, 2];
+  const BARS = 96, RATES = [1, 1.5, 2];
   const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.7v12.6c0 .8.9 1.3 1.6.9l10-6.3c.6-.4.6-1.3 0-1.7l-10-6.3C8.9 4.4 8 4.9 8 5.7Z"/></svg>';
   const PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1.3"/><rect x="13.5" y="5" width="4" height="14" rx="1.3"/></svg>';
   const MIC = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a.9.9 0 0 1 1.8 0 4.7 4.7 0 0 0 9.4 0 .9.9 0 0 1 1.8 0 6.5 6.5 0 0 1-5.6 6.4V20h2.3a.9.9 0 0 1 0 1.8H8.8a.9.9 0 0 1 0-1.8h2.3v-2.6A6.5 6.5 0 0 1 5.5 11Z"/></svg>';
   const MARK = '<svg viewBox="174 174 652 652" aria-hidden="true"><path d="M490.41,820.79h0c-171.87,0-311.2-139.33-311.2-311.2h0q311.2,0,311.2,311.2Z" fill="currentColor"/><path d="M490.41,179.21h0c-171.87,0-311.2,139.33-311.2,311.2h0q311.2,0,311.2-311.2Z" fill="currentColor"/><path d="M509.59,820.79h0c171.87,0,311.2-139.33,311.2-311.2h0q-311.2,0-311.2,311.2Z" fill="currentColor"/><path d="M509.59,179.21h0c171.87,0,311.2,139.33,311.2,311.2h0q-311.2,0-311.2-311.2Z" fill="#1f7aff"/></svg>';
   const clock = t => { t = Math.max(0, Math.round(t || 0)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
+  const bars = () => Array.from({ length: BARS }, (_, k) => `<i style="--i:${k}"></i>`).join("");
   const voiceNote = () => `
       <div class="ac-vn" data-vn>
         <button type="button" class="ac-vn-play" data-vn-play aria-label="Play the narration">${PLAY}</button>
         <div class="ac-vn-main">
           <div class="ac-vn-wave" data-vn-wave role="slider" tabindex="0" aria-label="Narration position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <span class="ac-vn-bars" data-vn-bars>${"<i></i>".repeat(BARS)}</span>
-            <span class="ac-vn-bars is-played" data-vn-played aria-hidden="true">${"<i></i>".repeat(BARS)}</span>
+            <span class="ac-vn-bars" data-vn-bars>${bars()}</span>
+            <span class="ac-vn-bars is-played" data-vn-played aria-hidden="true">${bars()}</span>
             <b class="ac-vn-dot"></b>
           </div>
           <div class="ac-vn-meta"><span data-vn-time>0:00</span><span class="ac-vn-tag">Narrated lesson</span><button type="button" class="ac-vn-rate" data-vn-rate aria-label="Playback speed" data-no-i18n>1×</button></div>
@@ -81,9 +82,12 @@ window.DSAcademy = function (kit) {
     if (!box) return;
     box.style.setProperty("--p", (p * 100).toFixed(2) + "%");
     box.classList.toggle("is-playing", !a.paused);
-    const play = vnEl("[data-vn-play]");
-    play.innerHTML = a.paused ? PLAY : PAUSE;
-    play.setAttribute("aria-label", a.paused ? "Play the narration" : "Pause the narration");
+    const play = vnEl("[data-vn-play]"), state = a.paused ? "play" : "pause";
+    if (play.dataset.state !== state) {  // swap the icon only when it changes, so its pop plays once
+      play.dataset.state = state;
+      play.innerHTML = a.paused ? PLAY : PAUSE;
+      play.setAttribute("aria-label", a.paused ? "Play the narration" : "Pause the narration");
+    }
     // like a voice message: the length before it starts, the elapsed time once it has
     vnEl("[data-vn-time]").textContent = a.currentTime > 0 ? clock(a.currentTime) : clock(dur);
     vnEl("[data-vn-wave]").setAttribute("aria-valuenow", Math.round(p * 100));
@@ -102,9 +106,56 @@ window.DSAcademy = function (kit) {
     } else if (vn.blocks[k]) vn.blocks[k].classList.toggle("is-saying", !a.paused);
   };
   ["timeupdate", "play", "pause", "loadedmetadata", "ended"].forEach(ev => vn.audio.addEventListener(ev, vnPaint));
+  // Sound waves: while it plays, each bar moves with the voice (Web Audio analyser on the recording).
+  // Set up on the first play, since browsers only start audio processing after a tap.
+  const calmVn = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let actx = null, analyser = null, freq = null, waveRaf = 0;
+  const live = new Float32Array(BARS), scale = new Float32Array(BARS).fill(1);
+  const waveOn = () => {
+    if (calmVn) return;
+    if (!actx) {
+      try {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        actx = new AC();
+        analyser = actx.createAnalyser();
+        analyser.fftSize = 256; analyser.smoothingTimeConstant = .72;
+        actx.createMediaElementSource(vn.audio).connect(analyser);
+        analyser.connect(actx.destination);
+        freq = new Uint8Array(analyser.frequencyBinCount);
+      } catch (e) { actx = null; analyser = null; }
+    }
+    if (actx && actx.state === "suspended") actx.resume();
+    if (!waveRaf) waveRaf = requestAnimationFrame(waveTick);
+  };
+  const waveTick = () => {
+    waveRaf = 0;
+    const box = vnEl("[data-vn]");
+    if (!box) return;
+    const playing = !vn.audio.paused;
+    if (analyser && playing) analyser.getByteFrequencyData(freq);
+    const sets = [$$("[data-vn-bars] i", box), $$("[data-vn-played] i", box)];
+    let moving = false;
+    for (let k = 0; k < BARS; k++) {
+      // speech lives in the low bins; scatter them so neighbouring bars don't move as one
+      const bin = 1 + ((k * 7) % 26), target = analyser && playing ? Math.min(1, freq[bin] / 210) : playing ? .5 + .5 * Math.sin(performance.now() / 140 + k) : 0;
+      live[k] += (target - live[k]) * (target > live[k] ? .5 : .14);
+      // playing: the bar follows the voice; paused: it glides back to the recording's shape
+      const want = playing ? .55 + live[k] * .75 : 1;
+      scale[k] += (want - scale[k]) * (playing ? .6 : .12);
+      if (Math.abs(scale[k] - 1) > .01) moving = true;
+      const sc = scale[k].toFixed(3);
+      sets[0][k].style.setProperty("--l", sc); sets[1][k].style.setProperty("--l", sc);
+    }
+    box.style.setProperty("--level", (live.reduce((a, b) => a + b, 0) / BARS).toFixed(3));
+    if (playing || moving) waveRaf = requestAnimationFrame(waveTick);
+    else { scale.fill(1); live.fill(0); sets.flat().forEach(b => b.style.removeProperty("--l")); box.style.removeProperty("--level"); }
+  };
+  vn.audio.addEventListener("play", waveOn);
+  vn.audio.addEventListener("pause", () => { if (!waveRaf) waveRaf = requestAnimationFrame(waveTick); });
   vn.audio.addEventListener("ended", () => { vn.audio.currentTime = 0; vnPaint(); });
   const vnSetup = l => {
     vn.audio.pause();
+    scale.fill(1); live.fill(0);
     vn.at = -1; vn.data = null;
     if (!l.audio) { vn.audio.removeAttribute("src"); return; }
     vn.blocks = $$("h1, .ac-lead, .ac-sec h2, .ac-sec > p, .ac-fig figcaption, .ac-tip, .ac-bad li, .ac-good li, .ac-practise p:last-child", doc);
@@ -116,7 +167,8 @@ window.DSAcademy = function (kit) {
       if (!d || LESSONS[cur].audio !== l.audio) return;
       vn.data = d;
       const peaks = d.peaks || [];
-      $$("[data-vn-bars] i, [data-vn-played] i", doc).forEach((b, j) => { b.style.height = Math.round(((peaks[j % BARS] || .4)) * 100) + "%"; });
+      $$("[data-vn-bars] i, [data-vn-played] i", doc).forEach((b, j) => { b.style.setProperty("--h", Math.round((peaks[j % BARS] || .4) * 100) + "%"); });
+      requestAnimationFrame(() => { const box = vnEl("[data-vn]"); if (box) box.classList.add("is-ready"); });  // the bars grow in
       vnPaint();
     }).catch(() => {});
     vnPaint();
@@ -153,10 +205,10 @@ window.DSAcademy = function (kit) {
   const lessonHtml = (l, i) => {
     const next = LESSONS[(i + 1) % LESSONS.length];
     return `
+      ${l.audio ? voiceNote() : ""}
       <p class="ac-kicker">Design Basics · Lesson ${i + 1} of ${LESSONS.length}</p>
       <h1 id="ac-title">${esc(l.title)}</h1>
       <p class="ac-lead">${esc(l.intro)}</p>
-      ${l.audio ? voiceNote() : ""}
       <nav class="ac-toc" aria-label="In this lesson">
         <p class="ac-label">In this lesson</p>
         <ol>${l.sections.map((s, k) => `<li><a href="#ac-s${k + 1}" data-ac-jump="${k + 1}">${esc(s.h)}</a></li>`).join("")}</ol>
