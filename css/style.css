@@ -2272,9 +2272,9 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
   transform: scaleY(var(--l, 1)); transition: height .55s var(--spring, var(--ease)) calc(var(--i) * 5ms), background .3s; will-change: transform; }
 .ac-vn:not(.is-ready) .ac-vn-bars i { height: 2px; }
 .ac-vn-wave:hover .ac-vn-bars:not(.is-played) i { background: color-mix(in srgb, var(--fg) 34%, transparent); }
-.ac-vn-bars.is-played { clip-path: inset(0 calc(100% - var(--p)) 0 0); }
+.ac-vn-bars.is-played { clip-path: inset(-100% calc(100% - var(--p)) -100% 0); }  /* clipped sideways only, since loud bars grow past the box */
 .ac-vn-bars.is-played i { background: var(--dl); }
-[dir="rtl"] .ac-vn-bars.is-played { clip-path: inset(0 0 0 calc(100% - var(--p))); }
+[dir="rtl"] .ac-vn-bars.is-played { clip-path: inset(-100% 0 -100% calc(100% - var(--p))); }
 .ac-vn-dot { position: absolute; top: 50%; left: var(--p); width: 10px; height: 10px; margin: -5px 0 0 -5px; border-radius: 50%; background: var(--dl); pointer-events: none; transform: scale(0); transition: transform .25s var(--spring, var(--ease)); }
 .ac-vn.is-playing .ac-vn-dot, .ac-vn-wave:hover .ac-vn-dot, .ac-vn-wave:focus-visible .ac-vn-dot { transform: scale(1); }
 .ac-vn-wave:active .ac-vn-dot { transform: scale(1.3); }
