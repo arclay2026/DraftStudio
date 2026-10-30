@@ -2255,6 +2255,10 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 .ac-vn { --p: 0%; --level: 0; position: relative; display: flex; align-items: center; gap: 16px; width: 100%; margin: 0 0 28px; padding: 12px 14px 12px 12px; border-radius: 24px; border: 1px solid var(--border);
   background: radial-gradient(160px 90px at calc(var(--p) * .78 + 74px) 40%, color-mix(in srgb, var(--dl) calc(var(--level) * 22%), transparent), transparent 70%), var(--fill);
   transition: border-color .3s, box-shadow .4s var(--ease); animation: ac-vn-in .6s var(--spring, var(--ease)) both; }
+/* sticky: it stays at the top of the lesson while you scroll, with a shadow once pinned */
+.ac-vn-pin { position: sticky; top: 0; z-index: 5; margin: -12px 0 28px; padding-top: 12px; background: var(--surface); }
+.ac-vn-pin .ac-vn { margin: 0; }
+.ac-vn.is-stuck { box-shadow: 0 18px 40px -22px rgba(0, 0, 0, .35); }
 .ac-vn.is-playing { border-color: color-mix(in srgb, var(--dl) 35%, var(--border)); box-shadow: 0 14px 34px -22px color-mix(in srgb, var(--dl) 70%, transparent); }
 @keyframes ac-vn-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
 .ac-vn-play { position: relative; flex: none; display: grid; place-items: center; width: 50px; height: 50px; border-radius: 17px; background: var(--dl); color: #fff; transition: transform .25s var(--spring, var(--ease)), background .2s; }

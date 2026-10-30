@@ -61,7 +61,7 @@ window.DSAcademy = function (kit) {
   const clock = t => { t = Math.max(0, Math.round(t || 0)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
   const bars = () => Array.from({ length: BARS }, (_, k) => `<i style="--i:${k}"></i>`).join("");
   const voiceNote = () => `
-      <div class="ac-vn" data-vn>
+      <div class="ac-vn-pin"><div class="ac-vn" data-vn>
         <button type="button" class="ac-vn-play" data-vn-play aria-label="Play the narration">${PLAY}</button>
         <div class="ac-vn-main">
           <div class="ac-vn-wave" data-vn-wave role="slider" tabindex="0" aria-label="Narration position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
@@ -72,7 +72,7 @@ window.DSAcademy = function (kit) {
           <div class="ac-vn-meta"><span data-vn-time>0:00</span><span class="ac-vn-tag">Narrated lesson</span><button type="button" class="ac-vn-rate" data-vn-rate aria-label="Playback speed" data-no-i18n>1×</button></div>
         </div>
         <span class="ac-vn-avatar" aria-hidden="true">${MARK}<i>${MIC}</i></span>
-      </div>`;
+      </div></div>`;
   const vn = { audio: new Audio(), data: null, rate: 1, blocks: [], at: -1 };
   vn.audio.preload = "metadata";
   const vnEl = sel => $(sel, doc);
@@ -101,7 +101,8 @@ window.DSAcademy = function (kit) {
       const el = vn.blocks[k];
       if (el && !a.paused) {
         const r = el.getBoundingClientRect(), sr = scroller.getBoundingClientRect();
-        if (r.top < sr.top + 70 || r.bottom > sr.bottom - 40) scroller.scrollTo({ top: scroller.scrollTop + r.top - sr.top - 110, behavior: "smooth" });
+        const under = box.offsetHeight + 40;  // keep the paragraph clear of the pinned player
+        if (r.top < sr.top + under || r.bottom > sr.bottom - 40) scroller.scrollTo({ top: scroller.scrollTop + r.top - sr.top - under - 30, behavior: "smooth" });
       }
     } else if (vn.blocks[k]) vn.blocks[k].classList.toggle("is-saying", !a.paused);
   };
@@ -251,6 +252,8 @@ window.DSAcademy = function (kit) {
     $("[data-ac-progress]", reader).style.transform = `scaleX(${max > 0 ? Math.min(1, scroller.scrollTop / max) : 0})`;
   };
   scroller.addEventListener("scroll", progress, { passive: true });
+  // the voice note gets a shadow once it's pinned to the top
+  scroller.addEventListener("scroll", () => { const v = $("[data-vn]", doc); if (v) v.classList.toggle("is-stuck", v.getBoundingClientRect().top - scroller.getBoundingClientRect().top <= 13 && scroller.scrollTop > 0); }, { passive: true });
 
   const open = i => {
     fill(i);
