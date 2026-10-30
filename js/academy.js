@@ -51,11 +51,23 @@ window.DSAcademy = function (kit) {
   if (SAY) { pickVoice(); speechSynthesis.addEventListener ? speechSynthesis.addEventListener("voiceschanged", pickVoice) : (speechSynthesis.onvoiceschanged = pickVoice); }
   // Is the lesson recorded? (a quick look for its first file, remembered)
   const recorded = {};
-  const hasAudio = i => recorded[i] || (recorded[i] = fetch(script(i).file(0), { method: "HEAD", cache: "no-store" }).then(r => r.ok).catch(() => false));
+  // A lesson can be one whole recording with exact timings (audio/<key>.mp3 + .json, made by
+  // tools/align-audio.py) or the script's parts (audio/<key>-1.mp3, -2 ...)
+  const head = url => fetch(url, { method: "HEAD", cache: "no-store" }).then(r => r.ok).catch(() => false);
+  const hasAudio = i => recorded[i] || (recorded[i] = (async () => {
+    const key = LESSONS[i].key;
+    if (await head(`audio/${key}.mp3`)) {
+      const t = await fetch(`audio/${key}.json`, { cache: "no-store" }).then(r => (r.ok ? r.json() : null)).catch(() => null);
+      return { whole: `audio/${key}.mp3`, times: t && t.starts, duration: t && t.duration };
+    }
+    return (await head(script(i).file(0))) ? { whole: null } : false;
+  })());
   const au = new Audio();
   au.preload = "auto";
   // Where in a part each block starts, as a share of the part (by length, plus a pause per block)
-  const shares = part => { const w = part.map(j => say.scr.blocks[j].length + 45), t = w.reduce((a, b) => a + b, 0); let acc = 0; return w.map(x => { const s0 = acc / t; acc += x; return s0; }); };
+  const shares = part => {
+    if (say.times && say.dur) return part.map(j => say.times[j] / say.dur);  // measured from the recording
+    const w = part.map(j => say.scr.blocks[j].length + 45), t = w.reduce((a, b) => a + b, 0); let acc = 0; return w.map(x => { const s0 = acc / t; acc += x; return s0; }); };
   const partOf = i => say.scr.parts.findIndex(p => p.includes(i));
 
   const sentences = t => (t.replace(/\s+/g, " ").trim().match(/[^.!?]+[.!?]+[”"’)]*\s*|[^.!?]+$/g) || [t]).map(x => x.trim()).filter(Boolean);
@@ -145,8 +157,13 @@ window.DSAcademy = function (kit) {
       else if (say.started) { say.playing = true; if (say.mode === "audio") au.play().catch(() => {}); else sayAt(say.i); }
       else {
         const lesson = cur;
-        say.scr = script(cur); say.blocks = $$(SAY_SEL, doc); say.i = 0; say.part = -1;
-        say.mode = (await hasAudio(cur)) ? "audio" : "voice";
+        say.scr = script(cur); say.blocks = $$(SAY_SEL, doc); say.i = 0; say.part = -1; say.times = null;
+        const rec = await hasAudio(cur);
+        say.mode = rec ? "audio" : "voice";
+        if (rec && rec.whole) {  // one file for the whole lesson
+          say.scr = Object.assign({}, say.scr, { parts: [say.scr.blocks.map((b, k) => k)], file: () => rec.whole });
+          if (rec.times && rec.times.length === say.scr.blocks.length) { say.times = rec.times; say.dur = rec.duration; }
+        }
         if (lesson !== cur) return;
         say.started = true; say.playing = true; sayAt(0);
       }
@@ -165,7 +182,8 @@ window.DSAcademy = function (kit) {
   const sayLabel = i => hasAudio(i).then(ok => {
     if (ok) recorded.ok = true;
     const sm = $(".ac-listen small", doc);
-    if (sm && cur === i) sm.textContent = `About ${LESSONS[i].time.replace(" read", "")} · ${ok ? "narrated" : "read aloud by your device"}`;
+    const len = ok && ok.duration ? `${Math.max(1, Math.round(ok.duration / 60))} min` : LESSONS[i].time.replace(" read", "");
+    if (sm && cur === i) sm.textContent = `About ${len} · ${ok ? "narrated" : "read aloud by your device"}`;
     if (cur === i) sayUi();
   });
   addEventListener("pagehide", () => { if (SAY) speechSynthesis.cancel(); au.pause(); });

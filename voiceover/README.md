@@ -11,15 +11,20 @@ change the lesson text in `js/academy-lessons.js` instead.
 2. In ElevenLabs, open **Text to Speech** and pick one voice for every lesson, so the
    course sounds like one narrator. Suggested settings: model **Eleven Multilingual v2**,
    Stability about 50%, Similarity about 75%, Style 0 to 15%, Speaker boost on.
-3. Paste **one part** (the text between the lines, not the PART line) and generate.
-   Listen once; regenerate if a word sounds wrong.
-4. Download it as **MP3** (44.1 kHz, 128 kbps is plenty) and rename it exactly as the
-   script says, for example `colour-1.mp3`.
-5. Upload all the files to the `audio/` folder of the repository
-   (on GitHub: open the `audio` folder, Add file, Upload files).
+3. Paste the text (not the PART lines) and generate. If ElevenLabs won't take it all at
+   once, record it in as many pieces as you need, in order. Listen once; regenerate if a
+   word sounds wrong.
+4. Download the pieces as **MP3** and upload them anywhere in the repository.
+5. Join and time them with one command (ffmpeg and node needed), for example:
 
-The site picks the recordings up by name; nothing else needs changing. The highlight
-follows the recording paragraph by paragraph.
+   `python3 tools/align-audio.py colour "Color lesson.mp3" "Color lesson continuation.mp3"`
+
+   This writes `audio/colour.mp3` (the whole lesson) and `audio/colour.json` (the second
+   each paragraph starts, found from the narrator's pauses), so the highlight follows the
+   voice exactly. The original pieces can then be deleted.
+
+Alternatively, save each part exactly as the script names it (for example `colour-1.mp3`)
+in `audio/`: the site plays those in order too, with the highlight timed by length.
 
 ## When a lesson changes
 
