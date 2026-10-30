@@ -2282,8 +2282,33 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 .ac-vn-rate { flex: none; height: 26px; min-width: 38px; padding: 0 8px; border-radius: 9px; background: var(--fill); color: var(--fg); font: 600 calc(11.5px * var(--ts)) var(--font-body); font-variant-numeric: tabular-nums; transition: transform .2s var(--spring, var(--ease)), background .2s; }
 .ac-vn-rate:hover { background: color-mix(in srgb, var(--fg) 10%, transparent); }
 .ac-vn-rate:active { transform: scale(.92); }
-/* the paragraph being read */
-.ac-doc .is-saying { border-radius: 10px; background: color-mix(in srgb, var(--dl) 11%, transparent); box-shadow: 0 0 0 8px color-mix(in srgb, var(--dl) 11%, transparent); transition: background .3s, box-shadow .3s; }
+/* the paragraph being read: an iPhone-style text selection that sweeps in and glides between paragraphs */
+@property --sweep { syntax: "<number>"; inherits: true; initial-value: 1; }
+.ac-doc { position: relative; }
+.ac-sel { --tint: color-mix(in srgb, var(--dl) 20%, transparent); --glide: .7s cubic-bezier(.22, 1, .36, 1);
+  position: absolute; left: 0; top: 0; z-index: 1; width: var(--sw); height: var(--sh); pointer-events: none; opacity: 0;
+  transform: translate3d(var(--sx), var(--sy), 0); transition: transform var(--glide), width var(--glide), height var(--glide), opacity .4s ease; }
+.ac-sel.is-jump, .ac-sel.is-jump * { transition: none !important; }
+.ac-sel.is-on { opacity: 1; animation: ac-sel-sweep .8s cubic-bezier(.65, 0, .35, 1) both; }
+@keyframes ac-sel-sweep { from { --sweep: 0; } }
+.ac-sel > i { position: absolute; left: 0; background: var(--tint); clip-path: inset(-1px calc(100% - var(--sweep) * 100%) -1px 0); transition: inherit; }
+.ac-sel-body { top: 0; width: 100%; height: calc(100% - var(--slh)); border-radius: 5px 5px 5px 0; }
+.ac-sel-last { bottom: 0; width: var(--sex); height: var(--slh); border-radius: 0 5px 5px 5px; }
+.ac-sel.is-one .ac-sel-last { border-radius: 5px; }
+.ac-sel-h { position: absolute; width: 2px; border-radius: 1px; background: var(--dl); transition: inherit; }
+.ac-sel-h::after { content: ""; position: absolute; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: var(--dl); }
+.ac-sel-h.is-start { left: -1px; top: 0; height: var(--sfh); }
+.ac-sel-h.is-start::after { top: -8px; }
+.ac-sel-h.is-end { bottom: 0; left: calc(var(--sweep) * var(--sex) - 1px); height: var(--slh); }
+.ac-sel-h.is-end::after { bottom: -8px; }
+.ac-sel-h { transform: scale(.2); opacity: 0; transition: transform .3s ease, opacity .3s ease, left var(--glide), height var(--glide); }
+.ac-sel.is-on .ac-sel-h { transform: none; opacity: 1; transition: transform .55s cubic-bezier(.34, 1.56, .64, 1), opacity .25s ease, left var(--glide), height var(--glide); }
+.ac-sel.is-on .ac-sel-h.is-start { transform-origin: 50% 0; }
+.ac-sel-h.is-end { transform-origin: 50% 100%; }
+[dir="rtl"] .ac-sel-h.is-start { left: auto; right: -1px; }
+[dir="rtl"] .ac-sel-h.is-end { left: auto; right: calc(var(--sweep) * var(--sex) - 1px); }
+[dir="rtl"] .ac-sel > i { left: auto; right: 0; clip-path: inset(-1px 0 -1px calc(100% - var(--sweep) * 100%)); }
+@media (prefers-reduced-motion: reduce) { .ac-sel, .ac-sel * { animation: none !important; transition: opacity .2s !important; } }
 @media (max-width: 560px) { .ac-vn { gap: 10px; } .ac-vn-time.is-total { display: none; } }
 @media (prefers-reduced-motion: reduce) { .ac-vn, .ac-vn-play svg { animation: none !important; } }
 .ac-toc { margin: 26px 0 8px; padding: 18px 20px; border-radius: 16px; background: var(--fill); }
@@ -3145,7 +3170,7 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
 .sel-btn, .sel-toggle, .sel-menu, .sel-menu button, .sw-clear, .lt, .lt-chip,
 .dd-btn, .dd-toggle, .dd-menu, .dd-menu button, .field, .seg, .seg-thumb, .search-results, .hsearch-results, .hsearch-field,
 .cx-dd-btn, .cx-ddlist, .cx-pop, .cx-menu, .cx-poplist button,
-.ac-card, .ac-panel, .ac-nav button, .ac-toc, .ac-tip, .ac-fig svg, .ac-sec h2 span, .ac-next, .ac-next-cover, .ac-vn-play, .ac-vn-rate, .ac-doc .is-saying,
+.ac-card, .ac-panel, .ac-nav button, .ac-toc, .ac-tip, .ac-fig svg, .ac-sec h2 span, .ac-next, .ac-next-cover, .ac-vn-play, .ac-vn-rate,
 .sw, .ps-chip, .sw-dot, .cvh-feats svg,
 .drop-req, .pal, .pt, .pt-stage, .pt-swatches, .qs-card, .qs-stage, .qs-tile, .qs-type,
 .fx-panel, .lx-panel, .lx-ticket, .qv-panel, .qt-card, .hero-dots, .nav-drop, .cpick, .set, .price-box, .notice,

@@ -94,15 +94,46 @@ window.DSAcademy = function (kit) {
     if (st && (a.currentTime > 0)) { k = 0; while (k + 1 < st.length && st[k + 1] <= a.currentTime + .05) k++; }
     if (k !== vn.at) {
       vn.at = k;
-      vn.blocks.forEach((b, j) => b.classList.toggle("is-saying", j === k && !a.paused));
+      selTo(a.paused ? null : vn.blocks[k]);
       const el = vn.blocks[k];
       if (el && !a.paused) {
         const r = el.getBoundingClientRect(), sr = scroller.getBoundingClientRect();
         const under = box.offsetHeight + 40;  // keep the paragraph clear of the pinned player
         if (r.top < sr.top + under || r.bottom > sr.bottom - 40) scroller.scrollTo({ top: scroller.scrollTop + r.top - sr.top - under - 30, behavior: "smooth" });
       }
-    } else if (vn.blocks[k]) vn.blocks[k].classList.toggle("is-saying", !a.paused);
+    } else selTo(a.paused ? null : vn.blocks[k]);
   };
+  // The paragraph being read wears a text selection, like on an iPhone: a tint shaped to the
+  // lines with a handle at each end. It sweeps in when the voice starts, glides from one
+  // paragraph to the next, and fades away on pause.
+  const SEL = '<div class="ac-sel" aria-hidden="true"><i class="ac-sel-body"></i><i class="ac-sel-last"></i><b class="ac-sel-h is-start"></b><b class="ac-sel-h is-end"></b></div>';
+  let selEl = null;
+  const selTo = el => {
+    const s = $(".ac-sel", doc);
+    if (!s) return;
+    if (!el) { s.classList.remove("is-on"); selEl = null; return; }
+    const on = s.classList.contains("is-on");
+    if (on && el === selEl) return;
+    selEl = el;
+    const rg = document.createRange();
+    rg.selectNodeContents(el);
+    const rects = [...rg.getClientRects()].filter(r => r.width > 1);
+    if (!rects.length) return;
+    const d = doc.getBoundingClientRect(), all = rg.getBoundingClientRect(), px = 4, py = 2;
+    const lastTop = Math.max(...rects.map(r => r.top)), last = rects.filter(r => r.bottom > lastTop + 2);
+    const firstTop = Math.min(...rects.map(r => r.top)), first = rects.filter(r => r.top < firstTop + 2);
+    const lastH = Math.max(...last.map(r => r.bottom)) - Math.min(...last.map(r => r.top));
+    const firstH = Math.max(...first.map(r => r.bottom)) - firstTop;
+    const v = {
+      x: all.left - d.left - px, y: all.top - d.top - py, w: all.width + px * 2, h: all.height + py * 2,
+      lh: lastH + py * 2, fh: firstH + py * 2, ex: Math.max(...last.map(r => r.right)) - all.left + px * 2
+    };
+    if (!on) s.classList.add("is-jump");  // it appears in place; it only glides once it's showing
+    for (const key in v) s.style.setProperty("--s" + key, v[key].toFixed(1) + "px");
+    s.classList.toggle("is-one", v.h - v.lh < 4);
+    if (!on) { void s.offsetWidth; s.classList.remove("is-jump"); s.classList.add("is-on"); }
+  };
+  addEventListener("resize", () => { const el = selEl; if (el) { selEl = null; selTo(el); } });
   ["timeupdate", "play", "pause", "loadedmetadata", "ended"].forEach(ev => vn.audio.addEventListener(ev, vnPaint));
   // Sound waves: while it plays, each bar moves with the voice (Web Audio analyser on the recording).
   // Set up on the first play, since browsers only start audio processing after a tap.
@@ -156,6 +187,8 @@ window.DSAcademy = function (kit) {
     scale.fill(1); live.fill(0);
     vn.at = -1; vn.data = null;
     if (!l.audio) { vn.audio.removeAttribute("src"); return; }
+    doc.insertAdjacentHTML("beforeend", SEL);
+    selEl = null;
     vn.blocks = $$("h1, .ac-lead, .ac-sec h2, .ac-sec > p, .ac-fig figcaption, .ac-tip, .ac-bad li, .ac-good li, .ac-practise p:last-child", doc);
     vn.audio.src = l.audio + ".mp3";
     vn.audio.playbackRate = vn.rate;
