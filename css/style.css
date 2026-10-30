@@ -2282,12 +2282,13 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 .ac-vn-rate { flex: none; height: 26px; min-width: 38px; padding: 0 8px; border-radius: 9px; background: var(--fill); color: var(--fg); font: 600 calc(11.5px * var(--ts)) var(--font-body); font-variant-numeric: tabular-nums; transition: transform .2s var(--spring, var(--ease)), background .2s; }
 .ac-vn-rate:hover { background: color-mix(in srgb, var(--fg) 10%, transparent); }
 .ac-vn-rate:active { transform: scale(.92); }
-:root[data-theme="dark"] .ac-sel { --pick: #ff9f0a; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ac-sel { --pick: #ff9f0a; } }
-/* the paragraph being read: an iPhone-style text selection that sweeps in and glides between paragraphs */
+:root[data-theme="dark"] .ac-sel { --pick: #ff9f0a; --tint: #422a07; mix-blend-mode: screen; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ac-sel { --pick: #ff9f0a; --tint: #422a07; mix-blend-mode: screen; } }
+/* the paragraph being read: an iPhone-style text selection that sweeps in and glides between paragraphs.
+   It blends with the page (multiply, or screen in dark mode), so the text under it keeps its full contrast. */
 @property --sweep { syntax: "<number>"; inherits: true; initial-value: 1; }
 .ac-doc { position: relative; }
-.ac-sel { --pick: #ff9500; --tint: color-mix(in srgb, var(--pick) 26%, transparent); --glide: .7s cubic-bezier(.22, 1, .36, 1);
+.ac-sel { --pick: #ff9500; --tint: #ffdeb0; mix-blend-mode: multiply; --glide: .7s cubic-bezier(.22, 1, .36, 1);
   position: absolute; left: 0; top: 0; z-index: 1; width: var(--sw); height: var(--sh); pointer-events: none; opacity: 0;
   transform: translate3d(var(--sx), var(--sy), 0); transition: transform var(--glide), width var(--glide), height var(--glide), opacity .4s ease; }
 .ac-sel.is-jump, .ac-sel.is-jump * { transition: none !important; }
