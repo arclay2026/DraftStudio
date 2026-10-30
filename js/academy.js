@@ -53,6 +53,7 @@ window.DSAcademy = function (kit) {
   /* ---------- Voice note: a narrated lesson, played like a chat voice message ----------
      The recording (audio/<key>.mp3) comes with audio/<key>.json: its length, a waveform
      (one height per bar) and the second each highlighted paragraph starts. */
+  const LEAD = .12;  // the highlight lands a beat before the first word, so it reads as on time
   const BARS = 96, RATES = [1, 1.5, 2];
   const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.7v12.6c0 .8.9 1.3 1.6.9l10-6.3c.6-.4.6-1.3 0-1.7l-10-6.3C8.9 4.4 8 4.9 8 5.7Z"/></svg>';
   const PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1.3"/><rect x="13.5" y="5" width="4" height="14" rx="1.3"/></svg>';
@@ -85,13 +86,14 @@ window.DSAcademy = function (kit) {
       play.innerHTML = a.paused ? PLAY : PAUSE;
       play.setAttribute("aria-label", a.paused ? "Play the narration" : "Pause the narration");
     }
-    vnEl("[data-vn-time]").textContent = clock(a.currentTime);
-    vnEl("[data-vn-total]").textContent = clock(dur);
+    const tEl = vnEl("[data-vn-time]"), tTxt = clock(a.currentTime), totEl = vnEl("[data-vn-total]"), totTxt = clock(dur);
+    if (tEl.textContent !== tTxt) tEl.textContent = tTxt;
+    if (totEl.textContent !== totTxt) totEl.textContent = totTxt;
     vnEl("[data-vn-wave]").setAttribute("aria-valuenow", Math.round(p * 100));
     // highlight the paragraph being read
     const st = vn.data && vn.data.starts;
     let k = -1;
-    if (st && (a.currentTime > 0)) { k = 0; while (k + 1 < st.length && st[k + 1] <= a.currentTime + .05) k++; }
+    if (st && (a.currentTime > 0)) { k = 0; while (k + 1 < st.length && st[k + 1] <= a.currentTime + LEAD) k++; }
     if (k !== vn.at) {
       vn.at = k;
       selTo(a.paused ? null : vn.blocks[k]);
@@ -134,7 +136,12 @@ window.DSAcademy = function (kit) {
     if (!on) { void s.offsetWidth; s.classList.remove("is-jump"); s.classList.add("is-on"); }
   };
   addEventListener("resize", () => { const el = selEl; if (el) { selEl = null; selTo(el); } });
-  ["timeupdate", "play", "pause", "loadedmetadata", "ended"].forEach(ev => vn.audio.addEventListener(ev, vnPaint));
+  ["timeupdate", "play", "pause", "seeked", "loadedmetadata", "ended"].forEach(ev => vn.audio.addEventListener(ev, vnPaint));
+  // timeupdate only fires about four times a second, so while it plays the player and the
+  // highlight follow the audio clock every frame instead
+  let syncRaf = 0;
+  const syncTick = () => { syncRaf = 0; if (vn.audio.paused) return; vnPaint(); syncRaf = requestAnimationFrame(syncTick); };
+  vn.audio.addEventListener("playing", () => { if (!syncRaf) syncRaf = requestAnimationFrame(syncTick); });
   // Sound waves: while it plays, each bar moves with the voice (Web Audio analyser on the recording).
   // Set up on the first play, since browsers only start audio processing after a tap.
   const calmVn = matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -189,7 +196,7 @@ window.DSAcademy = function (kit) {
     if (!l.audio) { vn.audio.removeAttribute("src"); return; }
     doc.insertAdjacentHTML("beforeend", SEL);
     selEl = null;
-    vn.blocks = $$("h1, .ac-lead, .ac-sec h2, .ac-sec > p, .ac-fig figcaption, .ac-tip, .ac-bad li, .ac-good li, .ac-practise p:last-child", doc);
+    vn.blocks = $$(".ac-kicker, h1, .ac-lead, .ac-sec h2, .ac-sec > p, .ac-fig figcaption, .ac-tip, .ac-bad li, .ac-good li, .ac-practise p:last-child", doc);
     vn.audio.src = l.audio + ".mp3";
     vn.audio.playbackRate = vn.rate;
     const rb = vnEl("[data-vn-rate]");
