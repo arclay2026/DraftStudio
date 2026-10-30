@@ -2236,7 +2236,7 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 .ac-say { flex: none; display: flex; align-items: center; gap: 6px; }
 .ac-say[hidden], .ac-say-more[hidden] { display: none; }
 .ac-say-more { display: flex; gap: 4px; }
-.ac-say button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 34px; min-width: 34px; padding: 0 10px; border-radius: 99px; border: 1px solid var(--border); font-size: calc(12.5px * var(--ts)); font-weight: 600; transition: background .2s, border-color .2s, color .2s; }
+.ac-say button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 34px; min-width: 34px; padding: 0 10px; border-radius: 11px; border: 1px solid var(--border); font-size: calc(12.5px * var(--ts)); font-weight: 600; transition: background .2s, border-color .2s, color .2s; }
 .ac-say button:hover { background: var(--fill); border-color: var(--border-2); }
 .ac-say svg { width: 15px; height: 15px; }
 .ac-say-main { padding-inline-end: 14px !important; }
@@ -2245,7 +2245,7 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 [dir="rtl"] .ac-say-more [data-say=next] svg { transform: scaleX(-1); } [dir="rtl"] .ac-say-more [data-say=prev] svg { transform: none !important; }
 .ac-listen { display: flex; align-items: center; gap: 14px; width: 100%; margin-top: 22px; padding: 12px 18px 12px 12px; border-radius: 18px; border: 1px solid var(--border); text-align: start; transition: background .2s, border-color .2s; }
 .ac-listen:hover { background: var(--fill); border-color: var(--border-2); }
-.ac-listen svg { flex: none; width: 44px; height: 44px; padding: 13px; border-radius: 50%; background: var(--dl); color: #fff; }
+.ac-listen svg { flex: none; width: 44px; height: 44px; padding: 13px; border-radius: 13px; background: var(--dl); color: #fff; }
 .ac-listen.is-on svg { background: #fff; color: var(--dl); }
 .ac-listen span { display: grid; gap: 2px; }
 .ac-listen b { font-size: calc(15px * var(--ts)); font-weight: 650; }
@@ -2256,7 +2256,7 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 .ac-reader.is-listening .ac-sec > p, .ac-reader.is-listening .ac-lead, .ac-reader.is-listening .ac-bad li, .ac-reader.is-listening .ac-good li { cursor: pointer; }
 @media (max-width: 560px) { .ac-reader.is-listening .ac-step { display: none; } .ac-say-main span { display: none; } .ac-say-main { padding-inline-end: 10px !important; } }
 .ac-nav { display: flex; gap: 6px; }
-.ac-nav button { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--border); transition: background .2s, border-color .2s; }
+.ac-nav button { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 11px; border: 1px solid var(--border); transition: background .2s, border-color .2s; }
 .ac-nav button:hover { background: var(--fill); border-color: var(--border-2); }
 .ac-nav svg { width: 15px; height: 15px; }
 [dir="rtl"] .ac-nav [data-ac-go] svg { transform: scaleX(-1); }
@@ -3127,6 +3127,7 @@ body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: 
 .sel-btn, .sel-toggle, .sel-menu, .sel-menu button, .sw-clear, .lt, .lt-chip,
 .dd-btn, .dd-toggle, .dd-menu, .dd-menu button, .field, .seg, .seg-thumb, .search-results, .hsearch-results, .hsearch-field,
 .cx-dd-btn, .cx-ddlist, .cx-pop, .cx-menu, .cx-poplist button,
+.ac-card, .ac-panel, .ac-nav button, .ac-say button, .ac-listen, .ac-listen svg, .ac-toc, .ac-tip, .ac-fig svg, .ac-sec h2 span, .ac-next, .ac-next-cover, .ac-doc .is-saying,
 .sw, .ps-chip, .sw-dot, .cvh-feats svg,
 .drop-req, .pal, .pt, .pt-stage, .pt-swatches, .qs-card, .qs-stage, .qs-tile, .qs-type,
 .fx-panel, .lx-panel, .lx-ticket, .qv-panel, .qt-card, .hero-dots, .nav-drop, .cpick, .set, .price-box, .notice,
