@@ -30,13 +30,14 @@ function title() {
     <div class="abs" id="t-wall" style="left:0;top:0;width:1920px;height:1080px;overflow:hidden">
       ${Array.from({ length: 7 }, (_, r) => `<div class="t-row" style="position:absolute;left:0;top:${150 + r * 120}px;white-space:nowrap;font-size:76px;line-height:1;color:rgba(244,243,239,.16)">${Array.from({ length: 14 }, (_, k) => { const n = NAMES[(r * 7 + k * 3) % NAMES.length], [f, w] = ROULETTE[(r + k) % ROULETTE.length]; return `<span style="font-family:${f};font-weight:${w};margin-right:60px">${n}</span>`; }).join("")}</div>`).join("")}
     </div>
-    <div class="abs h1" id="t-p1" style="left:160px;top:370px;width:1640px;font-size:104px">It’s not about a hundred fonts.<i id="t-strike" class="abs" style="left:0;top:56px;width:1480px;height:7px;background:var(--blue);transform-origin:0 50%"></i></div>
-    <div class="abs h1" id="t-p2" style="left:160px;top:540px;width:1640px;font-size:104px">It’s about a few simple <span class="blue">rules.</span></div>
-    <div class="abs" id="t-chips" style="left:160px;top:330px;width:1600px;display:grid;grid-template-columns:repeat(5,1fr);gap:26px">
+    <div class="abs h1" id="t-p1" style="left:160px;top:190px;width:1640px;font-size:84px">It’s not about a hundred fonts.</div>
+    <i id="t-strike" class="abs" style="left:160px;top:236px;width:1190px;height:6px;background:var(--blue);transform-origin:0 50%"></i>
+    <div class="abs h1" id="t-p2" style="left:160px;top:300px;width:1640px;font-size:84px">It’s about a few simple <span class="blue">rules.</span></div>
+    <div class="abs" id="t-chips" style="left:160px;top:470px;width:1600px;display:grid;grid-template-columns:repeat(5,1fr);gap:26px">
       ${[["01", "Anatomy of a letter", SERIF, "Ag"], ["02", "Kinds of font", DISPLAY, "AG"], ["03", "Size & weight", SANS, "Aa"], ["04", "Spacing", BODY, "A a"], ["05", "Pairing", SERIF, "Aa"]].map(([n, w, f, s], k) => `
-        <div class="card t-chip" style="height:420px;padding:40px 34px;display:flex;flex-direction:column">
+        <div class="card t-chip" style="height:400px;padding:40px 34px;display:flex;flex-direction:column">
           <div class="mono blue" style="font-size:22px;letter-spacing:.2em">${n}</div>
-          <div style="margin-top:28px;font-family:${f};font-size:110px;line-height:1;font-weight:${k === 2 ? 800 : 400};letter-spacing:${k === 3 ? ".3em" : "-.02em"}">${s}</div>
+          <div style="margin-top:28px;font-family:${f};font-size:110px;line-height:1;font-weight:${k === 2 ? 800 : 400};letter-spacing:${k === 3 ? ".14em" : "-.02em"};white-space:nowrap">${s}</div>
           <div style="margin-top:auto;font:600 42px/1.08 var(--sans);letter-spacing:-.03em">${w}</div></div>`).join("")}
     </div>`);
   // "Typography" spins through typefaces, letter by letter, and settles into Inter
@@ -69,12 +70,11 @@ function title() {
   textIn($("#t-p1"), T("promise"), { st: .04 });
   gsap.set("#t-strike", { scaleX: 0 });
   tl.to("#t-strike", { scaleX: 1, duration: .8, ease: "glide" }, T("rules") - .1);
-  tl.to("#t-p1 .wd", { color: "rgba(244,243,239,.3)", duration: .8 }, T("rules") - .1);
+  tl.to("#t-p1", { opacity: .35, duration: .8 }, T("rules") - .1);
   textIn($("#t-p2"), T("rules"), { st: .05 });
   // …a few simple rules, in five parts
-  const parts = Math.min(T("learn") - .4, T("rules") + 1.9);
-  fadeOut(["#t-p1", "#t-p2", "#t-wall"], parts - .3);
-  fadeIn($$(".t-chip"), parts, { y: 80, st: .09 });
+  tl.to("#t-wall", { autoAlpha: 0, duration: .8 }, T("rules") + .2);
+  fadeIn($$(".t-chip"), T("rules") + .5, { y: 80, st: .09 });
   light(INTRO, "#1f7aff", "#8c5cff", "#22c1ee", .28);
 }
 
@@ -195,7 +195,7 @@ function sizes() {
   tl.fromTo("#z-ratio", { autoAlpha: 0, scale: .8, transformOrigin: "0 50%" }, { autoAlpha: 1, scale: 1, duration: 1, ease: "pop" }, T("ratio"));
   // 16, then 20, 25, 31, 39 light up as they are read
   const lit = (k, at) => { tl.to($(".z-s", zrows[k]), { color: "#7fb3ff", duration: .3 }, at); tl.to($(".z-px", zrows[k]), { color: CREAM, duration: .3 }, at); };
-  [1, 2, 3, 4, 5].forEach((k, j) => lit(k, T("steps") + j * (T("body16") - T("steps")) / 5.5));
+  ["steps", "s20", "s25", "s31", "s39"].forEach((c, j) => lit(j + 1, T(c)));
   tl.to($$(".z-s", sc).filter((_, k) => k !== 1), { color: "rgba(244,243,239,.35)", duration: .6 }, T("body16"));
   tl.to($(".z-s", zrows[1]), { color: BLUE, duration: .6 }, T("body16"));
   tl.fromTo("#z-16", { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: .9 }, T("body16") + .2);

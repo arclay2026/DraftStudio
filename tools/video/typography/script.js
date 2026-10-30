@@ -18,7 +18,7 @@ window.NARRATION = `
 
 {ch3}Part three: size and weight.
 
-{random}Beginners pick font sizes by eye, and nothing quite relates. {scale}Professionals use a type scale: {multiply}each size is the one before it, multiplied by the same number. {ratio}With a ratio of one point two five, {steps}sixteen pixel body text grows to twenty, twenty-five, thirty-one and thirty-nine. {body16}And for reading on screens, sixteen pixels is the minimum.
+{random}Beginners pick font sizes by eye, and nothing quite relates. {scale}Professionals use a type scale: {multiply}each size is the one before it, multiplied by the same number. {ratio}With a ratio of one point two five, {steps}sixteen pixel body text grows to {s20}twenty, {s25}twenty-five, {s31}thirty-one and {s39}thirty-nine. {body16}And for reading on screens, sixteen pixels is the minimum.
 
 {weight}Weight is how thick the strokes are, {range}from thin, all the way to black. {three}Three weights are enough: {regular}regular for reading, {semibold}semibold for buttons and labels, {bold}and bold for headings.
 
