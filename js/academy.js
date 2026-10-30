@@ -44,7 +44,7 @@ window.DSAcademy = function (kit) {
         </span>
         <i class="ac-progress" data-ac-progress></i>
       </header>
-      <div class="ac-scroll" data-ac-scroll><div class="ac-doc" data-ac-doc></div></div>
+      <div class="ac-scroll" data-ac-scroll><div class="ac-vn-slot" data-vn-slot hidden></div><div class="ac-doc" data-ac-doc></div></div>
     </article>`;
   document.body.appendChild(reader);
   const panel = $(".ac-panel", reader), scroller = $("[data-ac-scroll]", reader), doc = $("[data-ac-doc]", reader);
@@ -56,26 +56,23 @@ window.DSAcademy = function (kit) {
   const BARS = 96, RATES = [1, 1.5, 2];
   const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.7v12.6c0 .8.9 1.3 1.6.9l10-6.3c.6-.4.6-1.3 0-1.7l-10-6.3C8.9 4.4 8 4.9 8 5.7Z"/></svg>';
   const PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1.3"/><rect x="13.5" y="5" width="4" height="14" rx="1.3"/></svg>';
-  const MIC = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a.9.9 0 0 1 1.8 0 4.7 4.7 0 0 0 9.4 0 .9.9 0 0 1 1.8 0 6.5 6.5 0 0 1-5.6 6.4V20h2.3a.9.9 0 0 1 0 1.8H8.8a.9.9 0 0 1 0-1.8h2.3v-2.6A6.5 6.5 0 0 1 5.5 11Z"/></svg>';
-  const MARK = '<svg viewBox="174 174 652 652" aria-hidden="true"><path d="M490.41,820.79h0c-171.87,0-311.2-139.33-311.2-311.2h0q311.2,0,311.2,311.2Z" fill="currentColor"/><path d="M490.41,179.21h0c-171.87,0-311.2,139.33-311.2,311.2h0q311.2,0,311.2-311.2Z" fill="currentColor"/><path d="M509.59,820.79h0c171.87,0,311.2-139.33,311.2-311.2h0q-311.2,0-311.2,311.2Z" fill="currentColor"/><path d="M509.59,179.21h0c171.87,0,311.2,139.33,311.2,311.2h0q-311.2,0-311.2-311.2Z" fill="#1f7aff"/></svg>';
   const clock = t => { t = Math.max(0, Math.round(t || 0)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
   const bars = () => Array.from({ length: BARS }, (_, k) => `<i style="--i:${k}"></i>`).join("");
   const voiceNote = () => `
-      <div class="ac-vn-pin"><div class="ac-vn" data-vn>
+      <div class="ac-vn" data-vn>
         <button type="button" class="ac-vn-play" data-vn-play aria-label="Play the narration">${PLAY}</button>
-        <div class="ac-vn-main">
-          <div class="ac-vn-wave" data-vn-wave role="slider" tabindex="0" aria-label="Narration position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-            <span class="ac-vn-bars" data-vn-bars>${bars()}</span>
-            <span class="ac-vn-bars is-played" data-vn-played aria-hidden="true">${bars()}</span>
-            <b class="ac-vn-dot"></b>
-          </div>
-          <div class="ac-vn-meta"><span data-vn-time>0:00</span><span class="ac-vn-tag">Narrated lesson</span><button type="button" class="ac-vn-rate" data-vn-rate aria-label="Playback speed" data-no-i18n>1×</button></div>
+        <span class="ac-vn-time" data-vn-time>0:00</span>
+        <div class="ac-vn-wave" data-vn-wave role="slider" tabindex="0" aria-label="Narration position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <span class="ac-vn-bars" data-vn-bars>${bars()}</span>
+          <span class="ac-vn-bars is-played" data-vn-played aria-hidden="true">${bars()}</span>
+          <b class="ac-vn-dot"></b>
         </div>
-        <span class="ac-vn-avatar" aria-hidden="true">${MARK}<i>${MIC}</i></span>
-      </div></div>`;
+        <span class="ac-vn-time is-total" data-vn-total>0:00</span>
+        <button type="button" class="ac-vn-rate" data-vn-rate aria-label="Playback speed" data-no-i18n>1×</button>
+      </div>`;
   const vn = { audio: new Audio(), data: null, rate: 1, blocks: [], at: -1 };
   vn.audio.preload = "metadata";
-  const vnEl = sel => $(sel, doc);
+  const vnEl = sel => $(sel, reader);
   const vnPaint = () => {
     const a = vn.audio, dur = a.duration || (vn.data && vn.data.duration) || 0, p = dur ? Math.min(1, a.currentTime / dur) : 0;
     const box = vnEl("[data-vn]");
@@ -88,8 +85,8 @@ window.DSAcademy = function (kit) {
       play.innerHTML = a.paused ? PLAY : PAUSE;
       play.setAttribute("aria-label", a.paused ? "Play the narration" : "Pause the narration");
     }
-    // like a voice message: the length before it starts, the elapsed time once it has
-    vnEl("[data-vn-time]").textContent = a.currentTime > 0 ? clock(a.currentTime) : clock(dur);
+    vnEl("[data-vn-time]").textContent = clock(a.currentTime);
+    vnEl("[data-vn-total]").textContent = clock(dur);
     vnEl("[data-vn-wave]").setAttribute("aria-valuenow", Math.round(p * 100));
     // highlight the paragraph being read
     const st = vn.data && vn.data.starts;
@@ -168,7 +165,7 @@ window.DSAcademy = function (kit) {
       if (!d || LESSONS[cur].audio !== l.audio) return;
       vn.data = d;
       const peaks = d.peaks || [];
-      $$("[data-vn-bars] i, [data-vn-played] i", doc).forEach((b, j) => { b.style.setProperty("--h", Math.round((peaks[j % BARS] || .4) * 100) + "%"); });
+      $$("[data-vn-bars] i, [data-vn-played] i", reader).forEach((b, j) => { b.style.setProperty("--h", Math.round((peaks[j % BARS] || .4) * 100) + "%"); });
       requestAnimationFrame(() => { const box = vnEl("[data-vn]"); if (box) box.classList.add("is-ready"); });  // the bars grow in
       vnPaint();
     }).catch(() => {});
@@ -182,7 +179,7 @@ window.DSAcademy = function (kit) {
     vn.audio.currentTime = Math.max(0, Math.min(.999, f)) * dur;
     vnPaint();
   };
-  doc.addEventListener("pointerdown", e => {
+  reader.addEventListener("pointerdown", e => {
     const w = e.target.closest("[data-vn-wave]");
     if (!w) return;
     e.preventDefault();
@@ -190,12 +187,12 @@ window.DSAcademy = function (kit) {
     const move = ev => vnSeek(ev.clientX), up = () => { removeEventListener("pointermove", move); removeEventListener("pointerup", up); };
     addEventListener("pointermove", move); addEventListener("pointerup", up);
   });
-  doc.addEventListener("keydown", e => {
+  reader.addEventListener("keydown", e => {
     if (!e.target.closest("[data-vn-wave]") || !["ArrowLeft", "ArrowRight"].includes(e.key)) return;
     e.preventDefault(); e.stopPropagation();
     vn.audio.currentTime = Math.max(0, vn.audio.currentTime + (e.key === "ArrowRight" ? 5 : -5));
   });
-  doc.addEventListener("click", e => {
+  reader.addEventListener("click", e => {
     if (e.target.closest("[data-vn-play]")) { if (vn.audio.paused) vn.audio.play().catch(() => {}); else vn.audio.pause(); }
     const rb = e.target.closest("[data-vn-rate]");
     if (rb) { vn.rate = RATES[(RATES.indexOf(vn.rate) + 1) % RATES.length]; vn.audio.playbackRate = vn.rate; rb.textContent = vn.rate + "×"; }
@@ -206,7 +203,6 @@ window.DSAcademy = function (kit) {
   const lessonHtml = (l, i) => {
     const next = LESSONS[(i + 1) % LESSONS.length];
     return `
-      ${l.audio ? voiceNote() : ""}
       <p class="ac-kicker">Design Basics · Lesson ${i + 1} of ${LESSONS.length}</p>
       <h1 id="ac-title">${esc(l.title)}</h1>
       <p class="ac-lead">${esc(l.intro)}</p>
@@ -242,6 +238,9 @@ window.DSAcademy = function (kit) {
     const l = LESSONS[cur];
     $("[data-ac-step]", reader).textContent = `Lesson ${cur + 1} of ${LESSONS.length} · ${l.time}`;
     doc.innerHTML = lessonHtml(l, cur);
+    const slot = $("[data-vn-slot]", reader);
+    slot.innerHTML = l.audio ? voiceNote() : "";
+    slot.hidden = !l.audio;
     vnSetup(l);
     scroller.scrollTop = 0;
     progress();
@@ -252,8 +251,6 @@ window.DSAcademy = function (kit) {
     $("[data-ac-progress]", reader).style.transform = `scaleX(${max > 0 ? Math.min(1, scroller.scrollTop / max) : 0})`;
   };
   scroller.addEventListener("scroll", progress, { passive: true });
-  // the voice note gets a shadow once it's pinned to the top
-  scroller.addEventListener("scroll", () => { const v = $("[data-vn]", doc); if (v) v.classList.toggle("is-stuck", v.getBoundingClientRect().top - scroller.getBoundingClientRect().top <= 13 && scroller.scrollTop > 0); }, { passive: true });
 
   const open = i => {
     fill(i);
