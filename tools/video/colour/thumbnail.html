@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>Colour · thumbnail</title>
 <!-- The YouTube thumbnail for the Colour lesson (1280×720). node render.js doesn't need it:
-     render-thumbnail.js screenshots it to colour-thumbnail.png -->
+     node ../shared/render-thumbnail.js colour screenshots it to colour-thumbnail.png -->
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; background: #0b0b0d; }
@@ -34,7 +34,7 @@
   <div class="sub">5 rules every<br>designer uses <span>→</span></div>
   <div class="brand" id="brand"></div>
 </div>
-<script src="logo.js"></script>
+<script src="../shared/logo.js"></script>
 <script>document.getElementById("brand").innerHTML = LOGO.replace("<svg ", '<svg height="40" ');</script>
 </body>
 </html>

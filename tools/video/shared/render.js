@@ -1,5 +1,6 @@
-// Renders index.html to a 1920×1080, 30 fps MP4, frame by frame, with Playwright and ffmpeg.
-//   node render.js [out.mp4] [--audio narration.mp3] [--workers 3] [--from s] [--to s]
+// Renders a lesson video (tools/video/<lesson>/index.html) to a 1920×1080, 30 fps MP4, frame by
+// frame, with Playwright and ffmpeg.
+//   node render.js <lesson> [out.mp4] [--audio narration.mp3] [--workers 3] [--from s] [--to s]
 // The frames are split between parallel workers, whose clips are then joined losslessly.
 // With --audio the recorded narration is laid under the picture, starting when the logo intro
 // ends (timing.js should then hold the cue times measured from that recording).
@@ -11,8 +12,11 @@ const args = process.argv.slice(2);
 const opt = k => { const i = args.indexOf(k); return i < 0 ? null : args.splice(i, 2)[1]; };
 const audio = opt("--audio"), part = opt("--frames"), workers = +(opt("--workers") || 3);
 const from = +(opt("--from") || 0), to = opt("--to");
-const out = path.resolve(args[0] || path.join(__dirname, "colour-lesson.mp4"));
-const page0 = "file://" + path.join(__dirname, "index.html") + "?render";
+const lesson = args[0];
+if (!lesson) { console.error("Usage: node render.js <lesson> [out.mp4] [--audio file] [--workers n]"); process.exit(1); }
+const dir = path.join(__dirname, "..", lesson);
+const out = path.resolve(args[1] || path.join(dir, `${lesson}-lesson.mp4`));
+const page0 = "file://" + path.join(dir, "index.html") + "?render";
 
 async function open() {
   const browser = await chromium.launch();
@@ -54,7 +58,7 @@ async function renderPart(a, b, file) {
     const a = f0 + k * step, b = Math.min(f1, a + step), file = path.join(tmp, `part${k}.mp4`);
     if (a >= b) return null;
     parts.push(file);
-    return new Promise((res, rej) => spawn(process.execPath, [__filename, file, "--frames", `${a}:${b}`], { stdio: "inherit" })
+    return new Promise((res, rej) => spawn(process.execPath, [__filename, lesson, file, "--frames", `${a}:${b}`], { stdio: "inherit" })
       .on("close", c => (c ? rej(new Error("worker failed")) : res())));
   }));
   fs.writeFileSync(path.join(tmp, "list.txt"), parts.sort().map(p => `file '${p}'`).join("\n"));

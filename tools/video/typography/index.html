@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Typography · lesson video</title>
+<!-- The Typography lesson as a 1920×1080 motion-graphics video. Open it to preview (space plays,
+     arrows step), or render it to MP4 with: node ../shared/render.js typography -->
+<link rel="stylesheet" href="../shared/stage.css">
+<style>
+  /* the typefaces this lesson shows off (fonts/LICENSE.txt) */
+  @font-face { font-family: "Playfair Display"; font-weight: 400; src: url(fonts/playfair-display-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Playfair Display"; font-weight: 700; src: url(fonts/playfair-display-latin-700-normal.woff2) format("woff2"); }
+  @font-face { font-family: "JetBrains Mono"; font-weight: 400; src: url(fonts/jetbrains-mono-latin-400-normal.woff2) format("woff2"); }
+  @font-face { font-family: "JetBrains Mono"; font-weight: 700; src: url(fonts/jetbrains-mono-latin-700-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Bebas Neue"; font-weight: 400; src: url(fonts/bebas-neue-latin-400-normal.woff2) format("woff2"); }
+  .serif { font-family: "Playfair Display", Georgia, serif; }
+  .mono2 { font-family: "JetBrains Mono", monospace; }
+  .disp { font-family: "Bebas Neue", Impact, sans-serif; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"><i class="orb" id="o1"></i><i class="orb" id="o2"></i><i class="orb" id="o3"></i></div>
+  <div id="scenes"></div>
+  <div id="chrome"></div>
+  <div id="vignette"></div>
+  <canvas id="grain" width="512" height="512"></canvas>
+</div>
+<script src="../shared/vendor/gsap.min.js"></script>
+<script src="../shared/vendor/SplitText.min.js"></script>
+<script src="../shared/vendor/CustomEase.min.js"></script>
+<script src="../shared/vendor/DrawSVGPlugin.min.js"></script>
+<script src="../shared/logo.js"></script>
+<script src="script.js"></script>
+<script src="timing.js"></script>
+<script src="../shared/engine.js"></script>
+<script src="video.js"></script>
+</body>
+</html>

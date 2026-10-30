@@ -1,0 +1,45 @@
+/* The 1920x1080 stage, type and chrome shared by every lesson video */
+  :root { --cream: #f4f3ef; --ink: #0b0b0d; --blue: #1f7aff; --mute: rgba(244, 243, 239, .52); --line: rgba(244, 243, 239, .14);
+    --sans: "Inter Display", "Inter", system-ui, sans-serif; --mono: "JetBrains Mono", "DejaVu Sans Mono", ui-monospace, monospace; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #000; }
+  body { display: grid; place-items: center; min-height: 100vh; overflow: hidden; }
+  #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; background: var(--ink); color: var(--cream);
+    font: 500 30px/1.3 var(--sans); letter-spacing: -.01em; transform-origin: 0 0; -webkit-font-smoothing: antialiased; font-feature-settings: "ss01", "cv11"; }
+  /* ambient light behind everything */
+  #bg { position: absolute; inset: 0; }
+  .orb { position: absolute; width: 1400px; height: 1400px; margin: -700px 0 0 -700px; border-radius: 50%; opacity: var(--o, .5);
+    background: radial-gradient(circle, var(--c) 0%, color-mix(in srgb, var(--c) 40%, transparent) 22%, transparent 62%); }
+  #vignette { position: absolute; inset: 0; background: radial-gradient(130% 100% at 50% 45%, transparent 55%, rgba(0, 0, 0, .55)); pointer-events: none; }
+  #grain { position: absolute; inset: -64px; opacity: .07; mix-blend-mode: overlay; pointer-events: none; }
+  .scene { position: absolute; inset: 0; visibility: hidden; }
+  .abs { position: absolute; }
+  .wd { will-change: transform; }
+  .kicker { font: 600 22px/1 var(--mono); letter-spacing: .32em; text-transform: uppercase; color: var(--blue); }
+  .h1 { font-weight: 600; font-size: 116px; line-height: .98; letter-spacing: -.045em; }
+  .h2 { font-weight: 600; font-size: 76px; line-height: 1.02; letter-spacing: -.04em; }
+  .sub { font-weight: 400; font-size: 34px; line-height: 1.38; color: var(--mute); letter-spacing: -.012em; }
+  .dim { color: var(--mute); }
+  .blue { color: var(--blue); }
+  .rainbow { background: linear-gradient(90deg, #ff4d4d, #ff9f1a, #ffd53d, #3ddc84, #22c1ee, #1f7aff, #8c5cff, #ff4fa3, #ff4d4d) 0 0 / 300% 100%;
+    -webkit-background-clip: text; background-clip: text; color: transparent; }
+  /* chrome: the bar at the top and the chapter progress at the bottom */
+  #chrome { position: absolute; inset: 0; pointer-events: none; }
+  .brand { position: absolute; left: 96px; top: 64px; display: flex; align-items: center; gap: 18px; font-size: 24px; font-weight: 600; }
+  .brand svg { width: 34px; height: 34px; }
+  .brand span { color: var(--mute); font-weight: 500; }
+  .chap { position: absolute; right: 96px; top: 64px; height: 34px; overflow: hidden; text-align: right; font-size: 24px; font-weight: 500; color: var(--mute); }
+  .chap div { position: absolute; right: 0; top: 0; white-space: nowrap; line-height: 34px; }
+  .chap b { color: var(--cream); font-weight: 600; margin-right: 14px; font-family: var(--mono); font-size: 20px; letter-spacing: .1em; }
+  .progress { position: absolute; left: 96px; right: 96px; bottom: 64px; display: flex; gap: 12px; }
+  .progress i { position: relative; flex: 1; height: 4px; border-radius: 2px; background: var(--line); overflow: hidden; }
+  .progress i b { position: absolute; inset: 0; background: var(--cream); transform-origin: 0 50%; transform: scaleX(0); }
+  /* chapter cards */
+  .ch-num { position: absolute; left: 150px; top: 250px; font: 700 440px/0.8 var(--sans); letter-spacing: -.06em; color: transparent; -webkit-text-stroke: 2px rgba(244, 243, 239, .5); }
+  .ch-line { position: absolute; left: 160px; top: 690px; width: 1600px; height: 2px; background: var(--blue); transform-origin: 0 50%; }
+  .ch-k { position: absolute; left: 160px; top: 740px; }
+  .ch-t { position: absolute; left: 156px; top: 790px; width: 1600px; }
+  /* swatches and cards */
+  .card { border-radius: 40px; background: rgba(244, 243, 239, .05); border: 1.5px solid var(--line); }
+  .chip { display: inline-block; width: 28px; height: 28px; border-radius: 9px; vertical-align: -4px; margin-right: 14px; }
+  .mono { font-family: var(--mono); }

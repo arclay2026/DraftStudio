@@ -1,0 +1,33 @@
+Typography is the art of arranging text so it's easy, and pleasant, to read. Most designs are mostly words, so good typography does more for your work than any other single skill.
+
+The good news? It's not about owning a hundred fonts. It's about a few simple rules. Let's learn them.
+
+Part one: the anatomy of a letter.
+
+Every letter in a font sits on the same set of invisible lines. The baseline is the line letters stand on. The x-height is the height of a lowercase x. The cap height is the height of capital letters. Tall letters, like d, h and k, rise to the ascender line, and letters with tails, like g, p and y, drop to the descender line.
+
+The x-height matters most. Fonts with a large x-height look bigger, and stay readable at small sizes.
+
+Part two: the main kinds of font.
+
+Serif fonts have small strokes at the ends of their letters. They feel classic and trustworthy. Sans-serif fonts have none. They feel modern and clean, and they're the default for apps and websites. Monospace fonts give every letter the same width, perfect for code and numbers. And display fonts are made to be used big, for headlines, never for paragraphs.
+
+Part three: size and weight.
+
+Beginners pick font sizes by eye, and nothing quite relates. Professionals use a type scale: each size is the one before it, multiplied by the same number. With a ratio of one point two five, sixteen pixel body text grows to twenty, twenty-five, thirty-one and thirty-nine. And for reading on screens, sixteen pixels is the minimum.
+
+Weight is how thick the strokes are, from thin, all the way to black. Three weights are enough: regular for reading, semibold for buttons and labels, and bold for headings.
+
+Part four: spacing.
+
+Line height is the space from one line to the next. Too tight, and the eye slips onto the wrong line. For body text, use about one and a half times the font size. Line length matters too. Aim for forty-five to seventy-five characters per line, so on a wide screen, use a narrow column.
+
+Letter spacing should stay at zero for body text. Big headlines look better slightly tighter, and small capital labels look better opened up.
+
+Part five: pairing fonts.
+
+Most designs need only two fonts: one for headings, and one for body text. The secret is clear contrast. A serif heading with a sans-serif body looks intentional. Two fonts that are almost the same look like a mistake. When in doubt, use one family, and let size and weight do the work.
+
+Let's recap. Letters sit on five guide lines, and the x-height matters most. Serif feels classic, sans-serif modern, monospace technical, display loud. Pick sizes from a type scale, with sixteen pixel body text. Set line height to about one and a half, and keep lines to forty-five to seventy-five characters. And pair two clearly different fonts, or one family in two weights.
+
+That's typography. Now try it yourself in Draft Studio's Canvas, and I'll see you in the next lesson.
