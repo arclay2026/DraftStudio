@@ -2279,8 +2279,7 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 .ac-vn-bars.is-played { clip-path: inset(0 calc(100% - var(--p)) 0 0); }
 .ac-vn-bars.is-played i { background: var(--dl); }
 [dir="rtl"] .ac-vn-bars.is-played { clip-path: inset(0 0 0 calc(100% - var(--p))); }
-.ac-vn-dot { position: absolute; top: 50%; left: var(--p); width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--dl); pointer-events: none;
-  box-shadow: 0 0 0 3px var(--fill), 0 0 0 calc(3px + var(--level) * 9px) color-mix(in srgb, var(--dl) 22%, transparent); transition: transform .25s var(--spring, var(--ease)); }
+.ac-vn-dot { position: absolute; top: 50%; left: var(--p); width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 50%; background: var(--dl); pointer-events: none; transition: transform .25s var(--spring, var(--ease)); }
 .ac-vn-wave:hover .ac-vn-dot, .ac-vn-wave:active .ac-vn-dot { transform: scale(1.2); }
 [dir="rtl"] .ac-vn-dot { left: auto; right: var(--p); margin: -7px -7px 0 0; }
 .ac-vn-meta { display: flex; align-items: center; gap: 8px; font-size: calc(12px * var(--ts)); color: var(--mute); font-variant-numeric: tabular-nums; }
