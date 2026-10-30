@@ -7,6 +7,8 @@
   const LESSONS = [
   {
     key: "colour", title: "Colour", time: "9 min read",
+    // narrated in ElevenLabs; colour.json holds its length, waveform and when each paragraph starts
+    audio: "audio/colour",
     line: "Pick colours that work together, every time.",
     intro: "Colour is the first thing people notice, often before they read a single word. It sets the mood, tells people what kind of brand you are, and points their eyes to what matters. The good news: you don't need “an eye for colour”. Designers use a few simple tools and rules, and in this lesson you'll learn all of them.",
     sections: [

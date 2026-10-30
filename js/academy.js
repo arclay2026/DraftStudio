@@ -50,6 +50,105 @@ window.DSAcademy = function (kit) {
   const panel = $(".ac-panel", reader), scroller = $("[data-ac-scroll]", reader), doc = $("[data-ac-doc]", reader);
   let cur = 0, lastCard = null;
 
+  /* ---------- Voice note: a narrated lesson, played like a chat voice message ----------
+     The recording (audio/<key>.mp3) comes with audio/<key>.json: its length, a waveform
+     (one height per bar) and the second each highlighted paragraph starts. */
+  const BARS = 64, RATES = [1, 1.5, 2];
+  const PLAY = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5.7v12.6c0 .8.9 1.3 1.6.9l10-6.3c.6-.4.6-1.3 0-1.7l-10-6.3C8.9 4.4 8 4.9 8 5.7Z"/></svg>';
+  const PAUSE = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6.5" y="5" width="4" height="14" rx="1.3"/><rect x="13.5" y="5" width="4" height="14" rx="1.3"/></svg>';
+  const MIC = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a.9.9 0 0 1 1.8 0 4.7 4.7 0 0 0 9.4 0 .9.9 0 0 1 1.8 0 6.5 6.5 0 0 1-5.6 6.4V20h2.3a.9.9 0 0 1 0 1.8H8.8a.9.9 0 0 1 0-1.8h2.3v-2.6A6.5 6.5 0 0 1 5.5 11Z"/></svg>';
+  const MARK = '<svg viewBox="174 174 652 652" aria-hidden="true"><path d="M490.41,820.79h0c-171.87,0-311.2-139.33-311.2-311.2h0q311.2,0,311.2,311.2Z" fill="currentColor"/><path d="M490.41,179.21h0c-171.87,0-311.2,139.33-311.2,311.2h0q311.2,0,311.2-311.2Z" fill="currentColor"/><path d="M509.59,820.79h0c171.87,0,311.2-139.33,311.2-311.2h0q-311.2,0-311.2,311.2Z" fill="currentColor"/><path d="M509.59,179.21h0c171.87,0,311.2,139.33,311.2,311.2h0q-311.2,0-311.2-311.2Z" fill="#1f7aff"/></svg>';
+  const clock = t => { t = Math.max(0, Math.round(t || 0)); return `${Math.floor(t / 60)}:${String(t % 60).padStart(2, "0")}`; };
+  const voiceNote = () => `
+      <div class="ac-vn" data-vn>
+        <button type="button" class="ac-vn-play" data-vn-play aria-label="Play the narration">${PLAY}</button>
+        <div class="ac-vn-main">
+          <div class="ac-vn-wave" data-vn-wave role="slider" tabindex="0" aria-label="Narration position" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <span class="ac-vn-bars" data-vn-bars>${"<i></i>".repeat(BARS)}</span>
+            <span class="ac-vn-bars is-played" data-vn-played aria-hidden="true">${"<i></i>".repeat(BARS)}</span>
+            <b class="ac-vn-dot"></b>
+          </div>
+          <div class="ac-vn-meta"><span data-vn-time>0:00</span><span class="ac-vn-tag">Narrated lesson</span><button type="button" class="ac-vn-rate" data-vn-rate aria-label="Playback speed" data-no-i18n>1×</button></div>
+        </div>
+        <span class="ac-vn-avatar" aria-hidden="true">${MARK}<i>${MIC}</i></span>
+      </div>`;
+  const vn = { audio: new Audio(), data: null, rate: 1, blocks: [], at: -1 };
+  vn.audio.preload = "metadata";
+  const vnEl = sel => $(sel, doc);
+  const vnPaint = () => {
+    const a = vn.audio, dur = a.duration || (vn.data && vn.data.duration) || 0, p = dur ? Math.min(1, a.currentTime / dur) : 0;
+    const box = vnEl("[data-vn]");
+    if (!box) return;
+    box.style.setProperty("--p", (p * 100).toFixed(2) + "%");
+    box.classList.toggle("is-playing", !a.paused);
+    const play = vnEl("[data-vn-play]");
+    play.innerHTML = a.paused ? PLAY : PAUSE;
+    play.setAttribute("aria-label", a.paused ? "Play the narration" : "Pause the narration");
+    // like a voice message: the length before it starts, the elapsed time once it has
+    vnEl("[data-vn-time]").textContent = a.currentTime > 0 ? clock(a.currentTime) : clock(dur);
+    vnEl("[data-vn-wave]").setAttribute("aria-valuenow", Math.round(p * 100));
+    // highlight the paragraph being read
+    const st = vn.data && vn.data.starts;
+    let k = -1;
+    if (st && (a.currentTime > 0)) { k = 0; while (k + 1 < st.length && st[k + 1] <= a.currentTime + .05) k++; }
+    if (k !== vn.at) {
+      vn.at = k;
+      vn.blocks.forEach((b, j) => b.classList.toggle("is-saying", j === k && !a.paused));
+      const el = vn.blocks[k];
+      if (el && !a.paused) {
+        const r = el.getBoundingClientRect(), sr = scroller.getBoundingClientRect();
+        if (r.top < sr.top + 70 || r.bottom > sr.bottom - 40) scroller.scrollTo({ top: scroller.scrollTop + r.top - sr.top - 110, behavior: "smooth" });
+      }
+    } else if (vn.blocks[k]) vn.blocks[k].classList.toggle("is-saying", !a.paused);
+  };
+  ["timeupdate", "play", "pause", "loadedmetadata", "ended"].forEach(ev => vn.audio.addEventListener(ev, vnPaint));
+  vn.audio.addEventListener("ended", () => { vn.audio.currentTime = 0; vnPaint(); });
+  const vnSetup = l => {
+    vn.audio.pause();
+    vn.at = -1; vn.data = null;
+    if (!l.audio) { vn.audio.removeAttribute("src"); return; }
+    vn.blocks = $$("h1, .ac-lead, .ac-sec h2, .ac-sec > p, .ac-fig figcaption, .ac-tip, .ac-bad li, .ac-good li, .ac-practise p:last-child", doc);
+    vn.audio.src = l.audio + ".mp3";
+    vn.audio.playbackRate = vn.rate;
+    const rb = vnEl("[data-vn-rate]");
+    if (rb) rb.textContent = vn.rate + "×";
+    fetch(l.audio + ".json").then(r => (r.ok ? r.json() : null)).then(d => {
+      if (!d || LESSONS[cur].audio !== l.audio) return;
+      vn.data = d;
+      const peaks = d.peaks || [];
+      $$("[data-vn-bars] i, [data-vn-played] i", doc).forEach((b, j) => { b.style.height = Math.round(((peaks[j % BARS] || .4)) * 100) + "%"; });
+      vnPaint();
+    }).catch(() => {});
+    vnPaint();
+  };
+  const vnSeek = x => {
+    const w = vnEl("[data-vn-wave]"), r = w.getBoundingClientRect(), dur = vn.audio.duration || (vn.data && vn.data.duration);
+    if (!dur) return;
+    let f = (x - r.left) / r.width;
+    if (getComputedStyle(w).direction === "rtl") f = 1 - f;
+    vn.audio.currentTime = Math.max(0, Math.min(.999, f)) * dur;
+    vnPaint();
+  };
+  doc.addEventListener("pointerdown", e => {
+    const w = e.target.closest("[data-vn-wave]");
+    if (!w) return;
+    e.preventDefault();
+    vnSeek(e.clientX);
+    const move = ev => vnSeek(ev.clientX), up = () => { removeEventListener("pointermove", move); removeEventListener("pointerup", up); };
+    addEventListener("pointermove", move); addEventListener("pointerup", up);
+  });
+  doc.addEventListener("keydown", e => {
+    if (!e.target.closest("[data-vn-wave]") || !["ArrowLeft", "ArrowRight"].includes(e.key)) return;
+    e.preventDefault(); e.stopPropagation();
+    vn.audio.currentTime = Math.max(0, vn.audio.currentTime + (e.key === "ArrowRight" ? 5 : -5));
+  });
+  doc.addEventListener("click", e => {
+    if (e.target.closest("[data-vn-play]")) { if (vn.audio.paused) vn.audio.play().catch(() => {}); else vn.audio.pause(); }
+    const rb = e.target.closest("[data-vn-rate]");
+    if (rb) { vn.rate = RATES[(RATES.indexOf(vn.rate) + 1) % RATES.length]; vn.audio.playbackRate = vn.rate; rb.textContent = vn.rate + "×"; }
+  });
+  addEventListener("pagehide", () => vn.audio.pause());
+
   const figure = (name, caption, n) => `<figure class="ac-fig" data-fig="${name}">${FIG.fig[name] ? FIG.fig[name]() : ""}<figcaption><b>Figure ${n}</b> ${esc(caption)}</figcaption></figure>`;
   const lessonHtml = (l, i) => {
     const next = LESSONS[(i + 1) % LESSONS.length];
@@ -57,6 +156,7 @@ window.DSAcademy = function (kit) {
       <p class="ac-kicker">Design Basics · Lesson ${i + 1} of ${LESSONS.length}</p>
       <h1 id="ac-title">${esc(l.title)}</h1>
       <p class="ac-lead">${esc(l.intro)}</p>
+      ${l.audio ? voiceNote() : ""}
       <nav class="ac-toc" aria-label="In this lesson">
         <p class="ac-label">In this lesson</p>
         <ol>${l.sections.map((s, k) => `<li><a href="#ac-s${k + 1}" data-ac-jump="${k + 1}">${esc(s.h)}</a></li>`).join("")}</ol>
@@ -89,6 +189,7 @@ window.DSAcademy = function (kit) {
     const l = LESSONS[cur];
     $("[data-ac-step]", reader).textContent = `Lesson ${cur + 1} of ${LESSONS.length} · ${l.time}`;
     doc.innerHTML = lessonHtml(l, cur);
+    vnSetup(l);
     scroller.scrollTop = 0;
     progress();
     if (location.hash !== "#lesson-" + l.key) history.replaceState(null, "", "#lesson-" + l.key);
@@ -108,6 +209,7 @@ window.DSAcademy = function (kit) {
     setTimeout(() => panel.focus({ preventScroll: true }), 50);
   };
   const close = () => {
+    vn.audio.pause();
     reader.classList.remove("is-open");
     document.documentElement.style.overflow = "";
     reader._t = setTimeout(() => { reader.hidden = true; }, 300);
