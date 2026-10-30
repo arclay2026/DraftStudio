@@ -12,6 +12,8 @@ printf '{ "v": "%s" }\n' "$V" > version.json
 command -v node >/dev/null 2>&1 && node tools/build-chat.js
 # Narration scripts for the lessons (voiceover/, recorded in ElevenLabs)
 command -v node >/dev/null 2>&1 && node tools/build-voiceover.js
+# The lessons written into learn.html, for previews and search engines
+command -v node >/dev/null 2>&1 && node tools/build-learn.js
 # Lighter WebP copies of the preview images (needs Python with Pillow)
 command -v python3 >/dev/null 2>&1 && python3 tools/build-images.py
 # Rebuild share previews, the d/ design pages and sitemap.xml

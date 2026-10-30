@@ -2200,6 +2200,12 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
    white "paper" so they read the same in light and dark mode.
    ===================================================================== */
 .ac-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(10px, 1.2vw, 16px); }
+/* The lessons as plain HTML (tools/build-learn.js), shown until js/academy.js draws the cards */
+.ac-static { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.ac-static-card { display: flex; flex-direction: column; gap: 6px; padding: 18px 20px; border-radius: 20px; border: 1px solid var(--border); background: var(--surface); }
+.ac-static-card strong { font: 600 22px/1.15 var(--font-display); letter-spacing: -.03em; }
+.ac-static-card ol { margin: 6px 0 0; padding-inline-start: 18px; color: var(--mute); font-size: 13px; line-height: 1.6; }
+@media (max-width: 900px) { .ac-static { grid-template-columns: 1fr; } }
 .ac-card {
   display: flex; flex-direction: column; text-align: start; border-radius: 24px; overflow: hidden;
   background: var(--surface); border: 1px solid var(--border);
