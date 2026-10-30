@@ -29,6 +29,7 @@ window.DSChat = function (kit) {
     license: ["licen", "commercial", "sell", "resell", "credit", "attribution", "allowed", "legal", "client", "comercial", "vend", "ترخيص", "تجاري", "许可", "商用", "商业", "版权"],
     price: ["free", "price", "cost", "pay", "how much", "gratuit", "gratis", "prix", "precio", "preco", "مجان", "سعر", "免费", "价格", "多少钱"],
     qr: ["qr"],
+    barcode: ["barcode", "bar code", "ean-13", "ean13", "ean-8", "upc-a", "upc code", "code 128", "code128", "code 39", "itf-14", "code-barre", "codigo de barras", "código de barras", "باركود", "条形码", "条码"],
     palette: ["palette", "colour", "color", "paleta", "couleur", "cores", "لون", "ألوان", "配色", "颜色", "调色"],
     open: ["open", "what is", "which app", "what app", "edit", "ouvr", "abr", "edit", "يفت", "فتح", "تعديل", "打开", "编辑", "什么是"]
   };
@@ -122,6 +123,7 @@ window.DSChat = function (kit) {
       return say(lines, [{ type: "files", ids: found.slice(0, 4).map(i => i.id) }]);
     }
     if (has(q, KW.price)) return say(["Everything marked Free costs nothing. No sign-up, no watermark.", "Exclusive logos are the exception: they're sold once, with full rights to the buyer."], [{ type: "links", keys: ["browse"] }]);
+    if (has(q, KW.barcode)) return say("Barcode Studio makes EAN-13, UPC-A, EAN-8, Code 128, Code 39 and ITF-14 barcodes. It adds the check digit for you and scan-checks every design live. For shop products, the number itself must be registered with GS1.", [{ type: "links", keys: ["barcode"] }]);
     if (has(q, KW.qr)) return say("QR Code Studio lets you design a QR code dot by dot, add your logo, and download it. Every design is scan-checked live.", [{ type: "links", keys: ["qr"] }]);
     if (has(q, KW.palette)) {
       const pick = palettes.filter(p => q.includes(fold(p.mood)) || q.includes(fold(p.name)));
@@ -168,6 +170,7 @@ window.DSChat = function (kit) {
     browse: ["browse.html", "Browse all files", "grid"],
     palettes: ["palettes.html", "Explore palettes", "palette"],
     qr: ["qr.html", "Open QR Code Studio", "ui-qr"],
+    barcode: ["barcode.html", "Open Barcode Studio", "ui-barcode"],
     license: ["license.html", "Read the license", "file"],
     learn: ["learn.html", "Learn about formats", "lightbulb"],
     mockups: ["browse.html?cat=mockups", "Browse mockups", "t-shirt"],

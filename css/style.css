@@ -1473,6 +1473,22 @@ html.qv-lock { overflow: hidden; }
 .qs-card header p { font-size: calc(11.5px * var(--ts)); color: var(--mute); margin-top: 2px; }
 .qs-sub { display: block; font-size: calc(11px * var(--ts)); font-weight: 500; color: var(--mute); text-transform: uppercase; letter-spacing: .08em; margin-bottom: -5.5px; }
 [data-qs] [data-when] { display: contents; }
+/* Barcode Studio (barcode.html) reuses the QR studio's parts; barcodes are wide, so the preview and looks are too */
+[data-bs] [data-when] { display: contents; }
+.bs:not(.is-retail) [data-when="retail"], .bs:not(.is-itf) [data-when="itf"], .bs:not(.has-text) [data-when="text"] { display: none; }
+.bs-preview > svg { width: min(100%, 520px); max-width: none; height: auto; max-height: 100%; }
+.bs-types { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.bs-type { height: 44px; }
+.bs-mini { flex: none; display: grid; place-items: center; width: 26px; height: 17px; }
+.bs-mini svg { width: 26px; height: 15px; }
+.bs-hint { margin: 8px 0 0; font-size: calc(11.5px * var(--ts)); line-height: 1.5; color: var(--mute); }
+.bs-link { padding: 0; font: inherit; color: var(--fg); text-decoration: underline; text-underline-offset: 2px; text-decoration-color: var(--border-2); }
+.bs-link:hover { text-decoration-color: currentColor; }
+.bs-note { margin: 10px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--fill); font-size: calc(11.5px * var(--ts)); line-height: 1.5; color: var(--mute); }
+.bs-note a { color: var(--fg); text-decoration: underline; text-underline-offset: 2px; }
+.bs-looks { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.bs-look > span { aspect-ratio: 1.45; background: var(--fill); }
+.bs-look > span svg { object-fit: contain; }
 .qs:not(.is-gradient) [data-when="gradient"], .qs:not(.is-linear) [data-when="linear"],
 .qs:not(.has-logo) [data-when="logo"], .qs:not(.has-label) [data-when="label"] { display: none; }
 
