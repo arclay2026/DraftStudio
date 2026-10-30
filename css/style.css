@@ -2258,11 +2258,6 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 .ac-vn.is-playing { border-color: color-mix(in srgb, var(--dl) 35%, var(--border)); box-shadow: 0 14px 34px -22px color-mix(in srgb, var(--dl) 70%, transparent); }
 @keyframes ac-vn-in { from { opacity: 0; transform: translateY(10px) scale(.98); } }
 .ac-vn-play { position: relative; flex: none; display: grid; place-items: center; width: 50px; height: 50px; border-radius: 17px; background: var(--dl); color: #fff; transition: transform .25s var(--spring, var(--ease)), background .2s; }
-/* sound-wave rings around the play button while it plays */
-.ac-vn-play::before, .ac-vn-play::after { content: ""; position: absolute; inset: 0; border-radius: inherit; corner-shape: inherit; border: 2px solid var(--dl); opacity: 0; pointer-events: none; }
-.ac-vn.is-playing .ac-vn-play::before { animation: ac-vn-ring 1.9s cubic-bezier(.2, .6, .35, 1) infinite; }
-.ac-vn.is-playing .ac-vn-play::after { animation: ac-vn-ring 1.9s cubic-bezier(.2, .6, .35, 1) .95s infinite; }
-@keyframes ac-vn-ring { 0% { opacity: .55; transform: scale(1); } 100% { opacity: 0; transform: scale(1.75); } }
 .ac-vn-play svg { transition: transform .3s var(--spring, var(--ease)); }
 .ac-vn.is-playing .ac-vn-play svg { animation: ac-vn-swap .35s var(--spring, var(--ease)); }
 @keyframes ac-vn-swap { from { transform: scale(.4) rotate(-30deg); opacity: 0; } }
@@ -2299,7 +2294,7 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 /* the paragraph being read */
 .ac-doc .is-saying { border-radius: 10px; background: color-mix(in srgb, var(--dl) 11%, transparent); box-shadow: 0 0 0 8px color-mix(in srgb, var(--dl) 11%, transparent); transition: background .3s, box-shadow .3s; }
 @media (max-width: 560px) { .ac-vn { gap: 12px; } .ac-vn-avatar { display: none; } }
-@media (prefers-reduced-motion: reduce) { .ac-vn, .ac-vn-play::before, .ac-vn-play::after, .ac-vn-play svg { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .ac-vn, .ac-vn-play svg { animation: none !important; } }
 .ac-toc { margin: 26px 0 8px; padding: 18px 20px; border-radius: 16px; background: var(--fill); }
 .ac-toc ol { margin: 10px 0 0; padding-inline-start: 22px; display: grid; gap: 6px; }
 .ac-toc li { font-size: calc(14px * var(--ts)); color: var(--mute); }
