@@ -132,7 +132,6 @@ window.DSAcademy = function (kit) {
     };
     if (!on) s.classList.add("is-jump");  // it appears in place; it only glides once it's showing
     for (const key in v) s.style.setProperty("--s" + key, v[key].toFixed(1) + "px");
-    s.classList.toggle("is-one", v.h - v.lh < 4);
     if (!on) { void s.offsetWidth; s.classList.remove("is-jump"); s.classList.add("is-on"); }
   };
   addEventListener("resize", () => { const el = selEl; if (el) { selEl = null; selTo(el); } });

@@ -2294,9 +2294,8 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 .ac-sel.is-on { opacity: 1; animation: ac-sel-sweep .8s cubic-bezier(.65, 0, .35, 1) both; }
 @keyframes ac-sel-sweep { from { --sweep: 0; } }
 .ac-sel > i { position: absolute; left: 0; background: var(--tint); clip-path: inset(-1px calc(100% - var(--sweep) * 100%) -1px 0); transition: inherit; }
-.ac-sel-body { top: 0; width: 100%; height: calc(100% - var(--slh)); border-radius: 5px 5px 5px 0; }
-.ac-sel-last { bottom: 0; width: var(--sex); height: var(--slh); border-radius: 0 5px 5px 5px; }
-.ac-sel.is-one .ac-sel-last { border-radius: 5px; }
+.ac-sel-body { top: 0; width: 100%; height: calc(100% - var(--slh)); }
+.ac-sel-last { bottom: 0; width: var(--sex); height: var(--slh); }
 .ac-sel-h { position: absolute; width: 2px; border-radius: 1px; background: var(--pick); transition: inherit; }
 .ac-sel-h::after { content: ""; position: absolute; left: 50%; width: 10px; height: 10px; margin-left: -5px; border-radius: 50%; background: var(--pick); }
 .ac-sel-h.is-start { left: -1px; top: 0; height: var(--sfh); }
