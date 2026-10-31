@@ -206,10 +206,12 @@ function client() {
   span("s-client", a, b);
   const ms = $$(".c-m");
   gsap.set([...ms, "#c-late"], { autoAlpha: 0 });
-  tl.fromTo(ms[0], { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: .5 }, a + .5);
-  tl.fromTo(ms[1], { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: .5 }, a + 1.6);
-  tl.fromTo("#c-late", { autoAlpha: 0, scale: .6 }, { autoAlpha: 1, scale: 1, duration: .5, ease: "pop" }, a + 2.2);
-  tl.to("#c-roll", { y: -250, duration: .6, ease: "glide" }, T("notice") - .2);
+  // the client's messages fit before the reply, however short the line is
+  const g = Math.max(1.6, T("notice") - a);
+  tl.fromTo(ms[0], { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: .5 }, a + g * .12);
+  tl.fromTo(ms[1], { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: .5 }, a + g * .42);
+  tl.fromTo("#c-late", { autoAlpha: 0, scale: .6 }, { autoAlpha: 1, scale: 1, duration: .5, ease: "pop" }, a + g * .62);
+  tl.to("#c-roll", { y: -250, duration: .6, ease: "glide" }, T("notice") - .1);
   tl.fromTo(ms[2], { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: .5 }, T("notice"));
   tl.fromTo(ms[3], { autoAlpha: 0, y: 20 }, { autoAlpha: 1, y: 0, duration: .5 }, T("notice") + 1);
 }
@@ -315,18 +317,19 @@ function finale() {
   morph("plate", a);
   L("s-done", `<div style="position:absolute;left:0;right:0;top:300px;text-align:center;font:700 92px/1.04 var(--sans);letter-spacing:-.05em">Done is better<br>than <span style="color:${BLUE}">perfect.</span></div>`);
   span("s-done", a, T("ship"));
-  morph("button", T("ship"), .8);
+  morph("button", T("ship") - .05, .6);
   tl.to("#heroB", { opacity: 1, duration: .6 }, T("ship") - .2);
   L("s-ship", `<div style="position:absolute;left:0;right:0;top:395px;text-align:center;font:700 62px/1 var(--sans);letter-spacing:-.03em">Ship it  →</div>`);
-  span("s-ship", T("ship"), T("follow"));
-  tl.to("#hsvg", { scale: .94, transformOrigin: "50% 50%", duration: .14, yoyo: true, repeat: 1, ease: "power2.inOut" }, T("ship") + .9);
+  span("s-ship", T("ship") - .1, T("follow") + .55);
+  tl.to("#hsvg", { scale: .94, transformOrigin: "50% 50%", duration: .12, yoyo: true, repeat: 1, ease: "power2.inOut" }, T("ship") + .45);
   // the button becomes the Draft Studio mark
-  morph("logo", T("follow"), 1.2);
-  tl.to("#heroB", { opacity: 0, duration: .8 }, T("follow") + .2);
-  tl.to("#hero", { opacity: .2, duration: .6 }, T("follow") + .5);
+  // the button becomes the Draft Studio mark while "Follow Draft Studio" is said
+  morph("logo", T("follow") + .55, 1.2);
+  tl.to("#heroB", { opacity: 0, duration: .8 }, T("follow") + .35);
+  tl.to("#hero", { opacity: .2, duration: .6 }, T("follow") + .7);
   L("s-logo", `<div style="position:absolute;left:150px;top:150px;width:560px;height:560px">${LOGO.replace(/viewBox="[^"]+"/, 'viewBox="160.66 428.57 142.85 142.86"').replace("<svg ", '<svg width="560" height="560" ')}</div>
     <div style="position:absolute;left:-40px;right:-40px;top:790px;text-align:center"><div style="font:700 64px/1 var(--sans);letter-spacing:-.04em">Follow Draft Studio</div><div class="sub" style="font-size:30px;margin-top:16px">Design lessons, made simple.</div></div>`);
-  tl.fromTo("#s-logo", { autoAlpha: 0 }, { autoAlpha: 1, duration: .7 }, T("follow") + .7);
+  tl.fromTo("#s-logo", { autoAlpha: 0 }, { autoAlpha: 1, duration: .7 }, T("follow") + 1.05);
   kicker(4, a);
 }
 
