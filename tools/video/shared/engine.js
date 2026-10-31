@@ -9,12 +9,16 @@ CustomEase.create("silk", "0.16, 1, 0.3, 1");
 CustomEase.create("glide", "0.65, 0, 0.35, 1");
 CustomEase.create("pop", "0.34, 1.45, 0.64, 1");
 
+// The frame: lesson videos are 1920×1080 at 30 fps with a 6.4 s logo intro; a page can set
+// window.VIDEO first to change that (the vertical social videos: 1080×1920 at 60 fps, no intro).
+const V = Object.assign({ w: 1920, h: 1080, fps: 30, intro: 6.4, endHold: 5.5 }, window.VIDEO || {});
 // WPS and the pauses are fitted to the ElevenLabs voice at speed 1.00 (the Colour narration)
-const INTRO = 6.4, WPS = 2.78, END_HOLD = 5.5, FPS = 30;
+const INTRO = V.intro, WPS = 2.78, END_HOLD = V.endHold, FPS = V.fps;
 const BLUE = "#1f7aff", CREAM = "#f4f3ef";
 const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
 // ---------- cues ----------
+const WORDS = [];   // every spoken word with its estimated time (the captions use these)
 const estimate = (() => {
   const out = {};
   let t = INTRO;
@@ -22,6 +26,7 @@ const estimate = (() => {
     const chapter = /^\{ch\d\}/.test(par.trim());
     for (const m of par.matchAll(/\{(\w+)\}|([^\s{]+)/g)) {
       if (m[1]) { out[m[1]] = +t.toFixed(2); continue; }
+      WORDS.push({ w: m[2], t: +t.toFixed(2) });
       t += 1 / WPS;
       if (/[,;:]["”]?$/.test(m[2])) t += .2;
       else if (/[.?!]["”]?$/.test(m[2])) t += .45;
@@ -31,6 +36,8 @@ const estimate = (() => {
   return out;
 })();
 const CUE = Object.assign({}, estimate, window.TIMING || {});
+// once the voice is recorded, word times measured from it replace the estimates
+if (window.WORD_TIMES && window.WORD_TIMES.length === WORDS.length) WORDS.forEach((w, i) => (w.t = window.WORD_TIMES[i]));
 const T = n => { if (!(n in CUE)) throw new Error("no cue: " + n); return CUE[n]; };
 const DURATION = +(T("end") + END_HOLD).toFixed(2);
 
@@ -202,13 +209,14 @@ function grain() {
   const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
   for (let i = 0; i < img.data.length; i += 4) { const v = rnd() * 255; img.data[i] = img.data[i + 1] = img.data[i + 2] = v; img.data[i + 3] = 255; }
   x.putImageData(img, 0, 0);
-  g.style.cssText += "width:2048px;height:1208px;image-rendering:pixelated;background:#808080";
+  g.style.cssText += `width:${V.w + 128}px;height:${V.h + 128}px;image-rendering:pixelated;background:#808080`;
   hooks.push(t => {
     const f = Math.round(t * FPS), r = Math.sin(f * 12.9898) * 43758.5453;
     g.style.transform = `translate(${Math.round((r - Math.floor(r)) * 60)}px, ${Math.round(((r * 7.31) % 1 + 1) % 1 * 60)}px)`;
-    orbs[0].style.left = 470 + 190 * Math.sin(t * .09) + "px"; orbs[0].style.top = 330 + 110 * Math.cos(t * .07) + "px";
-    orbs[1].style.left = 1480 + 170 * Math.cos(t * .08) + "px"; orbs[1].style.top = 800 + 120 * Math.sin(t * .1) + "px";
-    orbs[2].style.left = 1250 + 230 * Math.sin(t * .05 + 1) + "px"; orbs[2].style.top = 160 + 100 * Math.cos(t * .09) + "px";
+    const kx = V.w / 1920, ky = V.h / 1080;
+    orbs[0].style.left = (470 + 190 * Math.sin(t * .09)) * kx + "px"; orbs[0].style.top = (330 + 110 * Math.cos(t * .07)) * ky + "px";
+    orbs[1].style.left = (1480 + 170 * Math.cos(t * .08)) * kx + "px"; orbs[1].style.top = (800 + 120 * Math.sin(t * .1)) * ky + "px";
+    orbs[2].style.left = (1250 + 230 * Math.sin(t * .05 + 1)) * kx + "px"; orbs[2].style.top = (160 + 100 * Math.cos(t * .09)) * ky + "px";
   });
 }
 
@@ -219,17 +227,19 @@ async function build(les) {
   await document.fonts.ready;
   orbs.forEach(o => { o.style.setProperty("--c", "#0b0b0d"); o.style.setProperty("--o", "0"); });
   grain();
-  intro(les); les.scenes(); recap(les); outro(les); chrome(les);
+  // a bare video (the social ones) draws everything itself: no logo intro, recap, outro or chrome
+  if (les.bare) les.scenes();
+  else { intro(les); les.scenes(); recap(les); outro(les); chrome(les); }
   tl.set({}, {}, DURATION);
   window.seek = t => { tl.seek(t, true); hooks.forEach(h => h(t)); };
-  window.DURATION = DURATION; window.FPS = FPS; window.CUES = CUE; window.INTRO = INTRO;
+  window.DURATION = DURATION; window.FPS = FPS; window.CUES = CUE; window.INTRO = INTRO; window.SIZE = [V.w, V.h];
   window.seek(0);
   window.ready = true;
   if (!/render/.test(location.search)) preview();
 }
 // preview in a browser: scales to the window; space plays and pauses, arrows skip 5 s, 0-5 jump to the parts
 function preview() {
-  const st = $("#stage"), fit = () => { const k = Math.min(innerWidth / 1920, innerHeight / 1080); st.style.transform = `scale(${k})`; st.style.position = "absolute"; st.style.left = (innerWidth - 1920 * k) / 2 + "px"; st.style.top = (innerHeight - 1080 * k) / 2 + "px"; };
+  const st = $("#stage"), fit = () => { const k = Math.min(innerWidth / V.w, innerHeight / V.h); st.style.transform = `scale(${k})`; st.style.position = "absolute"; st.style.left = (innerWidth - V.w * k) / 2 + "px"; st.style.top = (innerHeight - V.h * k) / 2 + "px"; };
   fit(); addEventListener("resize", fit);
   let t = +(new URLSearchParams(location.search).get("t") || 0), playing = true, last = performance.now();
   const loop = now => { if (playing) { t = Math.min(DURATION, t + (now - last) / 1000); window.seek(t); } last = now; requestAnimationFrame(loop); };

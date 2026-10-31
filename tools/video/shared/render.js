@@ -1,5 +1,5 @@
-// Renders a lesson video (tools/video/<lesson>/index.html) to a 1920×1080, 30 fps MP4, frame by
-// frame, with Playwright and ffmpeg.
+// Renders a video (tools/video/<lesson>/index.html) to MP4, frame by frame, with Playwright and
+// ffmpeg, at the size and frame rate the page sets (1920×1080 at 30 fps for the lessons).
 //   node render.js <lesson> [out.mp4] [--audio narration.mp3] [--workers 3] [--from s] [--to s]
 // The frames are split between parallel workers, whose clips are then joined losslessly.
 // With --audio the recorded narration is laid under the picture, starting when the logo intro
@@ -24,6 +24,8 @@ async function open() {
   page.on("pageerror", e => { console.error("page error:", e.message); process.exit(1); });
   await page.goto(page0);
   await page.waitForFunction(() => window.ready, null, { timeout: 30000 });
+  const [width, height] = await page.evaluate(() => window.SIZE);
+  if (width !== 1920 || height !== 1080) await page.setViewportSize({ width, height });
   return { browser, page };
 }
 

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Perfectionism · social video</title>
+<!-- A vertical 1080×1920, 60 fps social video (Reels, TikTok, Shorts). Open it to preview (space
+     plays, arrows step), or render it with: node ../shared/render.js perfectionism -->
+<link rel="stylesheet" href="../shared/stage.css">
+<style>
+  #stage { width: 1080px; height: 1920px; }
+  .kick { position: absolute; left: 0; right: 0; top: 250px; text-align: center; }
+  .kick div { position: absolute; left: 0; right: 0; }
+  #hbox { position: absolute; left: 110px; top: 380px; width: 860px; height: 860px; }
+  #hbox > * { position: absolute; inset: 0; }
+  .ov { visibility: hidden; }
+  .glass { border-radius: 28px; background: linear-gradient(145deg, rgba(244, 243, 239, .13), rgba(244, 243, 239, .04)); border: 1.5px solid rgba(244, 243, 239, .2); }
+  #cap { position: absolute; left: 70px; right: 70px; top: 1300px; height: 190px; display: flex; align-items: center; justify-content: center;
+    text-align: center; font: 700 64px/1.14 var(--sans); letter-spacing: -.035em; }
+  #cap span { display: inline-block; margin: 0 .13em; transition: none; }
+</style>
+<script>window.VIDEO = { w: 1080, h: 1920, fps: 60, intro: .4, endHold: 2.6 };</script>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"><i class="orb" id="o1"></i><i class="orb" id="o2"></i><i class="orb" id="o3"></i></div>
+  <div id="scenes"></div>
+  <div id="chrome"></div>
+  <div id="vignette"></div>
+  <canvas id="grain" width="512" height="512"></canvas>
+</div>
+<script src="../shared/vendor/gsap.min.js"></script>
+<script src="../shared/vendor/SplitText.min.js"></script>
+<script src="../shared/vendor/CustomEase.min.js"></script>
+<script src="../shared/vendor/DrawSVGPlugin.min.js"></script>
+<script src="../shared/vendor/MorphSVGPlugin.min.js"></script>
+<script src="../shared/logo.js"></script>
+<script src="script.js"></script>
+<script src="timing.js"></script>
+<script src="../shared/engine.js"></script>
+<script src="video.js"></script>
+</body>
+</html>
