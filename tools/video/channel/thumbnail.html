@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Draft Studio · YouTube banner</title>
+<!-- The YouTube channel banner (2560×1440). Phones show only the middle 1546×423 (the safe area,
+     outlined with ?guides), so the logo and words stay inside it; wider screens and TVs see the rest.
+     node ../shared/render-thumbnail.js channel banner.png -->
+<style>
+  @font-face { font-family: "Playfair Display"; font-weight: 700; src: url(../typography/fonts/playfair-display-latin-700-normal.woff2) format("woff2"); }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #0b0b0d; }
+  #t { position: relative; width: 2560px; height: 1440px; overflow: hidden; background: #0b0b0d; color: #f4f3ef;
+    font-family: "Inter Display", "Inter", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .glow { position: absolute; border-radius: 50%; }
+  .dots { position: absolute; inset: 0; background-image: radial-gradient(rgba(244, 243, 239, .09) 1.6px, transparent 1.6px); background-size: 36px 36px;
+    -webkit-mask: radial-gradient(60% 55% at 50% 50%, #000, transparent); mask: radial-gradient(60% 55% at 50% 50%, #000, transparent); }
+  .card { position: absolute; border-radius: 40px; background: linear-gradient(145deg, rgba(244, 243, 239, .12), rgba(244, 243, 239, .03));
+    border: 2px solid rgba(244, 243, 239, .16); box-shadow: 0 40px 90px rgba(0, 0, 0, .45); }
+  /* the safe area: 1546 × 423, centred */
+  .safe { position: absolute; left: 507px; top: 508.5px; width: 1546px; height: 423px; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .tag { margin-top: 34px; font: 600 64px/1 "Inter Display", sans-serif; letter-spacing: -.035em; }
+  .tag span { color: #1f7aff; }
+  .row { margin-top: 30px; display: flex; gap: 14px; }
+  .row span { padding: 13px 24px; border-radius: 999px; font: 600 26px/1 "Inter Display", sans-serif; background: rgba(244, 243, 239, .08); border: 1.5px solid rgba(244, 243, 239, .16); color: rgba(244, 243, 239, .8); }
+  .guide { position: absolute; left: 507px; top: 508.5px; width: 1546px; height: 423px; outline: 3px dashed #ff4d4d; display: none; }
+  .guide2 { position: absolute; left: 0; right: 0; top: 508.5px; height: 423px; outline: 3px dashed #ffd53d; display: none; }
+  .show .guide, .show .guide2 { display: block; }
+</style>
+</head>
+<body>
+<div id="t">
+  <i class="glow" style="left:300px;top:-300px;width:1500px;height:1500px;background:radial-gradient(circle, rgba(31,122,255,.30), transparent 60%)"></i>
+  <i class="glow" style="left:1200px;top:300px;width:1500px;height:1500px;background:radial-gradient(circle, rgba(140,92,255,.22), transparent 60%)"></i>
+  <i class="glow" style="left:-500px;top:500px;width:1300px;height:1300px;background:radial-gradient(circle, rgba(255,77,77,.14), transparent 60%)"></i>
+  <div class="dots"></div>
+
+  <!-- the sides: lesson motifs, for desktop and TV -->
+  <div class="card" style="left:150px;top:470px;width:300px;height:300px;display:grid;place-items:center;transform:rotate(-8deg)">
+    <div style="width:210px;height:210px;border-radius:50%;background:conic-gradient(hsl(0 88% 56%),hsl(60 88% 56%),hsl(120 88% 56%),hsl(180 88% 56%),hsl(240 88% 56%),hsl(300 88% 56%),hsl(360 88% 56%));-webkit-mask:radial-gradient(circle,transparent 62px,#000 63px)"></div></div>
+  <div class="card" style="left:215px;top:830px;width:230px;height:230px;display:grid;place-items:center;transform:rotate(6deg);font:700 120px/1 'Playfair Display',serif">Aa</div>
+  <div class="card" style="right:150px;top:430px;width:320px;height:300px;padding:44px;display:flex;flex-direction:column;justify-content:flex-end;gap:10px;transform:rotate(7deg)">
+    <div style="font:600 64px/1 'Inter Display';letter-spacing:-.04em">Aa</div><div style="font:600 44px/1 'Inter Display';letter-spacing:-.03em;opacity:.8">Aa</div><div style="font:600 30px/1 'Inter Display';opacity:.6">Aa</div><div style="font:600 20px/1 'Inter Display';opacity:.45">Aa</div></div>
+  <div class="card" style="right:190px;top:800px;width:250px;height:250px;padding:34px;display:flex;align-items:flex-end;gap:12px;transform:rotate(-6deg)">
+    <i style="flex:6;height:100%;border-radius:12px;background:#efe5cf"></i><i style="flex:3;height:62%;border-radius:12px;background:#1d4a39;border:1.5px solid rgba(244,243,239,.2)"></i><i style="flex:1.2;height:34%;border-radius:12px;background:#ff6b1a"></i></div>
+
+  <!-- the safe area: what every device shows -->
+  <div class="safe">
+    <div id="logo"></div>
+    <div class="tag">Design lessons, <span>made simple.</span></div>
+    <div class="row"><span>Free files</span><span>Free tools</span><span>New lessons</span></div>
+  </div>
+  <div class="guide2"></div><div class="guide"></div>
+</div>
+<script src="../shared/logo.js"></script>
+<script>
+  document.getElementById("logo").innerHTML = LOGO.replace("<svg ", '<svg height="118" ');
+  if (/guides/.test(location.search)) document.getElementById("t").classList.add("show");
+</script>
+</body>
+</html>
