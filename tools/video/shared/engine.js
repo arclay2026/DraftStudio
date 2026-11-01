@@ -230,6 +230,8 @@ async function build(les) {
   // a bare video (the social ones) draws everything itself: no logo intro, recap, outro or chrome
   if (les.bare) les.scenes();
   else { intro(les); les.scenes(); recap(les); outro(les); chrome(les); }
+  // photos must be decoded before the first frame is drawn
+  await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
   tl.set({}, {}, DURATION);
   window.seek = t => { tl.seek(t, true); hooks.forEach(h => h(t)); };
   window.DURATION = DURATION; window.FPS = FPS; window.CUES = CUE; window.INTRO = INTRO; window.SIZE = [V.w, V.h];
