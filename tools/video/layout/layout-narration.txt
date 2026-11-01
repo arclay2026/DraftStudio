@@ -1,0 +1,27 @@
+Layout is where things go on the page. A good layout feels calm and obvious, as if nothing could be anywhere else.
+
+That feeling doesn't come from talent. It comes from a few simple tools. Let's learn them.
+
+Part one: the grid.
+
+A grid is a set of invisible columns. Margins keep content away from the edges. Columns hold your content, and gutters are the gaps between them. Websites often use twelve columns, and every element snaps to them. Suddenly, everything feels in order.
+
+Part two: a spacing scale.
+
+Beginners space things by eye: thirteen pixels here, twenty-two there. Professionals pick from a short list: four, eight, sixteen, twenty-four, thirty-two, forty-eight, sixty-four. Use only those gaps, and your design gets a steady rhythm.
+
+Part three: alignment.
+
+When things almost line up, it looks like a mistake. Pick one shared edge, and line everything up along it. One clean edge makes a whole page look intentional.
+
+Part four: proximity.
+
+Things that belong together should sit together. Use small gaps inside a group, and bigger gaps between groups. Readers understand the structure before they read a single word.
+
+Part five: white space.
+
+When every space is filled, everything shouts, and nobody listens. White space isn't empty. It gives your content room to breathe, and it's why premium brands feel calm and confident.
+
+Let's recap. Place content on a grid, and respect the margins and gutters. Choose gaps from a spacing scale. Line things up along one shared edge. Small gaps inside groups, big gaps between them. And let white space do its work.
+
+That's layout. Now try it yourself in Draft Studio's Canvas, and I'll see you in the next lesson.
