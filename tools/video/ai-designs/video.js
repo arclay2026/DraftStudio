@@ -14,7 +14,9 @@ Object.assign(SHAPES, {
   shirt: "M250 160L350 120Q430 170 510 120L610 160L740 270L670 360L610 320V760H250V320L190 360L120 270Z"
 });
 const PINK = "#ff8fb1", CYAN = "#22c1ee";
-// the uploaded images (images/): an AI-generated ad, and photos of what people actually got
+// PHOTOS: true puts the uploaded images (images/) in place of some drawings: an AI-generated ad and
+// photos of what people got. Off by default: mixed with the drawn scenes they looked less polished.
+const PHOTOS = false;
 const img = (src, w, h, style = "") => `<img src="images/${src}" style="display:block;width:${w}px;height:${h}px;object-fit:cover;border-radius:20px;${style}">`;
 const aiTag = `<span style="display:inline-block;padding:8px 14px;border-radius:999px;background:rgba(11,11,13,.72);border:1.5px solid rgba(244,243,239,.25);font:600 20px/1 var(--sans);letter-spacing:.02em">AI-generated ad</span>`;
 const center = (html, top, extra = "") => `<div style="position:absolute;left:0;right:0;top:${top}px;display:flex;justify-content:center;${extra}">${html}</div>`;
@@ -61,8 +63,8 @@ function shop() {
       <div style="margin-top:34px;padding:22px;border-radius:999px;background:${BLUE};text-align:center;font:600 30px/1 var(--sans)">Add to cart</div></div>`);
   L("s-box", `
     <svg style="position:absolute;inset:0" viewBox="0 0 860 860"><path d="M150 340L430 430L710 340M430 430V790" fill="none" stroke="rgba(244,243,239,.26)" stroke-width="2"/><path d="M290 295L570 385" stroke="#c9a46a" stroke-width="26" opacity=".5"/></svg>
-    ${center(img("real-sofa.png", 420, 236, "box-shadow:0 20px 50px rgba(0,0,0,.5)"), 440)}
-    ${center(chip("📦 Delivered", "background:rgba(11,11,13,.6)"), 700)}`);
+    ${PHOTOS ? center(img("real-sofa.png", 420, 236, "box-shadow:0 20px 50px rgba(0,0,0,.5)"), 440) : center(sofa(false), 470)}
+    ${center(chip("📦 Delivered", "background:rgba(11,11,13,.6)"), PHOTOS ? 700 : 640)}`);
   span("s-shop", a - .2, T("hook2"));
   morph("box", T("hook2"));
   span("s-box", T("hook2"), b);
@@ -82,10 +84,15 @@ function ageOf() {
 function menu() {
   const a = T("menu"), b = T("hotel");
   morph("menu", a);
-  L("s-menu", `
+  L("s-menu", PHOTOS ? `
     ${center(img("food.png", 560, 613, "border-radius:24px"), 124)}
     <div style="position:absolute;left:150px;top:140px;padding:14px">${aiTag}</div>
-    <div id="m-tags"><div style="position:absolute;left:160px;top:470px">${chip("melted cheese", `background:#ffd23d;color:#3a2a00`)}</div><div style="position:absolute;right:160px;top:420px">${chip("fresh lettuce", "background:#5fcf5a;color:#06210f")}</div></div>`);
+    <div id="m-tags"><div style="position:absolute;left:160px;top:470px">${chip("melted cheese", `background:#ffd23d;color:#3a2a00`)}</div><div style="position:absolute;right:160px;top:420px">${chip("fresh lettuce", "background:#5fcf5a;color:#06210f")}</div></div>` : `
+    ${center(`<div style="text-align:center"><div class="mono" style="font-size:22px;letter-spacing:.3em;color:${AMBER}">BURGER CO.</div><div style="font:700 50px/1 var(--sans);margin-top:12px;letter-spacing:-.03em">The Classic</div></div>`, 60)}
+    ${center(`<div id="m-dream">${burger(true)}</div>`, 200)}
+    <div id="m-tags"><div style="position:absolute;left:150px;top:340px">${chip("melted cheese", `background:#ffd23d;color:#3a2a00`)}</div><div style="position:absolute;right:150px;top:300px">${chip("fresh lettuce", "background:#5fcf5a;color:#06210f")}</div></div>
+    ${center(`<div style="font:700 44px/1 var(--sans)">$12.99</div>`, 560)}
+    ${center(`<div class="sub" style="font-size:28px">Juicy. Stacked. Perfect.</div>`, 620)}`);
   L("s-menu2", `
     ${center(`<div class="mono" style="font-size:22px;letter-spacing:.3em;color:${RED}">WHAT ARRIVED</div>`, 120)}
     ${center(burger(false), 290)}
@@ -102,7 +109,7 @@ function hotel() {
   morph("listing", a);
   const frameImg = (inner, id) => `<div id="${id}" style="position:absolute;left:80px;top:150px;width:700px;height:420px;border-radius:20px;overflow:hidden">${inner}</div>`;
   L("s-hotel", `
-    ${frameImg(pool, "h-pool")}${frameImg(img("real-carpark.png", 700, 420, "border-radius:0"), "h-car")}
+    ${frameImg(pool, "h-pool")}${frameImg(PHOTOS ? img("real-carpark.png", 700, 420, "border-radius:0") : carpark, "h-car")}
     <div style="position:absolute;left:80px;right:80px;top:600px;display:flex;justify-content:space-between;align-items:center">
       <div><div style="font:700 42px/1 var(--sans);letter-spacing:-.03em">Sea View Resort</div><div style="font:600 26px/1 var(--sans);color:${AMBER};margin-top:10px">★★★★★</div></div>
       <div id="h-tag"></div></div>
@@ -163,11 +170,14 @@ function cost() {
   // now every photo gets doubted
   morph("photo", T("doubt"));
   L("s-doubt", `
-    <div style="position:absolute;left:80px;top:130px;width:700px;height:600px;border-radius:30px;overflow:hidden">${img("coffee.png", 700, 600, "border-radius:0")}</div>
+    <div style="position:absolute;left:80px;top:130px;width:700px;height:600px;border-radius:30px;overflow:hidden;background:linear-gradient(160deg,#3a2a20,#1c1410)">${PHOTOS ? img("coffee.png", 700, 600, "border-radius:0") : `
+      <svg width="700" height="600" viewBox="0 0 700 600"><ellipse cx="350" cy="470" rx="230" ry="40" fill="#120c08"/><path d="M230 280H470L450 450Q350 480 250 450Z" fill="#f4f3ef"/><path d="M470 320Q540 330 530 380T460 420" fill="none" stroke="#f4f3ef" stroke-width="22"/>
+        <ellipse cx="350" cy="285" rx="120" ry="20" fill="#5a3418"/><path d="M300 240Q290 200 310 170M350 230Q340 180 362 150M400 240Q392 205 410 180" stroke="#f4f3ef" stroke-width="6" fill="none" opacity=".35"/></svg>`}</div>
     <div class="db" style="position:absolute;left:60px;top:150px">${chip("Is this AI? 🤔", "background:rgba(11,11,13,.75);border:1.5px solid rgba(244,243,239,.25)")}</div>
     <div class="db" style="position:absolute;right:60px;top:300px">${chip("Looks fake", "background:rgba(11,11,13,.75);border:1.5px solid rgba(244,243,239,.25)")}</div>
     <div class="db" style="position:absolute;left:110px;top:520px">${chip("AI again?", "background:rgba(11,11,13,.75);border:1.5px solid rgba(244,243,239,.25)")}</div>
-    <div id="db-real" style="position:absolute;left:0;right:0;top:760px;display:flex;justify-content:center">${chip("Even real photos get doubted", `background:${GREEN};color:#06210f`)}</div>`);
+    ${PHOTOS ? `<div id="db-real" style="position:absolute;left:0;right:0;top:760px;display:flex;justify-content:center">${chip("Even real photos get doubted", `background:${GREEN};color:#06210f`)}</div>`
+      : `<div id="db-real" style="position:absolute;right:90px;top:640px">${chip("📷 Real photo", `background:${GREEN};color:#06210f`)}</div>`}`);
   span("s-doubt", T("doubt"), b);
   gsap.set([".db", "#db-real"], { autoAlpha: 0 });
   tl.fromTo(".db", { autoAlpha: 0, scale: .6 }, { autoAlpha: 1, scale: 1, duration: .45, stagger: .35, ease: "pop" }, T("doubt") + .5);
