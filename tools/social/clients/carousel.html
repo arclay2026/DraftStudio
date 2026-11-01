@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Types of clients · Instagram carousel</title>
+<!-- An Instagram carousel (1080×1350 slides) in the light version of the video style.
+     node ../render-carousel.js clients writes slide-1.png, slide-2.png… -->
+<style>
+  :root { --paper: #f6f4ef; --ink: #111114; --mute: rgba(17, 17, 20, .56); --line: rgba(17, 17, 20, .1); --blue: #1f7aff;
+    --red: #ff5a5f; --green: #1fbf6a; --amber: #ffa82e; --purple: #8c5cff;
+    --sans: "Inter Display", "Inter", system-ui, sans-serif; --mono: "DejaVu Sans Mono", ui-monospace, monospace; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #ddd; }
+  body { display: flex; flex-direction: column; gap: 40px; padding: 40px; align-items: center; }
+  .slide { position: relative; width: 1080px; height: 1350px; overflow: hidden; background: var(--paper); color: var(--ink);
+    font: 500 30px/1.3 var(--sans); letter-spacing: -.01em; -webkit-font-smoothing: antialiased; }
+  /* soft light, like the videos' glow, in pastel */
+  .orb { position: absolute; width: 1100px; height: 1100px; border-radius: 50%; margin: -550px 0 0 -550px; background: radial-gradient(circle, var(--c) 0%, transparent 62%); opacity: .55; }
+  .grain { position: absolute; inset: 0; opacity: .05; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .glass { position: absolute; border-radius: 40px; background: linear-gradient(150deg, rgba(255, 255, 255, .92), rgba(255, 255, 255, .6));
+    border: 1.5px solid rgba(255, 255, 255, .95); box-shadow: 0 40px 90px -20px rgba(17, 17, 20, .16), inset 0 1px 0 #fff; }
+  .kick { position: absolute; left: 90px; top: 92px; font: 600 22px/1 var(--mono); letter-spacing: .3em; text-transform: uppercase; color: var(--blue); }
+  .num { position: absolute; right: 90px; top: 88px; font: 600 24px/1 var(--mono); color: var(--mute); letter-spacing: .1em; }
+  .title { position: absolute; left: 90px; right: 90px; font: 700 96px/.98 var(--sans); letter-spacing: -.055em; }
+  .quote { position: absolute; left: 90px; right: 90px; font: 500 38px/1.3 var(--sans); letter-spacing: -.02em; color: var(--mute); }
+  .quote b { color: var(--ink); font-weight: 600; }
+  .foot { position: absolute; left: 90px; right: 90px; bottom: 76px; display: flex; justify-content: space-between; align-items: center; }
+  .foot img { height: 40px; display: block; }
+  .swipe { font: 600 24px/1 var(--sans); color: var(--mute); display: flex; align-items: center; gap: 12px; }
+  .swipe i { width: 46px; height: 46px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-style: normal; font-size: 24px; }
+  .emo { font-family: "Noto Color Emoji", sans-serif; line-height: 1; }
+  .badge { position: absolute; display: grid; place-items: center; width: 150px; height: 150px; border-radius: 44px; font-size: 84px; }
+  .chip { display: inline-block; padding: 14px 24px; border-radius: 999px; font: 600 26px/1 var(--sans); }
+  .mono { font-family: var(--mono); }
+  .bubble { padding: 24px 30px; border-radius: 30px; font: 500 32px/1.3 var(--sans); max-width: 640px; }
+</style>
+</head>
+<body>
+
+<!-- 1 · cover -->
+<section class="slide" id="s1">
+  <i class="orb" style="--c:#b9d4ff;left:220px;top:300px"></i><i class="orb" style="--c:#ffd3e4;left:950px;top:1000px"></i><i class="orb" style="--c:#e2d6ff;left:900px;top:150px"></i>
+  <div class="kick">For designers</div>
+  <div class="glass" style="left:120px;top:250px;width:420px;height:300px;transform:rotate(-8deg);padding:36px"><div class="emo" style="font-size:72px">👻</div><div style="font:700 40px/1.05 var(--sans);margin-top:26px;letter-spacing:-.03em">The Ghoster</div></div>
+  <div class="glass" style="left:560px;top:200px;width:400px;height:290px;transform:rotate(7deg);padding:36px"><div class="emo" style="font-size:72px">🌙</div><div style="font:700 40px/1.05 var(--sans);margin-top:26px;letter-spacing:-.03em">The 3 a.m. Emailer</div></div>
+  <div class="glass" style="left:330px;top:440px;width:440px;height:310px;transform:rotate(-2deg);padding:36px;box-shadow:0 50px 100px -20px rgba(31,122,255,.35),inset 0 1px 0 #fff"><div class="emo" style="font-size:72px">💙</div><div style="font:700 40px/1.05 var(--sans);margin-top:26px;letter-spacing:-.03em">The Dream Client</div><div style="font:600 22px/1 var(--mono);color:var(--blue);margin-top:14px;letter-spacing:.14em">RARE</div></div>
+  <div class="title" style="top:850px;font-size:128px">Types of<br><span style="color:var(--blue)">clients.</span></div>
+  <div class="quote" style="top:1120px;font-size:34px">Every designer has met at least four. 👀</div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 2 · the ghoster -->
+<section class="slide" id="s2">
+  <i class="orb" style="--c:#d8ddff;left:850px;top:300px"></i><i class="orb" style="--c:#cfe6ff;left:150px;top:1100px"></i>
+  <div class="kick">Types of clients</div><div class="num">01 / 06</div>
+  <div class="glass" style="left:90px;top:190px;width:900px;height:600px;padding:50px">
+    <div style="display:flex;align-items:center;gap:20px"><i style="width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#c6ccdb,#9aa3b8);display:grid;place-items:center;font:700 30px/1 var(--sans);font-style:normal;color:#fff">M</i>
+      <div><div style="font:600 32px/1 var(--sans)">Mark (Client)</div><div style="font:500 22px/1 var(--sans);color:var(--mute);margin-top:8px">last seen 23 days ago</div></div></div>
+    <div style="display:flex;justify-content:flex-start;margin-top:40px"><div class="bubble" style="background:#eceef3">Love it!! 😍 Let me check with my team and get back to you.</div></div>
+    <div style="display:flex;justify-content:flex-end;margin-top:22px"><div class="bubble" style="background:var(--blue);color:#fff">Hi Mark! Just following up 🙂<div style="font-size:20px;opacity:.75;margin-top:8px;text-align:right">Seen ✓✓</div></div></div>
+  </div>
+  <div class="badge glass emo" style="left:840px;top:130px;transform:rotate(10deg)">👻</div>
+  <div class="title" style="top:880px">The Ghoster.</div>
+  <div class="quote" style="top:1000px">Loves the first draft. <b>Vanishes</b> when the invoice arrives.</div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 3 · my nephew -->
+<section class="slide" id="s3">
+  <i class="orb" style="--c:#ffe1b8;left:200px;top:300px"></i><i class="orb" style="--c:#ffd1dc;left:950px;top:1050px"></i>
+  <div class="kick">Types of clients</div><div class="num">02 / 06</div>
+  <div class="glass" style="left:90px;top:190px;width:900px;height:600px;padding:50px;display:flex;gap:40px;align-items:center">
+    <div style="flex:1;text-align:center"><div style="font:600 22px/1 var(--mono);letter-spacing:.2em;color:var(--mute)">YOUR QUOTE</div><div style="font:800 84px/1 var(--sans);letter-spacing:-.04em;margin-top:20px">$800</div>
+      <div style="font:500 24px/1.3 var(--sans);color:var(--mute);margin-top:14px">Logo, colours,<br>brand guide</div></div>
+    <div style="width:2px;height:300px;background:var(--line)"></div>
+    <div style="flex:1;text-align:center"><div style="font:600 22px/1 var(--mono);letter-spacing:.2em;color:var(--mute)">THE NEPHEW</div>
+      <div style="margin:20px auto 0;width:220px;height:160px;border-radius:24px;background:#fff6c4;border:2px dashed #e5c04a;display:grid;place-items:center;font:700 44px/1 'Comic Sans MS','DejaVu Sans',cursive;color:#e0336f;transform:rotate(-4deg)">LoGo!!</div>
+      <div style="font:800 52px/1 var(--sans);margin-top:20px;color:var(--red)">“Free”</div></div>
+  </div>
+  <div class="badge glass emo" style="left:840px;top:130px;transform:rotate(-8deg)">🧒</div>
+  <div class="title" style="top:880px">“My nephew<br>can do it.”</div>
+  <div class="quote" style="top:1100px">Then why are you here? <b>(Spoiler: the nephew is busy.)</b></div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 4 · the 3 a.m. emailer -->
+<section class="slide" id="s4">
+  <i class="orb" style="--c:#cfd6ff;left:900px;top:250px"></i><i class="orb" style="--c:#e5dbff;left:150px;top:1050px"></i>
+  <div class="kick">Types of clients</div><div class="num">03 / 06</div>
+  <div class="glass" style="left:90px;top:190px;width:900px;height:600px;padding:50px;background:linear-gradient(160deg,#1b1d2a,#2b2f45);border-color:rgba(255,255,255,.15)">
+    <div style="text-align:center;color:#fff;margin-top:20px"><div style="font:300 150px/1 var(--sans);letter-spacing:-.04em">3:07</div><div style="font:500 28px/1 var(--sans);opacity:.6;margin-top:10px">Tuesday</div></div>
+    <div style="margin-top:44px;padding:24px 28px;border-radius:26px;background:rgba(255,255,255,.14);color:#fff;display:flex;gap:20px;align-items:center">
+      <i style="flex:none;width:58px;height:58px;border-radius:16px;background:var(--blue);display:grid;place-items:center;font-style:normal;font-size:30px" class="emo">✉️</i>
+      <div><div style="font:600 26px/1.2 var(--sans)">Client · now</div><div style="font:500 26px/1.3 var(--sans);opacity:.85">Small change!! Need it by 9am 🙏 URGENT</div></div></div>
+  </div>
+  <div class="badge glass emo" style="left:840px;top:130px;transform:rotate(9deg)">🌙</div>
+  <div class="title" style="top:880px">The 3 a.m.<br>Emailer.</div>
+  <div class="quote" style="top:1100px">“Small change.” <b>Urgent.</b> Sent while you sleep.</div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 5 · make it pop -->
+<section class="slide" id="s5">
+  <i class="orb" style="--c:#ffd0ea;left:200px;top:300px"></i><i class="orb" style="--c:#fff0b3;left:950px;top:1000px"></i>
+  <div class="kick">Types of clients</div><div class="num">04 / 06</div>
+  <div class="glass" style="left:90px;top:190px;width:900px;height:600px;padding:50px;display:flex;align-items:flex-end;justify-content:center;gap:34px">
+    <div style="text-align:center"><div style="width:150px;height:150px;border-radius:30px;background:#eef1f7;display:grid;place-items:center;font:800 40px/1 var(--sans);color:var(--blue)">logo</div><div class="mono" style="font-size:20px;color:var(--mute);margin-top:16px">v1</div></div>
+    <div style="text-align:center"><div style="width:220px;height:220px;border-radius:36px;background:#eef1f7;display:grid;place-items:center;font:800 60px/1 var(--sans);color:var(--blue)">logo</div><div class="mono" style="font-size:20px;color:var(--mute);margin-top:16px">“bigger”</div></div>
+    <div style="text-align:center"><div style="width:300px;height:300px;border-radius:44px;background:linear-gradient(135deg,#ff3d77,#ffb800,#28d17c,#1f7aff);display:grid;place-items:center;font:900 92px/1 var(--sans);color:#fff;text-shadow:0 6px 0 #000;transform:rotate(-4deg)">LOGO</div><div class="mono" style="font-size:20px;color:var(--red);margin-top:16px">“make it pop”</div></div>
+  </div>
+  <div class="badge glass emo" style="left:840px;top:130px;transform:rotate(-9deg)">✨</div>
+  <div class="title" style="top:880px">“Can you make<br>it pop?”</div>
+  <div class="quote" style="top:1100px">Also: <b>logo bigger.</b> No, bigger. Perfect. Now bigger.</div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 6 · endless revisions -->
+<section class="slide" id="s6">
+  <i class="orb" style="--c:#c9f0dc;left:900px;top:300px"></i><i class="orb" style="--c:#cfe2ff;left:150px;top:1050px"></i>
+  <div class="kick">Types of clients</div><div class="num">05 / 06</div>
+  <div class="glass" style="left:90px;top:190px;width:900px;height:600px;padding:50px">
+    <div style="display:flex;gap:20px;align-items:baseline"><div style="font:600 30px/1 var(--sans)">Revisions</div><div style="font:600 24px/1 var(--mono);color:var(--mute)">· included: 2</div></div>
+    <div style="margin-top:28px;display:grid;grid-template-columns:repeat(6,1fr);gap:14px">
+      ${""}
+    </div>
+  </div>
+  <div class="badge glass emo" style="left:840px;top:130px;transform:rotate(8deg)">🔁</div>
+  <div class="title" style="top:880px">The Endless<br>Revisions.</div>
+  <div class="quote" style="top:1100px">“Just <b>one more</b> tiny change…” <span class="mono" style="font-size:28px">(×17)</span></div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 7 · the dream client -->
+<section class="slide" id="s7">
+  <i class="orb" style="--c:#b9d4ff;left:250px;top:350px"></i><i class="orb" style="--c:#c8f1dd;left:950px;top:1000px"></i><i class="orb" style="--c:#e2d6ff;left:950px;top:200px"></i>
+  <div class="kick">Types of clients</div><div class="num">06 / 06</div>
+  <div class="glass" style="left:90px;top:190px;width:900px;height:600px;padding:56px;box-shadow:0 50px 110px -20px rgba(31,122,255,.32),inset 0 1px 0 #fff">
+    <div style="font:600 22px/1 var(--mono);letter-spacing:.24em;color:var(--blue)">DREAM CLIENT CHECKLIST</div>
+    <div style="margin-top:34px;display:grid;gap:22px">
+      ${""}
+    </div>
+  </div>
+  <div class="badge glass emo" style="left:840px;top:130px;transform:rotate(-8deg)">💙</div>
+  <div class="title" style="top:880px">The Dream<br><span style="color:var(--blue)">Client.</span></div>
+  <div class="quote" style="top:1100px">Rare. <b>Protect at all costs.</b></div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 8 · call to action -->
+<section class="slide" id="s8">
+  <i class="orb" style="--c:#b9d4ff;left:540px;top:520px"></i><i class="orb" style="--c:#ffd3e4;left:100px;top:1150px"></i><i class="orb" style="--c:#e2d6ff;left:1000px;top:1100px"></i>
+  <div class="kick" style="left:0;right:0;text-align:center">Your turn</div>
+  <div style="position:absolute;left:0;right:0;top:230px;display:flex;justify-content:center;gap:18px" class="emo">
+    ${""}
+  </div>
+  <div class="title" style="top:430px;text-align:center;font-size:110px">Which one<br>have you met?</div>
+  <div class="quote" style="top:700px;text-align:center">Tell us in the comments 👇<br><b>and tag a designer who needs this.</b></div>
+  <div class="glass" style="left:240px;top:930px;width:600px;height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px">
+    <img src="../../../assets/logo.svg" alt="Draft Studio" style="height:54px">
+    <div style="font:600 26px/1 var(--sans);color:var(--mute)">Follow for more designer life</div></div>
+  <i class="grain"></i>
+</section>
+
+<script>
+  // the parts that repeat: the revision grid, the checklist, the client emojis on the last slide
+  const fill = (sel, html) => { const holder = document.querySelector(sel); holder.innerHTML = html; };
+  fill("#s6 .glass > div:nth-child(2)", Array.from({ length: 18 }, (_, k) => {
+    const n = k + 1, over = n > 2, last = n === 18;
+    return `<div style="aspect-ratio:1;border-radius:20px;display:grid;place-items:center;font:700 30px/1 var(--sans);
+      background:${last ? "var(--red)" : over ? "rgba(255,90,95,.12)" : "rgba(31,191,106,.15)"};color:${last ? "#fff" : over ? "var(--red)" : "var(--green)"}">${last ? "18?" : "v" + n}</div>`;
+  }).join(""));
+  fill("#s7 .glass > div:nth-child(2)", [["Clear brief", "Knows what they want"], ["Fair budget", "No “exposure” payments"], ["Pays on time", "Sometimes early 😮"], ["Says thank you", "…and sends referrals"]].map(([t, s]) => `
+    <div style="display:flex;align-items:center;gap:24px"><i style="flex:none;width:56px;height:56px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font:700 30px/1 var(--sans);font-style:normal">✓</i>
+      <div><div style="font:700 36px/1.1 var(--sans);letter-spacing:-.02em">${t}</div><div style="font:500 24px/1.2 var(--sans);color:var(--mute);margin-top:4px">${s}</div></div></div>`).join(""));
+  fill("#s8 > div:nth-of-type(2)", ["👻", "🧒", "🌙", "✨", "🔁", "💙"].map((e, k) => `<span class="glass" style="position:relative;display:grid;place-items:center;width:120px;height:120px;border-radius:36px;font-size:62px;transform:rotate(${[-6, 4, -3, 5, -4, 3][k]}deg)">${e}</span>`).join(""));
+</script>
+</body>
+</html>
