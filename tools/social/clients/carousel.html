@@ -5,35 +5,7 @@
 <title>Types of clients · Instagram carousel</title>
 <!-- An Instagram carousel (1080×1350 slides) in the light version of the video style.
      node ../render-carousel.js clients writes slide-1.png, slide-2.png… -->
-<style>
-  :root { --paper: #f6f4ef; --ink: #111114; --mute: rgba(17, 17, 20, .56); --line: rgba(17, 17, 20, .1); --blue: #1f7aff;
-    --red: #ff5a5f; --green: #1fbf6a; --amber: #ffa82e; --purple: #8c5cff;
-    --sans: "Inter Display", "Inter", system-ui, sans-serif; --mono: "DejaVu Sans Mono", ui-monospace, monospace; }
-  * { box-sizing: border-box; }
-  html, body { margin: 0; background: #ddd; }
-  body { display: flex; flex-direction: column; gap: 40px; padding: 40px; align-items: center; }
-  .slide { position: relative; width: 1080px; height: 1350px; overflow: hidden; background: var(--paper); color: var(--ink);
-    font: 500 30px/1.3 var(--sans); letter-spacing: -.01em; -webkit-font-smoothing: antialiased; }
-  /* soft light, like the videos' glow, in pastel */
-  .orb { position: absolute; width: 1100px; height: 1100px; border-radius: 50%; margin: -550px 0 0 -550px; background: radial-gradient(circle, var(--c) 0%, transparent 62%); opacity: .55; }
-  .grain { position: absolute; inset: 0; opacity: .05; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E"); }
-  .glass { position: absolute; border-radius: 40px; background: linear-gradient(150deg, rgba(255, 255, 255, .92), rgba(255, 255, 255, .6));
-    border: 1.5px solid rgba(255, 255, 255, .95); box-shadow: 0 40px 90px -20px rgba(17, 17, 20, .16), inset 0 1px 0 #fff; }
-  .kick { position: absolute; left: 90px; top: 92px; font: 600 22px/1 var(--mono); letter-spacing: .3em; text-transform: uppercase; color: var(--blue); }
-  .num { position: absolute; right: 90px; top: 88px; font: 600 24px/1 var(--mono); color: var(--mute); letter-spacing: .1em; }
-  .title { position: absolute; left: 90px; right: 90px; font: 700 96px/.98 var(--sans); letter-spacing: -.055em; }
-  .quote { position: absolute; left: 90px; right: 90px; font: 500 38px/1.3 var(--sans); letter-spacing: -.02em; color: var(--mute); }
-  .quote b { color: var(--ink); font-weight: 600; }
-  .foot { position: absolute; left: 90px; right: 90px; bottom: 76px; display: flex; justify-content: space-between; align-items: center; }
-  .foot img { height: 40px; display: block; }
-  .swipe { font: 600 24px/1 var(--sans); color: var(--mute); display: flex; align-items: center; gap: 12px; }
-  .swipe i { width: 46px; height: 46px; border-radius: 50%; background: var(--ink); color: #fff; display: grid; place-items: center; font-style: normal; font-size: 24px; }
-  .emo { font-family: "Noto Color Emoji", sans-serif; line-height: 1; }
-  .badge { position: absolute; display: grid; place-items: center; width: 150px; height: 150px; border-radius: 44px; font-size: 84px; }
-  .chip { display: inline-block; padding: 14px 24px; border-radius: 999px; font: 600 26px/1 var(--sans); }
-  .mono { font-family: var(--mono); }
-  .bubble { padding: 24px 30px; border-radius: 30px; font: 500 32px/1.3 var(--sans); max-width: 640px; }
-</style>
+<link rel="stylesheet" href="../light.css">
 </head>
 <body>
 

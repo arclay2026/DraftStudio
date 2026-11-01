@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Client feedback, translated · Instagram carousel</title>
+<!-- An Instagram carousel (1080×1350 slides) in the light video style: what clients say, and what
+     they mean. node ../render-carousel.js feedback writes slide-1.png, slide-2.png… -->
+<link rel="stylesheet" href="../light.css">
+<style>
+  .say { position: absolute; left: 90px; right: 90px; top: 190px; height: 380px; padding: 50px 56px; }
+  .lab { font: 600 22px/1 var(--mono); letter-spacing: .26em; }
+  .q { margin-top: 26px; font: 700 80px/1.02 var(--sans); letter-spacing: -.045em; }
+  .tr { position: absolute; left: 0; right: 0; top: 596px; display: flex; justify-content: center; }
+  .tr span { display: inline-flex; align-items: center; gap: 12px; padding: 14px 26px; border-radius: 999px; background: var(--ink); color: #fff; font: 600 24px/1 var(--sans); }
+  .mean { position: absolute; left: 90px; right: 90px; top: 680px; height: 470px; padding: 50px 56px; border-radius: 40px;
+    background: linear-gradient(160deg, #15161c, #262a3d); color: #fff; box-shadow: 0 50px 100px -30px rgba(17, 17, 20, .45); overflow: hidden; }
+  .mean .lab { color: #7fb0ff; }
+  .m { margin-top: 24px; font: 700 60px/1.06 var(--sans); letter-spacing: -.04em; max-width: 560px; }
+  .gag { position: absolute; right: 50px; bottom: 50px; }
+</style>
+</head>
+<body>
+
+<!-- 1 · cover -->
+<section class="slide" id="cover">
+  <i class="orb" style="--c:#b9d4ff;left:250px;top:330px"></i><i class="orb" style="--c:#ffd3e4;left:950px;top:1050px"></i><i class="orb" style="--c:#fff0b3;left:950px;top:200px"></i>
+  <div class="kick">For designers</div>
+  <div class="glass" style="left:110px;top:220px;width:560px;height:250px;padding:40px;transform:rotate(-5deg)">
+    <div class="lab" style="color:var(--mute)">THEY SAY</div><div style="font:700 62px/1.05 var(--sans);letter-spacing:-.045em;margin-top:22px">“Make it pop.”</div></div>
+  <div style="position:absolute;left:400px;top:430px;width:600px;height:260px;padding:40px;border-radius:40px;background:linear-gradient(160deg,#15161c,#262a3d);color:#fff;transform:rotate(4deg);box-shadow:0 50px 100px -30px rgba(17,17,20,.45)">
+    <div class="lab" style="color:#7fb0ff">THEY MEAN</div><div style="font:700 50px/1.08 var(--sans);letter-spacing:-.04em;margin-top:22px">“I have no idea what I want.”</div></div>
+  <div class="title" style="top:820px;font-size:118px">Client feedback,<br><span style="color:var(--blue)">translated.</span></div>
+  <div class="quote" style="top:1080px;font-size:34px">Swipe for the dictionary every designer needs. 📖</div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<div id="pairs"></div>
+
+<!-- 9 · call to action -->
+<section class="slide" id="cta">
+  <i class="orb" style="--c:#b9d4ff;left:540px;top:520px"></i><i class="orb" style="--c:#ffd3e4;left:100px;top:1150px"></i><i class="orb" style="--c:#e2d6ff;left:1000px;top:1100px"></i>
+  <div class="kick" style="left:0;right:0;text-align:center">Your turn</div>
+  <div class="title" style="top:260px;text-align:center;font-size:104px">Which one<br>hurts the most?</div>
+  <div class="quote" style="top:520px;text-align:center">Drop the number in the comments 👇<br><b>…or add one we missed.</b></div>
+  <div class="glass" style="left:150px;top:720px;width:780px;height:200px;display:flex;align-items:center;justify-content:center;gap:24px">
+    <span class="emo" style="font-size:72px">😇</span><div style="font:700 44px/1.1 var(--sans);letter-spacing:-.03em">Send this to<br>your client.</div></div>
+  <div class="glass" style="left:240px;top:980px;width:600px;height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+    <img src="../../../assets/logo.svg" alt="Draft Studio" style="height:50px">
+    <div style="font:600 26px/1 var(--sans);color:var(--mute)">Follow for more designer life</div></div>
+  <i class="grain"></i>
+</section>
+
+<script>
+  // the seven translations, each with a small visual gag
+  const PAIRS = [
+    ["Make it pop.", "I don't know what I want, but it's not this.",
+      `<div style="display:flex;gap:12px">${["#ff3d77", "#ffb800", "#28d17c", "#1f7aff", "#8c5cff"].map(c => `<i style="width:46px;height:120px;border-radius:14px;background:${c}"></i>`).join("")}</div>`, ["#ffd0ea", "#fff0b3"]],
+    ["Just a small change.", "Redo everything. By tomorrow.",
+      `<div style="width:260px"><div style="display:flex;justify-content:space-between;font:600 22px/1 var(--mono);opacity:.7"><span>Starting over</span><span>0%</span></div><div style="height:16px;border-radius:8px;background:rgba(255,255,255,.15);margin-top:14px"><i style="display:block;width:4%;height:100%;border-radius:8px;background:#ff5a5f"></i></div></div>`, ["#c9f0dc", "#cfe2ff"]],
+    ["Can you make the logo bigger?", "Bigger. No, BIGGER.",
+      `<div style="display:flex;align-items:flex-end;gap:12px">${[40, 70, 110, 160].map((s, k) => `<i style="width:${s}px;height:${s}px;border-radius:${s / 4}px;background:${k === 3 ? "#1f7aff" : "rgba(255,255,255,.25)"}"></i>`).join("")}</div>`, ["#b9d4ff", "#e2d6ff"]],
+    ["I'll know it when I see it.", "Get ready to make 14 versions.",
+      `<div style="display:grid;grid-template-columns:repeat(5,44px);gap:8px">${Array.from({ length: 14 }, (_, k) => `<i style="height:44px;border-radius:10px;background:${k === 13 ? "#ff5a5f" : "rgba(255,255,255,.18)"};display:grid;place-items:center;font:700 16px/1 var(--sans);font-style:normal;color:#fff">v${k + 1}</i>`).join("")}</div>`, ["#ffe1b8", "#ffd1dc"]],
+    ["Small budget, but great exposure!", "We're paying you in likes.",
+      `<div style="text-align:center"><div style="font:800 76px/1 var(--sans);letter-spacing:-.04em">$0</div><div style="margin-top:12px;font:700 32px/1 var(--sans);color:#ff8fb1">♥ 3 likes</div></div>`, ["#ffd3e4", "#fff0b3"]],
+    ["Can we try more colours?", "All of them. At once.",
+      `<div style="width:220px;height:140px;border-radius:24px;background:conic-gradient(#ff3d77,#ffb800,#c6ff3d,#28d17c,#22c1ee,#1f7aff,#8c5cff,#ff3d77)"></div>`, ["#d8f5ff", "#ffe6c9"]],
+    ["Let's go with the first version.", "Thanks for the 16 extra versions. 🙃",
+      `<div style="display:flex;align-items:center;gap:16px"><div style="width:120px;height:120px;border-radius:28px;background:rgba(255,255,255,.12);border:4px solid #1fbf6a;display:grid;place-items:center;font:800 40px/1 var(--sans)">v1</div><div style="font:800 64px/1 var(--sans);color:#1fbf6a">✓</div></div>`, ["#c8f1dd", "#b9d4ff"]]
+  ];
+  document.getElementById("pairs").outerHTML = PAIRS.map(([say, mean, gag, [c1, c2]], k) => `
+    <section class="slide">
+      <i class="orb" style="--c:${c1};left:${k % 2 ? 900 : 200}px;top:320px"></i><i class="orb" style="--c:${c2};left:${k % 2 ? 150 : 950}px;top:1080px"></i>
+      <div class="kick">Client feedback, translated</div><div class="num">0${k + 1} / 07</div>
+      <div class="glass say"><div class="lab" style="color:var(--mute)">THEY SAY</div><div class="q">“${say}”</div></div>
+      <div class="tr"><span><b style="font-size:26px">↓</b> translating…</span></div>
+      <div class="mean"><div class="lab">THEY MEAN</div><div class="m">${mean}</div><div class="gag">${gag}</div></div>
+      <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+      <i class="grain"></i>
+    </section>`).join("");
+</script>
+</body>
+</html>
