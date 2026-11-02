@@ -1,3 +1,4 @@
 # rendered slides: post them, keep them out of the repo
 *.png
 *.jpg
+*.zip
