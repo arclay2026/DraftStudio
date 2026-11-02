@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>PLU Diaspora Chapter SA · membership cards</title>
+<!-- Preview of the three membership-card versions (front + back). Query options:
+       ?v=1&side=front   one card only        &blank=1   empty fields (print template)
+       &bleed=1          show the 3 mm bleed  (render.js uses these to export PDF / PNG / SVG) -->
+<style>
+  @font-face { font-family: "Cinzel"; font-weight: 600; src: url(fonts/cinzel-latin-600-normal.woff2); }
+  @font-face { font-family: "Cinzel"; font-weight: 700; src: url(fonts/cinzel-latin-700-normal.woff2); }
+  @font-face { font-family: "Cinzel"; font-weight: 800; src: url(fonts/cinzel-latin-800-normal.woff2); }
+  @font-face { font-family: "Barlow Condensed"; font-weight: 400; src: url(fonts/barlow-condensed-latin-400-normal.woff2); }
+  @font-face { font-family: "Barlow Condensed"; font-weight: 500; src: url(fonts/barlow-condensed-latin-500-normal.woff2); }
+  @font-face { font-family: "Barlow Condensed"; font-weight: 600; src: url(fonts/barlow-condensed-latin-600-normal.woff2); }
+  @font-face { font-family: "Barlow Condensed"; font-weight: 700; src: url(fonts/barlow-condensed-latin-700-normal.woff2); }
+  @font-face { font-family: "IBM Plex Mono"; font-weight: 500; src: url(fonts/ibm-plex-mono-latin-500-normal.woff2); }
+  @font-face { font-family: "IBM Plex Mono"; font-weight: 600; src: url(fonts/ibm-plex-mono-latin-600-normal.woff2); }
+  html, body { margin: 0; }
+  body { background: #2a2c31; font: 14px/1.4 system-ui, sans-serif; color: #ddd; }
+  #sheet { display: grid; grid-template-columns: repeat(2, max-content); gap: 10mm 8mm; padding: 10mm; }
+  .card { position: relative; width: 86mm; height: 54mm; border-radius: 3.18mm; overflow: hidden; box-shadow: 0 2mm 6mm rgba(0,0,0,.45); }
+  .card svg { position: absolute; left: -3mm; top: -3mm; display: block; }
+  body.one { background: transparent; }
+  body.one #sheet { padding: 0; display: block; }
+  body.one .card { box-shadow: none; }
+  body.bleed .card { width: 92mm; height: 60mm; border-radius: 0; }
+  body.bleed .card svg { left: 0; top: 0; }
+  @page { size: 92mm 60mm; margin: 0; }
+  body.print { background: none; }
+  body.print #sheet { padding: 0; display: block; }
+  body.print .card { width: 92mm; height: 60mm; border-radius: 0; box-shadow: none; break-after: page; }
+  body.print .card svg { left: 0; top: 0; }
+</style>
+</head>
+<body>
+<div id="sheet"></div>
+<script src="logos.js"></script>
+<script src="card.js"></script>
+<script>
+  const q = new URLSearchParams(location.search);
+  // sample member, for the previews (the blank template leaves these out)
+  const SAMPLE = { name: q.get("name") || "NAMUGGA SARAH KATUSIIME", title: q.get("title") || "CHAPTER COORDINATOR", cde: q.get("cde") || "PLU/SA/0247" };
+  const list = q.get("v") ? [[+q.get("v"), q.get("side") || "front"]] : [[1, "front"], [1, "back"], [2, "front"], [2, "back"], [3, "front"], [3, "back"]];
+  if (q.get("v")) document.body.classList.add("one");
+  if (q.get("bleed")) document.body.classList.add("bleed");
+  if (q.get("print")) document.body.classList.add("print");
+  const pages = q.get("print") ? [[+q.get("v"), "front"], [+q.get("v"), "back"]] : list;
+  document.getElementById("sheet").innerHTML = pages.map(([v, side]) => `<div class="card">${card(v, side, SAMPLE, q.get("blank") === "1")}</div>`).join("");
+  // shrink any line marked data-fit until it fits its width (in mm)
+  window.ready = document.fonts.ready.then(() => {
+    document.querySelectorAll("text[data-fit]").forEach(t => {
+      const max = +t.dataset.fit, w = t.getComputedTextLength();
+      if (w > max) t.setAttribute("font-size", (+t.getAttribute("font-size") * max / w).toFixed(3));
+      t.removeAttribute("data-fit");
+    });
+    return true;
+  });
+</script>
+</body>
+</html>
