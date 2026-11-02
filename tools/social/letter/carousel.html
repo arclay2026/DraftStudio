@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>To the designer who feels behind · Instagram carousel</title>
+<!-- An Instagram carousel (1080×1350 slides) in the light video style: a heartfelt note to designers.
+     node ../render-carousel.js letter writes slide-1.png, slide-2.png… -->
+<link rel="stylesheet" href="../light.css">
+<style>
+  .kick { color: var(--blue); }
+  .t { position: absolute; left: 90px; right: 90px; top: 200px; font: 700 78px/1.0 var(--sans); letter-spacing: -.05em; }
+  .t em { font-style: normal; color: var(--blue); }
+  .q { position: absolute; left: 90px; right: 90px; top: 1010px; font: 500 34px/1.36 var(--sans); letter-spacing: -.02em; color: var(--mute); }
+  .q b { color: var(--ink); font-weight: 600; }
+  .vis { position: absolute; left: 90px; right: 90px; top: 500px; height: 460px; padding: 50px; display: flex; align-items: center; justify-content: center; }
+  .lab { font: 600 20px/1 var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--mute); }
+  .heart { color: var(--red); }
+</style>
+</head>
+<body>
+
+<!-- 1 · cover -->
+<section class="slide">
+  <i class="orb" style="--c:#b9d4ff;left:200px;top:260px"></i><i class="orb" style="--c:#ffd3e4;left:950px;top:1100px"></i><i class="orb" style="--c:#fff0b3;left:1000px;top:300px"></i>
+  <div class="kick">A note for designers</div>
+  <div class="glass" style="left:150px;top:220px;width:780px;height:440px;transform:rotate(-3deg);padding:60px 64px">
+    <div class="lab">To: you</div>
+    <div style="margin-top:34px;font:500 46px/1.3 var(--sans);letter-spacing:-.03em">If you've been feeling like you're not good enough lately…</div>
+    <div style="position:absolute;right:56px;bottom:46px;font:600 30px/1 var(--sans);color:var(--mute)">read this slowly <span class="emo">💙</span></div>
+  </div>
+  <div class="title" style="top:760px;font-size:112px">To the designer<br>who feels <span style="color:var(--blue)">behind.</span></div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 2 · the 47 drafts -->
+<section class="slide">
+  <i class="orb" style="--c:#b9d4ff;left:900px;top:300px"></i><i class="orb" style="--c:#e2d6ff;left:150px;top:1100px"></i>
+  <div class="kick">A note for designers</div><div class="num">01 / 07</div>
+  <div class="t">They see one logo.<br><em>You know there were 47.</em></div>
+  <div class="glass vis"><div style="display:grid;grid-template-columns:repeat(12,52px);gap:12px">
+    <script>document.write(Array.from({length:48},(_,k)=>k===47?`<i style="height:52px;border-radius:14px;background:var(--blue);box-shadow:0 10px 24px -6px rgba(31,122,255,.6)"></i>`:`<i style="height:52px;border-radius:14px;background:rgba(17,17,20,${.05+((k*37)%9)/100});"></i>`).join(""))</script>
+  </div><div class="lab" style="position:absolute;right:50px;bottom:40px;color:var(--blue)">final.ai ↑</div><div class="lab" style="position:absolute;left:50px;bottom:40px">47 drafts nobody saw</div></div>
+  <div class="q">The ones nobody will ever see <b>still taught you everything.</b> None of them were wasted.</div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 3 · chapter 1 vs chapter 20 -->
+<section class="slide">
+  <i class="orb" style="--c:#c9f0dc;left:200px;top:300px"></i><i class="orb" style="--c:#cfe2ff;left:950px;top:1100px"></i>
+  <div class="kick">A note for designers</div><div class="num">02 / 07</div>
+  <div class="t">Your chapter 1 is not <em>their chapter 20.</em></div>
+  <div class="glass vis" style="flex-direction:column;align-items:stretch;gap:56px">
+    <div><div style="display:flex;justify-content:space-between" class="lab"><span>You · year 1</span><span>ch. 1</span></div>
+      <div style="height:30px;border-radius:15px;background:rgba(17,17,20,.07);margin-top:18px"><i style="display:block;width:9%;height:100%;border-radius:15px;background:var(--blue)"></i></div></div>
+    <div><div style="display:flex;justify-content:space-between" class="lab"><span>That designer you admire · year 10</span><span>ch. 20</span></div>
+      <div style="height:30px;border-radius:15px;background:rgba(17,17,20,.07);margin-top:18px"><i style="display:block;width:92%;height:100%;border-radius:15px;background:var(--ink)"></i></div></div>
+    <div style="font:600 30px/1.3 var(--sans);text-align:center">Same book. <span style="color:var(--blue)">Different page.</span></div>
+  </div>
+  <div class="q">Their portfolio is <b>the best 1% of ten years of work.</b> You're watching their highlight reel while living your rough draft.</div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 4 · 1am -->
+<section class="slide">
+  <i class="orb" style="--c:#e2d6ff;left:900px;top:300px"></i><i class="orb" style="--c:#b9d4ff;left:150px;top:1100px"></i>
+  <div class="kick">A note for designers</div><div class="num">03 / 07</div>
+  <div class="t">The 1 a.m. version of you <em>deserves some credit.</em></div>
+  <div class="vis" style="padding:0"><div style="width:100%;height:100%;border-radius:40px;background:linear-gradient(160deg,#15161c,#262a3d);color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:26px;box-shadow:0 50px 100px -30px rgba(17,17,20,.45)">
+    <div style="font:200 150px/1 var(--sans);letter-spacing:-.04em">01:12</div>
+    <div style="font:500 30px/1 var(--sans);opacity:.6">Wednesday · everyone's asleep</div>
+    <div style="margin-top:10px;padding:18px 30px;border-radius:24px;background:rgba(255,255,255,.1);font:500 30px/1.2 var(--sans)">Still fixing the kerning on “Coffee”…</div>
+  </div></div>
+  <div class="q">Fixing things nobody will ever notice, <b>because you will.</b> That care isn't overthinking. It's the job.</div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 5 · the gap -->
+<section class="slide">
+  <i class="orb" style="--c:#fff0b3;left:200px;top:300px"></i><i class="orb" style="--c:#ffd3e4;left:950px;top:1100px"></i>
+  <div class="kick">A note for designers</div><div class="num">04 / 07</div>
+  <div class="t">Your taste is ahead of your skill. <em>That's a good sign.</em></div>
+  <div class="glass vis"><svg viewBox="0 0 800 360" width="800" height="360" style="overflow:visible">
+    <path d="M20 300 C 200 120, 420 70, 780 40" fill="none" stroke="#1f7aff" stroke-width="10" stroke-linecap="round"/>
+    <path d="M20 330 C 260 310, 520 220, 780 90" fill="none" stroke="#111114" stroke-width="10" stroke-linecap="round" stroke-dasharray="1 22"/>
+    <path d="M330 115 L330 290" stroke="#ff5a5f" stroke-width="3" stroke-dasharray="8 8"/>
+    <text x="350" y="215" font-family="DejaVu Sans Mono" font-weight="600" font-size="20" letter-spacing="3" fill="#ff5a5f">THE GAP</text>
+    <text x="640" y="22" font-family="Inter" font-weight="600" font-size="26" fill="#1f7aff">your eye</text>
+    <text x="560" y="250" font-family="Inter" font-weight="600" font-size="26" fill="#111114">your hands</text>
+  </svg></div>
+  <div class="q">That frustration isn't proof you're bad. <b>It's proof your eye is good.</b> Your hands catch up, as long as you keep making things.</div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 6 · ugly first -->
+<section class="slide">
+  <i class="orb" style="--c:#ffe1b8;left:900px;top:300px"></i><i class="orb" style="--c:#c8f1dd;left:150px;top:1100px"></i>
+  <div class="kick">A note for designers</div><div class="num">05 / 07</div>
+  <div class="t">Every designer you admire <em>made ugly things first.</em></div>
+  <div class="glass vis" style="gap:40px">
+    <div style="text-align:center"><div style="width:280px;height:280px;border-radius:24px;background:linear-gradient(135deg,#ff00cc,#00e5ff);display:grid;place-items:center;transform:rotate(-4deg);font:italic 700 46px/1 'Comic Sans MS','DejaVu Serif',serif;color:#ffff00;text-shadow:4px 4px 0 #000;box-shadow:0 20px 40px -14px rgba(0,0,0,.4)">MY<br>LOGO!!</div><div class="lab" style="margin-top:30px">Their first design</div></div>
+    <div style="font:700 70px/1 var(--sans);color:var(--blue)">→</div>
+    <div style="text-align:center"><div style="width:280px;height:280px;border-radius:24px;background:#111114;display:grid;place-items:center;box-shadow:0 20px 40px -14px rgba(0,0,0,.4)"><div style="font:700 54px/1 var(--sans);letter-spacing:-.05em;color:#fff">mono<span style="color:#1f7aff">.</span></div></div><div class="lab" style="margin-top:30px">Ten years later</div></div>
+  </div>
+  <div class="q">Nobody starts good. <b>They start. Then they just don't stop.</b></div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 7 · rejection -->
+<section class="slide">
+  <i class="orb" style="--c:#ffd3e4;left:200px;top:300px"></i><i class="orb" style="--c:#b9d4ff;left:950px;top:1100px"></i>
+  <div class="kick">A note for designers</div><div class="num">06 / 07</div>
+  <div class="t">A “no” from a client <em>is not a no to you.</em></div>
+  <div class="glass vis" style="flex-direction:column;align-items:stretch;gap:26px;justify-content:center">
+    <div class="bubble" style="background:rgba(17,17,20,.06);align-self:flex-start">Thanks, but we've decided to go in another direction.</div>
+    <div class="lab" style="align-self:flex-start;margin:-8px 0 0 10px">Client · 16:42</div>
+    <div class="bubble" style="background:var(--blue);color:#fff;align-self:flex-end">…and I'm still a designer. <span class="emo">🤍</span></div>
+  </div>
+  <div class="q">It was about one brief, one budget, one person's taste. <b>Not your talent. Not your worth.</b></div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 8 · building -->
+<section class="slide">
+  <i class="orb" style="--c:#cfe2ff;left:540px;top:600px"></i><i class="orb" style="--c:#fff0b3;left:100px;top:1200px"></i>
+  <div class="kick">A note for designers</div><div class="num">07 / 07</div>
+  <div class="vis" style="top:200px;height:520px;padding:0;align-items:flex-end;gap:22px">
+    <script>document.write([70,110,150,200,260,330,410,500].map((h,k)=>`<i style="width:84px;height:${h}px;border-radius:22px;background:${k===7?"var(--blue)":`rgba(17,17,20,${.06+k*.03})`}"></i>`).join(""))</script>
+  </div>
+  <div class="title" style="top:800px;text-align:center;font-size:108px">You're not behind.<br><span style="color:var(--blue)">You're building.</span></div>
+  <div class="q" style="top:1060px;text-align:center">Slowly. Quietly. <b>One draft at a time.</b></div>
+  <div class="foot"><img src="../../../assets/logo.svg" alt="Draft Studio"><div class="swipe">Swipe <i>→</i></div></div>
+  <i class="grain"></i>
+</section>
+
+<!-- 9 · call to action -->
+<section class="slide">
+  <i class="orb" style="--c:#b9d4ff;left:540px;top:520px"></i><i class="orb" style="--c:#ffd3e4;left:100px;top:1150px"></i><i class="orb" style="--c:#e2d6ff;left:1000px;top:1100px"></i>
+  <div class="kick" style="left:0;right:0;text-align:center">Keep this</div>
+  <div class="title" style="top:250px;text-align:center;font-size:100px">Save this for the day<br>you want to quit.</div>
+  <div class="quote" style="top:530px;text-align:center">And send it to a designer<br><b>who needs to hear it today.</b> <span class="emo">💙</span></div>
+  <div class="glass" style="left:150px;top:740px;width:780px;height:190px;display:flex;align-items:center;justify-content:center;gap:28px">
+    <span class="emo" style="font-size:66px">🔖</span><div style="font:700 42px/1.15 var(--sans);letter-spacing:-.03em">Tap save.<br><span style="color:var(--mute);font-weight:500">Future you will thank you.</span></div></div>
+  <div class="glass" style="left:240px;top:980px;width:600px;height:180px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px">
+    <img src="../../../assets/logo.svg" alt="Draft Studio" style="height:50px">
+    <div style="font:600 26px/1 var(--sans);color:var(--mute)">Follow for more designer life</div></div>
+  <i class="grain"></i>
+</section>
+</body>
+</html>
