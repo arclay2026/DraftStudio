@@ -16,11 +16,11 @@ window.DSChat = function (kit) {
   // the chat button is Drafty himself, drawn inline so his eyes can follow the pointer
   const DRAFTY_BALL = `<svg class="dr-ball" viewBox="0 0 100 100" aria-hidden="true">
     <defs><radialGradient id="drb-g" cx=".32" cy=".26" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#eceef2"/><stop offset=".85" stop-color="#bcc1ca"/><stop offset="1" stop-color="#8f95a0"/></radialGradient></defs>
-    <circle cx="50" cy="50" r="49" fill="url(#drb-g)"/>
+    <g class="dr-body"><circle cx="50" cy="50" r="49" fill="url(#drb-g)"/>
     <ellipse cx="30" cy="22" rx="14" ry="6.5" fill="#fff" opacity=".7" transform="rotate(-36 30 22)"/>
     <g class="dr-face"><g transform="rotate(-18 50 50)">
       <rect class="dr-eye" x="35" y="33" width="10" height="24" rx="5" fill="#111114"/><rect class="dr-eye" x="55" y="33" width="10" height="24" rx="5" fill="#111114"/>
-      <circle cx="38.2" cy="37.4" r="1.7" fill="#fff" opacity=".9"/><circle cx="58.2" cy="37.4" r="1.7" fill="#fff" opacity=".9"/></g></g></svg>`;
+      <circle cx="38.2" cy="37.4" r="1.7" fill="#fff" opacity=".9"/><circle cx="58.2" cy="37.4" r="1.7" fill="#fff" opacity=".9"/></g></g></g></svg>`;
   const { $, $$, esc, icon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG } = kit;
   const KEY = "ds-chat";
   const NAME = "Drafty";
@@ -309,18 +309,32 @@ window.DSChat = function (kit) {
   }
 
   fab.addEventListener("click", () => open(panel.hidden));
-  // Drafty's eyes follow the pointer around the page; when it rests, he looks back up to the top left
+  // Drafty is alive: his eyes follow the pointer, his body leans a little towards where he looks,
+  // and when the pointer rests he looks around on his own, glancing here and there
   {
-    const face = $(".dr-face", fab), calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let tx = -6, ty = -7, x = tx, y = ty, idle = 0, raf = 0;
-    const tick = () => { x += (tx - x) * .18; y += (ty - y) * .18; face.setAttribute("transform", `translate(${x.toFixed(2)} ${y.toFixed(2)})`); raf = Math.abs(tx - x) + Math.abs(ty - y) > .05 ? requestAnimationFrame(tick) : 0; };
+    const face = $(".dr-face", fab), body = $(".dr-body", fab), calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const GLANCES = [[-8, -8], [8, -6], [-9, 2], [6, 6], [0, -9], [-5, -9], [9, -1], [-7, 7], [3, -8]];
+    let tx = -6, ty = -7, x = tx, y = ty, raf = 0, idle = 0, glance = 0, last = -1;
+    const draw = () => { face.setAttribute("transform", `translate(${x.toFixed(2)} ${y.toFixed(2)})`); body.setAttribute("transform", `rotate(${(x * .9).toFixed(2)} 50 50)`); };
+    const tick = () => { x += (tx - x) * .22; y += (ty - y) * .22; draw(); raf = Math.abs(tx - x) + Math.abs(ty - y) > .05 ? requestAnimationFrame(tick) : 0; };
     const look = (nx, ny) => { tx = nx; ty = ny; if (!raf) raf = requestAnimationFrame(tick); };
-    face.setAttribute("transform", `translate(${x} ${y})`);
-    if (!calm) addEventListener("pointermove", e => {
-      const r = fab.getBoundingClientRect(), dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 260);
-      look(dx / d * 9 * k, dy / d * 9 * k);
-      clearTimeout(idle); idle = setTimeout(() => look(-6, -7), 2600);
-    }, { passive: true });
+    // on his own: a glance somewhere new every second or three, sometimes a quick double look
+    const wander = () => {
+      let k; do k = Math.floor(Math.random() * GLANCES.length); while (k === last); last = k;
+      look(...GLANCES[k]);
+      glance = setTimeout(wander, Math.random() < .2 ? 450 : 1300 + Math.random() * 2200);
+    };
+    draw();
+    if (!calm) {
+      glance = setTimeout(wander, 1200);
+      addEventListener("pointermove", e => {
+        clearTimeout(glance); clearTimeout(idle);
+        const r = fab.getBoundingClientRect(), dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2), d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 260);
+        look(dx / d * 9 * k, dy / d * 9 * k);
+        idle = setTimeout(wander, 2200);
+      }, { passive: true });
+      document.addEventListener("visibilitychange", () => { clearTimeout(glance); if (!document.hidden) glance = setTimeout(wander, 800); });
+    }
   }
   hello.addEventListener("click", () => open(true));
   $("[data-ch-close]", el).addEventListener("click", () => open(false));
