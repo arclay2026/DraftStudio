@@ -2114,11 +2114,21 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 .ch-av { flex: none; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 8px; background: var(--fg); color: var(--on-fg); font: 700 12px/1 var(--font-display); letter-spacing: -.04em; }
 .ch-av-lg { width: 36px; height: 36px; border-radius: 11px; font-size: 16px; }
 .ch-av img { width: 66%; height: 66%; }
-/* Drafty's face fills the chat button and the avatars, cropped by their rounded corners */
-.ch-av { overflow: hidden; }
-.ch-av img.ch-drafty, .ch-fab img.ch-drafty { display: block; width: 100%; height: 100%; }
-.ch-fab-chat { width: 100%; height: 100%; border-radius: 50%; overflow: hidden; }
-.ch-fab .ch-fab-chat img { width: 54px; height: 54px; }
+/* Drafty: the chat button is the ball himself, floating free (no box behind him) */
+.ch-av { overflow: visible; background: none; }
+.ch-av img.ch-drafty { display: block; width: 100%; height: 100%; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, .18)); }
+.ch:not(.is-open) .ch-fab { background: none; box-shadow: none; }
+.ch-fab .dr-ball { width: 58px; height: 58px; overflow: visible; filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .28)); animation: dr-float 3.6s ease-in-out infinite; transition: transform .45s var(--spring, var(--ease)); }
+.ch-fab:hover { transform: none; }
+.ch-fab:hover .dr-ball { animation-play-state: paused; transform: scale(1.1, .94) rotate(-8deg); }
+.ch-fab:active .dr-ball { transform: scale(.9, 1.06); }
+.ch-fab .dr-eye { transform-box: fill-box; transform-origin: 50% 50%; animation: dr-blink 5s infinite; }
+.ch-fab::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 34px; height: 6px; margin-left: -17px; border-radius: 50%; background: rgba(0, 0, 0, .22); filter: blur(3px); animation: dr-shadow 3.6s ease-in-out infinite; pointer-events: none; }
+.ch.is-open .ch-fab::after { display: none; }
+@keyframes dr-float { 0%, 100% { translate: 0 0; } 50% { translate: 0 -5px; } }
+@keyframes dr-shadow { 0%, 100% { transform: scaleX(1); opacity: 1; } 50% { transform: scaleX(.78); opacity: .6; } }
+@keyframes dr-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.12); } }
+@media (prefers-reduced-motion: reduce) { .ch-fab .dr-ball, .ch-fab::after, .ch-fab .dr-eye { animation: none; } }
 .ch-av .ch-av-k { display: none; }
 :root[data-theme="dark"] .ch-av .ch-av-w { display: none; }
 :root[data-theme="dark"] .ch-av .ch-av-k { display: block; }

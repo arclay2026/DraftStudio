@@ -1,19 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!-- Drafty, the Drafty Labs assistant: a glossy ball, tilted, looking up to the top left. It blinks. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><!-- Drafty, the Drafty Labs assistant: a glossy ball looking up to the top left. It blinks. -->
   <defs>
-    <radialGradient id="dr-bg" cx=".3" cy=".25" r=".9"><stop offset="0" stop-color="#1d1e23"/><stop offset="1" stop-color="#0b0b0d"/></radialGradient>
-    <radialGradient id="dr-ball" cx=".3" cy=".24" r=".85"><stop offset="0" stop-color="#ffffff"/><stop offset=".45" stop-color="#eceef2"/><stop offset=".82" stop-color="#b9bec8"/><stop offset="1" stop-color="#868c97"/></radialGradient>
+    <radialGradient id="dr-ball" cx=".32" cy=".26" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#eceef2"/><stop offset=".85" stop-color="#bcc1ca"/><stop offset="1" stop-color="#8f95a0"/></radialGradient>
     <style>.dr-eye{transform-box:fill-box;transform-origin:50% 50%;animation:dr-blink 5s infinite}@keyframes dr-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}</style>
   </defs>
-  <rect width="512" height="512" fill="url(#dr-bg)"/>
-  <circle cx="318" cy="338" r="300" fill="url(#dr-ball)"/>
-  <ellipse cx="170" cy="150" rx="78" ry="36" fill="#fff" opacity=".55" transform="rotate(-38 170 150)"/>
-  <!-- the face turns up and to the left: eyes high on the ball, the eye line tilted -->
-  <g transform="rotate(-20 262 250)">
-    <g fill="#111114">
-      <rect class="dr-eye" x="196" y="182" width="50" height="122" rx="25"/>
-      <rect class="dr-eye" x="300" y="182" width="50" height="122" rx="25"/>
-    </g>
-    <circle cx="212" cy="204" r="8" fill="#fff" opacity=".9"/>
-    <circle cx="316" cy="204" r="8" fill="#fff" opacity=".9"/>
+  <circle cx="50" cy="50" r="49" fill="url(#dr-ball)"/>
+  <ellipse cx="30" cy="22" rx="14" ry="6.5" fill="#fff" opacity=".7" transform="rotate(-36 30 22)"/>
+  <g transform="translate(-6 -7) rotate(-18 50 50)">
+    <rect class="dr-eye" x="35" y="33" width="10" height="24" rx="5" fill="#111114"/>
+    <rect class="dr-eye" x="55" y="33" width="10" height="24" rx="5" fill="#111114"/>
+    <circle cx="38.2" cy="37.4" r="1.7" fill="#fff" opacity=".9"/><circle cx="58.2" cy="37.4" r="1.7" fill="#fff" opacity=".9"/>
   </g>
 </svg>
