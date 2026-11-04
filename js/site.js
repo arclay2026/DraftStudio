@@ -852,12 +852,13 @@
         W = gw + BLEED * 2; H = gh + BLEED * 2;
         dpr = Math.min(2, devicePixelRatio || 1);
         cv.width = Math.round(W * dpr); cv.height = Math.round(H * dpr);
-        cell = Math.max(9, Math.min(15, Math.min(gw, gh) / 19));
+        // fine pitch (about 44 dots across the mark) so the star's thin gaps and curves read sharply
+        cell = Math.max(4.5, Math.min(8, Math.min(gw, gh) / 48));
         cols = Math.floor(gw / cell); rows = Math.floor(gh / cell);
         ox = BLEED + (gw - cols * cell) / 2 + cell / 2; oy = BLEED + (gh - rows * cell) / 2 + cell / 2;
         const dot = cell * .36;
         // the mark, rasterised at one pixel per dot (supersampled), one colour channel per petal
-        const n = Math.min(cols, rows) - 4, S = 4, m = document.createElement("canvas");
+        const n = Math.round(Math.min(cols, rows) * .8), S = 4, m = document.createElement("canvas");
         m.width = cols * S; m.height = rows * S;
         const g = m.getContext("2d"), k = n * S / 652;
         g.setTransform(k, 0, 0, k, ((cols - n) / 2) * S - 174 * k, ((rows - n) / 2) * S - 174 * k);
@@ -868,7 +869,7 @@
             let a = 0;
             for (let yy = 0; yy < S; yy++) for (let xx = 0; xx < S; xx++) a += px[((rr * S + yy) * m.width + cc * S + xx) * 4 + 3];
             a /= S * S * 255;
-            if (a > .3) lit.push({ x: ox + cc * cell, y: oy + rr * cell, p, a: Math.min(1, a * 1.15), v: .9 + hash(rr * 97 + cc) * .1 });
+            if (a > .5) lit.push({ x: ox + cc * cell, y: oy + rr * cell, p, a: Math.min(1, a * 1.15), v: .9 + hash(rr * 97 + cc) * .1 });
           });
         }
         // the unlit board: dark glass bulbs with a faint rim
@@ -882,7 +883,7 @@
         // glow sprites per tube colour: a wide soft halo, a tight bloom and a white-hot core
         sprites = TUBE.map(([R, G, B], p) => ({
           halo: sprite(cell * 3.4 * dpr, [[0, `rgba(${R},${G},${B},${HALO[p]})`], [.3, `rgba(${R},${G},${B},${HALO[p] * .4})`], [1, `rgba(${R},${G},${B},0)`]]),
-          bloom: sprite(cell * .85 * dpr, [[0, `rgba(${R},${G},${B},.75)`], [.5, `rgba(${R},${G},${B},.28)`], [1, `rgba(${R},${G},${B},0)`]]),
+          bloom: sprite(cell * .7 * dpr, [[0, `rgba(${R},${G},${B},.75)`], [.5, `rgba(${R},${G},${B},.28)`], [1, `rgba(${R},${G},${B},0)`]]),
           core: sprite(dot * 1.05 * dpr, [[0, "rgba(255,255,255,1)"], [.55, `rgba(${Math.min(255, R + 40)},${Math.min(255, G + 30)},255,.95)`], [.85, `rgba(${R},${G},${B},.7)`], [1, `rgba(${R},${G},${B},0)`]])
         }));
         return true;
