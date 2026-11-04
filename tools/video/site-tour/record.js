@@ -28,7 +28,7 @@ async function take(name, start, end, page0, script) {
   });
   await ctx.route(/wa\.me|drive\.google|googleusercontent/, r => r.abort());
   const p = await ctx.newPage();
-  await p.goto(url(page0)); await p.evaluate(() => { try { localStorage.clear(); } catch (e) {} }); await p.reload();
+  await p.goto(url(page0)); await p.evaluate(() => { try { localStorage.clear(); localStorage.setItem("ds-tour", "done"); } catch (e) {} }); await p.reload();   // fresh settings, no welcome tour
   await p.mouse.move(VW * .55, VH * .6);   // the real mouse starts mid-screen, off the side menu (which opens on hover)
   await p.waitForTimeout(1800);
   const cdp = await ctx.newCDPSession(p);

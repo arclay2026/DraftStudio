@@ -207,7 +207,7 @@ window.DSChat = function (kit) {
   try { msgs = JSON.parse(sessionStorage.getItem(KEY)) || []; } catch (e) {}
   const save = () => { try { sessionStorage.setItem(KEY, JSON.stringify(msgs.slice(-30))); } catch (e) {} };
 
-  const CHIPS = ["Find a mockup", "Show me logos", "Can I use files commercially?", "Make a QR code", "What opens a PSD file?"];
+  const CHIPS = ["Show me around", "Find a mockup", "Show me logos", "Can I use files commercially?", "Make a QR code", "What opens a PSD file?"];
 
   const el = document.createElement("div");
   el.className = "ch";
@@ -339,7 +339,7 @@ window.DSChat = function (kit) {
   $("[data-ch-close]", el).addEventListener("click", () => open(false));
   $("[data-ch-new]", el).addEventListener("click", () => { msgs = []; save(); draw(); input.focus(); });
   // Chips send their English wording; the bubble still shows in the visitor's language
-  chips.addEventListener("click", e => { const b = e.target.closest("button"); if (b) ask(b.dataset.q); });
+  chips.addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; if (b.dataset.q === "Show me around") { open(false); tour(true); } else ask(b.dataset.q); });
   form.addEventListener("submit", e => { e.preventDefault(); const v = input.value; input.value = ""; grow(); ask(v); });
   const grow = () => { input.style.height = "auto"; input.style.height = Math.min(input.scrollHeight, 120) + "px"; };
   input.addEventListener("input", grow);
@@ -347,4 +347,89 @@ window.DSChat = function (kit) {
   document.addEventListener("keydown", e => { if (e.key === "Escape" && !panel.hidden) open(false); });
   // Links inside answers close the chat on phones so the page is visible
   log.addEventListener("click", e => { if (e.target.closest("a") && innerWidth <= 640) open(false); });
+
+  /* ---------- The tour: Drafty shows first-time visitors around ----------
+     A dimmed page with a spotlight that glides from part to part, and Drafty beside a speech bubble,
+     looking at what he's showing. It starts by itself on a visitor's first page (once), and from the
+     "Show me around" chip any time after. Steps whose part isn't on screen (the side menu on phones)
+     are skipped. Esc or "Skip" ends it; arrow keys step through. */
+  function tour(force) {
+    const SEEN = "ds-tour";
+    try { if (!force && localStorage.getItem(SEEN)) return; } catch (e) {}
+    if (document.querySelector(".tr") || /canvas\.html/.test(location.pathname)) return;
+    const mac = /Mac|iPhone|iPad/.test(navigator.platform), touch = matchMedia("(pointer: coarse)").matches;
+    const STEPS = [
+      { t: "Hi, I’m Drafty! 👋", b: "Welcome to <b>Drafty Labs</b>: free design files, pro tools and lessons, all in one place. Can I show you around? It only takes half a minute.", go: "Show me around", no: "Maybe later" },
+      { at: ["#side"], t: "This is your map", b: "Files, the studio, tools and help. Everything on the site is one click away from here." },
+      { at: [".menu-btn"], t: "This is your map", b: "Tap the menu for files, the studio, tools and help. Everything on the site is right there." },
+      { at: ["[data-hsearch]", ".side-search", "[data-open-search]"], t: "Find anything", b: touch ? "Type what you need here: files, tools and pages all show up as you type." : `Type what you need here, or press <kbd>${mac ? "⌘" : "Ctrl"}</kbd> <kbd>K</kbd> on any page to search the whole site.` },
+      { at: ["a.side-link[href^='browse.html?cat=mockups']", "a.side-link[href^='browse.html?cat=templates']"], t: "Free files", b: "Mockups, logos, vectors and templates. Free for personal and commercial work, with no sign-up and no watermark." },
+      { at: ["a.side-link[href='palettes.html']", "a.side-link[href='canvas.html']"], t: "Pro tools", b: "Design in your browser with <b>Canvas</b>, make QR codes and barcodes that look designed, and pick colour palettes in a click." },
+      { at: ["a.side-link[href='websites.html']", "a.side-link[href='pricing.html']"], t: "The studio", b: "Need a website or a logo made just for you? The studio builds them." },
+      { at: ["a.side-link[href='learn.html']"], t: "Learn design", b: "Six short, free lessons. Press play and I’ll read them to you, word by word." },
+      { at: ["button.set-btn"], t: "Make it yours", b: "Dark mode, six languages and bigger text all live in Settings." },
+      { at: [".ch-fab"], t: "I’m always here", b: "Stuck, or looking for something? Tap me and ask anything, any time.", go: "Let’s go!" }];
+    // the rectangle a step points at: the union of its elements that are on screen
+    const rectOf = step => {
+      if (!step.at) return null;
+      const rs = step.at.map(s => document.querySelector(s)).filter(Boolean).map(e => e.getBoundingClientRect())
+        .filter(r => r.width > 0 && r.height > 0 && r.right > 0 && r.bottom > 0 && r.left < innerWidth && r.top < innerHeight);
+      if (!rs.length) return null;
+      const u = { left: Math.min(...rs.map(r => r.left)), top: Math.min(...rs.map(r => r.top)), right: Math.max(...rs.map(r => r.right)), bottom: Math.max(...rs.map(r => r.bottom)) };
+      return { x: u.left - 8, y: u.top - 8, w: u.right - u.left + 16, h: u.bottom - u.top + 16 };
+    };
+    const steps = STEPS.filter((s, k) => !k || rectOf(s));
+    const ball = DRAFTY_BALL.replace(/drb-g/g, "drt-g").replace('class="dr-ball"', 'class="dr-ball tr-ball"');
+    const t = document.createElement("div");
+    t.className = "tr"; t.setAttribute("role", "dialog"); t.setAttribute("aria-label", "A tour of Drafty Labs");
+    t.innerHTML = `<div class="tr-spot"></div><div class="tr-host"><div class="tr-drafty">${ball}</div>
+      <div class="tr-card" aria-live="polite"><b class="tr-t"></b><p class="tr-b"></p>
+        <div class="tr-foot"><span class="tr-dots">${steps.slice(1).map(() => "<i></i>").join("")}</span>
+          <button type="button" class="tr-skip" data-tr-skip>Skip</button><button type="button" class="tr-back" data-tr-back>Back</button><button type="button" class="tr-next btn btn-dark" data-tr-next>Next</button></div></div></div>`;
+    document.body.append(t);
+    const spot = $(".tr-spot", t), host = $(".tr-host", t), face = $(".dr-face", t);
+    let k = 0;
+    const end = () => { try { localStorage.setItem(SEEN, "done"); } catch (e) {} t.classList.remove("is-on"); removeEventListener("keydown", keys, true); removeEventListener("resize", show); setTimeout(() => t.remove(), 400); };
+    const show = () => {
+      // on narrow screens Drafty sits on top of his bubble instead of beside it
+      const st = steps[k], r = rectOf(st), W = innerWidth, H = innerHeight, narrow = W < 560, cw = Math.min(360, W - 32), hw = narrow ? cw : cw + 74, hh = narrow ? 290 : 240;
+      host.classList.toggle("is-narrow", narrow);
+      // the spotlight: on the part, or shrunk to nothing in the middle for the welcome
+      Object.assign(spot.style, r ? { left: r.x + "px", top: r.y + "px", width: r.w + "px", height: r.h + "px", borderRadius: "16px" } : { left: W / 2 + "px", top: H / 2 + "px", width: 0, height: 0, borderRadius: "50%" });
+      // Drafty and his bubble: beside the part where there's room, else above or below it, else centred
+      let x = (W - hw) / 2, y = H / 2 - 110;
+      if (r) {
+        if (narrow) { if (r.y > H / 2) y = r.y - hh - 10; else y = r.y + r.h + 14; x = (W - hw) / 2; }
+        else if (r.x + r.w + 24 + hw < W) { x = r.x + r.w + 24; y = r.y + Math.min(r.h, 220) / 2 - 70; }
+        else if (r.x - 24 - hw > 0) { x = r.x - 24 - hw; y = r.y + Math.min(r.h, 220) / 2 - 70; }
+        else if (r.y > H / 2) { y = r.y - hh; x = Math.min(Math.max(16, r.x + r.w - hw), W - hw - 16); }
+        else { y = r.y + r.h + 20; x = Math.min(Math.max(16, r.x), W - hw - 16); }
+      }
+      host.style.width = hw + "px";
+      host.style.left = Math.round(Math.min(Math.max(16, x), W - hw - 16)) + "px";
+      host.style.top = Math.round(Math.min(Math.max(16, y), H - hh - 16)) + "px";
+      // he looks at what he's showing (straight at you for the welcome)
+      requestAnimationFrame(() => {
+        const hb = $(".tr-drafty", t).getBoundingClientRect(), cx = hb.left + hb.width / 2, cy = hb.top + hb.height / 2;
+        const tx = r ? r.x + r.w / 2 - cx : 0, ty = r ? r.y + r.h / 2 - cy : 3, d = Math.hypot(tx, ty) || 1;
+        face.setAttribute("transform", r ? `translate(${(tx / d * 9).toFixed(1)} ${(ty / d * 9).toFixed(1)})` : "translate(0 3)");
+      });
+      $(".tr-t", t).textContent = st.t; $(".tr-b", t).innerHTML = st.b;
+      $("[data-tr-next]", t).textContent = st.go || (k === steps.length - 1 ? "Done" : "Next");
+      $("[data-tr-skip]", t).textContent = st.no || "Skip";
+      $("[data-tr-back]", t).hidden = k < 2;
+      $(".tr-dots", t).hidden = !k;
+      $$(".tr-dots i", t).forEach((d, j) => d.classList.toggle("is-on", j === k - 1));
+      host.classList.remove("is-pop"); void host.offsetWidth; host.classList.add("is-pop");
+    };
+    const step = d => { k += d; if (k >= steps.length) return end(); k = Math.max(0, k); show(); };
+    const keys = e => { if (e.key === "Escape") { e.stopPropagation(); end(); } else if (e.key === "ArrowRight" || e.key === "Enter") { e.preventDefault(); step(1); } else if (e.key === "ArrowLeft") step(-1); };
+    t.addEventListener("click", e => { if (e.target.closest("[data-tr-next]")) step(1); else if (e.target.closest("[data-tr-back]")) step(-1); else if (e.target.closest("[data-tr-skip]")) end(); });
+    addEventListener("keydown", keys, true); addEventListener("resize", show);
+    show(); requestAnimationFrame(() => t.classList.add("is-on"));
+    $("[data-tr-next]", t).focus({ preventScroll: true });
+  }
+  window.DSTour = () => tour(true);
+  // a first visit: Drafty says hello once the page has settled
+  setTimeout(() => { if (!document.hidden) tour(false); }, 1600);
 };
