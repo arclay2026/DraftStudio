@@ -11,7 +11,7 @@
    ===================================================================== */
 window.DSChat = function (kit) {
   // Drafty's avatar: the official mark, white on the dark tile (black in dark mode, where the tile is light)
-  const AV_MARK = '<img class="ch-av-w" src="assets/logo-mark-dark.svg?v=dl2" alt=""><img class="ch-av-k" src="assets/logo-mark.svg?v=dl2" alt="">';
+  const AV_MARK = '<img class="ch-av-w" src="assets/logo-mark-dark.svg?v=dl3" alt=""><img class="ch-av-k" src="assets/logo-mark.svg?v=dl3" alt="">';
   const { $, $$, esc, icon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG } = kit;
   const KEY = "ds-chat";
   const NAME = "Drafty";

@@ -63,7 +63,7 @@ for (const f of PAGES) {
     "@graph": [
       { "@type": "WebSite", "@id": SITE + "#site", url: SITE, name: "Drafty Labs", inLanguage: LANGS,
         potentialAction: { "@type": "SearchAction", target: SITE + "browse.html?q={search_term_string}", "query-input": "required name=search_term_string" } },
-      { "@type": "Organization", "@id": SITE + "#org", name: "Drafty Labs", url: SITE, logo: SITE + "assets/logo-mark.svg?v=dl2", email: DS.site.email }
+      { "@type": "Organization", "@id": SITE + "#org", name: "Drafty Labs", url: SITE, logo: SITE + "assets/logo-mark.svg?v=dl3", email: DS.site.email }
     ]
   } : null;
   write(f, putSeo(html, seoBlock({ url, title: title(html), description: meta(html, "description"), image: SITE + SHARE_IMAGE, jsonld })));

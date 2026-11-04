@@ -423,16 +423,16 @@
     el.outerHTML = `
       <a class="skip" href="#main">Skip to content</a>
       <header class="topbar">
-        <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="logo-l" src="assets/logo.svg?v=dl2" alt="Drafty Labs" width="113" height="28"><img class="logo-d" src="assets/logo-dark.svg?v=dl2" alt="Drafty Labs" width="113" height="28"></a>
+        <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="logo-l" src="assets/logo.svg?v=dl3" alt="Drafty Labs" width="113" height="28"><img class="logo-d" src="assets/logo-dark.svg?v=dl3" alt="Drafty Labs" width="113" height="28"></a>
         <button class="icon-btn" type="button" aria-label="Search" data-open-search>${icon("search")}</button>
         <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="side">${icon("menu")}</button>
       </header>
       <aside class="side" id="side" aria-label="Main">
         <div class="side-top">
           <a class="logo" href="index.html" aria-label="Drafty Labs home">
-            <img class="logo-full logo-l" src="assets/logo.svg?v=dl2" alt="Drafty Labs" width="113" height="28">
-            <img class="logo-full logo-d" src="assets/logo-dark.svg?v=dl2" alt="Drafty Labs" width="113" height="28">
-            <span class="logo-mark" aria-hidden="true"><img class="logo-l" src="assets/logo-mark.svg?v=dl2" alt="" width="28" height="28"><img class="logo-d" src="assets/logo-mark-dark.svg?v=dl2" alt="" width="28" height="28"></span>
+            <img class="logo-full logo-l" src="assets/logo.svg?v=dl3" alt="Drafty Labs" width="113" height="28">
+            <img class="logo-full logo-d" src="assets/logo-dark.svg?v=dl3" alt="Drafty Labs" width="113" height="28">
+            <span class="logo-mark" aria-hidden="true"><img class="logo-l" src="assets/logo-mark.svg?v=dl3" alt="" width="28" height="28"><img class="logo-d" src="assets/logo-mark-dark.svg?v=dl3" alt="" width="28" height="28"></span>
           </a>
           <button class="side-fold" type="button" aria-label="Collapse menu" data-side-fold>${sideIcon("fold")}</button>
         </div>
@@ -457,7 +457,7 @@
         <div class="wrap">
           <div class="fgrid">
             <div class="f-brand">
-              <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="f-logo-w" src="assets/logo-dark.svg?v=dl2" alt="Drafty Labs" width="129" height="32"><img class="f-logo-k" src="assets/logo.svg?v=dl2" alt="Drafty Labs" width="129" height="32"></a>
+              <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="f-logo-w" src="assets/logo-dark.svg?v=dl3" alt="Drafty Labs" width="129" height="32"><img class="f-logo-k" src="assets/logo.svg?v=dl3" alt="Drafty Labs" width="129" height="32"></a>
               <p>${esc(s.tagline)}</p>
             </div>
             <nav class="f-links" aria-label="Files">
@@ -828,10 +828,10 @@
     const dots = $("[data-dots]");
     if (dots) {
       const MARK = [  // assets/brand/drafty-labs-mark.svg, mapped into viewBox 174 174 652 652; the last petal is the blue one
-        "M490.42,179.21h0c-171.87,0,-311.21,139.33,-311.21,311.21h0q311.21,0,311.21,-311.21Z",
-        "M490.42,820.79h0c-171.87,0,-311.21,-139.33,-311.21,-311.21h0q311.21,0,311.21,311.21Z",
-        "M509.58,820.79h0c171.87,0,311.21,-139.33,311.21,-311.21h0q-311.21,0,-311.21,311.21Z",
-        "M509.58,179.21h0c171.87,0,311.21,139.33,311.21,311.21h0q-311.21,0,-311.21,-311.21Z"
+        "M490.39,179.21c0,106.7,0,176.8,-12.53,222.87v0.04c-5.77,21.1,-14.12,37.16,-26.35,49.39,-12.23,12.23,-28.29,20.58,-49.39,26.35,-46.08,12.53,-116.17,12.53,-222.92,12.53,0,-8.01,0.3,-15.98,0.9,-23.85C191.7,313.73,313.73,191.7,466.54,180.11c7.88,-0.6,15.85,-0.9,23.85,-0.9Z",
+        "M490.39,820.79c-8.01,0,-15.98,-0.3,-23.85,-0.9,-152.81,-11.59,-274.85,-133.61,-286.43,-286.43,-0.6,-7.88,-0.9,-15.85,-0.9,-23.85,106.74,0,176.84,0,222.92,12.53,21.1,5.77,37.16,14.12,49.39,26.35,12.23,12.23,20.58,28.29,26.35,49.39v0.04c12.53,46.08,12.53,116.17,12.53,222.87Z",
+        "M820.79,509.61c0,8.01,-0.3,15.98,-0.9,23.85,-11.59,152.81,-133.61,274.85,-286.43,286.43,-7.88,0.6,-15.85,0.9,-23.85,0.9,0,-106.7,0,-176.8,12.53,-222.87,5.73,-21.1,14.12,-37.2,26.35,-49.43,12.23,-12.23,28.29,-20.58,49.39,-26.35,46.08,-12.53,116.17,-12.53,222.92,-12.53Z",
+        "M820.79,490.39c-106.74,0,-176.84,0,-222.92,-12.53,-21.1,-5.77,-37.16,-14.12,-49.39,-26.35,-12.23,-12.23,-20.63,-28.33,-26.35,-49.43v-0.04c-12.53,-46.08,-12.53,-116.17,-12.53,-222.83,8.01,0,15.98,0.3,23.85,0.9,152.81,11.59,274.85,133.61,286.43,286.43,0.6,7.88,0.9,15.85,0.9,23.85Z"
       ];
       // tube colours: three ice-white petals and one electric blue
       const TUBE = [[196, 222, 255], [196, 222, 255], [196, 222, 255], [40, 132, 255]], HALO = [.07, .07, .07, .16];
