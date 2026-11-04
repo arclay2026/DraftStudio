@@ -1621,6 +1621,53 @@
     reveal(main);
   }
 
+  /* ---------- What's new: a small toast beside Drafty ----------
+     One feature at a time, in a card with a gradient tile (frosted shapes drift slowly behind a white
+     icon). It waits until the welcome tour is over, shows once per feature, never on the feature's own
+     page, and at most once a day; closing or opening it counts as seen. */
+  function promo() {
+    const PROMOS = [
+      { id: "barcode", href: "barcode.html", ic: "barcode", t: "Try Barcode Studio", d: "Product barcodes in six formats, each one checked before you download.", c: ["#2fe0b0", "#0e9fb8"] },
+      { id: "canvas", href: "canvas.html", ic: "canvas", t: "Try Canvas", d: "A full design editor in your browser, with 300+ fonts built in.", c: ["#7aa7ff", "#2f5dff"] },
+      { id: "qr", href: "qr.html", ic: "qr", t: "Try QR Code Studio", d: "QR codes that look designed. Your colours, your logo.", c: ["#ffb36b", "#ff5f6d"] },
+      { id: "palettes", href: "palettes.html", ic: "palettes", t: "Try Palettes", d: "36 ready-made colour palettes, or a fresh one in one tap.", c: ["#c59bff", "#6b5cff"] },
+      { id: "learn", href: "learn.html", ic: "learn", t: "Learn design, free", d: "Six short lessons with diagrams, read aloud word by word.", c: ["#ff9cc2", "#ff6a5b"] }];
+    const get = k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
+    const here = location.pathname.split("/").pop() || "index.html";
+    if (here === "canvas.html" || Date.now() - (+get("ds-promo-at") || 0) < 864e5) return;
+    const p = PROMOS.find(x => !get("ds-promo-" + x.id) && x.href !== here);
+    if (!p) return;
+    // the tile: a two-colour gradient, frosted squircles at angles, a soft light behind the icon
+    const tile = `<svg class="pm-art" viewBox="0 0 96 80" aria-hidden="true"><defs>
+        <linearGradient id="pm-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.c[0]}"/><stop offset="1" stop-color="${p.c[1]}"/></linearGradient>
+        <radialGradient id="pm-l" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+      <rect width="96" height="80" fill="url(#pm-g)"/>
+      <g class="pm-shapes" fill="#fff" fill-opacity=".16" stroke="#fff" stroke-opacity=".45" stroke-width=".7">
+        <rect class="pm-s1" x="-8" y="-10" width="46" height="44" rx="14" transform="rotate(-8 15 12)"/>
+        <rect class="pm-s2" x="58" y="-14" width="52" height="40" rx="15" transform="rotate(10 84 6)"/>
+        <rect class="pm-s3" x="8" y="44" width="40" height="46" rx="14" transform="rotate(14 28 67)"/>
+        <rect class="pm-s4" x="62" y="46" width="44" height="42" rx="14" transform="rotate(-12 84 67)"/>
+      </g>
+      <circle cx="48" cy="40" r="26" fill="url(#pm-l)"/></svg>`;
+    const el = document.createElement("aside");
+    el.className = "pm"; el.setAttribute("role", "status"); el.setAttribute("aria-label", "What's new");
+    el.innerHTML = `<a class="pm-card" href="${p.href}"><span class="pm-tile">${tile}<span class="pm-ic">${sideIcon(p.ic)}</span></span>
+        <span class="pm-text"><b>${esc(p.t)}</b><span>${esc(p.d)}</span></span></a>
+      <button class="pm-x" type="button" aria-label="Close">${icon("close")}</button>`;
+    const seen = () => { set("ds-promo-" + p.id, "1"); set("ds-promo-at", String(Date.now())); };
+    const close = () => { seen(); el.classList.remove("is-on"); document.body.classList.remove("has-pm"); setTimeout(() => el.remove(), 450); };
+    $(".pm-x", el).addEventListener("click", close);
+    $(".pm-card", el).addEventListener("click", seen);
+    // in a few seconds, once no tour or quick view is showing
+    let tries = 0;
+    const wait = () => {
+      if (++tries > 40) return;
+      if (document.querySelector(".tr, .qv.is-open, .ch.is-open, .ch.is-hello") || document.hidden) return setTimeout(wait, 1500);
+      document.body.append(el); document.body.classList.add("has-pm"); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("is-on")));
+    };
+    setTimeout(wait, 4500);
+  }
+
   /* ---------- Quick view ---------- */
   // Clicking any file card opens the file in a large pop-up instead of a new page.
   // The address bar still changes to the file's own link, so sharing, refreshing and Back all work.
@@ -2501,6 +2548,7 @@
   tooltips();
   colorPicker();
   quickView();
+  promo();
   pressFX();
   reveal();
   if (window.DSChat) window.DSChat({ $, $$, esc, icon, libIcon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG });
