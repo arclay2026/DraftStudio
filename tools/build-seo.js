@@ -33,7 +33,7 @@ function seoBlock({ url, title, description, image, imageAlt, type = "website", 
     `<link rel="canonical" href="${esc(url)}">`,
     ...LANGS.map(l => `<link rel="alternate" hreflang="${l}" href="${esc(url)}${l === "en" ? "" : (url.includes("?") ? "&" : "?") + "lang=" + l}">`),
     `<link rel="alternate" hreflang="x-default" href="${esc(url)}">`,
-    `<meta property="og:site_name" content="Draft Studio">`,
+    `<meta property="og:site_name" content="Drafty Labs">`,
     `<meta property="og:type" content="${type}">`,
     `<meta property="og:url" content="${esc(url)}">`,
     `<meta property="og:title" content="${t}">`,
@@ -61,9 +61,9 @@ for (const f of PAGES) {
   const jsonld = f === "index.html" ? {
     "@context": "https://schema.org",
     "@graph": [
-      { "@type": "WebSite", "@id": SITE + "#site", url: SITE, name: "Draft Studio", inLanguage: LANGS,
+      { "@type": "WebSite", "@id": SITE + "#site", url: SITE, name: "Drafty Labs", inLanguage: LANGS,
         potentialAction: { "@type": "SearchAction", target: SITE + "browse.html?q={search_term_string}", "query-input": "required name=search_term_string" } },
-      { "@type": "Organization", "@id": SITE + "#org", name: "Draft Studio", url: SITE, logo: SITE + "assets/logo-mark.svg", email: DS.site.email }
+      { "@type": "Organization", "@id": SITE + "#org", name: "Drafty Labs", url: SITE, logo: SITE + "assets/logo-mark.svg", email: DS.site.email }
     ]
   } : null;
   write(f, putSeo(html, seoBlock({ url, title: title(html), description: meta(html, "description"), image: SITE + SHARE_IMAGE, jsonld })));
@@ -77,7 +77,7 @@ fs.mkdirSync(dir, { recursive: true });
 for (const it of DS.items) {
   const url = `${SITE}d/${encodeURIComponent(it.id)}.html`;
   const fmts = formatsOf(it);
-  const t = `${it.title} · ${it.price ? "Exclusive " + it.category.replace(/s$/, "").toLowerCase() : "Free " + fmts.join(", ")} · Draft Studio`;
+  const t = `${it.title} · ${it.price ? "Exclusive " + it.category.replace(/s$/, "").toLowerCase() : "Free " + fmts.join(", ")} · Drafty Labs`;
   const desc = (it.description || "") + (it.price ? "" : " Free download, no sign-up.");
   const image = SITE + it.preview.replace(/^\//, "");
   const jsonld = {

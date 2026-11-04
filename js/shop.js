@@ -63,7 +63,7 @@
   if (au) {
     const TEXT = {
       signin: ["Sign in", "Welcome back", "Sign in to download your files, view receipts and manage your saved designs."],
-      signup: ["Create account", "Join Draft Studio", "Keep every purchase, certificate and saved design in one place."],
+      signup: ["Create account", "Join Drafty Labs", "Keep every purchase, certificate and saved design in one place."],
       forgot: ["Password reset", "Forgot your password?", "Enter the email you signed up with and we'll send you a secure link to choose a new one."]
     };
     const show = v => {
@@ -140,7 +140,7 @@
     const setState = st => {
       box.dataset.status = st;
       $$("[data-demo]").forEach(b => b.setAttribute("aria-pressed", b.dataset.demo === st));
-      document.title = `${TITLE[st]} · Draft Studio`;
+      document.title = `${TITLE[st]} · Drafty Labs`;
       // top bar: all steps done once paid; otherwise still on Payment
       bar.forEach((li, i) => {
         const done = st === "paid" || st === "refunded" ? true : i === 0;

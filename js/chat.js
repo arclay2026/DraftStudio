@@ -1,5 +1,5 @@
 /* =====================================================================
-   DRAFTY — the Draft Studio chat assistant
+   DRAFTY — the Drafty Labs chat assistant
    A chat bubble on every page. Answers come from one of two brains:
    • the AI server (worker/), when DS.site.chatEndpoint is set and awake
    • a built-in brain that answers from the site's own data otherwise,
@@ -58,14 +58,14 @@ window.DSChat = function (kit) {
 
   // Everyday questions about the site. Each topic: trigger phrases, then the reply.
   const TOPICS = [
-    { k: ["site about", "this site", "this website", "what is draft studio", "what's draft studio", "whats draft studio", "what is this", "what's this", "whats this", "what do you do", "what do you offer", "what do you have", "tell me about", "about you", "about the site", "about draft studio",
+    { k: ["site about", "this site", "this website", "what is draft studio", "what's draft studio", "whats draft studio", "what is drafty labs", "what's drafty labs", "whats drafty labs", "drafty labs", "what is this", "what's this", "whats this", "what do you do", "what do you offer", "what do you have", "tell me about", "about you", "about the site", "about draft studio",
           "propos", "ce site", "quoi ce", "que es", "de que trata", "este sitio", "esta web", "este site", "esse site", "o que e", "sobre o site", "عن الموقع", "ما هو", "这个网站", "是什么网站", "关于"],
-      a: () => ({ text: ["Draft Studio is a library of free design files: PSD mockups, editable logos, vectors and templates.", "There are free tools too: a palette generator and QR Code Studio for custom QR codes. No sign-up, no watermark."],
+      a: () => ({ text: ["Drafty Labs is a library of free design files: PSD mockups, editable logos, vectors and templates.", "There are free tools too: a palette generator and QR Code Studio for custom QR codes. No sign-up, no watermark."],
         blocks: [{ type: "links", keys: ["browse", "palettes", "qr"] }] }) },
     { weak: true, k: ["what can you do", "how can you help", "who are you", "what are you", "help me", "can you help", "que peux-tu", "que puedes", "o que voce faz", "ماذا تستطيع", "你能做什么", "你是谁"],
-      a: () => ({ text: [`I'm ${NAME}, the Draft Studio assistant. I can find files and palettes, tell you which app opens a file, and answer license questions.`, "Try asking “show me logos” or “can I use this for a client?”"], blocks: [] }) },
+      a: () => ({ text: [`I'm ${NAME}, the Drafty Labs assistant. I can find files and palettes, tell you which app opens a file, and answer license questions.`, "Try asking “show me logos” or “can I use this for a client?”"], blocks: [] }) },
     { k: ["who made", "who owns", "who runs", "who created", "who is behind", "who are the", "qui a cree", "quien hizo", "quem fez", "من صنع", "谁做的"],
-      a: () => ({ text: ["Draft Studio is made by a small design team.", "You can reach them directly on WhatsApp or email."], blocks: [{ type: "contact" }] }) },
+      a: () => ({ text: ["Drafty Labs is made by a small design team.", "You can reach them directly on WhatsApp or email."], blocks: [{ type: "contact" }] }) },
     { k: ["sign up", "signup", "account", "register", "login", "log in", "inscription", "cuenta", "registr", "conta", "cadastro", "حساب", "تسجيل", "注册", "账号", "登录"],
       a: () => ({ text: ["No account needed. Open any file and press Download. That's it."], blocks: [] }) },
     { k: ["watermark", "filigrane", "marca de agua", "marca d", "علامة مائية", "水印"],
@@ -188,7 +188,7 @@ window.DSChat = function (kit) {
       <a class="ch-pal" href="palettes.html"><span class="ch-sw">${p.colors.map(c => `<i style="background:${c}"></i>`).join("")}</span><small><b data-no-i18n>${esc(p.name)}</b> · ${esc(p.mood)}</small></a>`).join("")}</div>`;
     if (b.type === "apps") { const f = FORMATS.find(x => x.ext === b.ext); return f ? `<p class="ch-apps"><span>Opens in</span>${f.apps.map(a => `<b>${esc(APPS[a].name)}</b>${APPS[a].free ? ` <em>Free</em>` : ""}`).join(", ")}</p>` : ""; }
     if (b.type === "links") return `<div class="ch-links">${b.keys.filter(k => LINKS[k]).map(k => `<a href="${LINKS[k][0]}">${icon(LINKS[k][2])}<span>${LINKS[k][1]}</span></a>`).join("")}</div>`;
-    if (b.type === "contact") return `<div class="ch-links"><a href="${waLink("Hi Draft Studio, ")}" target="_blank" rel="noopener">${icon("chat")}<span>WhatsApp</span></a><a href="${mailLink("Hello Draft Studio")}">${icon("mail")}<span>Email</span></a></div>`;
+    if (b.type === "contact") return `<div class="ch-links"><a href="${waLink("Hi Drafty Labs, ")}" target="_blank" rel="noopener">${icon("chat")}<span>WhatsApp</span></a><a href="${mailLink("Hello Drafty Labs")}">${icon("mail")}<span>Email</span></a></div>`;
     return "";
   };
   const para = s => `<p>${esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>")}</p>`;
@@ -207,10 +207,10 @@ window.DSChat = function (kit) {
       <span class="ch-fab-i ch-fab-chat">${icon("chat")}</span><span class="ch-fab-i ch-fab-x">${icon("close")}</span><i class="ch-dot"></i>
     </button>
     <span class="ch-hello" aria-hidden="true">Ask ${NAME}</span>
-    <section class="ch-panel" id="ch-panel" role="dialog" aria-label="${NAME}, Draft Studio assistant" hidden>
+    <section class="ch-panel" id="ch-panel" role="dialog" aria-label="${NAME}, Drafty Labs assistant" hidden>
       <header class="ch-head">
         <span class="ch-av ch-av-lg" aria-hidden="true">${AV_MARK}</span>
-        <span class="ch-who"><b data-no-i18n>${NAME}</b><small><i></i><span>Draft Studio assistant</span></small></span>
+        <span class="ch-who"><b data-no-i18n>${NAME}</b><small><i></i><span>Drafty Labs assistant</span></small></span>
         <button class="ch-hbtn" type="button" data-ch-new aria-label="New chat" data-tip="New chat">${icon("refresh")}</button>
         <button class="ch-hbtn" type="button" data-ch-close aria-label="Close chat">${icon("close")}</button>
       </header>
@@ -221,7 +221,7 @@ window.DSChat = function (kit) {
         <textarea id="ch-input" rows="1" placeholder="Ask anything…" maxlength="600"></textarea>
         <button class="ch-send" type="submit" aria-label="Send">${icon("send")}</button>
       </form>
-      <p class="ch-note">${endpoint ? "AI answers can be wrong." : "Quick answers from the Draft Studio site."} <a href="${waLink("Hi Draft Studio, ")}" target="_blank" rel="noopener">Talk to a human</a></p>
+      <p class="ch-note">${endpoint ? "AI answers can be wrong." : "Quick answers from the Drafty Labs site."} <a href="${waLink("Hi Drafty Labs, ")}" target="_blank" rel="noopener">Talk to a human</a></p>
     </section>`;
   document.body.appendChild(el);
 

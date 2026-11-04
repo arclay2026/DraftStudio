@@ -1,4 +1,4 @@
-# Draft Studio backend: design
+# Drafty Labs backend: design
 
 Status: **draft for review**. Nothing here is built yet. Mark anything you want changed and the
 plan updates before the first line of code.
@@ -288,7 +288,7 @@ All of this is first built against **PayFast's sandbox**, with a switch in `conf
 
 ### 5.4 Copyright transfer (exclusive logos)
 
-When an exclusive logo is paid, the ITN step also fills in a one-page PDF from a fixed template: buyer name, logo, order number, date, price and Draft Studio's signature image. It's saved with the order and listed with the other files, so it shows on the order page, in the email and under My purchases. One small PDF library (for example FPDF, no other dependencies) does this.
+When an exclusive logo is paid, the ITN step also fills in a one-page PDF from a fixed template: buyer name, logo, order number, date, price and Drafty Labs's signature image. It's saved with the order and listed with the other files, so it shows on the order page, in the email and under My purchases. One small PDF library (for example FPDF, no other dependencies) does this.
 
 ### 5.5 Invoice status on the order page
 

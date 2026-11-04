@@ -89,8 +89,8 @@ function light(at, c1, c2, c3, o = .42) {
 function logoLockup(id, top) {
   const box = document.createElement("div");
   box.className = "abs lockup"; box.id = id;
-  box.style.cssText = `left:480px;top:${top}px;width:960px`;
-  box.innerHTML = LOGO.replace("<svg ", '<svg width="960" ');
+  box.style.cssText = `left:552px;top:${top}px;width:816px`;
+  box.innerHTML = LOGO.replace("<svg ", '<svg width="816" ');
   const svg = $("svg", box);
   svg.insertAdjacentHTML("afterbegin", `<defs>${[0, 1, 2, 3].map(k => `<filter id="${id}-f${k}" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="0"/></filter>`).join("")}
     <clipPath id="${id}-clip"><rect x="300" y="420" width="0" height="160"/></clipPath></defs>`);
@@ -102,7 +102,7 @@ function logoLockup(id, top) {
 // the four petals swirl in and lock together, the blue one last; then the name slides out
 function assemble(L, at, quick) {
   const DIR = [[-1, 1], [-1, -1], [1, 1], [1, -1]], k0 = quick ? .7 : 1;
-  gsap.set(L.box, { x: 376 });
+  gsap.set(L.box, { x: 304 });
   L.petals.forEach((p, k) => {
     const blue = k === 3, start = at + (blue ? .75 * k0 : .14 * k * k0);
     const from = blue ? { rotation: 220, scale: .08, opacity: 0, svgOrigin: "232.09 500" }

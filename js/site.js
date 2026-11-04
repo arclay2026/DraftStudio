@@ -1,5 +1,5 @@
 /* =====================================================================
-   DRAFT STUDIO — SITE SCRIPT
+   DRAFTY LABS — SITE SCRIPT
    Builds the header, footer, search and every page from js/data.js.
    You shouldn't need to edit this file to add designs.
    ===================================================================== */
@@ -423,15 +423,15 @@
     el.outerHTML = `
       <a class="skip" href="#main">Skip to content</a>
       <header class="topbar">
-        <a class="logo" href="index.html" aria-label="Draft Studio home"><img class="logo-l" src="assets/logo.svg" alt="Draft Studio" width="133" height="28"><img class="logo-d" src="assets/logo-dark.svg" alt="Draft Studio" width="133" height="28"></a>
+        <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="logo-l" src="assets/logo.svg" alt="Drafty Labs" width="113" height="28"><img class="logo-d" src="assets/logo-dark.svg" alt="Drafty Labs" width="113" height="28"></a>
         <button class="icon-btn" type="button" aria-label="Search" data-open-search>${icon("search")}</button>
         <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="side">${icon("menu")}</button>
       </header>
       <aside class="side" id="side" aria-label="Main">
         <div class="side-top">
-          <a class="logo" href="index.html" aria-label="Draft Studio home">
-            <img class="logo-full logo-l" src="assets/logo.svg" alt="Draft Studio" width="133" height="28">
-            <img class="logo-full logo-d" src="assets/logo-dark.svg" alt="Draft Studio" width="133" height="28">
+          <a class="logo" href="index.html" aria-label="Drafty Labs home">
+            <img class="logo-full logo-l" src="assets/logo.svg" alt="Drafty Labs" width="113" height="28">
+            <img class="logo-full logo-d" src="assets/logo-dark.svg" alt="Drafty Labs" width="113" height="28">
             <span class="logo-mark" aria-hidden="true"><img class="logo-l" src="assets/logo-mark.svg" alt="" width="28" height="28"><img class="logo-d" src="assets/logo-mark-dark.svg" alt="" width="28" height="28"></span>
           </a>
           <button class="side-fold" type="button" aria-label="Collapse menu" data-side-fold>${sideIcon("fold")}</button>
@@ -457,7 +457,7 @@
         <div class="wrap">
           <div class="fgrid">
             <div class="f-brand">
-              <a class="logo" href="index.html" aria-label="Draft Studio home"><img class="f-logo-w" src="assets/logo-dark.svg" alt="Draft Studio" width="152" height="32"><img class="f-logo-k" src="assets/logo.svg" alt="Draft Studio" width="152" height="32"></a>
+              <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="f-logo-w" src="assets/logo-dark.svg" alt="Drafty Labs" width="129" height="32"><img class="f-logo-k" src="assets/logo.svg" alt="Drafty Labs" width="129" height="32"></a>
               <p>${esc(s.tagline)}</p>
             </div>
             <nav class="f-links" aria-label="Files">
@@ -470,7 +470,7 @@
                 <li><a href="learn.html">Learn</a></li>
                 <li><a href="license.html">License</a></li>
                 <li><a href="license.html#faq">FAQ</a></li>
-                <li><a href="${waLink("Hi Draft Studio, I'd like to request a design: ")}" target="_blank" rel="noopener">Request a design</a></li>
+                <li><a href="${waLink("Hi Drafty Labs, I'd like to request a design: ")}" target="_blank" rel="noopener">Request a design</a></li>
               </ul>
             </nav>
             <div class="f-links">
@@ -822,7 +822,7 @@
       }
     }
 
-    // Dot card: a neon dot sign at night. The Draft Studio mark lights up petal by petal
+    // Dot card: a neon dot sign at night. The Drafty Labs mark lights up petal by petal
     // (each petal is one tube that stutters as it strikes), hums, then powers off with
     // an afterglow. Drawn on a canvas; still and lit when motion is reduced.
     const dots = $("[data-dots]");
@@ -1050,7 +1050,7 @@
     { q: "Pitch decks", tone: "yes", a: "Make your slides look expensive. Nobody needs to know." },
     { q: "My own brand logo", tone: "but", a: "You can, but free logos can be downloaded by anyone. For a logo only you own, buy an exclusive one." },
     { q: "Reselling the files", tone: "no", a: "Please don't sell our files as they are, alone or in a bundle. Make something new with them instead." },
-    { q: "Re-uploading them", tone: "no", a: "Don't post our files on other download sites. Link to Draft Studio instead, so people get the latest version." },
+    { q: "Re-uploading them", tone: "no", a: "Don't post our files on other download sites. Link to Drafty Labs instead, so people get the latest version." },
     { q: "Claiming you made them", tone: "no", a: "Use them in your work, sure. Just don't present the original files as your own design." }
   ];
   const WORD = { yes: "Yes.", no: "No.", but: "Yes, but…" };
@@ -1065,9 +1065,9 @@
       ticket.dataset.tone = u.tone;
       ticket.innerHTML = `
         <span class="lx-stamp" aria-hidden="true">${STAMP[u.tone]}</span>
-        <p class="lx-q lx-anim">Can I use Draft Studio files for <b>${esc(u.q.toLowerCase())}</b>?</p>
+        <p class="lx-q lx-anim">Can I use Drafty Labs files for <b>${esc(u.q.toLowerCase())}</b>?</p>
         <div class="lx-a lx-anim"><span class="word">${WORD[u.tone]}</span><p>${esc(u.a)}</p></div>
-        <div class="lx-foot"><span>Draft Studio license</span><span>Free files · v1</span></div>`;
+        <div class="lx-foot"><span>Drafty Labs license</span><span>Free files · v1</span></div>`;
       ticket.classList.remove("is-swap"); void ticket.offsetWidth; ticket.classList.add("is-swap");
       $$("button", uses).forEach(b => b.setAttribute("aria-pressed", +b.dataset.i === i));
     };
@@ -1263,7 +1263,7 @@
           <h3>${empty ? `Fresh ${esc(cat ? cat.name.toLowerCase() : "files")} <br>are on the way.` : `Your ${esc(what)} <br>could be next.`}</h3>
           <p>${empty ? "Nothing on this shelf yet. Tell us what you'd like and it could be the first drop." : "Tell us what you need. Popular requests become free drops for everyone."}</p>
         </div>
-        <a class="btn btn-dark" href="${waLink(`Hi Draft Studio, I'd like to request a ${what}: `)}" target="_blank" rel="noopener">Request a drop <span class="arr">${ARR}</span></a>
+        <a class="btn btn-dark" href="${waLink(`Hi Drafty Labs, I'd like to request a ${what}: `)}" target="_blank" rel="noopener">Request a drop <span class="arr">${ARR}</span></a>
       </article>`;
   }
 
@@ -1272,7 +1272,7 @@
     return `<div class="empty">
       <h3>Fresh ${esc(name)} are on the way.</h3>
       <p>Nothing here yet. Tell us what you'd like to see and we'll draft it.</p>
-      <a class="btn btn-dark" href="${waLink(`Hi Draft Studio, I'd like to request ${cat ? "some " + name : "a design"}: `)}" target="_blank" rel="noopener">${icon("chat")} Request on WhatsApp</a>
+      <a class="btn btn-dark" href="${waLink(`Hi Drafty Labs, I'd like to request ${cat ? "some " + name : "a design"}: `)}" target="_blank" rel="noopener">${icon("chat")} Request on WhatsApp</a>
     </div>`;
   }
 
@@ -1331,7 +1331,7 @@
       const mine = state.cat === "saved";
       $("[data-title]").innerHTML = mine ? `Saved <span class="hl">files.</span>` : cat ? esc(cat.name) : state.q ? `“${esc(state.q)}”` : `Every <span class="hl">file.</span>`;
       $("[data-lede]").textContent = mine ? "Your favourites, kept in this browser. Tap the bookmark on any design to add it here." : cat ? cat.blurb : "Every mockup, vector, logo and template in the studio. Free to download, free to use.";
-      document.title = (mine ? "Saved" : cat ? cat.name : "Browse") + " · Draft Studio";
+      document.title = (mine ? "Saved" : cat ? cat.name : "Browse") + " · Drafty Labs";
       const cur = options.find(o => o.slug === state.cat) || options[0];
       renderMenu();
       $("[data-dd-label]", cats).textContent = cur.name;
@@ -1470,7 +1470,7 @@
         <div class="amount">${it.priceFrom ? '<small>From</small> ' : ""}${esc(it.price)}</div>
         <p>You get ${esc((it.includes || []).join(", "))}. Once it's sold it comes off the shelf for good.</p>
         ${it.sold ? `<span class="btn" aria-disabled="true">Sold</span>` :
-          `<a class="btn btn-dark" href="${waLink(`Hi Draft Studio, I'd like to buy “${it.title}” (${it.num}), ${it.priceFrom ? "priced from" : "for"} ${it.price}.`)}" target="_blank" rel="noopener">${icon("chat")} Buy on WhatsApp</a>`}
+          `<a class="btn btn-dark" href="${waLink(`Hi Drafty Labs, I'd like to buy “${it.title}” (${it.num}), ${it.priceFrom ? "priced from" : "for"} ${it.price}.`)}" target="_blank" rel="noopener">${icon("chat")} Buy on WhatsApp</a>`}
       </div>` : `
       ${it.requires ? `<div class="notice">${icon("lightbulb")}<span>This file needs <b>${esc(it.requires)}</b> (or free Photopea in your browser).</span></div>` : ""}
       ${zip ? `<a class="btn btn-dl dl-all" href="${esc(zip.path)}" download>${icon("download")} Download all${zip.size ? " · " + esc(zip.size) : ""}</a>` : ""}
@@ -1539,7 +1539,7 @@
     $("[data-share]", root).addEventListener("click", () => {
       // The d/ page has the design's own preview card for WhatsApp, X and others
       const url = (DS.site.url || new URL(".", location.href).href) + `d/${encodeURIComponent(it.id)}.html`;
-      const data = { title: it.title + " · Draft Studio", text: isPaid(it) ? it.title : `Free ${fmts.join("/")} download: ${it.title}`, url };
+      const data = { title: it.title + " · Drafty Labs", text: isPaid(it) ? it.title : `Free ${fmts.join("/")} download: ${it.title}`, url };
       if (navigator.share) navigator.share(data).catch(() => {});
       else copy(url, "Link copied");
     });
@@ -1578,7 +1578,7 @@
       main.innerHTML = `<div class="wrap section"><div class="empty"><h3>That file has moved.</h3><p>We couldn't find “${esc(id || "")}”. Try browsing instead.</p><a class="btn btn-dark" href="browse.html">Browse all files</a></div></div>`;
       return;
     }
-    document.title = `${it.title} · Draft Studio`;
+    document.title = `${it.title} · Drafty Labs`;
     // item.html?id=… is the same page as d/<id>.html; point search engines there
     const canon = $('link[rel="canonical"]');
     if (canon && !document.body.dataset.id && DS.site.url) canon.href = DS.site.url + `d/${encodeURIComponent(it.id)}.html`;
@@ -1808,7 +1808,7 @@
     x.fillStyle = "#0f0f0f"; x.font = "600 40px Inter, system-ui, sans-serif"; x.textBaseline = "alphabetic";
     x.fillText(name, pad, 84);
     x.fillStyle = "#8a8a8a"; x.font = "500 20px Inter, system-ui, sans-serif"; x.textAlign = "right";
-    x.fillText("Draft Studio", W - pad, 84); x.textAlign = "left";
+    x.fillText("Drafty Labs", W - pad, 84); x.textAlign = "left";
     x.save(); x.beginPath(); x.roundRect(pad, top, W - pad * 2, sh, 28); x.clip();
     colors.forEach((col, i) => { x.fillStyle = col; x.fillRect(pad + i * sw, top, Math.ceil(sw), sh); });
     x.restore();
@@ -1975,7 +1975,7 @@
     $("[data-pg-hex]", pg).addEventListener("click", () => copy(state.colors.map(c => c.toUpperCase()).join(", "), "HEX codes copied"));
     $("[data-pg-css]", pg).addEventListener("click", () => copy(paletteCss(state.colors), "CSS copied"));
     $("[data-pg-link]", pg).addEventListener("click", () => copy(location.href, "Link copied"));
-    $("[data-pg-png]", pg).addEventListener("click", () => palettePng(state.colors, "Draft Studio palette"));
+    $("[data-pg-png]", pg).addEventListener("click", () => palettePng(state.colors, "Drafty Labs palette"));
     $$("[data-ps-theme]", pg).forEach(b => b.addEventListener("click", () => {
       state.dark = b.dataset.psTheme === "dark";
       $$("[data-ps-theme]", pg).forEach(x => x.setAttribute("aria-pressed", x === b));

@@ -1,5 +1,5 @@
 /* =====================================================================
-   DRAFT STUDIO — BARCODE STUDIO
+   DRAFTY LABS — BARCODE STUDIO
    A barcode designer: EAN-13, UPC-A, EAN-8, Code 128, Code 39, ITF-14.
    The encoders are written from the GS1 / ISO specs and tested against
    ZXing. Every design is drawn as SVG, then read back from its pixels

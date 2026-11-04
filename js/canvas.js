@@ -1,5 +1,5 @@
 /* =====================================================================
-   CANVAS — Draft Studio's free design studio (canvas.html)
+   CANVAS — Drafty Labs's free design studio (canvas.html)
    A desktop-style workspace: a menu bar, a control bar for the selection,
    a tool column, docked Layers/Assets and Properties panels, a status bar
    with zoom, artboard and cursor position, a ⌘K command palette and a
@@ -55,7 +55,7 @@ window.DSCanvas = function (kit) {
     : UI[id]
       ? `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${UI[id]}</svg>`
       : icon(id, cls));
-  // The Draft Studio mark: ink in the interface text colour, one petal in the site blue
+  // The Drafty Labs mark: ink in the interface text colour, one petal in the site blue
   const MARK_SVG = `<svg class="cx-mark" viewBox="174 174 652 652" aria-hidden="true"><path d="M490.41,820.79h0c-171.87,0-311.2-139.33-311.2-311.2h0q311.2,0,311.2,311.2Z" fill="currentColor"/><path d="M490.41,179.21h0c-171.87,0-311.2,139.33-311.2,311.2h0q311.2,0,311.2-311.2Z" fill="currentColor"/><path d="M509.59,820.79h0c171.87,0,311.2-139.33,311.2-311.2h0q-311.2,0-311.2,311.2Z" fill="currentColor"/><path d="M509.59,179.21h0c171.87,0,311.2,139.33,311.2,311.2h0q-311.2,0-311.2-311.2Z" fill="#1f7aff"/></svg>`;
 
   /* =====================================================================
@@ -3210,7 +3210,7 @@ window.DSCanvas = function (kit) {
   fileJson.addEventListener("change", () => {
     const f = fileJson.files[0];
     fileJson.value = "";
-    if (f) f.text().then(s => restore(s, { refit: true }).then(() => { note("Open Project"); changed(); toast(tr("Project opened")); })).catch(() => toast(tr("That file isn't a Draft Studio design.")));
+    if (f) f.text().then(s => restore(s, { refit: true }).then(() => { note("Open Project"); changed(); toast(tr("Project opened")); })).catch(() => toast(tr("That file isn't a Drafty Labs design.")));
   });
   let dragDepth = 0;
   body.addEventListener("dragenter", e => { if ([...(e.dataTransfer.types || [])].includes("Files")) { dragDepth++; root.classList.add("is-dropping"); } });
@@ -3232,7 +3232,7 @@ window.DSCanvas = function (kit) {
       new F.Circle({ radius: 300, fill: "#1f7aff", left: 430, top: 80, name: "Circle", kind: "shape" }),
       T("2026", { fontSize: 34, fontWeight: 600, fill: "#ffffff", left: 80, top: 80, width: 300, name: "Year" }),
       T("MAKE IT BOLD.", { fontFamily: "Archivo Black", fontWeight: 400, fontSize: 168, lineHeight: .92, charSpacing: -30, fill: "#ffffff", left: 76, top: 720, width: 940, name: "Headline" }),
-      T("A poster template from Draft Studio. Change every word.", { fontSize: 32, fontWeight: 400, fill: "#bdbdbd", left: 80, top: 1170, width: 700, lineHeight: 1.35, name: "Caption" })] },
+      T("A poster template from Drafty Labs. Change every word.", { fontSize: 32, fontWeight: 400, fill: "#bdbdbd", left: 80, top: 1170, width: 700, lineHeight: 1.35, name: "Caption" })] },
     { name: "Quote post", w: 1080, h: 1080, bg: "#f4f1de", make: () => [
       T("“", { fontFamily: "Playfair Display", fontWeight: 700, fontSize: 320, fill: "#e07a5f", left: 84, top: 40, width: 300, lineHeight: 1, name: "Quote mark" }),
       T("Design is thinking made visual.", { fontFamily: "Playfair Display", fontWeight: 600, fontSize: 96, lineHeight: 1.05, charSpacing: -10, fill: "#3d405b", left: 90, top: 330, width: 880, name: "Quote" }),
@@ -3576,7 +3576,7 @@ window.DSCanvas = function (kit) {
       case "main-menu": {
         if (!menuPop.hidden && menuPop.dataset.mode === "main") { closeMenus(); break; }
         $(".cx-brand", root).classList.add("is-open");
-        openMenuAt(el, menuItems(MENUS) + `<hr>${menuItems([["Command Palette", "mod+K", "palette"], ["Keyboard Shortcuts", "mod+/", "shortcuts"]])}<hr><a class="cx-menu-home" href="index.html">${icon("arrow-left") || ""}<span>Back to Draft Studio</span></a>`, "main");
+        openMenuAt(el, menuItems(MENUS) + `<hr>${menuItems([["Command Palette", "mod+K", "palette"], ["Keyboard Shortcuts", "mod+/", "shortcuts"]])}<hr><a class="cx-menu-home" href="index.html">${icon("arrow-left") || ""}<span>Back to Drafty Labs</span></a>`, "main");
         break;
       }
       case "new":
@@ -3608,7 +3608,7 @@ window.DSCanvas = function (kit) {
       case "prefs": prefsDialog(); break;
       case "shortcuts": shortcutsDialog(); break;
       case "palette": openPalette(); break;
-      case "about": openDialog("About Canvas", `<div class="cx-about">${MARK_SVG}<p>Canvas is Draft Studio's free design studio. It runs entirely in your browser: nothing is uploaded, and your work autosaves on this device.</p><p class="cx-note">Built with Fabric.js and paper.js (MIT licence).</p></div>`); break;
+      case "about": openDialog("About Canvas", `<div class="cx-about">${MARK_SVG}<p>Canvas is Drafty Labs's free design studio. It runs entirely in your browser: nothing is uploaded, and your work autosaves on this device.</p><p class="cx-note">Built with Fabric.js and paper.js (MIT licence).</p></div>`); break;
       case "learn": location.href = "learn.html"; break;
       case "close-dialog": closeDialog(); break;
       case "undo": step(-1); break;

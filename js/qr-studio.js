@@ -1,5 +1,5 @@
 /* =====================================================================
-   DRAFT STUDIO — QR STUDIO
+   DRAFTY LABS — QR STUDIO
    A QR code designer. Encoding: js/vendor/qrcode.min.js (qrcode-generator).
    Scan check: js/vendor/jsqr.min.js (jsQR) decodes every design live.
    Everything is drawn as SVG, so exports are sharp at any size.
@@ -39,7 +39,7 @@
     vcard: { label: "Contact", icon: "user", fields: [
         { k: "first", label: "First name", ph: "Alex", half: true }, { k: "last", label: "Last name", ph: "Mokoena", half: true },
         { k: "tel", label: "Phone", ph: "+27 73 668 4875", half: true }, { k: "email", label: "Email", ph: "alex@brand.com", half: true },
-        { k: "org", label: "Company", ph: "Draft Studio", half: true }, { k: "title", label: "Job title", ph: "Designer", half: true },
+        { k: "org", label: "Company", ph: "Drafty Labs", half: true }, { k: "title", label: "Job title", ph: "Designer", half: true },
         { k: "web", label: "Website", ph: "https://brand.com" }],
       make: d => ["BEGIN:VCARD", "VERSION:3.0", `N:${d.last || ""};${d.first || ""}`, `FN:${[d.first, d.last].filter(Boolean).join(" ")}`,
         d.org && `ORG:${d.org}`, d.title && `TITLE:${d.title}`, d.tel && `TEL;TYPE=CELL:${d.tel}`, d.email && `EMAIL:${d.email}`,
@@ -291,7 +291,7 @@
     };
 
     const looksEl = $("[data-qs-looks]", root);
-    const looksQ = encode("DRAFT STUDIO", "M");
+    const looksQ = encode("DRAFTY LABS", "M");
     const lookState = l => Object.assign(clone(DEFAULT), { margin: 2, radius: 14, scale: .9, c2: l.c2 || l.c1 }, l);
     looksEl.innerHTML = LOOKS.map((l, i) => `<button type="button" class="qs-look" data-look="${i}" data-tip="${l.name}"><span>${buildSVG(lookState(l), looksQ, ICONS, { id: "lk" + i }).svg}</span><small>${l.name}</small></button>`).join("") +
       `<button type="button" class="qs-look is-random" data-surprise data-tip="Surprise me">${icon("magic")}<small>Surprise</small></button>`;

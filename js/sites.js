@@ -34,7 +34,7 @@
   const SITES = (window.DS && DS.sites) || [];
   const byId = id => SITES.find(s => s.id === id) || SITES[0];
   const host = u => u.replace(/^https?:\/\//, "").replace(/\/$/, "");
-  const wa = s => `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(`Hi Draft Studio, I saw ${s.name} on your site and I'd like a website like it for my business.`)}`;
+  const wa = s => `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(`Hi Drafty Labs, I saw ${s.name} on your site and I'd like a website like it for my business.`)}`;
   const page = document.body.dataset.page;
 
   /* ---------- Site cards (websites.html) ---------- */
@@ -77,7 +77,7 @@
   const plans = $("[data-plans]");
   if (plans && DS.webPackages) {
     const TICK = ic("check", 2.6);
-    const pwa = name => `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(`Hi Draft Studio, I'm interested in your ${name} package (website).`)}`;
+    const pwa = name => `https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent(`Hi Drafty Labs, I'm interested in your ${name} package (website).`)}`;
     plans.innerHTML = DS.webPackages.map(k => `
       <article class="pl${k.popular ? " is-pop" : ""}">
         <div class="pl-top">
@@ -110,7 +110,7 @@
   if (page === "preview") {
     const s = byId(new URLSearchParams(location.search).get("id"));
     if (!s) return;
-    document.title = `${s.name} — live preview · Draft Studio`;
+    document.title = `${s.name} — live preview · Drafty Labs`;
     $("[data-pv-name]").textContent = s.name;
     $("[data-pv-host]").textContent = host(s.url);
     $("[data-pv-back]").href = "websites.html";

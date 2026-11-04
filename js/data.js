@@ -1,5 +1,5 @@
 /* =====================================================================
-   DRAFT STUDIO — CONTENT
+   DRAFTY LABS — CONTENT
    Everything the site shows comes from this one file. Edit it on GitHub
    (pencil icon), click "Commit changes", and the site updates.
 
@@ -49,7 +49,7 @@
 
 window.DS = {
   site: {
-    name: "Draft Studio",
+    name: "Drafty Labs",
     tagline: "Free mockups, vectors, logos and templates for people who make things.",
     // The site's public address, used for share previews and Google (tools/build-seo.js)
     url: "https://arclay2026.github.io/DraftStudio/",

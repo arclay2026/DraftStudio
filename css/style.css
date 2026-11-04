@@ -1,5 +1,5 @@
 /* =====================================================================
-   DRAFT STUDIO — STYLES
+   DRAFTY LABS — STYLES
    Clean white page, soft grey rounded panels, black pill buttons with a
    round arrow, white and black only. Every colour, font and size lives in
    the tokens below.
@@ -2377,7 +2377,7 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
 }
 
 /* =====================================================================
-   CANVAS — Draft Studio's design studio (canvas.html, js/canvas.js)
+   CANVAS — Drafty Labs's design studio (canvas.html, js/canvas.js)
    A desktop-style workspace: menu bar and control bar on top, a tool
    column, docked Layers/Assets and Properties panels, a status bar with
    zoom, artboards and the pointer position, a minimap and a ⌘K palette.
