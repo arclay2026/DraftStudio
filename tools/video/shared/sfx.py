@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""The sound-effect library for the lesson videos, synthesised from scratch (no samples, no licences).
+"""The sound-effect library for the lesson videos, synthesised from scratch (no samples, no licences):
+quiet, Apple-style product-film sound (air, tactile clicks, felt thumps), never tones or bells.
 
     python3 tools/video/shared/sfx.py        writes tools/video/shared/sfx/<name>.wav (48 kHz stereo)
 
@@ -89,103 +90,81 @@ def write(name, st, peak=0.9):
 
 
 # ---------- the sounds ----------
-def whoosh(d=0.75, f0=350, f1=3200, peak_at=0.6, name="whoosh", width=0.9):
+# The palette is restrained, in the spirit of product-film sound design: air, soft tactile clicks and
+# deep felt thumps. There are no tones, bells or pitch sweeps. Each file is levelled to its own peak, so
+# small sounds stay small (a tick is far quieter than a whoosh).
+def air(name, d=0.7, f0=300, f1=1600, peak_at=0.55, width=0.7, peak=0.5, lp=3200):
+    """breath of air moving past: broad filtered noise, a smooth swell, a gentle pan"""
     n = int(d * SR); k = np.linspace(0, 1, n)
-    fc = np.where(k < peak_at, f0 * (f1 / f0) ** (k / peak_at), f1 * (f0 * 1.6 / f1) ** ((k - peak_at) / (1 - peak_at)))
-    x = svf(pink(d), fc, q=1.4) + 0.35 * svf(pink(d), fc * 1.9, q=2.5)
-    e = np.where(k < peak_at, (k / peak_at) ** 2.2, np.exp(-5 * (k - peak_at) / (1 - peak_at)))
-    tail = int(.5 * SR)  # the air travels left to right, with a little room behind it
+    fc = np.where(k < peak_at, f0 * (f1 / f0) ** (k / peak_at), f1 * (f0 * 1.3 / f1) ** ((k - peak_at) / (1 - peak_at)))
+    x = lp1(svf(pink(d), fc, q=0.55), lp)
+    e = np.where(k < peak_at, np.clip(np.sin(np.pi / 2 * k / peak_at), 0, 1) ** 2.2, np.clip(np.cos(np.pi / 2 * (k - peak_at) / (1 - peak_at)), 0, 1) ** 1.6)
+    tail = int(.35 * SR)
     moving = pan(np.concatenate([x * e, np.zeros(tail)]), np.concatenate([np.linspace(-width, width, n), np.full(tail, width)]))
-    write(name, moving + 0.35 * room(x * e, 0.8, 0.18, 0.5))
+    write(name, moving + 0.25 * room(x * e, 0.9, 0.2, 0.35), peak)
 
-def pop(name="pop", f0=1100, f1=320, d=0.16, bright=0.25):
-    x = osc(sweep(f0, f1, d), "sine") * env_ad(int(d * SR), 0.002, d * 0.5, 5)
-    click = svf(noise(0.01), 4000, 1.5) * np.linspace(1, 0, int(0.01 * SR))
-    x[:len(click)] += bright * click
-    write(name, room(x, 0.6, 0.12, 0.25))
+def click(fc=2400, body=170, dec=0.0016, bdec=0.007):
+    """one soft tactile click: a damped noise tick with a little low body (no pitch)"""
+    d = 0.06; n = int(d * SR)
+    x = svf(noise(d), fc, 0.9) * np.exp(-np.arange(n) / (dec * SR))
+    x += 0.35 * np.sin(2 * np.pi * body * t_(d)) * np.exp(-np.arange(n) / (bdec * SR))
+    return lp1(x, 6500)
 
-def tick(name="tick", fc=5200, d=0.035, body=900):
+def tap(name, fc=2400, body=170, peak=0.22):
+    write(name, room(click(fc, body), 0.45, 0.08, 0.12), peak)
+
+def double_tap(name, a=(2200, 160), b=(2800, 190), gap=0.085, peak=0.24):
+    x = np.zeros(int((gap + 0.08) * SR)); c1, c2 = click(*a), click(*b) * 0.8
+    x[:len(c1)] += c1; s = int(gap * SR); x[s:s + len(c2)] += c2
+    write(name, room(x, 0.5, 0.1, 0.15), peak)
+
+def snap(name="snap", peak=0.28):
+    """a magnetic snap: a muted low click, then a crisp one 16 ms later"""
+    x = np.zeros(int(0.1 * SR)); c1 = click(1500, 120, 0.002, 0.01); c2 = click(3200, 210, 0.0012, 0.005) * 0.7
+    x[:len(c1)] += c1; s = int(0.016 * SR); x[s:s + len(c2)] += c2
+    write(name, room(x, 0.5, 0.1, 0.15), peak)
+
+def thock(name, f0=105, f1=68, d=0.22, peak=0.32):
+    """a soft felt thump: a short low sine with a padded attack"""
     n = int(d * SR)
-    x = svf(noise(d), fc, 2.5) * np.exp(-np.arange(n) / (0.004 * SR)) + 0.5 * np.sin(2 * np.pi * body * t_(d)) * np.exp(-np.arange(n) / (0.006 * SR))
-    write(name, room(x, 0.5, 0.1, 0.15), 0.7)
+    x = np.sin(2 * np.pi * np.cumsum(sweep(f0, f1, d)) / SR) * env_ad(n, 0.003, 0.05, 4.5)
+    x += 0.15 * lp1(noise(d), 500) * np.exp(-np.arange(n) / (0.006 * SR))
+    write(name, room(lp1(x, 700), 0.6, 0.12, 0.2), peak)
 
-def snap(name="snap"):
-    d = 0.16; n = int(d * SR)
-    hit = svf(noise(d), 2600, 1.2) * np.exp(-np.arange(n) / (0.012 * SR))
-    thump = np.sin(2 * np.pi * np.cumsum(sweep(220, 90, d)) / SR) * np.exp(-np.arange(n) / (0.03 * SR))
-    write(name, room(0.8 * hit + thump, 0.6, 0.12, 0.2))
-
-def riser(name="riser", d=1.6):
-    n = int(d * SR); k = np.linspace(0, 1, n)
-    air = svf(pink(d), sweep(250, 7000, d), 1.6)
-    tone = 0.25 * osc(sweep(180, 720, d), "tri") + 0.12 * osc(sweep(270, 1080, d), "sine")
-    e = k ** 2.6
-    x = (air + tone) * e
-    x[-int(0.012 * SR):] *= np.linspace(1, 0, int(0.012 * SR))  # stops dead, so the impact lands on the cue
-    write(name, room(x, 1.0, 0.22, 0.3))
-
-def impact(name="impact", d=1.5):
+def sub(name="sub", d=1.3, peak=0.45):
+    """a deep, soft sub hit, felt more than heard (no crack, no ring)"""
     n = int(d * SR)
-    sub = np.sin(2 * np.pi * np.cumsum(sweep(78, 38, d)) / SR) * np.exp(-np.arange(n) / (0.35 * SR))
-    body = svf(noise(d), 180, 0.9, "lp") * np.exp(-np.arange(n) / (0.08 * SR)) * 1.6
-    crack = svf(noise(d), 3200, 1.0) * np.exp(-np.arange(n) / (0.015 * SR)) * 0.5
-    write(name, room(sub + body + crack, 1.2, 0.3, 1.4))
+    x = np.sin(2 * np.pi * np.cumsum(sweep(62, 44, d)) / SR) * env_ad(n, 0.012, 0.45, 3.2)
+    x += 0.25 * lp1(noise(d), 120) * env_ad(n, 0.01, 0.2, 4)
+    write(name, room(lp1(x, 180), 1.0, 0.18, 0.6), peak)
 
-def bell(freq, d=2.2, amp=1.0):
-    ts = t_(d); x = np.zeros_like(ts)
-    for r, a, dec in ((1, 1, 1.4), (2.76, .45, .55), (5.4, .22, .3), (8.93, .1, .18), (2.0, .2, .9)):
-        x += a * np.sin(2 * np.pi * freq * r * ts) * np.exp(-ts / dec)
-    return amp * x * env_ad(len(ts), 0.002, d, 0.6)
-
-def ding(name="ding"):
-    write(name, room(bell(1318.5) + 0.5 * bell(1975.5, amp=.6), 1.3, 0.35, 1.5))
-
-def shimmer(name="shimmer"):
-    d = 2.8; x = np.zeros(int(d * SR))
-    for k, f in enumerate((1046.5, 1318.5, 1568.0, 2093.0, 2637.0)):
-        s = int(k * 0.07 * SR); b = bell(f, d - k * 0.07, 0.55)
-        x[s:s + len(b)] += b
-    air = svf(pink(d), sweep(3000, 9000, d), 2.0) * env_ad(int(d * SR), 0.3, 1.2, 3) * 0.25
-    write(name, room(x + air, 1.4, 0.4, 1.8))
-
-def success(name="success"):
-    d = 1.6; x = np.zeros(int(d * SR))
-    for k, f in enumerate((1318.5, 1975.5)):
-        s = int(k * 0.11 * SR); b = bell(f, d - k * 0.11, 0.8); x[s:s + len(b)] += b
-    write(name, room(x, 1.1, 0.3, 1.0), 0.75)
-
-def error(name="error"):
-    d = 0.5; x = np.zeros(int(d * SR))
-    for k, f in enumerate((233.1, 207.7)):
-        s = int(k * 0.15 * SR); n = int(0.16 * SR)
-        x[s:s + n] += lp1(osc(np.full(n, f), "square"), 1400) * env_ad(n, 0.004, 0.12, 4)
-    write(name, room(x, 0.7, 0.15, 0.3), 0.7)
-
-def swell(name="swell", d=2.4):
-    ts = t_(d); x = np.zeros_like(ts)
-    for f in (261.6, 329.6, 392.0, 523.3):
-        x += np.sin(2 * np.pi * f * ts + rng.random() * 6) * (1 + 0.003 * np.sin(2 * np.pi * 5 * ts))
-    e = np.sin(np.pi * np.clip(ts / d, 0, 1)) ** 2
-    write(name, room(lp1(x, 1800) * e, 1.3, 0.35, 1.0), 0.6)
-
-def blip(name="blip", f=1760, d=0.09):
-    x = np.sin(2 * np.pi * f * t_(d)) * env_ad(int(d * SR), 0.002, d * .45, 5)
-    write(name, room(x, 0.5, 0.12, 0.2), 0.55)
-
-def slide(name="slide", d=0.42):
+def gather(name="riser", d=1.4, peak=0.42):
+    """air gathering towards a moment: rising filtered noise that stops dead on the cue (no tone)"""
     n = int(d * SR); k = np.linspace(0, 1, n)
-    x = svf(pink(d), sweep(1800, 600, d), 2.2) * np.sin(np.pi * k) ** 1.5
-    write(name, room(x, 0.6, 0.15, 0.25))
+    x = lp1(svf(pink(d), sweep(250, 2600, d), 0.6), 4000) * k ** 2.4
+    x[-int(0.02 * SR):] *= np.linspace(1, 0, int(0.02 * SR))
+    write(name, room(x, 0.9, 0.15, 0.2), peak)
 
-def thud(name="thud"):
-    d = 0.4; n = int(d * SR)
-    x = np.sin(2 * np.pi * np.cumsum(sweep(140, 60, d)) / SR) * np.exp(-np.arange(n) / (0.07 * SR))
-    x += 0.3 * svf(noise(d), 900, 1, "lp") * np.exp(-np.arange(n) / (0.02 * SR))
-    write(name, room(x, 0.7, 0.15, 0.3))
+def breath(name, d=1.6, peak=0.18):
+    """a faint, bright airy lift for reveals (in place of sparkles and bells)"""
+    n = int(d * SR)
+    x = svf(pink(d), sweep(5000, 8000, d), 0.7) * env_ad(n, 0.35, 0.9, 2.5)
+    write(name, room(lp1(x, 11000), 1.2, 0.3, 0.8), peak)
+
+def warm(name="swell", d=2.2, peak=0.3):
+    """a slow, warm low swell: dark noise and a quiet sub, rising and falling"""
+    ts = t_(d); e = np.sin(np.pi * np.clip(ts / d, 0, 1)) ** 2
+    x = lp1(pink(d), 260) * 0.8 + 0.4 * np.sin(2 * np.pi * 55 * ts)
+    write(name, room(lp1(x, 400) * e, 1.2, 0.25, 0.6), peak)
 
 if __name__ == "__main__":
     print("Synthesising sound effects into", OUT)
-    whoosh(); whoosh(0.55, 500, 2400, 0.55, "whoosh_soft", 0.6); whoosh(1.0, 200, 1800, 0.7, "whoosh_low", 0.5)
-    pop(); pop("pop_low", 700, 220, 0.2, 0.15)
-    tick(); tick("tick_low", 2600, 0.04, 520)
-    snap(); riser(); impact(); ding(); shimmer(); success(); error(); swell(); blip(); blip("blip_hi", 2349, 0.08); slide(); thud()
+    # the names stay as the engine and lessons use them; each now holds the restrained sound
+    air("whoosh"); air("whoosh_soft", 0.5, 400, 1400, 0.5, 0.5, 0.32, 2800); air("whoosh_low", 0.95, 160, 800, 0.6, 0.45, 0.45, 1600)
+    air("slide", 0.38, 600, 1300, 0.45, 0.35, 0.26, 2600)
+    tap("pop", 2300, 160, 0.24); thock("pop_low", 120, 80, 0.16, 0.22)
+    tap("tick", 3200, 210, 0.14); tap("tick_low", 1900, 150, 0.14)
+    tap("blip", 2600, 180, 0.14); tap("blip_hi", 3400, 220, 0.12)
+    snap(); gather(); sub("impact"); thock("thud")
+    double_tap("success"); thock("error", 90, 60, 0.18, 0.2)
+    breath("shimmer"); breath("ding", 1.2, 0.14); warm()

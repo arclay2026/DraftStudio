@@ -54,7 +54,15 @@ def main():
     if not os.path.exists(os.path.join(HERE, "sfx", "whoosh.wav")):   # first run: synthesise the library
         subprocess.run([sys.executable, "-I", os.path.join(HERE, "sfx.py")], check=True)
     sfx = np.zeros((2, n)); cache = {}
-    for e in json.load(open(events_path)):
+    # restraint: small sounds never chatter. A small sound within 0.18 s of one already kept is dropped;
+    # the big moments (air, impacts, swells) always play.
+    BIG = {"whoosh", "whoosh_soft", "whoosh_low", "riser", "impact", "swell", "shimmer"}
+    kept, last = [], -9
+    for e in sorted(json.load(open(events_path)), key=lambda e: e["t"]):
+        if e["n"] in BIG: kept.append(e); continue
+        if e["t"] - last >= 0.18: kept.append(e); last = e["t"]
+    print(f"{len(kept)} sound effects kept of {len(json.load(open(events_path)))}")
+    for e in kept:
         name = e["n"]
         if name not in cache: cache[name] = load_wav(os.path.join(HERE, "sfx", name + ".wav"))
         x = cache[name] * e.get("g", 1)
@@ -79,7 +87,7 @@ def main():
     with wave.open(out, "wb") as w:
         w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR)
         w.writeframes((np.clip(mix, -1, 1).T * 32767).astype("<i2").tobytes())
-    print(f"Mixed {len(json.load(open(events_path)))} sound effects{' under the voice' if voice else ''} into {out}")
+    print(f"Mixed {len(kept)} sound effects{' under the voice' if voice else ''} into {out}")
 
 
 if __name__ == "__main__":
