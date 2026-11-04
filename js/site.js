@@ -423,16 +423,16 @@
     el.outerHTML = `
       <a class="skip" href="#main">Skip to content</a>
       <header class="topbar">
-        <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="logo-l" src="assets/logo.svg" alt="Drafty Labs" width="113" height="28"><img class="logo-d" src="assets/logo-dark.svg" alt="Drafty Labs" width="113" height="28"></a>
+        <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="logo-l" src="assets/logo.svg?v=dl2" alt="Drafty Labs" width="113" height="28"><img class="logo-d" src="assets/logo-dark.svg?v=dl2" alt="Drafty Labs" width="113" height="28"></a>
         <button class="icon-btn" type="button" aria-label="Search" data-open-search>${icon("search")}</button>
         <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="side">${icon("menu")}</button>
       </header>
       <aside class="side" id="side" aria-label="Main">
         <div class="side-top">
           <a class="logo" href="index.html" aria-label="Drafty Labs home">
-            <img class="logo-full logo-l" src="assets/logo.svg" alt="Drafty Labs" width="113" height="28">
-            <img class="logo-full logo-d" src="assets/logo-dark.svg" alt="Drafty Labs" width="113" height="28">
-            <span class="logo-mark" aria-hidden="true"><img class="logo-l" src="assets/logo-mark.svg" alt="" width="28" height="28"><img class="logo-d" src="assets/logo-mark-dark.svg" alt="" width="28" height="28"></span>
+            <img class="logo-full logo-l" src="assets/logo.svg?v=dl2" alt="Drafty Labs" width="113" height="28">
+            <img class="logo-full logo-d" src="assets/logo-dark.svg?v=dl2" alt="Drafty Labs" width="113" height="28">
+            <span class="logo-mark" aria-hidden="true"><img class="logo-l" src="assets/logo-mark.svg?v=dl2" alt="" width="28" height="28"><img class="logo-d" src="assets/logo-mark-dark.svg?v=dl2" alt="" width="28" height="28"></span>
           </a>
           <button class="side-fold" type="button" aria-label="Collapse menu" data-side-fold>${sideIcon("fold")}</button>
         </div>
@@ -457,7 +457,7 @@
         <div class="wrap">
           <div class="fgrid">
             <div class="f-brand">
-              <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="f-logo-w" src="assets/logo-dark.svg" alt="Drafty Labs" width="129" height="32"><img class="f-logo-k" src="assets/logo.svg" alt="Drafty Labs" width="129" height="32"></a>
+              <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="f-logo-w" src="assets/logo-dark.svg?v=dl2" alt="Drafty Labs" width="129" height="32"><img class="f-logo-k" src="assets/logo.svg?v=dl2" alt="Drafty Labs" width="129" height="32"></a>
               <p>${esc(s.tagline)}</p>
             </div>
             <nav class="f-links" aria-label="Files">
@@ -827,11 +827,11 @@
     // an afterglow. Drawn on a canvas; still and lit when motion is reduced.
     const dots = $("[data-dots]");
     if (dots) {
-      const MARK = [  // assets/logo-mark.svg, viewBox 174 174 652 652; the last petal is the blue one
-        "M490.41,179.21h0c-171.87,0-311.2,139.33-311.2,311.2h0q311.2,0,311.2-311.2Z",
-        "M490.41,820.79h0c-171.87,0-311.2-139.33-311.2-311.2h0q311.2,0,311.2,311.2Z",
-        "M509.59,820.79h0c171.87,0,311.2-139.33,311.2-311.2h0q-311.2,0-311.2,311.2Z",
-        "M509.59,179.21h0c171.87,0,311.2,139.33,311.2,311.2h0q-311.2,0-311.2-311.2Z"
+      const MARK = [  // assets/brand/drafty-labs-mark.svg, mapped into viewBox 174 174 652 652; the last petal is the blue one
+        "M490.42,179.21h0c-171.87,0,-311.21,139.33,-311.21,311.21h0q311.21,0,311.21,-311.21Z",
+        "M490.42,820.79h0c-171.87,0,-311.21,-139.33,-311.21,-311.21h0q311.21,0,311.21,311.21Z",
+        "M509.58,820.79h0c171.87,0,311.21,-139.33,311.21,-311.21h0q-311.21,0,-311.21,311.21Z",
+        "M509.58,179.21h0c171.87,0,311.21,139.33,311.21,311.21h0q-311.21,0,-311.21,-311.21Z"
       ];
       // tube colours: three ice-white petals and one electric blue
       const TUBE = [[196, 222, 255], [196, 222, 255], [196, 222, 255], [40, 132, 255]], HALO = [.07, .07, .07, .16];
