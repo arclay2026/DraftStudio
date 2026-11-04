@@ -1599,7 +1599,7 @@ html.qv-lock { overflow: hidden; }
 }
 :root[data-theme="dark"] .cvh-new { color: #ff8a2a; background: rgba(255, 138, 42, .12); box-shadow: inset 0 0 0 1px rgba(255, 138, 42, .5); }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .cvh-new { color: #ff8a2a; background: rgba(255, 138, 42, .12); box-shadow: inset 0 0 0 1px rgba(255, 138, 42, .5); } }
-.cvh h2 { margin: 14.5px 0 11px; }
+.cvh h2 { margin: 14.5px 0 11px; text-wrap: balance; }
 .cvh-copy > p { color: var(--mute); font-size: calc(clamp(13px, 1.1vw, 15px) * var(--ts)); max-width: 32em; }
 .cvh-feats { list-style: none; margin: 23.5px 0 27px; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px 16px; }
 .cvh-feats li { display: flex; align-items: center; gap: 9px; font-size: calc(13px * var(--ts)); }
@@ -1880,7 +1880,7 @@ html.qv-dragging #main, html.qv-dragging .footer, html.qv-dragging .qv-backdrop 
 
 
 /* =====================================================================
-   SIDE MENU — dashboard-style navigation; the page sits on a raised panel
+   SIDE MENU — dashboard-style navigation; the page sits beside it, split by a hairline
    ===================================================================== */
 :root { --side-w: 228px; --side-bg: #f5f5f5; --bar-h: 0px; }
 :root[data-rail] { --side-w: 60px; }
@@ -1892,6 +1892,10 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 }
 .shell > main { padding-top: var(--edge); }
 .shell > .footer { margin-bottom: 0; }
+/* Desktop: the page sits flush against the menu, split by a single hairline (no floating panel) */
+@media (min-width: 1024px) {
+  .shell { margin: 0; min-height: 100vh; border: 0; border-inline-start: 1px solid var(--border); border-radius: 0; box-shadow: none; }
+}
 
 .side {
   position: fixed; z-index: 60; top: 0; bottom: 0; inset-inline-start: 0; width: var(--side-w);
@@ -2398,7 +2402,7 @@ html.ch-lock, html.ch-lock body { overflow: hidden; }
    zoom, artboards and the pointer position, a minimap and a ⌘K palette.
    Dark charcoal by default; .is-light switches the interface to light.
    ===================================================================== */
-body[data-page="canvas"] .shell { height: calc(100vh - 16px); min-height: 0; overflow: hidden; }
+body[data-page="canvas"] .shell { height: 100vh; min-height: 0; overflow: hidden; }
 .shell > main.cv-main { height: 100%; padding: 0; }
 body[data-page="canvas"] .ch-fab, body[data-page="canvas"] .ch-panel { display: none; }
 .cx {
@@ -3324,3 +3328,31 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 @media (max-width: 1023px), (max-height: 760px) { .sp { display: none; } }
 @media (min-width: 1024px) and (max-height: 1080px) { .sp-card .tc-tile { height: 56px; margin-bottom: 5px; } .sp-card .tc-ic svg { width: 22px; height: 22px; } .sp-card span:not(.tc-tile):not(.tc-ic) { -webkit-line-clamp: 1; } .sp { margin: 6px 0 8px; } }
 @media (prefers-reduced-motion: reduce) { .tc-shapes rect { animation: none; } .tp, .sp, .sp-card, .tc-ic svg { transition: none; } }
+
+/* Home banner (site.js banner): a wide card of streaked light, a headline and two links; slides take turns */
+.pb-sec { padding-top: clamp(16px, 2vw, 28px); padding-bottom: 0; }
+.pb { position: relative; height: clamp(190px, 15.5vw, 250px); border-radius: clamp(18px, 1.8vw, 26px); overflow: hidden; isolation: isolate; background: #060403; }
+.pb-slide { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; visibility: hidden; transition: opacity .9s var(--ease), visibility 0s .9s; }
+.pb-slide.is-on { opacity: 1; visibility: visible; transition: opacity .9s var(--ease), visibility 0s; }
+.pb-art { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; transform: scale(1.06); transition: transform 7s linear; }
+.pb-slide.is-on .pb-art { transform: scale(1); }
+.pb-g1, .pb-g2, .pb-g3 { transform-box: view-box; animation: pb-drift 16s ease-in-out infinite alternate; }
+.pb-g2 { animation-duration: 19s; animation-direction: alternate-reverse; }
+.pb-g3 { animation-duration: 13s; }
+@keyframes pb-drift { from { translate: 0 0; } to { translate: -36px 8px; } }
+.pb-copy { position: relative; padding: 0 24px; text-align: center; color: #fff; }
+.pb-copy h2 { margin: 0; font-size: clamp(22px, 2.35vw, 36px); font-weight: 500; line-height: 1.2; letter-spacing: -.02em; text-wrap: balance; text-shadow: 0 2px 24px rgba(0, 0, 0, .35); }
+.pb-btns { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: clamp(16px, 1.7vw, 24px); }
+.pb-btns a { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 11px; font-size: calc(14.5px * var(--ts)); font-weight: 500; text-decoration: none; transition: background .2s, transform .25s var(--spring, var(--ease)); }
+.pb-try { background: #fff; color: #0b0b0c; }
+.pb-try:hover { transform: translateY(-1px); background: #f1f1f1; }
+.pb-more { color: #fff; }
+.pb-more:hover { background: rgba(255, 255, 255, .12); }
+.pb-btns a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.pb-dots { display: flex; justify-content: center; gap: 4px; margin-top: 12px; }
+.pb-dots button { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; }
+.pb-dots button::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: color-mix(in srgb, var(--fg) 22%, transparent); transition: background .3s, transform .3s; }
+.pb-dots button[aria-selected="true"]::before { background: var(--fg); transform: scale(1.1); }
+.pb-dots button:hover::before { background: color-mix(in srgb, var(--fg) 50%, transparent); }
+@media (max-width: 640px) { .pb { height: 220px; } .pb-copy h2 br { display: none; } .pb-copy h2 { font-size: 23px; max-width: 15em; } }
+@media (prefers-reduced-motion: reduce) { .pb-g1, .pb-g2, .pb-g3 { animation: none; } .pb-art, .pb-slide, .pb-slide.is-on { transition: none; } }

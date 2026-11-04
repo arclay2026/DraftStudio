@@ -1697,6 +1697,115 @@
     sideCard();
   }
 
+  /* ---------- Home banner: news about a tool, a few slides that take turns ----------
+     Each slide is a wide rounded card with soft streaks of light (drawn as an SVG, so it stays sharp),
+     a two-line headline, "Try it" and "Learn more" (which scrolls to that tool's section below). */
+  let bannerN = 0;
+  // Three compositions, so no two slides share the same shape:
+  // 0 light folds in from the left, streaks fly off to the right; 1 the same idea mirrored;
+  // 2 a glow rising from below, a lit corner top right and a dark band on the left.
+  const bannerArt = (c, look = 0) => {
+    const n = ++bannerN;
+    const sweep = `
+      <g class="pb-g1" filter="url(#pb-b${n})">
+        <path d="M-120 -60H540L380 360H-120Z" fill="url(#pb-l${n})"/>
+        <ellipse cx="170" cy="70" rx="200" ry="90" fill="${c[0]}" opacity=".7"/>
+        <path d="M430 -60H600L500 360H330Z" fill="${c[3]}"/>
+      </g>
+      <g class="pb-g1" filter="url(#pb-m${n})">
+        <path d="M120 -60H230L40 360H-70Z" fill="#fff" opacity=".13"/>
+        <path d="M270 -60H330L170 360H95Z" fill="${c[2]}" opacity=".45"/>
+        <path d="M350 -60H395L250 360H200Z" fill="${c[0]}" opacity=".3"/>
+      </g>
+      <g class="pb-g2" filter="url(#pb-b${n})">
+        <ellipse cx="930" cy="70" rx="430" ry="42" transform="rotate(-13 930 70)" fill="${c[1]}" opacity=".85"/>
+        <ellipse cx="1040" cy="190" rx="380" ry="62" transform="rotate(-17 1040 190)" fill="${c[2]}" opacity=".9"/>
+        <ellipse cx="760" cy="265" rx="320" ry="34" transform="rotate(-9 760 265)" fill="${c[1]}" opacity=".55"/>
+      </g>
+      <g class="pb-g3" filter="url(#pb-s${n})">
+        <ellipse cx="960" cy="120" rx="330" ry="5" transform="rotate(-15 960 120)" fill="${c[0]}" opacity=".75"/>
+        <ellipse cx="880" cy="215" rx="260" ry="4" transform="rotate(-12 880 215)" fill="${c[0]}" opacity=".5"/>
+      </g>`;
+    const rise = `
+      <g class="pb-g1" filter="url(#pb-b${n})">
+        <ellipse cx="660" cy="330" rx="660" ry="125" fill="${c[1]}"/>
+        <ellipse cx="600" cy="305" rx="360" ry="62" fill="${c[0]}" opacity=".85"/>
+        <ellipse cx="1110" cy="30" rx="400" ry="175" fill="url(#pb-l${n})"/>
+        <ellipse cx="-30" cy="90" rx="270" ry="170" fill="${c[2]}" opacity=".95"/>
+        <path d="M170 -60H330L210 360H50Z" fill="${c[3]}"/>
+      </g>
+      <g class="pb-g2" filter="url(#pb-m${n})">
+        <path d="M-60 -60H120L-10 360H-150Z" fill="${c[2]}" opacity=".75"/>
+        <path d="M960 -60H1010L1110 360H1060Z" fill="#fff" opacity=".12"/>
+        <path d="M1040 -60H1070L1180 360H1150Z" fill="${c[2]}" opacity=".5"/>
+      </g>
+      <g class="pb-g3" filter="url(#pb-s${n})">
+        <ellipse cx="520" cy="285" rx="430" ry="5" transform="rotate(5 520 285)" fill="${c[0]}" opacity=".7"/>
+        <ellipse cx="900" cy="240" rx="280" ry="4" transform="rotate(9 900 240)" fill="${c[0]}" opacity=".45"/>
+      </g>`;
+    const body = look === 2 ? rise : look === 1 ? `<g transform="translate(1200 0) scale(-1 1)">${sweep}</g>` : sweep;
+    return `<svg class="pb-art" viewBox="0 0 1200 300" preserveAspectRatio="none" aria-hidden="true"><defs>
+        <linearGradient id="pb-l${n}" x1="0" y1="0" x2="1" y2=".7"><stop offset="0" stop-color="${c[0]}"/><stop offset=".55" stop-color="${c[1]}"/><stop offset="1" stop-color="${c[2]}"/></linearGradient>
+        <radialGradient id="pb-v${n}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+        <filter id="pb-b${n}" x="-30%" y="-80%" width="160%" height="260%"><feGaussianBlur stdDeviation="26"/></filter>
+        <filter id="pb-s${n}" x="-30%" y="-300%" width="160%" height="700%"><feGaussianBlur stdDeviation="7"/></filter>
+        <filter id="pb-m${n}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="11"/></filter>
+        <filter id="pb-n${n}"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 .09 0"/></filter></defs>
+      <rect width="1200" height="300" fill="${c[3]}"/>${body}
+      <rect x="250" y="-40" width="700" height="380" fill="url(#pb-v${n})"/>
+      <rect width="1200" height="300" filter="url(#pb-n${n})"/></svg>`;
+  };
+
+  function banner() {
+    const hero = $("section.hero");
+    if (!hero) return;
+    // the home sections each slide's "Learn more" scrolls to
+    const tag = (el, id) => { if (el && !el.id) el.id = id; };
+    const secOf = sel => { const el = $(sel); return el && el.closest("section"); };
+    tag($(".cvh-sec"), "home-canvas");
+    tag(secOf("[data-qt]"), "home-qr");
+    tag(secOf("[data-pt]"), "home-palettes");
+    const SLIDES = [
+      { t: "Drafty Canvas is now live, <br>free in your browser", go: "canvas.html", more: "#home-canvas", c: ["#ffb347", "#ff6a00", "#b33a00", "#080402"] },
+      { t: "QR Code Studio is here: <br>codes that look designed", go: "qr.html", more: "#home-qr", c: ["#ff8ad8", "#d42ac0", "#5b1fd1", "#07030a"] },
+      { t: "36 colour palettes, ready <br>to copy in one click", go: "palettes.html", more: "#home-palettes", c: ["#8fd3ff", "#2f7bff", "#3b2fd0", "#02040a"] }].filter(s => $(s.more));
+    if (!SLIDES.length) return;
+    const sec = document.createElement("section");
+    sec.className = "section pb-sec";
+    sec.innerHTML = `<div class="wrap"><div class="pb" role="region" aria-roledescription="carousel" aria-label="What's new">
+        ${SLIDES.map((s, i) => `<div class="pb-slide${i ? "" : " is-on"}" role="group" aria-roledescription="slide" aria-label="${i + 1} of ${SLIDES.length}"${i ? ' aria-hidden="true"' : ""}>
+          ${bannerArt(s.c, i)}
+          <div class="pb-copy"><h2>${s.t}</h2>
+            <div class="pb-btns"><a class="pb-try" href="${s.go}"${i ? ' tabindex="-1"' : ""}>Try it</a><a class="pb-more" href="${s.more}"${i ? ' tabindex="-1"' : ""}>Learn more</a></div></div>
+        </div>`).join("")}
+      </div>
+      ${SLIDES.length > 1 ? `<div class="pb-dots" role="tablist" aria-label="Choose a slide">${SLIDES.map((_, i) => `<button type="button" role="tab" aria-label="Slide ${i + 1}" aria-selected="${!i}"></button>`).join("")}</div>` : ""}</div>`;
+    hero.after(sec);
+    const slides = $$(".pb-slide", sec), dots = $$(".pb-dots button", sec), box = $(".pb", sec);
+    let at = 0, timer = 0;
+    const show = i => {
+      at = (i + slides.length) % slides.length;
+      slides.forEach((el, k) => {
+        el.classList.toggle("is-on", k === at);
+        el.setAttribute("aria-hidden", k !== at);
+        $$("a", el).forEach(a => a.tabIndex = k === at ? 0 : -1);
+      });
+      dots.forEach((d, k) => d.setAttribute("aria-selected", k === at));
+    };
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const play = () => { clearInterval(timer); if (!still && slides.length > 1) timer = setInterval(() => !document.hidden && show(at + 1), 6500); };
+    dots.forEach((d, k) => d.addEventListener("click", () => { show(k); play(); }));
+    box.addEventListener("pointerenter", () => clearInterval(timer));
+    box.addEventListener("pointerleave", play);
+    sec.addEventListener("focusin", () => clearInterval(timer));
+    // swipe on touch screens
+    let x0 = null;
+    box.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; clearInterval(timer); }, { passive: true });
+    box.addEventListener("touchend", e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) show(at + (dx < 0 ? 1 : -1)); x0 = null; play(); });
+    $$(".pb-more", sec).forEach(a => a.addEventListener("click", e => { const t = $(a.getAttribute("href")); if (t) { e.preventDefault(); t.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" }); } }));
+    play();
+  }
+
   /* ---------- Quick view ---------- */
   // Clicking any file card opens the file in a large pop-up instead of a new page.
   // The address bar still changes to the file's own link, so sharing, refreshing and Back all work.
@@ -2578,6 +2687,7 @@
   colorPicker();
   quickView();
   toolSpots();
+  if (page === "home") banner();
   pressFX();
   reveal();
   if (window.DSChat) window.DSChat({ $, $$, esc, icon, libIcon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG });
