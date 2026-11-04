@@ -14,12 +14,14 @@ const opt = k => { const i = args.indexOf(k); return i < 0 ? null : args.splice(
 // sound effects are off unless asked for with --sfx (the lessons are voice only)
 const withSfx = args.includes("--sfx"); if (withSfx) args.splice(args.indexOf("--sfx"), 1);
 const audio = opt("--audio"), part = opt("--frames"), workers = +(opt("--workers") || 3);
-const from = +(opt("--from") || 0), to = opt("--to");
+let from = +(opt("--from") || 0), to = opt("--to");
+// --query part=2 passes options to the page (the Colour Shorts pick their part this way)
+const query = opt("--query");
 const lesson = args[0];
 if (!lesson) { console.error("Usage: node render.js <lesson> [out.mp4] [--audio file] [--workers n]"); process.exit(1); }
 const dir = path.join(__dirname, "..", lesson);
 const out = path.resolve(args[1] || path.join(dir, `${lesson}-lesson.mp4`));
-const page0 = "file://" + path.join(dir, "index.html") + "?render";
+const page0 = "file://" + path.join(dir, "index.html") + "?render" + (query ? "&" + query : "");
 
 async function open() {
   const browser = await chromium.launch();
@@ -53,7 +55,10 @@ async function renderPart(a, b, file) {
 (async () => {
   if (part) { const [a, b] = part.split(":").map(Number); return renderPart(a, b, out); }
   const { browser, page } = await open();
-  const { DURATION, FPS, INTRO, SFX } = await page.evaluate(() => ({ DURATION: window.DURATION, FPS: window.FPS, INTRO: window.INTRO, SFX: window.SFX || [] }));
+  const { DURATION, FPS, INTRO, SFX, CLIP } = await page.evaluate(() => ({ DURATION: window.DURATION, FPS: window.FPS, INTRO: window.INTRO, SFX: window.SFX || [], CLIP: window.CLIP }));
+  // a page that cuts a clip out of a longer recording (window.CLIP) sets the window, and where the voice fades
+  let fadeAt = null;
+  if (CLIP && !from && !to) { from = CLIP.from; to = String(CLIP.to); fadeAt = CLIP.voiceEnd - CLIP.from; }
   await browser.close();
   const f0 = Math.round(from * FPS), f1 = Math.round((to ? Math.min(+to, DURATION) : DURATION) * FPS);
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "render-"));
@@ -63,7 +68,7 @@ async function renderPart(a, b, file) {
     const a = f0 + k * step, b = Math.min(f1, a + step), file = path.join(tmp, `part${k}.mp4`);
     if (a >= b) return null;
     parts.push(file);
-    return new Promise((res, rej) => spawn(process.execPath, [__filename, lesson, file, "--frames", `${a}:${b}`], { stdio: "inherit" })
+    return new Promise((res, rej) => spawn(process.execPath, [__filename, lesson, file, "--frames", `${a}:${b}`, ...(query ? ["--query", query] : [])], { stdio: "inherit" })
       .on("close", c => (c ? rej(new Error("worker failed")) : res())));
   }));
   fs.writeFileSync(path.join(tmp, "list.txt"), parts.sort().map(p => `file '${p}'`).join("\n"));
@@ -79,7 +84,7 @@ async function renderPart(a, b, file) {
     const m = spawnSync("python3", mx, { stdio: "inherit" });
     if (m.status) process.exit(m.status);
     // with a voice the whole mix is levelled to -14 LUFS; effects alone sit about where they will under a voice
-    ff.push("-i", wav, "-map", "0:v", "-map", "1:a", "-c:a", "aac", "-b:a", "256k", "-af", audio ? "loudnorm=I=-14:TP=-1.5:LRA=11" : "loudnorm=I=-24:TP=-3", "-shortest");
+    ff.push("-i", wav, "-map", "0:v", "-map", "1:a", "-c:a", "aac", "-b:a", "256k", "-af", (fadeAt != null ? `afade=t=out:st=${fadeAt.toFixed(2)}:d=0.3,` : "") + (audio ? "loudnorm=I=-14:TP=-1.5:LRA=11" : "loudnorm=I=-24:TP=-3"), "-shortest");
   }
   ff.push("-c:v", "copy", "-movflags", "+faststart", out);
   const r = spawnSync("ffmpeg", ff, { stdio: "inherit" });
