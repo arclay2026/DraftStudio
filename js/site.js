@@ -498,7 +498,15 @@
     const hit = x => x.toLowerCase().includes(q);
     const its = items.filter(it => !q || hit([it.title, it.category, (it.tags || []).join(" "), formatsOf(it).join(" ")].join(" "))).slice(0, 6);
     const cats = CATS.filter(c => !q || hit(c.name + " " + c.formats.join(" ")));
+    // the site's pages and tools too, so a search finds "QR", "canvas", "pricing"…
+    const PAGES = [["qr.html", "QR Code Studio", "qr", "Designed QR codes · qr code wifi whatsapp link"], ["barcode.html", "Barcode Studio", "barcode", "Barcodes · ean upc code 128 barcode"],
+      ["canvas.html", "Canvas", "canvas", "Design editor · design editor draw fonts"], ["palettes.html", "Palettes", "palettes", "Colour palettes · colour color palette generator"],
+      ["learn.html", "Learn", "learn", "Design Basics course · lessons course tutorial learn"], ["websites.html", "Websites", "websites", "Websites built for business · website web design"],
+      ["pricing.html", "Pricing", "pricing", "Website packages · price pricing packages store"], ["license.html", "License", "license", "Free means free · license licence commercial"]];
+    const pages = q ? PAGES.filter(([, n, , k]) => hit(n + " " + k)).slice(0, 4) : [];
     let html = "";
+    if (pages.length) html += `<div class="group">Pages &amp; tools</div>` + pages.map(([h, n, ic, k]) => `
+      <a href="${h}"><span class="thumb">${sideIcon(ic)}</span><span><span class="t">${n}</span><br><span class="s">${k.split(" · ")[0]}</span></span></a>`).join("");
     if (its.length) html += `<div class="group">Files</div>` + its.map(it => `
       <a href="${itemUrl(it)}"><span class="thumb"><img ${imgSrc(it.preview, "sm")} alt="" loading="lazy"></span>
         <span><span class="t">${esc(it.title)}</span><br><span class="s">${esc(it.category)} · ${formatsOf(it).join(", ")}</span></span></a>`).join("");
@@ -506,7 +514,7 @@
       <a href="browse.html?cat=${c.slug}"><span class="thumb">${icon("folder")}</span>
         <span><span class="t">${c.name}</span><br><span class="s">${c.formats.join(" · ")}</span></span></a>`).join("");
     if (q) html += `<a href="browse.html?q=${encodeURIComponent(input.value.trim())}"><span class="thumb">${icon("arrow-right")}</span><span><span class="t">See all results for “${esc(input.value.trim())}”</span></span></a>`;
-    if (!its.length && !cats.length) html = `<div class="none">Nothing matches “${esc(input.value)}” yet.<br>Press Enter to search all files.</div>`;
+    if (!its.length && !cats.length && !pages.length) html = `<div class="none">Nothing matches “${esc(input.value)}” yet.<br>Press Enter to search all files.</div>`;
     return html;
   }
 
@@ -581,6 +589,12 @@
     wrap.addEventListener("click", e => { if (e.target === wrap) close(); });
     document.addEventListener("keydown", e => {
       if (e.key === "Escape" && wrap.classList.contains("is-open")) close();
+      // Ctrl+K / Cmd+K: search the whole site from any page (Canvas keeps its own command palette)
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k" && !/canvas\.html/.test(location.pathname)) {
+        e.preventDefault();
+        if (wrap.classList.contains("is-open")) close(); else open();
+        return;
+      }
       if (e.key === "/" && !/input|textarea|select/i.test(document.activeElement.tagName)) {
         e.preventDefault();
         const hs = $("[data-hsearch] input");
