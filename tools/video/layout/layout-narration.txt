@@ -24,4 +24,4 @@ When every space is filled, everything shouts, and nobody listens. White space i
 
 Let's recap. Place content on a grid, and respect the margins and gutters. Choose gaps from a spacing scale. Line things up along one shared edge. Small gaps inside groups, big gaps between them. And let white space do its work.
 
-That's layout. Now try it yourself in Draft Studio's Canvas, and I'll see you in the next lesson.
+That's layout. Now try it yourself in Drafty Labs' Canvas, and I'll see you in the next lesson.

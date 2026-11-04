@@ -22,7 +22,7 @@ const SHAPES = {
   plate: crect(820, 420, 40),
   button: crect(560, 170, 78)
 };
-// the Draft Studio mark (the four petals of the logo), scaled into the box
+// the Drafty Labs mark (the four petals of the logo), scaled into the box
 SHAPES.logo = (() => {
   const s = 560 / 144, ox = 232.09, oy = 500;
   const petals = [...LOGO.matchAll(/<path fill="[^"]+" d="([^"]+)"/g)].slice(0, 4).map(m => m[1]);
