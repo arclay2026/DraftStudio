@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><!-- Drafty, the Drafty Labs assistant: a glossy ball looking up to the top left. It blinks. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><!-- Drafty, the Drafty Labs assistant: a glossy ball, looking up to the top left. It blinks. -->
   <defs>
     <radialGradient id="dr-ball" cx=".32" cy=".26" r=".8"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#eceef2"/><stop offset=".85" stop-color="#bcc1ca"/><stop offset="1" stop-color="#8f95a0"/></radialGradient>
     <style>.dr-eye{transform-box:fill-box;transform-origin:50% 50%;animation:dr-blink 5s infinite}@keyframes dr-blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.12)}}</style>
   </defs>
   <circle cx="50" cy="50" r="49" fill="url(#dr-ball)"/>
   <ellipse cx="30" cy="22" rx="14" ry="6.5" fill="#fff" opacity=".7" transform="rotate(-36 30 22)"/>
-  <g transform="translate(-6 -7) rotate(-18 50 50)">
+  <g transform="translate(-6 -7)">
     <rect class="dr-eye" x="35" y="33" width="10" height="24" rx="5" fill="#111114"/>
     <rect class="dr-eye" x="55" y="33" width="10" height="24" rx="5" fill="#111114"/>
     <circle cx="38.2" cy="37.4" r="1.7" fill="#fff" opacity=".9"/><circle cx="58.2" cy="37.4" r="1.7" fill="#fff" opacity=".9"/>

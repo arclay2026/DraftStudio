@@ -2120,7 +2120,7 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
 .ch:not(.is-open) .ch-fab { background: none; box-shadow: none; }
 .ch-fab .dr-ball { width: 58px; height: 58px; overflow: visible; filter: drop-shadow(0 10px 12px rgba(0, 0, 0, .28)); animation: dr-float 3.6s ease-in-out infinite; transition: transform .45s var(--spring, var(--ease)); }
 .ch-fab:hover { transform: none; }
-.ch-fab:hover .dr-ball { animation-play-state: paused; transform: scale(1.1, .94) rotate(-8deg); }
+.ch-fab:hover .dr-ball { animation-play-state: paused; transform: scale(1.1, .94); }
 .ch-fab:active .dr-ball { transform: scale(.9, 1.06); }
 .ch-fab .dr-eye { transform-box: fill-box; transform-origin: 50% 50%; animation: dr-blink 5s infinite; }
 .ch-fab::after { content: ""; position: absolute; left: 50%; bottom: -8px; width: 34px; height: 6px; margin-left: -17px; border-radius: 50%; background: rgba(0, 0, 0, .22); filter: blur(3px); animation: dr-shadow 3.6s ease-in-out infinite; pointer-events: none; }
