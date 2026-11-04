@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Layout · thumbnail</title>
+<!-- The YouTube thumbnail for the Layout lesson (1280×720):
+     node ../shared/render-thumbnail.js layout screenshots it to layout-thumbnail.png -->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #0b0b0d; }
+  #t { position: relative; width: 1280px; height: 720px; overflow: hidden; background: #0b0b0d; color: #f4f3ef;
+    font-family: "Inter Display", "Inter", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .glow { position: absolute; border-radius: 50%; }
+  .k { position: absolute; left: 80px; top: 96px; font: 600 22px/1 "DejaVu Sans Mono", monospace; letter-spacing: .3em; text-transform: uppercase; color: #1f7aff; }
+  .big { position: absolute; left: 70px; top: 140px; font-weight: 700; font-size: 200px; line-height: 1; letter-spacing: -.06em; }
+  .sub { position: absolute; left: 82px; top: 400px; font-size: 54px; font-weight: 600; letter-spacing: -.035em; line-height: 1.08; }
+  .sub span { color: #1f7aff; }
+  .page { position: absolute; left: 690px; top: 130px; width: 640px; height: 470px; border-radius: 30px; background: #16171b; border: 2px solid rgba(244, 243, 239, .14);
+    transform: rotate(-5deg); overflow: hidden; box-shadow: 0 40px 80px rgba(0, 0, 0, .6); }
+  .page i { position: absolute; }
+  .c { top: 0; bottom: 0; width: 36px; background: rgba(31, 122, 255, .2); border-left: 1.5px solid rgba(31, 122, 255, .5); border-right: 1.5px solid rgba(31, 122, 255, .5); }
+  .b { border-radius: 10px; background: rgba(244, 243, 239, .85); }
+  .brand { position: absolute; left: 82px; bottom: 70px; }
+  .vig { position: absolute; inset: 0; background: radial-gradient(120% 100% at 30% 50%, transparent 50%, rgba(0, 0, 0, .5)); }
+</style>
+</head>
+<body>
+<div id="t">
+  <i class="glow" style="left:-220px;top:-280px;width:900px;height:900px;background:radial-gradient(circle, rgba(34,193,238,.18), transparent 60%)"></i>
+  <i class="glow" style="left:620px;top:80px;width:900px;height:900px;background:radial-gradient(circle, rgba(31,122,255,.34), transparent 60%)"></i>
+  <div class="page" id="page"></div>
+  <div class="vig"></div>
+  <div class="k">Design Basics · Lesson 03</div>
+  <div class="big">Layout</div>
+  <div class="sub">5 rules for designs<br>that feel <span>calm.</span></div>
+  <div class="brand" id="brand"></div>
+</div>
+<script src="../shared/logo.js"></script>
+<script>
+  document.getElementById("brand").innerHTML = LOGO.replace("<svg ", '<svg height="40" ');
+  // a page on a 12-column grid: margins 40, columns 36, gutters 12
+  const col = k => 40 + k * 48, span = n => n * 36 + (n - 1) * 12;
+  const el = (cls, k, n, y, h, bg) => `<i class="${cls}" style="left:${col(k)}px;width:${span(n)}px;top:${y}px;height:${h}px;${bg ? "background:" + bg : ""}"></i>`;
+  document.getElementById("page").innerHTML =
+    Array.from({ length: 12 }, (_, k) => `<i class="c" style="left:${col(k)}px"></i>`).join("") +
+    el("b", 0, 3, 34, 20) + el("b", 9, 3, 38, 12, "rgba(244,243,239,.4)") +
+    el("b", 0, 7, 86, 200, "linear-gradient(135deg,#1f7aff,#8c5cff 70%,#ff4fa3)") +
+    el("b", 7, 5, 96, 26) + el("b", 7, 4, 136, 26) + el("b", 7, 5, 186, 10, "rgba(244,243,239,.4)") + el("b", 7, 4, 206, 10, "rgba(244,243,239,.4)") + el("b", 7, 2, 240, 36, "#1f7aff") +
+    el("b", 0, 4, 316, 110, "linear-gradient(135deg,#22c1ee,#1f7aff)") + el("b", 4, 4, 316, 110, "linear-gradient(135deg,#ffd53d,#ff6b6b)") + el("b", 8, 4, 316, 110, "rgba(244,243,239,.25)");
+</script>
+</body>
+</html>
