@@ -11,7 +11,8 @@
    ===================================================================== */
 window.DSChat = function (kit) {
   // Drafty's avatar: the official mark, white on the dark tile (black in dark mode, where the tile is light)
-  const AV_MARK = '<img class="ch-av-w" src="assets/logo-mark-dark.svg?v=dl3" alt=""><img class="ch-av-k" src="assets/logo-mark.svg?v=dl3" alt="">';
+  // Drafty's face (assets/drafty.svg): the chat button and every message from Drafty
+  const AV_MARK = '<img class="ch-drafty" src="assets/drafty.svg?v=d1" alt="">';
   const { $, $$, esc, icon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG } = kit;
   const KEY = "ds-chat";
   const NAME = "Drafty";
@@ -204,7 +205,7 @@ window.DSChat = function (kit) {
   el.className = "ch";
   el.innerHTML = `
     <button class="ch-fab" type="button" aria-label="Ask ${NAME}" aria-expanded="false" aria-controls="ch-panel">
-      <span class="ch-fab-i ch-fab-chat">${icon("chat")}</span><span class="ch-fab-i ch-fab-x">${icon("close")}</span><i class="ch-dot"></i>
+      <span class="ch-fab-i ch-fab-chat"><img class="ch-drafty" src="assets/drafty.svg?v=d1" alt=""></span><span class="ch-fab-i ch-fab-x">${icon("close")}</span><i class="ch-dot"></i>
     </button>
     <span class="ch-hello" aria-hidden="true">Ask ${NAME}</span>
     <section class="ch-panel" id="ch-panel" role="dialog" aria-label="${NAME}, Drafty Labs assistant" hidden>
