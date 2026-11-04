@@ -1688,7 +1688,12 @@
         <button class="sp-x" type="button" aria-label="Hide this">${icon("close")}</button>`;
       $(".sp-x", el).addEventListener("click", () => { set("ds-promo-" + p.id); out(el); setTimeout(sideCard, 270); });
       foot.before(el);
+      fit();
     };
+    // only when it fits: the menu links never get pushed into a scroll for it
+    const nav = $(".side-nav");
+    const fit = () => { const el = $(".sp"); if (!el || !nav) return; el.hidden = false; el.hidden = nav.scrollHeight > nav.clientHeight + 1; };
+    addEventListener("resize", fit, { passive: true });
     sideCard();
   }
 
