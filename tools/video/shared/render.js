@@ -77,7 +77,8 @@ async function renderPart(a, b, file) {
     if (audio) mx.push("--voice", path.resolve(audio), "--offset", String(INTRO - from));
     const m = spawnSync("python3", mx, { stdio: "inherit" });
     if (m.status) process.exit(m.status);
-    ff.push("-i", wav, "-map", "0:v", "-map", "1:a", "-c:a", "aac", "-b:a", "256k", "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-shortest");
+    // with a voice the whole mix is levelled to -14 LUFS; effects alone sit about where they will under a voice
+    ff.push("-i", wav, "-map", "0:v", "-map", "1:a", "-c:a", "aac", "-b:a", "256k", "-af", audio ? "loudnorm=I=-14:TP=-1.5:LRA=11" : "loudnorm=I=-24:TP=-3", "-shortest");
   }
   ff.push("-c:v", "copy", "-movflags", "+faststart", out);
   const r = spawnSync("ffmpeg", ff, { stdio: "inherit" });
