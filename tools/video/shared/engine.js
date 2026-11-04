@@ -127,7 +127,7 @@ function assemble(L, at, quick) {
 function intro(les) {
   const s = scene("intro", 0, INTRO + .15, `<i class="abs" id="flash" style="left:610px;top:166px;width:700px;height:700px;border-radius:50%;
       background:radial-gradient(circle, rgba(31,122,255,.85), rgba(31,122,255,.25) 35%, transparent 68%)"></i>
-    <div class="abs kicker" id="i-tag" style="left:0;right:0;top:720px;text-align:center;letter-spacing:.5em">Design Basics · Lesson ${les.num}</div>`);
+    <div class="abs kicker" id="i-tag" style="left:0;right:0;top:720px;text-align:center;letter-spacing:.5em">${les.tag || `Design Basics · Lesson ${les.num}`}</div>`);
   const L = logoLockup("i-logo", 436);
   s.prepend(L.box);
   const landed = assemble(L, .35);
@@ -243,10 +243,12 @@ async function build(les) {
   // a bare video (the social ones) draws everything itself: no logo intro, recap, outro or chrome
   if (les.bare) les.scenes();
   else { intro(les); les.scenes(); recap(les); outro(les); chrome(les); if (les.after) les.after(); }
-  // photos must be decoded before the first frame is drawn
+  // photos must be decoded, and videos loaded, before the first frame is drawn
   await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
+  await Promise.all([...document.querySelectorAll("video")].map(v => v.readyState >= 2 ? 0 : new Promise(r => { v.addEventListener("loadeddata", r, { once: true }); v.addEventListener("error", r, { once: true }); })));
   tl.set({}, {}, DURATION);
-  window.seek = t => { tl.seek(t, true); hooks.forEach(h => h(t)); };
+  // a hook may return a promise (a video seeking to its frame); seek then resolves when every frame is ready
+  window.seek = t => { tl.seek(t, true); const w = hooks.map(h => h(t)).filter(r => r && r.then); return w.length ? Promise.all(w) : undefined; };
   window.SFX = SFX; window.DURATION = DURATION; window.FPS = FPS; window.CUES = CUE; window.INTRO = INTRO; window.SIZE = [V.w, V.h];
   window.seek(0);
   window.ready = true;

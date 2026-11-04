@@ -64,7 +64,8 @@ def main():
     print(f"{len(kept)} sound effects kept of {len(json.load(open(events_path)))}")
     for e in kept:
         name = e["n"]
-        if name not in cache: cache[name] = load_wav(os.path.join(HERE, "sfx", name + ".wav"))
+        if name not in cache:   # a library name, or a path to any audio file (a lesson's own click, say)
+            cache[name] = load_any(name) if os.sep in name else load_wav(os.path.join(HERE, "sfx", name + ".wav"))
         x = cache[name] * e.get("g", 1)
         p = e.get("p", 0)
         if p: x = x * np.array([[min(1, 1 - p)], [min(1, 1 + p)]])
