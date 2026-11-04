@@ -42,6 +42,10 @@ const T = n => { if (!(n in CUE)) throw new Error("no cue: " + n); return CUE[n]
 const DURATION = +(T("end") + END_HOLD).toFixed(2);
 
 const tl = gsap.timeline({ paused: true, defaults: { ease: "silk", duration: 1 } });
+// Sound effects: sfx(name, time, gain, pan) schedules one of shared/sfx/*.wav (made by sfx.py).
+// The time is when the sound should hit; render.js hands the list to mix.py, which lays it under the voice.
+const SFX = [];
+function sfx(n, t, g = 1, p = 0) { if (t >= 0) SFX.push({ n, t: +t.toFixed(3), g, p }); }
 const hooks = [];   // per-frame drawing for things a tween can't express (live colours, dots on a ring)
 
 // ---------- helpers ----------
@@ -108,10 +112,14 @@ function assemble(L, at, quick) {
     const from = blue ? { rotation: 220, scale: .08, opacity: 0, svgOrigin: "232.09 500" }
       : { x: DIR[k][0] * 170, y: DIR[k][1] * 170, rotation: DIR[k][0] * DIR[k][1] * -130, scale: .3, opacity: 0, svgOrigin: "232.09 500" };
     tl.from(p, { ...from, duration: blue ? 1.35 : 1.6 * k0, ease: blue ? "pop" : "silk" }, start);
+    if (blue) sfx("pop", start + .7, .8); else sfx("whoosh_soft", start + .5, .4, DIR[k][0] * .5);
     tl.fromTo(L.blurs[k], { attr: { stdDeviation: 16 } }, { attr: { stdDeviation: 0 }, duration: 1.2 * k0, ease: "power2.out" }, start);
   });
   tl.to(L.box, { x: 0, duration: 1.25, ease: "glide" }, at + 2.25 * k0);
   tl.fromTo(L.clip, { attr: { width: 0 } }, { attr: { width: 560 }, duration: 1.3, ease: "glide" }, at + 2.4 * k0);
+  sfx("whoosh_low", at + .5, .55);
+  sfx("impact", at + 1.45 * k0, .5); sfx("shimmer", at + 1.45 * k0, .55);
+  sfx("slide", at + 2.45 * k0, .45);
   return at + 1.45 * k0;   // when the blue petal lands
 }
 
@@ -128,6 +136,7 @@ function intro(les) {
   tl.to("#flash", { scale: 2, opacity: 0, duration: 1.5, ease: "power2.out" }, landed + .25);
   tl.fromTo("#i-tag", { autoAlpha: 0, y: 18, letterSpacing: ".9em" }, { autoAlpha: 1, y: 0, letterSpacing: ".5em", duration: 1.6, ease: "silk" }, 3.6);
   tl.to([L.box, "#i-tag"], { scale: .94, autoAlpha: 0, filter: "blur(14px)", duration: .9, ease: "power2.in" }, INTRO - 1);
+  sfx("tick", 3.65, .35); sfx("whoosh", INTRO - .45, .5);
   light(0, "#0d2a5c", "#0b1430", "#0b0b0d", .55);
 }
 
@@ -139,6 +148,7 @@ function chapterCard(n, word, title, a, b) {
   tl.from($(".ch-line", s), { scaleX: 0, duration: 1.3, ease: "glide" }, a);
   textIn($(".ch-k", s), a + .1);
   textIn($(".ch-t", s), a + .2, { st: .05 });
+  sfx("riser", a - .05, .4); sfx("impact", a - .05, .55); sfx("whoosh_soft", a + .3, .35);
 }
 
 function recap(les) {
@@ -153,9 +163,11 @@ function recap(les) {
         <span style="flex:none;width:64px;height:64px">${ICON[k]}</span>
         <span style="font:600 42px/1.15 var(--sans);letter-spacing:-.025em">${l}</span></div>`).join("")}`);
   textIn($("#q-k"), a); textIn($("#q-t"), a + .1, { chars: true, st: .05 });
+  sfx("whoosh", a, .45); sfx("thud", a + .25, .5);
   $$(".q-row", sc).forEach((r, k) => {
     gsap.set(r, { autoAlpha: 0 });
     tl.fromTo(r, { autoAlpha: 0, x: 80 }, { autoAlpha: 1, x: 0, duration: 1.1 }, T("rc" + (k + 1)) - .1);
+    sfx("slide", T("rc" + (k + 1)) + .05, .35); sfx("blip", T("rc" + (k + 1)) + .25, .35);
     if (k) tl.to($$(".q-row", sc)[k - 1], { opacity: .5, duration: .6 }, T("rc" + (k + 1)));
   });
   tl.to($$(".q-row", sc), { opacity: 1, duration: .8 }, T("rc5") + 2.4);
@@ -170,6 +182,7 @@ function outro(les) {
     <div class="abs h2" id="z-try" style="left:160px;top:620px;width:1600px">${les.outro.tryit}</div>
     <div class="abs sub" id="z-next" style="left:160px;top:740px">See you in the next lesson.</div>`);
   tl.from("#z-big", { yPercent: 100, duration: 1.5 }, a);
+  sfx("whoosh_low", a + .25, .5); sfx("swell", a + 1.2, .35);
   tl.fromTo("#z-big", { backgroundPosition: "0% 0" }, { backgroundPosition: "100% 0", duration: e - a + 1, ease: "none" }, a);
   textIn($("#z-try"), T("tryit")); textIn($("#z-next"), T("next"));
   // the end card: the logo comes together once more
@@ -229,12 +242,12 @@ async function build(les) {
   grain();
   // a bare video (the social ones) draws everything itself: no logo intro, recap, outro or chrome
   if (les.bare) les.scenes();
-  else { intro(les); les.scenes(); recap(les); outro(les); chrome(les); }
+  else { intro(les); les.scenes(); recap(les); outro(les); chrome(les); if (les.after) les.after(); }
   // photos must be decoded before the first frame is drawn
   await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
   tl.set({}, {}, DURATION);
   window.seek = t => { tl.seek(t, true); hooks.forEach(h => h(t)); };
-  window.DURATION = DURATION; window.FPS = FPS; window.CUES = CUE; window.INTRO = INTRO; window.SIZE = [V.w, V.h];
+  window.SFX = SFX; window.DURATION = DURATION; window.FPS = FPS; window.CUES = CUE; window.INTRO = INTRO; window.SIZE = [V.w, V.h];
   window.seek(0);
   window.ready = true;
   if (!/render/.test(location.search)) preview();

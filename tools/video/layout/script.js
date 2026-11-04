@@ -28,5 +28,7 @@ window.NARRATION = `
 
 {recap}Let's recap. {rc1}Place content on a grid, and respect the margins and gutters. {rc2}Choose gaps from a spacing scale. {rc3}Line things up along one shared edge. {rc4}Small gaps inside groups, big gaps between them. {rc5}And let white space do its work.
 
-{outro}That's layout. {tryit}Now try it yourself in Drafty Labs' Canvas, {next}and I'll see you in the next lesson.{end}
+{outro}That's layout. {tryit}Now try it yourself in Drafty Labs' Canvas.
+
+{rename}And one more thing: we're now Drafty Labs, {formerly}formerly known as Draft Studio. {why}There were simply too many Draft Studios out there, so we made a name that's truly ours. {next}See you in the next lesson.{end}
 `;

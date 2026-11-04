@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Layout · lesson video</title>
+<!-- The Layout lesson as a 1920×1080 motion-graphics video with sound design. Open it to preview
+     (space plays, arrows step, 1-5 jump to the parts), or render it to MP4 with:
+     node ../shared/render.js layout --audio layout-narration.mp3 -->
+<link rel="stylesheet" href="../shared/stage.css">
+<style>
+  .frame { border-radius: 34px; background: rgba(244, 243, 239, .035); border: 1.5px solid var(--line); overflow: hidden; }
+  .blk { position: absolute; border-radius: 14px; background: rgba(244, 243, 239, .16); }
+  .img { background: linear-gradient(135deg, #1f7aff, #8c5cff 70%, #ff4fa3); }
+  .img2 { background: linear-gradient(135deg, #22c1ee, #1f7aff); }
+  .img3 { background: linear-gradient(135deg, #ffd53d, #ff6b6b); }
+  .bar { position: absolute; height: 14px; border-radius: 7px; background: rgba(244, 243, 239, .3); }
+  .bar.h { height: 34px; border-radius: 10px; background: rgba(244, 243, 239, .85); }
+  .btn { position: absolute; height: 56px; border-radius: 28px; background: var(--blue); }
+  .col { position: absolute; top: 0; bottom: 0; background: rgba(31, 122, 255, .16); border-left: 1.5px solid rgba(31, 122, 255, .45); border-right: 1.5px solid rgba(31, 122, 255, .45); }
+  .tag { position: absolute; font: 600 26px/1 var(--sans); letter-spacing: -.01em; white-space: nowrap; padding: 10px 18px; border-radius: 14px; }
+  .meas { position: absolute; font: 600 24px/1 var(--mono); white-space: nowrap; }
+  .tool { position: absolute; top: 470px; width: 300px; height: 380px; padding: 36px 32px; }
+  .tool .ic { height: 150px; display: flex; align-items: center; }
+  .num { font: 600 22px/1 var(--mono); letter-spacing: .2em; color: var(--blue); }
+  .shout { position: absolute; font-weight: 900; letter-spacing: -.04em; white-space: nowrap; line-height: 1; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="bg"><i class="orb" id="o1"></i><i class="orb" id="o2"></i><i class="orb" id="o3"></i></div>
+  <div id="scenes"></div>
+  <div id="chrome"></div>
+  <div id="vignette"></div>
+  <canvas id="grain" width="512" height="512"></canvas>
+</div>
+<script src="../shared/vendor/gsap.min.js"></script>
+<script src="../shared/vendor/SplitText.min.js"></script>
+<script src="../shared/vendor/CustomEase.min.js"></script>
+<script src="../shared/vendor/DrawSVGPlugin.min.js"></script>
+<script src="../shared/logo.js"></script>
+<script src="script.js"></script>
+<script src="timing.js"></script>
+<script src="../shared/engine.js"></script>
+<script src="video.js"></script>
+</body>
+</html>

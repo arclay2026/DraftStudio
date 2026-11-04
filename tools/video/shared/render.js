@@ -1,15 +1,17 @@
 // Renders a video (tools/video/<lesson>/index.html) to MP4, frame by frame, with Playwright and
 // ffmpeg, at the size and frame rate the page sets (1920×1080 at 30 fps for the lessons).
-//   node render.js <lesson> [out.mp4] [--audio narration.mp3] [--workers 3] [--from s] [--to s]
+//   node render.js <lesson> [out.mp4] [--audio narration.mp3] [--workers 3] [--from s] [--to s] [--no-sfx]
 // The frames are split between parallel workers, whose clips are then joined losslessly.
-// With --audio the recorded narration is laid under the picture, starting when the logo intro
-// ends (timing.js should then hold the cue times measured from that recording).
+// The soundtrack is mixed by mix.py: the sound effects the timeline scheduled (sfx()), plus, with
+// --audio, the recorded narration starting when the logo intro ends (timing.js should then hold the
+// cue times measured from that recording). The mix is levelled to -14 LUFS, YouTube's loudness.
 const { chromium } = require("playwright");
 const { spawn, spawnSync } = require("child_process");
 const fs = require("fs"), path = require("path"), os = require("os");
 
 const args = process.argv.slice(2);
 const opt = k => { const i = args.indexOf(k); return i < 0 ? null : args.splice(i, 2)[1]; };
+const noSfx = args.includes("--no-sfx"); if (noSfx) args.splice(args.indexOf("--no-sfx"), 1);
 const audio = opt("--audio"), part = opt("--frames"), workers = +(opt("--workers") || 3);
 const from = +(opt("--from") || 0), to = opt("--to");
 const lesson = args[0];
@@ -50,7 +52,7 @@ async function renderPart(a, b, file) {
 (async () => {
   if (part) { const [a, b] = part.split(":").map(Number); return renderPart(a, b, out); }
   const { browser, page } = await open();
-  const { DURATION, FPS, INTRO } = await page.evaluate(() => ({ DURATION: window.DURATION, FPS: window.FPS, INTRO: window.INTRO }));
+  const { DURATION, FPS, INTRO, SFX } = await page.evaluate(() => ({ DURATION: window.DURATION, FPS: window.FPS, INTRO: window.INTRO, SFX: window.SFX || [] }));
   await browser.close();
   const f0 = Math.round(from * FPS), f1 = Math.round((to ? Math.min(+to, DURATION) : DURATION) * FPS);
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "render-"));
@@ -65,10 +67,18 @@ async function renderPart(a, b, file) {
   }));
   fs.writeFileSync(path.join(tmp, "list.txt"), parts.sort().map(p => `file '${p}'`).join("\n"));
   const ff = ["-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", path.join(tmp, "list.txt")];
-  // the voice starts as the logo intro hands over to the title
-  // (padded with real silence rather than offset, so every player and YouTube keep it in sync)
-  if (audio) ff.push("-i", path.resolve(audio), "-map", "0:v", "-map", "1:a", "-c:a", "aac", "-b:a", "256k",
-    "-af", `adelay=${Math.round(Math.max(0, INTRO - from) * 1000)}:all=1,apad`, "-shortest");
+  // the soundtrack: effects shifted to this render's start, the voice from the end of the logo intro
+  // (written as one file with real silence, so every player and YouTube keep it in sync)
+  const events = (noSfx ? [] : SFX).map(e => ({ ...e, t: e.t - from })).filter(e => e.t > -3);
+  if (audio || events.length) {
+    const ev = path.join(tmp, "sfx.json"), wav = path.join(tmp, "mix.wav");
+    fs.writeFileSync(ev, JSON.stringify(events));
+    const mx = ["-I", path.join(__dirname, "mix.py"), ev, String((f1 - f0) / FPS), wav];
+    if (audio) mx.push("--voice", path.resolve(audio), "--offset", String(INTRO - from));
+    const m = spawnSync("python3", mx, { stdio: "inherit" });
+    if (m.status) process.exit(m.status);
+    ff.push("-i", wav, "-map", "0:v", "-map", "1:a", "-c:a", "aac", "-b:a", "256k", "-af", "loudnorm=I=-14:TP=-1.5:LRA=11", "-shortest");
+  }
   ff.push("-c:v", "copy", "-movflags", "+faststart", out);
   const r = spawnSync("ffmpeg", ff, { stdio: "inherit" });
   fs.rmSync(tmp, { recursive: true, force: true });
