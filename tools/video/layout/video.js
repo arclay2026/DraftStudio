@@ -2,6 +2,14 @@
 // logo intro, chapter cards, recap, outro and chrome; sfx() lays the sound effects (shared/sfx/*.wav).
 const C = { blue: BLUE, cyan: "#22c1ee", violet: "#8c5cff", yellow: "#ffd53d", red: "#ff6b6b", green: "#3ddc84" };
 const px = v => Math.round(v) + "px";
+// wordAt("word", "cue"): when the voice says that word (its first time at or after the cue), measured from
+// the recording (timing.js WORD_TIMES), so the small moves land exactly on the spoken word
+const norm = w => w.toLowerCase().replace(/[^a-z0-9'-]/g, "");
+function wordAt(word, cue, n = 0) {
+  const t0 = cue ? T(cue) - .05 : 0, hits = WORDS.filter(w => w.t >= t0 && norm(w.w).startsWith(word));
+  if (!hits[n]) throw new Error(`word not found: ${word} after ${cue}`);
+  return hits[n].t;
+}
 const box = (cls, x, y, w, h, extra = "") => `<i class="${cls}" style="left:${px(x)};top:${px(y)};width:${px(w)};height:${px(h)};${extra}"></i>`;
 const tag = (id, text, color, x, y, extra = "") => `<div class="tag" id="${id}" style="left:${px(x)};top:${px(y)};background:${color};color:#0b0b0d;${extra}">${text}</div>`;
 // a horizontal dimension line with arrow ends
@@ -61,16 +69,16 @@ function opening() {
   [0, 3, 6, 9, 12].forEach((k, i) => sfx("pop_low", a + .45 + k * .05, .25, (i % 2 ? .4 : -.4)));
   gsap.set(["#o-frame", "#o-guides"], { autoAlpha: 0 });
   // drift a little while it is chaos
-  hooks.push(t => { if (t < a || t > T("calm") + .1) return; const d = t - a; els.forEach((e, k) => { e.style.translate = `${Math.sin(d * .9 + k) * 10}px ${Math.cos(d * .7 + k * 2) * 10}px`; }); });
-  hooks.push(t => { if (t > T("calm") + .1) els.forEach(e => (e.style.translate = "0px 0px")); });
+  hooks.push(t => { if (t < a || t > wordAt("calm", "calm") + .1) return; const d = t - a; els.forEach((e, k) => { e.style.translate = `${Math.sin(d * .9 + k) * 10}px ${Math.cos(d * .7 + k * 2) * 10}px`; }); });
+  hooks.push(t => { if (t > wordAt("calm", "calm") + .1) els.forEach(e => (e.style.translate = "0px 0px")); });
   // calm: every piece glides home into a clean website
-  const c = T("calm");
+  const c = wordAt("calm", "calm");
   tl.to(els, { x: 0, y: 0, rotation: 0, scale: 1, duration: 1.3, ease: "glide", stagger: .045 }, c - .1);
   tl.to("#o-frame", { autoAlpha: 1, duration: 1 }, c + .2);
   els.forEach((e, k) => { if (k % 3 === 0) sfx("snap", c + 1.05 + k * .045, .3, (k / els.length - .5)); });
   sfx("whoosh", c + .45, .5);
   // as if nothing could be anywhere else: the hidden grid shows for a moment
-  const n = T("nothing");
+  const n = wordAt("nothing", "nothing");
   tl.to("#o-guides", { autoAlpha: 1, duration: .6 }, n);
   tl.from($$("#o-guides .col"), { scaleY: 0, transformOrigin: "50% 0", duration: .9, stagger: .07, ease: "glide" }, n);
   tl.to("#o-guides", { autoAlpha: 0, duration: 1 }, n + 2.2);
@@ -82,16 +90,17 @@ function opening() {
   sfx("whoosh_soft", p - .2, .45);
   textIn($("#o-p1"), p, { st: .04 });
   gsap.set("#o-strike", { scaleX: 0 });
-  tl.to("#o-strike", { scaleX: 1, duration: .55, ease: "power2.out" }, p + 1.6);
-  tl.to("#o-talent", { opacity: .4, duration: .5 }, p + 1.6);
+  const tal = wordAt("talent", "promise");
+  tl.to("#o-strike", { scaleX: 1, duration: .45, ease: "power2.out" }, tal + .05);
+  tl.to("#o-talent", { opacity: .4, duration: .5 }, tal + .05);
   sfx("slide", p + 1.7, .4);
   // …a few simple tools: five cards, one per part
   const tt = T("tools");
   textIn($("#o-p2"), tt, { st: .04 });
-  fadeIn($$(".o-tool", sc), tt + .6, { y: 90, st: .1 });
+  fadeIn($$(".o-tool", sc), wordAt("tools", "tools") - .15, { y: 90, st: .1 });
   [0, 1, 2, 3, 4].forEach(k => sfx("pop", tt + .9 + k * .1, .35, (k - 2) * .3));
   // let's learn them: each card lights in turn
-  $$(".o-tool", sc).forEach((cd, k) => tl.to(cd, { borderColor: "rgba(31,122,255,.9)", backgroundColor: "rgba(31,122,255,.12)", duration: .3, yoyo: true, repeat: 1 }, T("learn") + k * .14));
+  $$(".o-tool", sc).forEach((cd, k) => tl.to(cd, { borderColor: "rgba(31,122,255,.9)", backgroundColor: "rgba(31,122,255,.12)", duration: .3, yoyo: true, repeat: 1 }, wordAt("learn", "learn") + k * .14));
   sfx("shimmer", T("learn") + .2, .35);
   light(a, "#1f7aff", "#8c5cff", "#22c1ee", .26);
   light(p, "#ff6b6b", "#1f7aff", "#8c5cff", .2);
@@ -141,17 +150,17 @@ function grid() {
   tl.to(cols[5], { backgroundColor: "rgba(31,122,255,.65)", duration: .4 }, c + .3);
   fadeIn("#g-tc", c + .3, { y: 14 }); sfx("blip", c + .3, .35);
   // gutters
-  const g = T("gutters");
+  const g = wordAt("gutters", "gutters");
   tl.to(cols, { backgroundColor: "rgba(31,122,255,.16)", duration: .5 }, g);
   tl.to($$(".g-gut", sc), { autoAlpha: 1, duration: .4, stagger: .03 }, g);
   fadeIn("#g-tg", g + .3, { y: 14 }); sfx("blip_hi", g + .3, .35);
   // twelve columns, counted
-  const tw = T("twelve");
+  const tw = wordAt("twelve", "twelve");
   tl.to($$(".g-gut", sc), { autoAlpha: 0, duration: .5 }, tw - .2);
   $$(".g-n", sc).forEach((nEl, k) => { tl.fromTo(nEl, { autoAlpha: 0, y: 20, scale: .6 }, { autoAlpha: 1, y: 0, scale: 1, duration: .45, ease: "pop" }, tw + k * .08); sfx(k % 2 ? "blip_hi" : "blip", tw + .05 + k * .08, .22, (k / N - .5)); });
   fadeIn("#g-t12", tw + .9, { y: 14 });
   // everything snaps to them
-  const s = T("snap");
+  const s = wordAt("snaps", "snap") - .15;
   tl.to([...$$(".g-n", sc), "#g-tm", "#g-tc", "#g-tg", "#g-t12", "#g-dm1", "#g-dm2"], { autoAlpha: 0, duration: .4 }, s - .2);
   tl.to($$(".g-mar", sc), { opacity: 0, duration: .4 }, s - .2);
   els.forEach((e, k) => {
@@ -160,7 +169,7 @@ function grid() {
     if (k % 2 === 0) sfx("snap", s + d + .4, .32, (k / els.length - .5));
   });
   // order: the grid fades back, the page stands on its own
-  const o = T("order");
+  const o = wordAt("order", "order");
   tl.to(cols, { backgroundColor: "rgba(31,122,255,.06)", borderColor: "rgba(31,122,255,.18)", duration: 1 }, o);
   checkIn("g-ok", o + .3);
   light(a, "#1f7aff", "#22c1ee", "#8c5cff", .24);
@@ -194,16 +203,18 @@ function spacing() {
   gsap.set([...gaps, "#s-k", "#s-note", "#s-pulse"], { autoAlpha: 0 });
   // by eye: odd gaps, measured in red
   const p = T("px");
-  gaps.forEach((g, i) => { tl.fromTo(g, { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: .5, ease: "back.out(2)" }, p + i * .3); sfx("tick_low", p + .05 + i * .3, .35); });
+  const said = [wordAt("thirteen", "px"), wordAt("twenty-two", "px")]; said.push(said[1] + .35, said[1] + .7);
+  gaps.forEach((g, i) => { tl.fromTo(g, { autoAlpha: 0, x: -14 }, { autoAlpha: 1, x: 0, duration: .45, ease: "back.out(2)" }, said[i] - .05); sfx("tick_low", p + .05 + i * .3, .35); });
   sfx("error", p + 1.4, .3);
   hooks.push(t => { const on = t > p && t < T("rhythm"); els.forEach((e, k) => { e.style.translate = on ? `${Math.sin(t * 7 + k * 2) * 2}px 0px` : "0px 0px"; }); });
   // the professional's short list, read out one by one
   const s = T("scale"), st = T("steps");
   textIn($("#s-k"), s);
   const steps = $$(".s-step", sc);
-  steps.forEach((e, k) => { const at = st + k * .56; tl.fromTo(e, { autoAlpha: 0, y: 30, scale: .5 }, { autoAlpha: 1, y: 0, scale: 1, duration: .5, ease: "pop" }, at); sfx(k % 2 ? "blip_hi" : "blip", at + .05, .3 + k * .03, (k / 6 - .5)); });
+  const STEP = ["four", "eight", "sixteen", "twenty-four", "thirty-two", "forty-eight", "sixty-four"].map(w => wordAt(w, "steps"));
+  steps.forEach((e, k) => { const at = STEP[k] - .05; tl.fromTo(e, { autoAlpha: 0, y: 30, scale: .5 }, { autoAlpha: 1, y: 0, scale: 1, duration: .5, ease: "pop" }, at); sfx(k % 2 ? "blip_hi" : "blip", at + .05, .3 + k * .03, (k / 6 - .5)); });
   // only those gaps: the stack re-spaces itself on the scale, the labels turn green
-  const r = T("rhythm");
+  const r = wordAt("gaps", "rhythm") - .3;
   textIn($("#s-note"), r);
   els.forEach((e, i) => tl.to(e, { top: yg[i], duration: .8, ease: "glide" }, r + .2));
   gaps.forEach((g, i) => {
@@ -214,7 +225,7 @@ function spacing() {
     sfx("snap", r + .95 + i * .04, .3);
   });
   // a steady rhythm: a beat that pulses through the gaps
-  const f = T("feel");
+  const f = wordAt("steady", "feel");
   fadeIn("#s-pulse", f - .2, { y: 20 });
   const beats = $$(".s-beat", sc);
   beats.forEach((b, k) => tl.to(b, { backgroundColor: BLUE, duration: .18, yoyo: true, repeat: 1 }, f + k * .22));
@@ -242,7 +253,7 @@ function alignment() {
   gsap.set([...bad, "#a-q", "#a-one", "#a-ok"], { autoAlpha: 0 });
   gsap.set("#a-edge", { scaleY: 0 });
   // it looks like a mistake: every edge is a little off
-  const w = T("wrong");
+  const w = wordAt("mistake", "wrong") - .1;
   tl.to(bad, { autoAlpha: 1, duration: .25, stagger: .07 }, w);
   fadeIn("#a-q", w + .3, { y: 14 });
   sfx("error", w + .25, .35);
@@ -253,11 +264,11 @@ function alignment() {
   tl.to("#a-edge", { scaleY: 1, duration: .9, ease: "glide" }, e);
   sfx("slide", e + .3, .45);
   fadeIn("#a-one", e + .5, { y: 14 });
-  const l = T("line");
+  const l = wordAt("line", "line");
   els.forEach((el, i) => { tl.to(el, { left: X, duration: .55, ease: "back.out(1.6)" }, l + i * .11); if (OFF[i]) sfx("snap", l + .35 + i * .11, .32); });
   tl.to(bad, { autoAlpha: 0, duration: .4, stagger: .05 }, l + .2);
   // clean
-  const c = T("clean");
+  const c = wordAt("intentional", "clean");
   tl.to("#a-edge", { boxShadow: "0 0 60px rgba(31,122,255,1)", duration: .4, yoyo: true, repeat: 1 }, c);
   checkIn("a-ok", c + .3);
   light(a, "#ff6b6b", "#8c5cff", "#1f7aff", .2);
@@ -283,15 +294,15 @@ function proximity() {
   sfx("whoosh_soft", a, .4);
   gsap.set([...$$(".p-bg, .p-num", sc), "#p-small", "#p-big"], { autoAlpha: 0 });
   // things that belong together move together
-  const g0 = a + 1.4;
+  const g0 = wordAt("together", "groups", 1) - .3;     // the second "together"
   [0, 1, 2].forEach(g => parts.forEach((_, i) => tl.to($$(`.p-g${g}.p-i${i}`, sc), { left: grp.x0 + g * (COLW + grp.gx), top: grp.y[i], duration: 1.1, ease: "glide" }, g0 + g * .08)));
   tl.to($$(".p-bg", sc), { autoAlpha: 1, duration: .8, stagger: .1 }, g0 + .7);
   sfx("whoosh", g0 + .45, .4); [0, 1, 2].forEach(g => sfx("thud", g0 + 1.05 + g * .08, .3, (g - 1) * .5));
   // small gaps inside, big gaps between
-  fadeIn("#p-small", T("small") + .1, { y: 0, s: .6, ease: "pop" }); sfx("blip", T("small") + .15, .35);
-  fadeIn("#p-big", T("big") + .1, { y: 0, s: .6, ease: "pop" }); sfx("blip_hi", T("big") + .15, .35);
+  fadeIn("#p-small", wordAt("small", "small"), { y: 0, s: .6, ease: "pop" }); sfx("blip", T("small") + .15, .35);
+  fadeIn("#p-big", wordAt("bigger", "big"), { y: 0, s: .6, ease: "pop" }); sfx("blip_hi", T("big") + .15, .35);
   // the structure reads before a single word: three groups count off
-  const r = T("read");
+  const r = wordAt("structure", "read");
   $$(".p-num", sc).forEach((n, k) => { tl.fromTo(n, { autoAlpha: 0, scale: .4 }, { autoAlpha: 1, scale: 1, duration: .5, ease: "pop" }, r + k * .25); sfx("pop", r + .1 + k * .25, .35, (k - 1) * .5); });
   $$(".p-bg", sc).forEach((b, k) => tl.to(b, { borderColor: "rgba(31,122,255,.8)", duration: .3, yoyo: true, repeat: 1 }, r + k * .25));
   light(a, "#22c1ee", "#1f7aff", "#ffd53d", .22);
@@ -321,11 +332,11 @@ function whiteSpace() {
   loud.forEach((l, k) => { tl.fromTo(l, { autoAlpha: 0, scale: 1.8 }, { autoAlpha: 1, scale: 1, duration: .35, ease: "back.out(2.5)" }, a + k * .09); if (k % 2 === 0) sfx("pop_low", a + .12 + k * .09, .28, (k % 4 - 1.5) / 2); });
   sfx("thud", a + .1, .4);
   // everything shouts…
-  const s = T("shout");
+  const s = wordAt("shouts", "shout");
   hooks.push(t => { const on = t > s && t < T("nobody") + .4, amp = on ? 6 : 0; loud.forEach((l, k) => { l.style.translate = `${Math.sin(t * 31 + k * 3) * amp}px ${Math.cos(t * 27 + k) * amp}px`; }); });
   [0, 1, 2, 3, 4, 5].forEach(k => sfx(k % 2 ? "pop" : "pop_low", s + k * .12, .3, (k % 3 - 1) * .6));
   // …and nobody listens
-  const n = T("nobody");
+  const n = wordAt("nobody", "nobody");
   tl.to("#w-loud", { opacity: .18, filter: "grayscale(1) blur(2px)", duration: .9 }, n);
   sfx("whoosh_low", n + .2, .4);
   // white space isn't empty
@@ -338,12 +349,12 @@ function whiteSpace() {
   textOut($("#w-t"), b - .3);
   gsap.set(["#w-prod", "#w-d1", "#w-d2", "#w-prem"], { autoAlpha: 0 });
   tl.fromTo("#w-prod", { autoAlpha: 0, scale: .9, y: 40 }, { autoAlpha: 1, scale: 1, y: 0, duration: 1.3 }, b);
-  tl.fromTo("#w-pad", { scale: .55, opacity: 0 }, { scale: 1, opacity: 1, duration: 1.4, ease: "glide" }, b + .5);
+  tl.fromTo("#w-pad", { scale: .55, opacity: 0 }, { scale: 1, opacity: 1, duration: 1.4, ease: "glide" }, wordAt("breathe", "breathe") - .3);
   fadeIn(["#w-d1", "#w-d2"], b + 1.2, { y: 0, s: .6, ease: "pop" });
   sfx("swell", b + .6, .4); sfx("blip", b + 1.25, .3);
   tl.fromTo("#w-orb", { y: 12 }, { y: -12, duration: 2.4, ease: "sine.inOut", yoyo: true, repeat: 3 }, b + .4);
   // premium brands feel calm and confident
-  const p = T("premium");
+  const p = wordAt("premium", "premium");
   fadeIn("#w-prem", p + .3, { y: 14 });
   sfx("shimmer", p + .35, .45);
   light(a, "#ff6b6b", "#ffd53d", "#ff4fa3", .26);
@@ -377,18 +388,19 @@ function rename() {
   textIn($("#r-was"), f);
   fadeIn("#r-old", f + .2, { y: 20 });
   gsap.set("#r-strike", { scaleX: 0 });
-  tl.to("#r-strike", { scaleX: 1, duration: .5, ease: "power2.out" }, f + 1.1);
+  tl.to("#r-strike", { scaleX: 1, duration: .45, ease: "power2.out" }, wordAt("studio", "formerly"));
   sfx("slide", f + 1.2, .4);
   // too many Draft Studios out there: they crowd in, then fade, leaving the one that's ours
   const crowd = $$(".r-c");
-  crowd.forEach((c, k) => tl.fromTo(c, { autoAlpha: 0, scale: .6 }, { autoAlpha: 1, scale: 1, duration: .4, ease: "back.out(2)" }, w + k * .045));
+  const many = wordAt("many", "why") - .1, made = wordAt("made", "why") - .2, truly = wordAt("truly", "why") - .15;
+  crowd.forEach((c, k) => tl.fromTo(c, { autoAlpha: 0, scale: .6 }, { autoAlpha: 1, scale: 1, duration: .4, ease: "back.out(2)" }, many + k * .03));
   [0, 4, 8, 12, 16].forEach(k => sfx("pop_low", w + .1 + k * .045, .22, (k / 20 - .5) * 1.4));
-  tl.to(crowd, { autoAlpha: 0, scale: .8, filter: "blur(8px)", duration: .8, stagger: .02 }, w + 2.4);
-  tl.to(["#r-was", "#r-old"], { autoAlpha: 0, y: -20, duration: .5 }, w + 2.4);
+  tl.to(crowd, { autoAlpha: 0, scale: .8, filter: "blur(8px)", duration: .8, stagger: .02 }, made);
+  tl.to(["#r-was", "#r-old"], { autoAlpha: 0, y: -20, duration: .5 }, made);
   sfx("whoosh_low", w + 2.6, .4);
   gsap.set("#r-ok", { autoAlpha: 0 });
-  checkIn("r-ok", w + 3);
-  tl.to("#r-logo", { scale: 1.06, duration: .5, yoyo: true, repeat: 1, ease: "sine.inOut" }, w + 3);
+  checkIn("r-ok", truly);
+  tl.to("#r-logo", { scale: 1.06, duration: .5, yoyo: true, repeat: 1, ease: "sine.inOut" }, truly);
   light(a, "#1f7aff", "#8c5cff", "#22c1ee", .3);
 }
 

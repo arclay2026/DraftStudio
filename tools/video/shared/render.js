@@ -1,6 +1,6 @@
 // Renders a video (tools/video/<lesson>/index.html) to MP4, frame by frame, with Playwright and
 // ffmpeg, at the size and frame rate the page sets (1920×1080 at 30 fps for the lessons).
-//   node render.js <lesson> [out.mp4] [--audio narration.mp3] [--workers 3] [--from s] [--to s] [--no-sfx]
+//   node render.js <lesson> [out.mp4] [--audio narration.mp3] [--workers 3] [--from s] [--to s] [--sfx]
 // The frames are split between parallel workers, whose clips are then joined losslessly.
 // The soundtrack is mixed by mix.py: the sound effects the timeline scheduled (sfx()), plus, with
 // --audio, the recorded narration starting when the logo intro ends (timing.js should then hold the
@@ -11,7 +11,8 @@ const fs = require("fs"), path = require("path"), os = require("os");
 
 const args = process.argv.slice(2);
 const opt = k => { const i = args.indexOf(k); return i < 0 ? null : args.splice(i, 2)[1]; };
-const noSfx = args.includes("--no-sfx"); if (noSfx) args.splice(args.indexOf("--no-sfx"), 1);
+// sound effects are off unless asked for with --sfx (the lessons are voice only)
+const withSfx = args.includes("--sfx"); if (withSfx) args.splice(args.indexOf("--sfx"), 1);
 const audio = opt("--audio"), part = opt("--frames"), workers = +(opt("--workers") || 3);
 const from = +(opt("--from") || 0), to = opt("--to");
 const lesson = args[0];
@@ -69,7 +70,7 @@ async function renderPart(a, b, file) {
   const ff = ["-y", "-loglevel", "error", "-f", "concat", "-safe", "0", "-i", path.join(tmp, "list.txt")];
   // the soundtrack: effects shifted to this render's start, the voice from the end of the logo intro
   // (written as one file with real silence, so every player and YouTube keep it in sync)
-  const events = (noSfx ? [] : SFX).map(e => ({ ...e, t: e.t - from })).filter(e => e.t > -3);
+  const events = (withSfx ? SFX : []).map(e => ({ ...e, t: e.t - from })).filter(e => e.t > -3);
   if (audio || events.length) {
     const ev = path.join(tmp, "sfx.json"), wav = path.join(tmp, "mix.wav");
     fs.writeFileSync(ev, JSON.stringify(events));
