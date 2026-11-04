@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Drafty Labs · profile picture</title>
+<!-- The profile picture for YouTube, Instagram and TikTok (800×800; the apps crop it to a circle)
+     and the YouTube video watermark (?watermark: 150×150, transparent). Screenshot #t at its size. -->
+<style>
+  html, body { margin: 0; background: transparent; }
+  #t { position: relative; width: 800px; height: 800px; overflow: hidden; display: grid; place-items: center;
+    background: radial-gradient(70% 70% at 50% 40%, #13254a 0%, #0b0b0d 70%); }
+  #t i { position: absolute; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(31,122,255,.28), transparent 55%); }
+  #mark { position: relative; width: 440px; height: 440px; }
+  .wm #t { width: 150px; height: 150px; background: none; }
+  .wm #t i { display: none; }
+  .wm #mark { width: 132px; height: 132px; }
+</style>
+</head>
+<body>
+<div id="t"><i></i><div id="mark"></div></div>
+<script src="../shared/logo.js"></script>
+<script>
+  // the mark only: the logo's viewBox cropped to the four petals (cream ink on the dark ground)
+  document.getElementById("mark").innerHTML = LOGO.replace(/viewBox="[^"]+"/, 'viewBox="158 426 148 148"').replace("<svg ", '<svg width="100%" height="100%" ');
+  if (/watermark/.test(location.search)) document.documentElement.classList.add("wm");
+</script>
+</body>
+</html>
