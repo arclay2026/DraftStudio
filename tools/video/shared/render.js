@@ -21,6 +21,7 @@ const lesson = args[0];
 if (!lesson) { console.error("Usage: node render.js <lesson> [out.mp4] [--audio file] [--workers n]"); process.exit(1); }
 const dir = path.join(__dirname, "..", lesson);
 const out = path.resolve(args[1] || path.join(dir, `${lesson}-lesson.mp4`));
+fs.mkdirSync(path.dirname(out), { recursive: true });
 const page0 = "file://" + path.join(dir, "index.html") + "?render" + (query ? "&" + query : "");
 
 async function open() {
