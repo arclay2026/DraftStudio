@@ -1622,8 +1622,9 @@
   }
 
   /* ---------- Tool cards: a gradient tile (frosted shapes drifting behind a white icon) + a line of copy ----------
-     They live in the page, not on top of it: one in the sidebar (closable, then the next tool takes its place),
-     and a "More free tools" row at the end of the home, tool, lesson and file pages. */
+     Like the cards in a pro app's side panels: never grouped, each one alone where it fits. One sits in a
+     page's own panel (QR → Barcode, Barcode → QR, Palettes → Canvas, Learn → Palettes, a file → Canvas or
+     Palettes), and one in the sidebar above Settings. Closing either hides that tool's card for good. */
   const TOOLS = [
     { id: "barcode", href: "barcode.html", ic: "barcode", t: "Barcode Studio", d: "Product barcodes in six formats, each one checked before you download.", c: ["#2fe0b0", "#0e9fb8"] },
     { id: "canvas", href: "canvas.html", ic: "canvas", t: "Canvas", d: "A full design editor in your browser, with 300+ fonts built in.", c: ["#7aa7ff", "#2f5dff"] },
@@ -1645,41 +1646,50 @@
       </g>
       <circle cx="48" cy="40" r="26" fill="url(#tc-l${n})"/></svg><span class="tc-ic">${sideIcon(p.ic)}</span></span>`;
   };
-  const toolCard = p => `<a class="tc" href="${p.href}">${toolTile(p)}<span class="tc-text"><b>${esc(p.t)}</b><span>${esc(p.d)}</span></span><span class="tc-go" aria-hidden="true">${icon("arrow-right")}</span></a>`;
 
   function toolSpots() {
-    const here = location.pathname.split("/").pop() || "index.html";
-    if (here === "canvas.html") return;
+    const kind = document.body.dataset.page;
+    const here = kind === "item" ? "item.html" : location.pathname.split("/").pop() || "index.html";
+    if (kind === "canvas") return;
     const get = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
     const set = k => { try { localStorage.setItem(k, "1"); } catch (e) {} };
+    const tool = id => TOOLS.find(t => t.id === id);
+    const out = el => { el.classList.add("is-out"); setTimeout(() => el.remove(), 260); };
 
-    // 1. The sidebar: one tool at a time, above Settings
+    // One card per page, each in a spot where that tool makes sense (never a row of them)
+    const item = here === "item.html" && $("#main .item-info");
+    const logoish = item && /logo|vector/i.test(($("#main .crumbs") || {}).textContent || "");
+    const SPOTS = {
+      "qr.html": { id: "barcode", at: () => $(".qs-panel"), how: "prepend", d: "Barcodes for products and packaging, in six formats." },
+      "barcode.html": { id: "qr", at: () => $(".qs-panel"), how: "prepend", d: "For links, Wi-Fi and contacts, in your colours and logo." },
+      "palettes.html": { id: "canvas", at: () => $(".pg-actions"), how: "after", d: "Put this palette to work in a full design editor." },
+      "learn.html": { id: "palettes", at: () => $("[data-academy]"), how: "after", d: "Practise the colour lesson with 36 ready-made palettes." },
+      "item.html": logoish ? { id: "palettes", at: () => item, how: "append", d: "Find the colours for your logo in 36 ready-made palettes." }
+                           : { id: "canvas", at: () => item, how: "append", d: "Design your own in the browser, with 300+ fonts." } };
+    const spot = SPOTS[here], sp = spot && tool(spot.id), host = spot && spot.at();
+    const onPage = sp && host && !get("ds-promo-" + sp.id) ? sp.id : null;
+    if (onPage) {
+      const el = document.createElement("div");
+      el.className = "tp tp-" + here.replace(".html", "");
+      el.innerHTML = `<a class="tp-card" href="${sp.href}">${toolTile(sp)}<span class="tc-text"><b>Try ${esc(sp.t)}</b><span>${esc(spot.d)}</span></span></a>
+        <button class="tp-x" type="button" aria-label="Hide this">${icon("close")}</button>`;
+      $(".tp-x", el).addEventListener("click", () => { set("ds-promo-" + sp.id); out(el); });
+      host[spot.how](el);
+    }
+
+    // The sidebar, above Settings: a different tool from the one on the page
     const foot = $(".side-foot");
     const sideCard = () => {
-      const old = $(".sp"); if (old) old.remove();
-      const p = TOOLS.find(x => x.href !== here && !get("ds-promo-" + x.id));
+      const p = TOOLS.find(x => x.href !== here && x.id !== onPage && !get("ds-promo-" + x.id));
       if (!p || !foot) return;
       const el = document.createElement("div");
       el.className = "sp";
       el.innerHTML = `<a class="sp-card" href="${p.href}">${toolTile(p)}<b>Try ${esc(p.t)}</b><span>${esc(p.d)}</span></a>
         <button class="sp-x" type="button" aria-label="Hide this">${icon("close")}</button>`;
-      $(".sp-x", el).addEventListener("click", () => { set("ds-promo-" + p.id); el.classList.add("is-out"); setTimeout(sideCard, 260); });
+      $(".sp-x", el).addEventListener("click", () => { set("ds-promo-" + p.id); out(el); setTimeout(sideCard, 270); });
       foot.before(el);
     };
     sideCard();
-
-    // 2. A "More free tools" row at the end of the page
-    const main = $("#main");
-    const ROW = { "index.html": ["barcode", "learn"], "learn.html": 1, "qr.html": 1, "barcode.html": 1, "palettes.html": 1, "browse.html": 1, "item.html": 1 };
-    if (!main || !ROW[here]) return;
-    const list = Array.isArray(ROW[here]) ? ROW[here].map(id => TOOLS.find(t => t.id === id)) : TOOLS.filter(t => t.href !== here).slice(0, 4);
-    const sec = document.createElement("section");
-    sec.className = "section tc-sec";
-    sec.innerHTML = `<div class="wrap">
-        <div class="sec-head reveal"><div><span class="eyebrow"><span class="dot"></span>Free tools</span><h2>${here === "index.html" ? "Two more <span class=\"soft\">free tools.</span>" : "More to <span class=\"soft\">make with.</span>"}</h2></div></div>
-        <div class="tc-grid reveal${list.length === 2 ? " is-two" : ""}">${list.map(toolCard).join("")}</div>
-      </div>`;
-    main.append(sec);
   }
 
   /* ---------- Quick view ---------- */

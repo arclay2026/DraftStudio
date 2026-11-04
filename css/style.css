@@ -3282,19 +3282,26 @@ svg.mi, svg.mi path { fill: currentColor !important; stroke: none !important; }
 @keyframes tc-drift { 0%, 100% { translate: 0 0; } 50% { translate: 3px -2px; } }
 a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 
-/* the row at the end of a page */
-.tc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 14px; }
-.tc-grid.is-two { grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); }
-.tc { position: relative; display: flex; align-items: center; gap: 16px; padding: 9px 48px 9px 9px; border-radius: 22px; background: var(--surface); border: 1px solid var(--border); color: var(--fg); text-decoration: none;
-  box-shadow: 0 14px 36px -22px rgba(0, 0, 0, .25); transition: transform .35s var(--spring, var(--ease)), box-shadow .3s, border-color .3s; }
-.tc:hover { transform: translateY(-2px); box-shadow: 0 24px 50px -24px rgba(0, 0, 0, .32); border-color: color-mix(in srgb, var(--fg) 14%, var(--border)); }
-.tc-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.tc-text b { font-size: calc(15.5px * var(--ts)); font-weight: 600; letter-spacing: -.012em; }
-.tc-text span { font-size: calc(13.5px * var(--ts)); line-height: 1.42; color: var(--mute); }
-.tc-go { position: absolute; right: 16px; top: 50%; display: grid; place-items: center; width: 30px; height: 30px; margin-top: -15px; border-radius: 50%; color: var(--mute); transition: transform .35s var(--spring, var(--ease)), background .2s, color .2s; }
-.tc-go svg { width: 18px; height: 18px; }
-.tc:hover .tc-go { transform: translateX(3px); background: var(--bg); color: var(--fg); }
-@media (max-width: 640px) { .tc-tile { width: 76px; height: 66px; border-radius: 13px; } .tc { gap: 13px; padding-right: 40px; } .tc-go { right: 10px; } .tc-ic svg { width: 26px; height: 26px; } }
+/* one card in a page's own panel, like "Try Flows" in a settings panel */
+.tp { position: relative; transition: opacity .25s var(--ease), transform .25s var(--ease); }
+.tp.is-out { opacity: 0; transform: translateY(6px); }
+.tp-card { display: flex; align-items: center; gap: 14px; padding: 7px 44px 7px 7px; border-radius: 18px; background: var(--surface); border: 1px solid var(--border); color: var(--fg); text-decoration: none;
+  transition: border-color .25s, box-shadow .3s; }
+.tp-card:hover { border-color: color-mix(in srgb, var(--fg) 16%, var(--border)); box-shadow: 0 14px 30px -22px rgba(0, 0, 0, .3); }
+.tp-card .tc-tile { width: 88px; height: 72px; border-radius: 12px; }
+.tp-card .tc-ic svg { width: 26px; height: 26px; }
+.tc-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.tc-text b { font-weight: 600; letter-spacing: -.012em; }
+.tc-text span { line-height: 1.42; color: var(--mute); text-wrap: pretty; }
+.tp-card .tc-text b { font-size: calc(14px * var(--ts)); }
+.tp-card .tc-text span { font-size: calc(12.5px * var(--ts)); }
+.tp-x { position: absolute; top: 50%; right: 10px; width: 28px; height: 28px; margin-top: -14px; display: grid; place-items: center; border-radius: 50%; color: var(--fg); transition: background .2s; }
+.tp-x:hover { background: color-mix(in srgb, var(--fg) 7%, transparent); }
+.tp-x svg { width: 16px; height: 16px; }
+.tp-palettes { margin-top: 14px; }
+.tp-item { margin-top: 18px; max-width: 520px; }
+.tp-learn { margin: clamp(18px, 2vw, 26px) var(--edge) 0; max-width: 560px; }
+@media (max-width: 640px) { .tp-card .tc-tile { width: 72px; height: 62px; } .tp-card { gap: 12px; } }
 
 /* the one in the sidebar */
 .sp { position: relative; margin: 8px 0 10px; transition: opacity .25s var(--ease), transform .25s var(--ease); }
@@ -3314,4 +3321,4 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 @media (hover: none) { .sp-x { opacity: 1; } }
 :root[data-rail] .side:not(.is-peek) .sp { display: none; }
 @media (max-width: 1023px), (max-height: 760px) { .sp { display: none; } }
-@media (prefers-reduced-motion: reduce) { .tc-shapes rect { animation: none; } .tc, .sp-card, .tc-go, .tc-ic svg { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .tc-shapes rect { animation: none; } .tp, .sp, .sp-card, .tc-ic svg { transition: none; } }
