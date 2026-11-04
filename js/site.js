@@ -1621,51 +1621,65 @@
     reveal(main);
   }
 
-  /* ---------- What's new: a small toast beside Drafty ----------
-     One feature at a time, in a card with a gradient tile (frosted shapes drift slowly behind a white
-     icon). It waits until the welcome tour is over, shows once per feature, never on the feature's own
-     page, and at most once a day; closing or opening it counts as seen. */
-  function promo() {
-    const PROMOS = [
-      { id: "barcode", href: "barcode.html", ic: "barcode", t: "Try Barcode Studio", d: "Product barcodes in six formats, each one checked before you download.", c: ["#2fe0b0", "#0e9fb8"] },
-      { id: "canvas", href: "canvas.html", ic: "canvas", t: "Try Canvas", d: "A full design editor in your browser, with 300+ fonts built in.", c: ["#7aa7ff", "#2f5dff"] },
-      { id: "qr", href: "qr.html", ic: "qr", t: "Try QR Code Studio", d: "QR codes that look designed. Your colours, your logo.", c: ["#ffb36b", "#ff5f6d"] },
-      { id: "palettes", href: "palettes.html", ic: "palettes", t: "Try Palettes", d: "36 ready-made colour palettes, or a fresh one in one tap.", c: ["#c59bff", "#6b5cff"] },
-      { id: "learn", href: "learn.html", ic: "learn", t: "Learn design, free", d: "Six short lessons with diagrams, read aloud word by word.", c: ["#ff9cc2", "#ff6a5b"] }];
-    const get = k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set = (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} };
-    const here = location.pathname.split("/").pop() || "index.html";
-    if (here === "canvas.html" || Date.now() - (+get("ds-promo-at") || 0) < 864e5) return;
-    const p = PROMOS.find(x => !get("ds-promo-" + x.id) && x.href !== here);
-    if (!p) return;
-    // the tile: a two-colour gradient, frosted squircles at angles, a soft light behind the icon
-    const tile = `<svg class="pm-art" viewBox="0 0 96 80" aria-hidden="true"><defs>
-        <linearGradient id="pm-g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.c[0]}"/><stop offset="1" stop-color="${p.c[1]}"/></linearGradient>
-        <radialGradient id="pm-l" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
-      <rect width="96" height="80" fill="url(#pm-g)"/>
-      <g class="pm-shapes" fill="#fff" fill-opacity=".16" stroke="#fff" stroke-opacity=".45" stroke-width=".7">
-        <rect class="pm-s1" x="-8" y="-10" width="46" height="44" rx="14" transform="rotate(-8 15 12)"/>
-        <rect class="pm-s2" x="58" y="-14" width="52" height="40" rx="15" transform="rotate(10 84 6)"/>
-        <rect class="pm-s3" x="8" y="44" width="40" height="46" rx="14" transform="rotate(14 28 67)"/>
-        <rect class="pm-s4" x="62" y="46" width="44" height="42" rx="14" transform="rotate(-12 84 67)"/>
+  /* ---------- Tool cards: a gradient tile (frosted shapes drifting behind a white icon) + a line of copy ----------
+     They live in the page, not on top of it: one in the sidebar (closable, then the next tool takes its place),
+     and a "More free tools" row at the end of the home, tool, lesson and file pages. */
+  const TOOLS = [
+    { id: "barcode", href: "barcode.html", ic: "barcode", t: "Barcode Studio", d: "Product barcodes in six formats, each one checked before you download.", c: ["#2fe0b0", "#0e9fb8"] },
+    { id: "canvas", href: "canvas.html", ic: "canvas", t: "Canvas", d: "A full design editor in your browser, with 300+ fonts built in.", c: ["#7aa7ff", "#2f5dff"] },
+    { id: "qr", href: "qr.html", ic: "qr", t: "QR Code Studio", d: "QR codes that look designed. Your colours, your logo.", c: ["#ffb36b", "#ff5f6d"] },
+    { id: "palettes", href: "palettes.html", ic: "palettes", t: "Palettes", d: "36 ready-made colour palettes, or a fresh one in one tap.", c: ["#c59bff", "#6b5cff"] },
+    { id: "learn", href: "learn.html", ic: "learn", t: "Learn design", d: "Six short lessons with diagrams, read aloud word by word.", c: ["#ff9cc2", "#ff6a5b"] }];
+  let tileN = 0;
+  const toolTile = p => {
+    const n = ++tileN;
+    return `<span class="tc-tile"><svg class="tc-art" viewBox="0 0 96 80" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><defs>
+        <linearGradient id="tc-g${n}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${p.c[0]}"/><stop offset="1" stop-color="${p.c[1]}"/></linearGradient>
+        <radialGradient id="tc-l${n}" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+      <rect width="96" height="80" fill="url(#tc-g${n})"/>
+      <g class="tc-shapes" fill="#fff" fill-opacity=".16" stroke="#fff" stroke-opacity=".45" stroke-width=".7">
+        <rect x="-8" y="-10" width="46" height="44" rx="14" transform="rotate(-8 15 12)"/>
+        <rect x="58" y="-14" width="52" height="40" rx="15" transform="rotate(10 84 6)"/>
+        <rect x="8" y="44" width="40" height="46" rx="14" transform="rotate(14 28 67)"/>
+        <rect x="62" y="46" width="44" height="42" rx="14" transform="rotate(-12 84 67)"/>
       </g>
-      <circle cx="48" cy="40" r="26" fill="url(#pm-l)"/></svg>`;
-    const el = document.createElement("aside");
-    el.className = "pm"; el.setAttribute("role", "status"); el.setAttribute("aria-label", "What's new");
-    el.innerHTML = `<a class="pm-card" href="${p.href}"><span class="pm-tile">${tile}<span class="pm-ic">${sideIcon(p.ic)}</span></span>
-        <span class="pm-text"><b>${esc(p.t)}</b><span>${esc(p.d)}</span></span></a>
-      <button class="pm-x" type="button" aria-label="Close">${icon("close")}</button>`;
-    const seen = () => { set("ds-promo-" + p.id, "1"); set("ds-promo-at", String(Date.now())); };
-    const close = () => { seen(); el.classList.remove("is-on"); document.body.classList.remove("has-pm"); setTimeout(() => el.remove(), 450); };
-    $(".pm-x", el).addEventListener("click", close);
-    $(".pm-card", el).addEventListener("click", seen);
-    // in a few seconds, once no tour or quick view is showing
-    let tries = 0;
-    const wait = () => {
-      if (++tries > 40) return;
-      if (document.querySelector(".tr, .qv.is-open, .ch.is-open, .ch.is-hello") || document.hidden) return setTimeout(wait, 1500);
-      document.body.append(el); document.body.classList.add("has-pm"); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add("is-on")));
+      <circle cx="48" cy="40" r="26" fill="url(#tc-l${n})"/></svg><span class="tc-ic">${sideIcon(p.ic)}</span></span>`;
+  };
+  const toolCard = p => `<a class="tc" href="${p.href}">${toolTile(p)}<span class="tc-text"><b>${esc(p.t)}</b><span>${esc(p.d)}</span></span><span class="tc-go" aria-hidden="true">${icon("arrow-right")}</span></a>`;
+
+  function toolSpots() {
+    const here = location.pathname.split("/").pop() || "index.html";
+    if (here === "canvas.html") return;
+    const get = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+    const set = k => { try { localStorage.setItem(k, "1"); } catch (e) {} };
+
+    // 1. The sidebar: one tool at a time, above Settings
+    const foot = $(".side-foot");
+    const sideCard = () => {
+      const old = $(".sp"); if (old) old.remove();
+      const p = TOOLS.find(x => x.href !== here && !get("ds-promo-" + x.id));
+      if (!p || !foot) return;
+      const el = document.createElement("div");
+      el.className = "sp";
+      el.innerHTML = `<a class="sp-card" href="${p.href}">${toolTile(p)}<b>Try ${esc(p.t)}</b><span>${esc(p.d)}</span></a>
+        <button class="sp-x" type="button" aria-label="Hide this">${icon("close")}</button>`;
+      $(".sp-x", el).addEventListener("click", () => { set("ds-promo-" + p.id); el.classList.add("is-out"); setTimeout(sideCard, 260); });
+      foot.before(el);
     };
-    setTimeout(wait, 4500);
+    sideCard();
+
+    // 2. A "More free tools" row at the end of the page
+    const main = $("#main");
+    const ROW = { "index.html": ["barcode", "learn"], "learn.html": 1, "qr.html": 1, "barcode.html": 1, "palettes.html": 1, "browse.html": 1, "item.html": 1 };
+    if (!main || !ROW[here]) return;
+    const list = Array.isArray(ROW[here]) ? ROW[here].map(id => TOOLS.find(t => t.id === id)) : TOOLS.filter(t => t.href !== here).slice(0, 4);
+    const sec = document.createElement("section");
+    sec.className = "section tc-sec";
+    sec.innerHTML = `<div class="wrap">
+        <div class="sec-head reveal"><div><span class="eyebrow"><span class="dot"></span>Free tools</span><h2>${here === "index.html" ? "Two more <span class=\"soft\">free tools.</span>" : "More to <span class=\"soft\">make with.</span>"}</h2></div></div>
+        <div class="tc-grid reveal${list.length === 2 ? " is-two" : ""}">${list.map(toolCard).join("")}</div>
+      </div>`;
+    main.append(sec);
   }
 
   /* ---------- Quick view ---------- */
@@ -2548,7 +2562,7 @@
   tooltips();
   colorPicker();
   quickView();
-  promo();
+  toolSpots();
   pressFX();
   reveal();
   if (window.DSChat) window.DSChat({ $, $$, esc, icon, libIcon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG });

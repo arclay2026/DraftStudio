@@ -3266,33 +3266,52 @@ svg.mi, svg.mi path { fill: currentColor !important; stroke: none !important; }
 @keyframes tr-pop { from { opacity: 0; transform: translateY(8px) scale(.97); } }
 @media (prefers-reduced-motion: reduce) { .tr-spot, .tr-host, .tr-drafty .dr-face { transition: none; } .tr-drafty .tr-ball, .tr-host.is-pop .tr-card { animation: none; } }
 
-/* What's new: a toast beside Drafty (site.js promo) */
-.pm { position: fixed; z-index: 79; right: 96px; bottom: 22px; width: min(420px, calc(100vw - 132px)); opacity: 0; transform: translateY(16px) scale(.97); filter: blur(6px);
-  transition: opacity .5s var(--ease), transform .6s var(--spring, var(--ease)), filter .5s var(--ease); pointer-events: none; }
-.pm.is-on { opacity: 1; transform: none; filter: none; pointer-events: auto; }
-.has-pm .ch-hello { display: none; }
-/* the chat row spans the hidden hello bubble too; only its real parts should catch clicks */
+/* The chat row spans its hidden hello bubble too; only its real parts should catch clicks */
 .ch { pointer-events: none; }
 .ch > .ch-fab, .ch > .ch-panel { pointer-events: auto; }
-.pm-card { display: flex; align-items: center; gap: 16px; padding: 9px 46px 9px 9px; border-radius: 22px; background: var(--surface); border: 1px solid var(--border); color: var(--fg); text-decoration: none;
-  box-shadow: 0 18px 44px -18px rgba(0, 0, 0, .28), 0 2px 6px rgba(0, 0, 0, .04); transition: transform .35s var(--spring, var(--ease)), box-shadow .3s; }
-.pm-card:hover { transform: translateY(-2px); box-shadow: 0 26px 54px -20px rgba(0, 0, 0, .34), 0 2px 6px rgba(0, 0, 0, .05); }
-.pm-tile { position: relative; flex: none; width: 96px; height: 80px; border-radius: 15px; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18); }
-.pm-art { position: absolute; inset: 0; width: 100%; height: 100%; }
-.pm-ic { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; }
-.pm-ic svg { width: 30px; height: 30px; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .18)); transition: transform .45s var(--spring, var(--ease)); }
-.pm-card:hover .pm-ic svg { transform: scale(1.12); }
-.pm-shapes rect { transform-box: fill-box; transform-origin: 50% 50%; }
-.pm-s1 { animation: pm-drift 9s ease-in-out infinite; }
-.pm-s2 { animation: pm-drift 11s ease-in-out -3s infinite reverse; }
-.pm-s3 { animation: pm-drift 10s ease-in-out -6s infinite; }
-.pm-s4 { animation: pm-drift 12s ease-in-out -2s infinite reverse; }
-@keyframes pm-drift { 0%, 100% { translate: 0 0; } 50% { translate: 3px -2px; } }
-.pm-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.pm-text b { font-size: calc(15.5px * var(--ts)); font-weight: 600; letter-spacing: -.012em; }
-.pm-text span { font-size: calc(13.5px * var(--ts)); line-height: 1.42; color: var(--mute); }
-.pm-x { position: absolute; top: 50%; right: 12px; width: 30px; height: 30px; margin-top: -15px; display: grid; place-items: center; border-radius: 50%; color: var(--fg); transition: background .2s; }
-.pm-x:hover { background: var(--bg); }
-.pm-x svg { width: 17px; height: 17px; }
-@media (max-width: 640px) { .pm { right: 84px; left: 12px; bottom: 16px; width: auto; } .pm-tile { width: 72px; height: 64px; } .pm-card { gap: 12px; padding-right: 40px; } .pm-text span { -webkit-line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden; } }
-@media (prefers-reduced-motion: reduce) { .pm, .pm-card, .pm-ic svg { transition: opacity .3s; transform: none; filter: none; } .pm-shapes rect { animation: none; } }
+
+/* Tool cards (site.js toolSpots): a gradient tile with frosted shapes and a white icon */
+.tc-tile { position: relative; flex: none; display: block; width: 96px; height: 80px; border-radius: 15px; overflow: hidden; isolation: isolate; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .18); }
+.tc-art { position: absolute; inset: 0; width: 100%; height: 100%; }
+.tc-ic { position: absolute; inset: 0; display: grid; place-items: center; color: #fff; }
+.tc-ic svg { width: 30px; height: 30px; filter: drop-shadow(0 2px 6px rgba(0, 0, 0, .18)); transition: transform .45s var(--spring, var(--ease)); }
+.tc-shapes rect { transform-box: fill-box; transform-origin: 50% 50%; animation: tc-drift 10s ease-in-out infinite; }
+.tc-shapes rect:nth-child(2) { animation-duration: 12s; animation-delay: -3s; animation-direction: reverse; }
+.tc-shapes rect:nth-child(3) { animation-duration: 11s; animation-delay: -6s; }
+.tc-shapes rect:nth-child(4) { animation-duration: 13s; animation-delay: -2s; animation-direction: reverse; }
+@keyframes tc-drift { 0%, 100% { translate: 0 0; } 50% { translate: 3px -2px; } }
+a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
+
+/* the row at the end of a page */
+.tc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 380px), 1fr)); gap: 14px; }
+.tc-grid.is-two { grid-template-columns: repeat(auto-fill, minmax(min(100%, 440px), 1fr)); }
+.tc { position: relative; display: flex; align-items: center; gap: 16px; padding: 9px 48px 9px 9px; border-radius: 22px; background: var(--surface); border: 1px solid var(--border); color: var(--fg); text-decoration: none;
+  box-shadow: 0 14px 36px -22px rgba(0, 0, 0, .25); transition: transform .35s var(--spring, var(--ease)), box-shadow .3s, border-color .3s; }
+.tc:hover { transform: translateY(-2px); box-shadow: 0 24px 50px -24px rgba(0, 0, 0, .32); border-color: color-mix(in srgb, var(--fg) 14%, var(--border)); }
+.tc-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.tc-text b { font-size: calc(15.5px * var(--ts)); font-weight: 600; letter-spacing: -.012em; }
+.tc-text span { font-size: calc(13.5px * var(--ts)); line-height: 1.42; color: var(--mute); }
+.tc-go { position: absolute; right: 16px; top: 50%; display: grid; place-items: center; width: 30px; height: 30px; margin-top: -15px; border-radius: 50%; color: var(--mute); transition: transform .35s var(--spring, var(--ease)), background .2s, color .2s; }
+.tc-go svg { width: 18px; height: 18px; }
+.tc:hover .tc-go { transform: translateX(3px); background: var(--bg); color: var(--fg); }
+@media (max-width: 640px) { .tc-tile { width: 76px; height: 66px; border-radius: 13px; } .tc { gap: 13px; padding-right: 40px; } .tc-go { right: 10px; } .tc-ic svg { width: 26px; height: 26px; } }
+
+/* the one in the sidebar */
+.sp { position: relative; margin: 8px 0 10px; transition: opacity .25s var(--ease), transform .25s var(--ease); }
+.sp.is-out { opacity: 0; transform: translateY(6px); }
+.sp-card { display: flex; flex-direction: column; gap: 3px; padding: 6px 6px 10px; border-radius: 16px; background: var(--surface); border: 1px solid var(--border); color: var(--fg); text-decoration: none;
+  box-shadow: 0 10px 26px -18px rgba(0, 0, 0, .3); transition: transform .35s var(--spring, var(--ease)), box-shadow .3s; }
+.sp-card:hover { transform: translateY(-2px); box-shadow: 0 18px 34px -20px rgba(0, 0, 0, .36); }
+.sp-card .tc-tile { width: 100%; height: 84px; border-radius: 11px; margin-bottom: 7px; }
+.sp-card .tc-ic svg { width: 28px; height: 28px; }
+.sp-card b { padding: 0 6px; font-size: calc(13px * var(--ts)); font-weight: 600; letter-spacing: -.01em; }
+.sp-card span:not(.tc-tile):not(.tc-ic) { padding: 0 6px; font-size: calc(11.5px * var(--ts)); line-height: 1.4; color: var(--mute); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.sp-x { position: absolute; top: 12px; right: 12px; display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; color: #fff;
+  background: rgba(255, 255, 255, .22); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); border: 1px solid rgba(255, 255, 255, .35); opacity: 0; transition: opacity .2s, background .2s; }
+.sp:hover .sp-x, .sp-x:focus-visible { opacity: 1; }
+.sp-x:hover { background: rgba(255, 255, 255, .36); }
+.sp-x svg { width: 14px; height: 14px; }
+@media (hover: none) { .sp-x { opacity: 1; } }
+:root[data-rail] .side:not(.is-peek) .sp { display: none; }
+@media (max-width: 1023px), (max-height: 760px) { .sp { display: none; } }
+@media (prefers-reduced-motion: reduce) { .tc-shapes rect { animation: none; } .tc, .sp-card, .tc-go, .tc-ic svg { transition: none; } }
