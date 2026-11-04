@@ -1,19 +1,31 @@
-Meet Drafty Labs. One place for free design files, simple tools, and lessons that actually teach you. It's coming soon, so here's a first look at how it all works.
+Meet Drafty Labs. One home for free design files, pro tools that run in your browser, and lessons that actually teach you. It's coming soon, so here's a full tour of everything inside.
 
-Part one: browse and download.
+Part one: finding your way around.
 
-Everything starts on the home page. Type what you need, like "logo", and every match appears instantly. Filter by type, licence, orientation, and even colour. Open any design to see it up close, check its formats and licence, and download it in one click. No sign-up, and no watermark.
+Everything lives in this sidebar: files, the studio, tools, and help. Press Control K anywhere to search the whole site. In settings, you can switch to dark mode, change the language to one of six, or make the text bigger. And if you're ever stuck, Drafty, our assistant, is one tap away. Just ask.
 
-Part two: Canvas.
+Part two: free files.
 
-Canvas is a full design editor that runs right in your browser. Pick a size, like an Instagram post. Draw shapes, add text in over three hundred fonts, and change colours in a click. When you're done, export it as an image, ready to post.
+The home page shows what's new. Pick a shelf: mockups, logos, vectors or templates. Or type what you need, like "logo", and every match appears as you type. Browse lets you filter everything: by type, by licence, by orientation, and even by colour. Tap the bookmark to save any design for later. Open a design to see it up close, check its formats, and download it in one click. No sign-up, and no watermark. Free means free: use it in personal and commercial work. And if you want a logo nobody else can have, buy an exclusive one, or request a custom design straight from WhatsApp.
 
-Part three: the studios.
+Part three: Canvas.
 
-QR Code Studio makes codes that look designed, not generated. Choose a style, shape every dot, and it checks that your code still scans. Barcode Studio does the same for products and packaging. And Palettes gives you thirty-six ready-made colour palettes, or generates a new one, previewed on a real layout.
+Canvas is a full design editor, right in your browser. Start from a preset, like an Instagram post. The tool column has everything a pro expects: the pen, shapes, the pencil, the shape builder, gradients and the eyedropper. Add text in over three hundred fonts, and search them by name. Recolour anything from the swatches. Drop in an SVG, and it stays fully editable. Layers and history keep you in control, and when you're done, export it, ready to post.
 
-Part four: learn.
+Part four: QR Code Studio.
 
-Design Basics is a free course in six short lessons. Press play, and the lesson reads itself to you, highlighting every word as it goes. And every lesson has its own video, right here on the channel.
+QR Code Studio makes codes that look designed, not generated. A code can open a link, join a Wi-Fi network, start a WhatsApp chat, send an email, or save a contact. Shape every dot, style the corners, pick your colours, and put your logo in the middle. As you design, it checks that the code still scans, and exports PNG, SVG or JPG, up to four thousand pixels.
 
-That's Drafty Labs: free files, free tools, and free lessons. Coming soon. Follow along, so you're the first to know.
+Part five: barcodes and palettes.
+
+Barcode Studio does the same for products: six formats, from EAN-13 to ITF-14, six looks, and a scan check on every one. Palettes gives you thirty-six ready-made colour palettes. Or generate a new one: analogous, complementary, pastel, and more. Press space, and a fresh palette appears. Every colour gets a role and a contrast score, previewed on a real layout, in light and dark. Copy it as hex or CSS, or download it as an image.
+
+Part six: learn.
+
+Design Basics is a free course: colour, typography, layout, hierarchy, logos and mockups. Every lesson has clear diagrams, and you can press play to hear it read aloud, with every word highlighted as it's spoken. Each one also has its own video, right here on the channel.
+
+Part seven: the studio.
+
+Need more than files? The studio builds websites that bring in business, with simple packages, from a landing page to a full online store. And the portfolio shows logos made to last.
+
+That's Drafty Labs: free files, pro tools, and free lessons, all in one place. Coming soon. Follow along, so you're the first to know.
