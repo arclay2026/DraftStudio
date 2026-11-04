@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Drafty Labs site tour · thumbnail</title>
+<!-- The YouTube thumbnail for the site tour (1280×720), built from stills of the recordings:
+     node ../shared/render-thumbnail.js site-tour -->
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #0b0b0d; }
+  #t { position: relative; width: 1280px; height: 720px; overflow: hidden; background: #0b0b0d; color: #f4f3ef;
+    font-family: "Inter Display", "Inter", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .glow { position: absolute; border-radius: 50%; }
+  .win { position: absolute; border-radius: 16px; overflow: hidden; background: #1d1e23; border: 1.5px solid rgba(244, 243, 239, .18); box-shadow: 0 40px 90px rgba(0, 0, 0, .65); }
+  .win::before { content: ""; display: block; height: 26px; background: #1d1e23 radial-gradient(circle at 16px 13px, #ff5f57 5px, transparent 5.5px), radial-gradient(circle at 34px 13px, #febc2e 5px, transparent 5.5px), radial-gradient(circle at 52px 13px, #28c840 5px, transparent 5.5px); }
+  .win img { display: block; width: 100%; }
+  .k { position: absolute; left: 70px; top: 86px; font: 600 22px/1 "DejaVu Sans Mono", monospace; letter-spacing: .3em; text-transform: uppercase; color: #1f7aff; }
+  .big { position: absolute; left: 62px; top: 128px; font-weight: 700; font-size: 128px; line-height: .96; letter-spacing: -.06em; }
+  .big span { background: linear-gradient(90deg, #ff9f1a, #ffd53d, #3ddc84, #22c1ee, #1f7aff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .soon { position: absolute; left: 70px; top: 430px; display: flex; align-items: center; gap: 14px; padding: 16px 26px; border-radius: 999px; background: rgba(31, 122, 255, .16); border: 2px solid #1f7aff; font: 700 34px/1 "Inter Display", sans-serif; letter-spacing: -.02em; }
+  .soon i { width: 14px; height: 14px; border-radius: 50%; background: #1f7aff; box-shadow: 0 0 18px #1f7aff; }
+  .row { position: absolute; left: 70px; top: 520px; display: flex; gap: 10px; }
+  .row span { padding: 11px 18px; border-radius: 999px; background: rgba(244, 243, 239, .1); border: 1.5px solid rgba(244, 243, 239, .2); font: 600 22px/1 "Inter Display", sans-serif; }
+  .brand { position: absolute; left: 70px; bottom: 56px; }
+  .vig { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(11, 11, 13, .9) 0%, rgba(11, 11, 13, .55) 42%, transparent 62%); }
+</style>
+</head>
+<body>
+<div id="t">
+  <i class="glow" style="left:640px;top:-200px;width:900px;height:900px;background:radial-gradient(circle, rgba(31,122,255,.35), transparent 60%)"></i>
+  <i class="glow" style="left:-300px;top:300px;width:800px;height:800px;background:radial-gradient(circle, rgba(140,92,255,.2), transparent 60%)"></i>
+  <div class="win" style="left:700px;top:330px;width:560px;transform:rotate(5deg)"><img src="thumb-palette.jpg" alt=""></div>
+  <div class="win" style="left:560px;top:40px;width:660px;transform:rotate(-4deg)"><img src="thumb-canvas.jpg" alt=""></div>
+  <div class="win" style="left:860px;top:250px;width:440px;transform:rotate(3deg)"><img src="thumb-qr.jpg" alt=""></div>
+  <div class="vig"></div>
+  <div class="k">First look</div>
+  <div class="big">Meet<br><span>Drafty Labs</span></div>
+  <div class="soon"><i></i>Coming soon</div>
+  <div class="row"><span>Free files</span><span>Pro tools</span><span>Free lessons</span></div>
+  <div class="brand" id="brand"></div>
+</div>
+<script src="../shared/logo.js"></script>
+<script>document.getElementById("brand").innerHTML = LOGO.replace("<svg ", '<svg height="40" ');</script>
+</body>
+</html>
