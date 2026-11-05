@@ -784,7 +784,7 @@ svg.mi .mi-on { display: none; }
 .search-modal.is-open { display: flex; animation: fade .2s; }
 @keyframes fade { from { opacity: 0; } }
 .search-box {
-  width: 100%; max-width: 506.5px; max-height: 76vh; display: flex; flex-direction: column; overflow: hidden;
+  width: 100%; max-width: 640px; max-height: 76vh; display: flex; flex-direction: column; overflow: hidden;
   background: var(--bg); border: 1px solid var(--line-2); border-radius: 16px; box-shadow: 0 24px 64px -12px rgba(0, 0, 0, .22), 0 2px 8px rgba(0, 0, 0, .06);
   animation: pop .25s var(--ease);
 }
