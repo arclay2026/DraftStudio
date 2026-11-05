@@ -689,3 +689,8 @@ body.sp-focus { padding-inline-start: 0; background: var(--bg); }
    (Buttons and links keep their keyboard focus outline.) */
 input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="color"]),
 textarea, select { outline: none !important; }
+
+/* Account preview: accounts aren't connected yet, so everything but the wishlist is greyed out */
+.ua.is-preview .ua-hero { filter: grayscale(1); opacity: .42; pointer-events: none; user-select: none; }
+.ua.is-preview .sp-tabs [aria-disabled="true"] { filter: grayscale(1); opacity: .38; cursor: not-allowed; }
+.ua.is-preview .sp-tabs [aria-disabled="true"]:hover { background: none; color: inherit; }

@@ -168,15 +168,19 @@
   const ac = $("[data-ua]");
   if (ac) {
     const tabs = $$(".sp-tabs [data-tab]", ac);
+    // Accounts aren't connected yet, so only the wishlist is live: the profile card and the other tabs are greyed out
+    const LIVE = ["wishlist"];
+    ac.classList.add("is-preview");
+    tabs.forEach(b => { if (!LIVE.includes(b.dataset.tab)) { b.setAttribute("aria-disabled", "true"); b.tabIndex = -1; b.title = "Coming soon"; } });
     const open = id => {
-      if (!$(`[data-panel="${id}"]`, ac)) id = "overview";
+      if (!LIVE.includes(id)) id = LIVE[0];
       tabs.forEach(b => b.setAttribute("aria-selected", b.dataset.tab === id));
       $$("[data-panel]", ac).forEach(p => { p.hidden = p.dataset.panel !== id; });
       history.replaceState(null, "", "#" + id);
     };
-    tabs.forEach(b => b.addEventListener("click", () => open(b.dataset.tab)));
+    tabs.forEach(b => b.addEventListener("click", () => { if (b.getAttribute("aria-disabled") !== "true") open(b.dataset.tab); }));
     $$("[data-tab-link]", ac).forEach(a => a.addEventListener("click", e => { e.preventDefault(); open(a.dataset.tabLink); scrollTo({ top: 0, behavior: "smooth" }); }));
-    open(location.hash.slice(1) || "overview");
+    open(location.hash.slice(1) || LIVE[0]);
 
     // Settings menu: highlight the section in view
     const links = $$(".st-nav a", ac);
