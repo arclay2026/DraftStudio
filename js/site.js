@@ -542,7 +542,8 @@
     const input = $("input", form), results = $("[data-hsearch-results]", form);
     let active = -1;
     const show = on => { form.classList.toggle("is-open", on); input.setAttribute("aria-expanded", on); };
-    const render = () => { results.innerHTML = searchHtml(input.value); active = -1; show(true); };
+    // suggestions only once something is typed; clicking into an empty field shows nothing
+    const render = () => { active = -1; if (!input.value.trim()) { show(false); return; } results.innerHTML = searchHtml(input.value); show(true); };
     input.addEventListener("focus", render);
     input.addEventListener("input", render);
     input.addEventListener("keydown", e => {
