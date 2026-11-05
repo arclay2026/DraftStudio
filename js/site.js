@@ -604,6 +604,46 @@
     $$("[data-open-search]").forEach(b => b.addEventListener("click", open));
   }
 
+  /* ---------- Top bar (desktop): menu toggle and page name, search in the middle, quick links on the right ----------
+     Sits at the top of the page beside the side menu and stays put while you scroll. Not on Canvas, which has
+     its own menu bar. Phones keep their own top bar. */
+  function topNav() {
+    const shell = $(".shell"), kind = document.body.dataset.page;
+    if (!shell || kind === "canvas") return;
+    const cur = $('.side-link[aria-current="page"]');
+    const name = cur ? cur.dataset.label : document.title.split(" · ")[0];
+    const mac = /Mac|iPhone|iPad/.test(navigator.platform);
+    const el = document.createElement("header");
+    el.className = "tnav";
+    el.innerHTML = `
+      <div class="tnav-l">
+        <button class="tnav-icon" type="button" data-tnav-fold aria-label="Collapse menu">${sideIcon("fold")}</button>
+        <span class="tnav-page">${esc(name || "Drafty Labs")}</span>
+      </div>
+      <button class="tnav-search" type="button" data-tnav-search>
+        ${icon("search")}<span>Search everything…</span>
+        <span class="tnav-keys" aria-hidden="true"><kbd>${mac ? "⌘" : "Ctrl"}</kbd><kbd>K</kbd></span>
+      </button>
+      <nav class="tnav-r" aria-label="Quick links">
+        <a class="tnav-btn" href="${waLink("Hi Drafty Labs, some feedback on the website: ")}" target="_blank" rel="noopener">Feedback</a>
+        <a class="tnav-btn" href="learn.html">Learn</a>
+        <button class="tnav-btn" type="button" data-tnav-ask><img src="assets/drafty.svg?v=d3" alt="" width="18" height="18">Ask</button>
+        <a class="tnav-icon tnav-ring" href="browse.html" aria-label="Browse all files" data-tip="Browse all files">${sideIcon("browse-all")}</a>
+        <a class="tnav-me" href="account.html" aria-label="Your account"><img class="logo-l" src="assets/logo-mark.svg?v=dl3" alt="" width="26" height="26"><img class="logo-d" src="assets/logo-mark-dark.svg?v=dl3" alt="" width="26" height="26"></a>
+      </nav>`;
+    shell.prepend(el);
+    document.documentElement.classList.add("has-tnav");
+    // the toggle drives the side menu's own fold button, so the two never disagree
+    const fold = $("[data-side-fold]"), tf = $("[data-tnav-fold]", el);
+    const sync = () => tf.setAttribute("aria-label", document.documentElement.hasAttribute("data-rail") ? "Expand menu" : "Collapse menu");
+    tf.addEventListener("click", () => { if (fold) fold.click(); sync(); });
+    sync();
+    $("[data-tnav-search]", el).addEventListener("click", () => { const b = $("[data-open-search]"); if (b) b.click(); });
+    $("[data-tnav-ask]", el).addEventListener("click", () => { const f = $(".ch-fab"); if (f) f.click(); });
+    const onScroll = () => el.classList.toggle("is-scrolled", scrollY > 4);
+    addEventListener("scroll", onScroll, { passive: true }); onScroll();
+  }
+
   /* ---------- Shared behaviour ---------- */
   function chrome() {
     // The page sits on a raised panel beside the side menu
@@ -1781,10 +1821,13 @@
             <div class="pb-btns"><a class="pb-try" href="${s.go}"${i ? ' tabindex="-1"' : ""}>Try it</a><a class="pb-more" href="${s.more}"${i ? ' tabindex="-1"' : ""}>Learn more</a></div></div>
         </div>`).join("")}
       </div>
-      ${SLIDES.length > 1 ? `<div class="pb-tabs" role="tablist" aria-label="Choose a slide">${SLIDES.map((s, i) => `<button type="button" role="tab" aria-label="${esc(s.name)}" aria-selected="${!i}" style="--pc:${s.c[1]}"><i class="pb-bar"><b></b></i></button>`).join("")}</div>` : ""}`;
+      ${SLIDES.length > 1 ? `<div class="pb-tabs"><div class="pb-nav">
+        <button class="pb-arrow pb-prev" type="button" aria-label="Previous slide" data-pb-step="-1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 6-6 6 6 6"/></svg></button>
+        <div class="pb-lines" role="tablist" aria-label="Choose a slide">${SLIDES.map((s, i) => `<button type="button" role="tab" aria-label="${esc(s.name)}" aria-selected="${!i}" style="--pc:${s.c[1]}"><i class="pb-bar"><b></b></i></button>`).join("")}</div>
+        <button class="pb-arrow pb-next" type="button" aria-label="Next slide" data-pb-step="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m14.5 6-6 6 6 6"/></svg></button></div></div>` : ""}`;
     sec.innerHTML = panel ? inner : `<div class="wrap">${inner}</div>`;
     if (panel) panel.append(sec); else hero.after(sec);
-    const slides = $$(".pb-slide", sec), dots = $$(".pb-tabs button", sec), box = $(".pb", sec);
+    const slides = $$(".pb-slide", sec), dots = $$(".pb-tabs [role=tab]", sec), box = $(".pb", sec);
     let at = 0;
     const show = i => {
       at = (i + slides.length) % slides.length;
@@ -1803,8 +1846,9 @@
       d.addEventListener("click", () => show(k));
       $("b", d).addEventListener("animationend", () => { if (k === at && !still) show(at + 1); });
     });
-    box.addEventListener("pointerenter", () => hold(true));
-    box.addEventListener("pointerleave", () => hold(false));
+    sec.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") hold(true); });
+    sec.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") hold(false); });
+    $$("[data-pb-step]", sec).forEach(b => b.addEventListener("click", () => show(at + +b.dataset.pbStep)));
     sec.addEventListener("focusin", () => hold(true));
     sec.addEventListener("focusout", e => { if (!sec.contains(e.relatedTarget)) hold(false); });
     // swipe on touch screens
@@ -2687,6 +2731,7 @@
   header(page === "browse" ? (new URLSearchParams(location.search).get("cat") || "browse") : page);
   footer();
   chrome();
+  topNav();
   settings();
   ({ home, browse, item, palettes, qr, barcode, learn, license, canvas }[page] || (() => {}))();
   enhanceSelects();

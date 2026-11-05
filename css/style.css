@@ -3336,7 +3336,7 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .pb-hero .pb { border-radius: var(--radius-lg); }
 .pb-hero .pb-tabs { position: absolute; left: 0; right: 0; bottom: clamp(6px, 1vw, 12px); z-index: 2; margin: 0; }
 .pb-hero .pb-bar { background: rgba(255, 255, 255, .28); }
-.pb-hero .pb-tabs button:hover .pb-bar { background: rgba(255, 255, 255, .5); }
+.pb-hero .pb-tabs [role="tab"]:hover .pb-bar { background: rgba(255, 255, 255, .5); }
 .pb-hero .pb-bar b { background: #fff; }
 .pb-hero .pb-tabs button:focus-visible { outline-color: #fff; }
 .pb { position: relative; height: clamp(190px, 15.5vw, 250px); border-radius: clamp(18px, 1.8vw, 26px); overflow: hidden; isolation: isolate; background: #060403; }
@@ -3361,14 +3361,80 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .pb-btns a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 /* under the banner: each slide's name with a hairline that fills while it's showing, in that slide's colour */
 .pb-tabs { display: flex; justify-content: center; gap: 4px; margin-top: 10px; }
-.pb-tabs button { display: grid; place-items: center; padding: 8px 3px; }
+.pb-tabs [role="tab"] { display: grid; place-items: center; padding: 8px 3px; }
 .pb-bar { position: relative; display: block; width: 18px; height: 3px; border-radius: 3px; overflow: hidden; background: color-mix(in srgb, var(--fg) 16%, transparent); transition: width .45s var(--ease), background .2s; }
-.pb-tabs button:hover .pb-bar { background: color-mix(in srgb, var(--fg) 30%, transparent); }
-.pb-tabs button[aria-selected="true"] .pb-bar { width: 44px; }
+.pb-tabs [role="tab"]:hover .pb-bar { background: color-mix(in srgb, var(--fg) 30%, transparent); }
+.pb-tabs [role="tab"][aria-selected="true"] .pb-bar { width: 44px; }
 .pb-bar b { position: absolute; inset: 0; border-radius: inherit; background: var(--pc, var(--fg)); transform: scaleX(0); transform-origin: 0 50%; }
-.pb-tabs button[aria-selected="true"] .pb-bar b { animation: pb-fill 6.5s linear forwards; }
+.pb-tabs [role="tab"][aria-selected="true"] .pb-bar b { animation: pb-fill 6.5s linear forwards; }
 .pb-sec.is-held .pb-tabs b { animation-play-state: paused !important; }
 @keyframes pb-fill { to { transform: none; } }
 .pb-tabs button:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; border-radius: 6px; }
 @media (max-width: 640px) { .pb { height: 186px; } .pb-btns { margin-top: 13px; } .pb-btns a { height: 36px; padding: 0 14px; } .pb-copy { margin-top: -6px; } .pb-copy h2 br { display: none; } .pb-copy h2 { font-size: 23px; max-width: 15em; } }
-@media (prefers-reduced-motion: reduce) { .pb-g1, .pb-g2, .pb-g3 { animation: none; } .pb-art, .pb-slide, .pb-slide.is-on { transition: none; } .pb-tabs button[aria-selected="true"] .pb-bar b { animation: none; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pb-g1, .pb-g2, .pb-g3 { animation: none; } .pb-art, .pb-slide, .pb-slide.is-on { transition: none; } .pb-tabs [role="tab"][aria-selected="true"] .pb-bar b { animation: none; transform: none; } }
+
+/* Top bar on desktop (site.js topNav) */
+.tnav { display: none; }
+@media (min-width: 1024px) {
+  .tnav { position: sticky; top: 0; z-index: 50; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 340px) minmax(0, 1fr); align-items: center; gap: 16px;
+    height: 54px; padding: 0 var(--edge) 0 14px; background: color-mix(in srgb, var(--bg) 88%, transparent); border-bottom: 1px solid var(--border);
+    -webkit-backdrop-filter: saturate(1.6) blur(14px); backdrop-filter: saturate(1.6) blur(14px); }
+  .has-tnav .side-fold { display: none; }
+  body[data-page="home"] .shell > main { padding-top: 0; }
+}
+.tnav-l { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.tnav-page { font-size: calc(14px * var(--ts)); font-weight: 500; color: var(--fg); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tnav-icon { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; color: var(--mute); transition: background .15s, color .15s; }
+.tnav-icon:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); color: var(--fg); }
+.tnav-icon svg { width: 19px; height: 19px; }
+.tnav-search { display: flex; align-items: center; gap: 9px; width: 100%; height: 36px; padding: 0 6px 0 11px; border-radius: 11px; border: 1px solid var(--border); background: var(--surface);
+  color: var(--mute); font-size: calc(13px * var(--ts)); text-align: start; transition: border-color .2s, box-shadow .2s; }
+.tnav-search:hover { border-color: color-mix(in srgb, var(--fg) 18%, var(--border)); box-shadow: 0 2px 8px -4px rgba(0, 0, 0, .12); }
+.tnav-search > svg { flex: none; width: 17px; height: 17px; }
+.tnav-search > span:not(.tnav-keys) { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tnav-keys { display: flex; gap: 3px; }
+.tnav-keys kbd { display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 5px; border-radius: 6px; border: 1px solid var(--border); background: var(--bg);
+  font: 500 calc(11px * var(--ts))/1 var(--font, inherit); color: var(--mute); }
+.tnav-r { display: flex; align-items: center; justify-content: flex-end; gap: 6px; }
+.tnav-btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface);
+  color: var(--fg); font-size: calc(13px * var(--ts)); font-weight: 500; white-space: nowrap; text-decoration: none; transition: background .15s, border-color .15s; }
+.tnav-btn:hover { background: var(--bg-2); border-color: color-mix(in srgb, var(--fg) 14%, var(--border)); }
+.tnav-btn img { width: 18px; height: 18px; margin-inline-start: -3px; }
+.tnav-ring { border: 1px solid var(--border); background: var(--surface); width: 34px; height: 34px; color: var(--fg); }
+.tnav-me { display: grid; place-items: center; width: 36px; height: 36px; margin-inline-start: 4px; border-radius: 50%; box-shadow: 0 0 0 1px var(--border); transition: box-shadow .2s; }
+.tnav-me:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--fg) 25%, transparent); }
+.tnav-me img { width: 26px; height: 26px; }
+@supports (corner-shape: squircle) { .tnav-btn, .tnav-search, .tnav-ring, .tnav-icon { corner-shape: squircle; border-radius: 13px; } }
+@media (max-width: 1180px) { .tnav-r .tnav-btn:first-child { display: none; } }
+.tnav-me .logo-d { display: none; }
+:root[data-theme="dark"] .tnav-me .logo-l { display: none; }
+:root[data-theme="dark"] .tnav-me .logo-d { display: block; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tnav-me .logo-l { display: none; } :root:not([data-theme="light"]) .tnav-me .logo-d { display: block; } }
+
+/* Hovering the progress lines: a plain soft pill grows out from behind them and arrows slide in at its ends.
+   The lines themselves never move. Mouse only; touch screens swipe. */
+.pb-tabs { pointer-events: none; }
+.pb-nav { position: relative; display: inline-flex; align-items: center; pointer-events: auto; padding: 0 2px; }
+.pb-lines { position: relative; z-index: 1; display: flex; gap: 4px; }
+.pb-nav::before { content: ""; position: absolute; z-index: 0; top: 5px; bottom: 5px; left: 8px; right: 8px; border-radius: 999px; opacity: 0;
+  background: rgba(0, 0, 0, .3);
+  transition: top .5s var(--spring, var(--ease)), bottom .5s var(--spring, var(--ease)), left .5s var(--spring, var(--ease)), right .5s var(--spring, var(--ease)), opacity .25s var(--ease); }
+.pb-arrow { position: absolute; z-index: 1; top: 50%; display: grid; place-items: center; width: 26px; height: 26px; margin-top: -13px; border-radius: 50%; color: #fff;
+  opacity: 0; pointer-events: none; transition: opacity .25s var(--ease), transform .45s var(--spring, var(--ease)), background .15s; }
+.pb-arrow svg { width: 15px; height: 15px; }
+.pb-prev { left: -30px; transform: translateX(14px) scale(.7); }
+.pb-next { right: -30px; transform: translateX(-14px) scale(.7); }
+.pb-next svg { transform: scaleX(-1); }
+.pb-arrow:hover { background: rgba(255, 255, 255, .16); }
+.pb-arrow:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
+@media (hover: hover) {
+  .pb-nav:hover::before, .pb-nav:focus-within::before { top: -5px; bottom: -5px; left: -40px; right: -40px; opacity: 1; }
+  .pb-nav:hover .pb-arrow, .pb-nav:focus-within .pb-arrow { opacity: 1; pointer-events: auto; transform: none; }
+}
+/* outside a dark banner, a light tint with dark arrows */
+.pb-sec:not(.pb-hero) .pb-nav::before { background: color-mix(in srgb, var(--fg) 7%, transparent); }
+.pb-sec:not(.pb-hero) .pb-arrow { color: var(--fg); }
+@media (prefers-reduced-motion: reduce) { .pb-nav::before, .pb-arrow { transition: opacity .2s; } }
+/* leave room under the buttons for the glass pill */
+.pb-hero .pb-copy { margin-top: -16px; }
+@media (max-width: 640px) { .pb-hero .pb-copy { margin-top: -12px; } }
