@@ -3385,16 +3385,16 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .tnav-ring { border: 1px solid var(--border); background: var(--surface); width: 30px; height: 30px; color: var(--fg); }
 .tnav-me { display: grid; place-items: center; width: 31px; height: 31px; margin-inline-start: 4px; border-radius: 50%; box-shadow: 0 0 0 1px var(--border); transition: box-shadow .2s; }
 .tnav-me:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--fg) 25%, transparent); }
-.tnav-me img { width: 23px; height: 23px; }
+.tnav-me svg { width: 100%; height: 100%; border-radius: 50%; }
+/* an empty profile picture: a soft grey disc with a person silhouette */
+.tnav-me .av-bg { fill: color-mix(in srgb, var(--fg) 9%, var(--surface)); }
+.tnav-me .av-fg { fill: color-mix(in srgb, var(--fg) 34%, var(--surface)); }
+.tnav-me:hover .av-fg { fill: color-mix(in srgb, var(--fg) 48%, var(--surface)); }
 @supports (corner-shape: squircle) { .tnav-btn, .tnav-search, .tnav-ring, .tnav-icon { corner-shape: squircle; border-radius: 12px; } }
 @supports (corner-shape: squircle) { .tnav-search { border-radius: 16px; } .tnav-keys kbd { border-radius: 8px; corner-shape: squircle; } }
 .tnav-wa svg { width: 16px; height: 16px; color: #25d366; margin-inline-start: -2px; }
 /* narrower screens: keep WhatsApp, drop Learn (it's in the side menu too) */
 @media (max-width: 1180px) { .tnav-r a.tnav-btn[href="learn.html"] { display: none; } }
-.tnav-me .logo-d { display: none; }
-:root[data-theme="dark"] .tnav-me .logo-l { display: none; }
-:root[data-theme="dark"] .tnav-me .logo-d { display: block; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .tnav-me .logo-l { display: none; } :root:not([data-theme="light"]) .tnav-me .logo-d { display: block; } }
 
 /* Hovering the progress lines: a plain soft pill grows out from behind them and arrows slide in at its ends.
    The lines themselves never move. Mouse only; touch screens swipe. */
