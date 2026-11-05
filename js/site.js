@@ -1717,18 +1717,27 @@
       host[spot.how](el);
     }
 
-    // The sidebar, above Settings: a different tool from the one on the page
+    // The sidebar, above Settings: always there (no close button), showing each tool in turn every 15 seconds.
+    // It skips the page you're on and the tool already suggested on this page, and waits while it's hovered.
     const foot = $(".side-foot");
     const sideCard = () => {
-      const p = TOOLS.find(x => x.href !== here && x.id !== onPage && !get("ds-promo-" + x.id));
-      if (!p || !foot) return;
+      const list = TOOLS.filter(x => x.href !== here && x.id !== onPage);
+      if (!list.length || !foot) return;
+      let k = 0, over = false;
       const el = document.createElement("div");
       el.className = "sp";
-      el.innerHTML = `<a class="sp-card" href="${p.href}">${toolTile(p)}<b>Try ${esc(p.t)}</b><span>${esc(p.d)}</span></a>
-        <button class="sp-x" type="button" aria-label="Hide this">${icon("close")}</button>`;
-      $(".sp-x", el).addEventListener("click", () => { set("ds-promo-" + p.id); out(el); setTimeout(sideCard, 270); });
+      const fill = p => `<a class="sp-card" href="${p.href}">${toolTile(p)}<b>Try ${esc(p.t)}</b><span>${esc(p.d)}</span></a>`;
+      el.innerHTML = fill(list[0]);
+      el.addEventListener("pointerenter", () => { over = true; });
+      el.addEventListener("pointerleave", () => { over = false; });
       foot.before(el);
       fit();
+      if (list.length > 1) setInterval(() => {
+        if (over || document.hidden || el.hidden || el.contains(document.activeElement)) return;
+        k = (k + 1) % list.length;
+        el.classList.add("is-swap");
+        setTimeout(() => { el.innerHTML = fill(list[k]); el.classList.remove("is-swap"); }, 280);
+      }, 15000);
     };
     // only when it fits: the menu links never get pushed into a scroll for it
     const nav = $(".side-nav");
