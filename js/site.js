@@ -1770,17 +1770,20 @@
       { name: "QR Code Studio", t: "QR Code Studio is here: <br>codes that look designed", go: "qr.html", more: "#home-qr", c: ["#ff8ad8", "#d42ac0", "#5b1fd1", "#07030a"] },
       { name: "Palettes", t: "36 colour palettes, ready <br>to copy in one click", go: "palettes.html", more: "#home-palettes", c: ["#8fd3ff", "#2f7bff", "#3b2fd0", "#02040a"] }].filter(s => $(s.more));
     if (!SLIDES.length) return;
-    const sec = document.createElement("section");
-    sec.className = "section pb-sec";
-    sec.innerHTML = `<div class="wrap"><div class="pb" role="region" aria-roledescription="carousel" aria-label="What's new">
+    // it lives inside the hero panel, under the headline and buttons (or after the hero if there's no panel)
+    const panel = $(".hero-panel", hero);
+    const sec = document.createElement(panel ? "div" : "section");
+    sec.className = panel ? "pb-sec pb-hero" : "section pb-sec";
+    const inner = `<div class="pb" role="region" aria-roledescription="carousel" aria-label="What's new">
         ${SLIDES.map((s, i) => `<div class="pb-slide${i ? "" : " is-on"}" role="group" aria-roledescription="slide" aria-label="${i + 1} of ${SLIDES.length}"${i ? ' aria-hidden="true"' : ""}>
           ${bannerArt(s.c, i)}
           <div class="pb-copy"><h2>${s.t}</h2>
             <div class="pb-btns"><a class="pb-try" href="${s.go}"${i ? ' tabindex="-1"' : ""}>Try it</a><a class="pb-more" href="${s.more}"${i ? ' tabindex="-1"' : ""}>Learn more</a></div></div>
         </div>`).join("")}
       </div>
-      ${SLIDES.length > 1 ? `<div class="pb-tabs" role="tablist" aria-label="Choose a slide">${SLIDES.map((s, i) => `<button type="button" role="tab" aria-label="${esc(s.name)}" aria-selected="${!i}" style="--pc:${s.c[1]}"><i class="pb-bar"><b></b></i></button>`).join("")}</div>` : ""}</div>`;
-    hero.after(sec);
+      ${SLIDES.length > 1 ? `<div class="pb-tabs" role="tablist" aria-label="Choose a slide">${SLIDES.map((s, i) => `<button type="button" role="tab" aria-label="${esc(s.name)}" aria-selected="${!i}" style="--pc:${s.c[1]}"><i class="pb-bar"><b></b></i></button>`).join("")}</div>` : ""}`;
+    sec.innerHTML = panel ? inner : `<div class="wrap">${inner}</div>`;
+    if (panel) panel.append(sec); else hero.after(sec);
     const slides = $$(".pb-slide", sec), dots = $$(".pb-tabs button", sec), box = $(".pb", sec);
     let at = 0;
     const show = i => {

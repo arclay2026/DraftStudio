@@ -3329,6 +3329,9 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 
 /* Home banner (site.js banner): a wide card of streaked light, a headline and two links; slides take turns */
 .pb-sec { padding-top: clamp(16px, 2vw, 28px); padding-bottom: 0; }
+.pb-hero { position: relative; z-index: 1; padding: 0; }
+.pb-hero .pb { border-radius: 22.5px; }
+.pb-hero .pb-tabs { margin: 6px 0 -2px; }
 .pb { position: relative; height: clamp(190px, 15.5vw, 250px); border-radius: clamp(18px, 1.8vw, 26px); overflow: hidden; isolation: isolate; background: #060403; }
 .pb-slide { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; visibility: hidden; transition: opacity .9s var(--ease), visibility 0s .9s; }
 .pb-slide.is-on { opacity: 1; visibility: visible; transition: opacity .9s var(--ease), visibility 0s; }
