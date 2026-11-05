@@ -3388,7 +3388,9 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .tnav-me img { width: 23px; height: 23px; }
 @supports (corner-shape: squircle) { .tnav-btn, .tnav-search, .tnav-ring, .tnav-icon { corner-shape: squircle; border-radius: 12px; } }
 @supports (corner-shape: squircle) { .tnav-search { border-radius: 16px; } .tnav-keys kbd { border-radius: 8px; corner-shape: squircle; } }
-@media (max-width: 1180px) { .tnav-r .tnav-btn:first-child { display: none; } }
+.tnav-wa svg { width: 16px; height: 16px; color: #25d366; margin-inline-start: -2px; }
+/* narrower screens: keep WhatsApp, drop Learn (it's in the side menu too) */
+@media (max-width: 1180px) { .tnav-r a.tnav-btn[href="learn.html"] { display: none; } }
 .tnav-me .logo-d { display: none; }
 :root[data-theme="dark"] .tnav-me .logo-l { display: none; }
 :root[data-theme="dark"] .tnav-me .logo-d { display: block; }
