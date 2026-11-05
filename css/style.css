@@ -1369,12 +1369,19 @@ html.qv-lock { overflow: hidden; }
 .qv-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 5.5px clamp(18px, 2vw, 32.5px) 36px; }
 .item.is-qv { padding-top: 5.5px; }
 /* "More logos / mockups / ..." under the file in the quick view */
-.qv-more { margin-top: clamp(28px, 4vw, 48px); padding-top: clamp(20px, 2.4vw, 30px); border-top: 1px solid var(--border); }
-.qv-more-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
-.qv-more-h h3 { font-size: clamp(19px, 1.8vw, 24px); font-weight: 600; letter-spacing: -.02em; }
-.qv-more .grid { columns: 4; }
-@media (max-width: 1100px) { .qv-more .grid { columns: 3; } }
-@media (max-width: 700px) { .qv-more .grid { columns: 2; } }
+.qv-more { margin-top: clamp(24px, 3vw, 36px); padding-top: clamp(16px, 2vw, 22px); border-top: 1px solid var(--border); }
+.qv-more-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.qv-more-h .link-arrow { font-size: calc(12.5px * var(--ts)); }
+.qv-more-h h3 { font-size: calc(15px * var(--ts)); font-weight: 600; letter-spacing: -.01em; }
+/* small thumbnails: they suggest, they don't compete with the file above */
+.qv-more .grid { columns: 7; column-gap: 10px; }
+.qv-more .card { margin-bottom: 12px; }
+.qv-more .card-media { border-radius: 12px; }
+.qv-more .card-body h3 { font-size: calc(12px * var(--ts)); font-weight: 500; line-height: 1.3; margin-top: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qv-more .card-body .sub { font-size: calc(10.5px * var(--ts)); margin-top: 1px; }
+.qv-more .card-save, .qv-more .card-cta { display: none; }
+@media (max-width: 1100px) { .qv-more .grid { columns: 5; } }
+@media (max-width: 700px) { .qv-more .grid { columns: 3; } }
 .item.is-qv .item-media { top: 0; }
 .item.is-qv .item-media { --max-h: min(calc(100vh - 144px), 684px); }
 .item.is-qv .item-info h1 { font-size: clamp(26px, 3vw, 43px); margin-top: 0; }
