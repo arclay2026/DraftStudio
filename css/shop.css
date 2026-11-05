@@ -532,7 +532,7 @@ body.sp-focus { padding-inline-start: 0; background: var(--bg); }
 .wl-img img { width: 100%; height: 100%; object-fit: cover; transition: transform .8s var(--ease); }
 .wl-card:hover .wl-img img { transform: scale(1.04); }
 .wl-img .sp-chip { position: absolute; left: 10px; top: 10px; }
-.wl-buy { position: absolute; left: 10px; right: 10px; bottom: 10px; opacity: 0; transform: translateY(8px); transition: opacity .25s, transform .35s var(--ease); }
+.wl-img .wl-buy { position: absolute; left: 10px; right: 10px; bottom: 10px; width: auto; opacity: 0; transform: translateY(8px); transition: opacity .25s, transform .35s var(--ease); }
 .wl-card:hover .wl-buy, .wl-card:focus-within .wl-buy { opacity: 1; transform: none; }
 .wl-save { position: absolute; top: 10px; right: 10px; z-index: 2; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: color-mix(in srgb, var(--surface) 88%, transparent); color: var(--fg); box-shadow: 0 0 0 1px var(--border); -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px); }
 .wl-save:hover { background: var(--surface); }
