@@ -273,7 +273,7 @@ p { margin: 0; }
 .hero-ctas { display: flex; flex-wrap: wrap; justify-content: center; gap: 12.5px 25px; margin: 35px 0 clamp(44px, 5vw, 66.5px); }
 
 /* Both cards share one row height; the dot grid scales to fit it */
-.hero-cards { display: grid; grid-template-columns: minmax(0, 2.65fr) minmax(0, 1fr); gap: clamp(9px, 1.8vw, 25px); height: clamp(254px, 27vw, 412px); }
+.hero-cards { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(9px, 1.8vw, 25px); height: clamp(254px, 27vw, 412px); }
 .hero-photo {
   position: relative; display: block; overflow: hidden; isolation: isolate; border-radius: 22.5px; height: 100%; background: #3d82c6;
 }
@@ -1044,7 +1044,6 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 .5px rgb
   .f-brand { grid-column: 1 / -1; }
   .lx { grid-template-columns: 1fr; }
   .menu-btn { display: inline-grid; }
-  .hero-cards { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); }
 }
 @media (max-width: 900px) {
   .drops { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: none; grid-auto-rows: 206px; }
@@ -1115,7 +1114,6 @@ input[type="range"]:focus-visible::-moz-range-thumb { box-shadow: 0 0 0 .5px rgb
   .hero-ctas { flex-direction: column; align-items: center; gap: 11px; margin: 27px 0 35px; }
   .hero-cards { grid-template-columns: 1fr; height: auto; }
   .hero-photo { height: 269px; }
-  .hero-dots { height: 285.5px; }
   .license { grid-template-columns: 1fr; }
   .fx-top { align-items: center; }
   .fx-foot .btn { width: 100%; }
