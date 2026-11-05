@@ -3368,5 +3368,5 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .pb-sec.is-held .pb-tabs b { animation-play-state: paused !important; }
 @keyframes pb-fill { to { transform: none; } }
 .pb-tabs button:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; border-radius: 6px; }
-@media (max-width: 640px) { .pb { height: 220px; } .pb-copy h2 br { display: none; } .pb-copy h2 { font-size: 23px; max-width: 15em; } }
+@media (max-width: 640px) { .pb { height: 186px; } .pb-btns { margin-top: 13px; } .pb-btns a { height: 36px; padding: 0 14px; } .pb-copy { margin-top: -6px; } .pb-copy h2 br { display: none; } .pb-copy h2 { font-size: 23px; max-width: 15em; } }
 @media (prefers-reduced-motion: reduce) { .pb-g1, .pb-g2, .pb-g3 { animation: none; } .pb-art, .pb-slide, .pb-slide.is-on { transition: none; } .pb-tabs button[aria-selected="true"] .pb-bar b { animation: none; transform: none; } }
