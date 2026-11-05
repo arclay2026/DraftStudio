@@ -779,13 +779,13 @@ svg.mi .mi-on { display: none; }
 /* ---------- Search overlay ---------- */
 .search-modal {
   position: fixed; inset: 0; z-index: 100; display: none; align-items: flex-start; justify-content: center;
-  padding: clamp(12.5px, 10vh, 95.5px) 12.5px 12.5px; background: rgba(0, 0, 0, .55); backdrop-filter: blur(5.5px); -webkit-backdrop-filter: blur(5.5px);
+  padding: clamp(12.5px, 10vh, 95.5px) 12.5px 12.5px; background: transparent; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); /* just a blur, no dark tint */
 }
 .search-modal.is-open { display: flex; animation: fade .2s; }
 @keyframes fade { from { opacity: 0; } }
 .search-box {
   width: 100%; max-width: 506.5px; max-height: 76vh; display: flex; flex-direction: column; overflow: hidden;
-  background: var(--bg); border: 1px solid var(--line-2); border-radius: 16px; box-shadow: 0 31.5px 79px rgba(0,0,0,.6);
+  background: var(--bg); border: 1px solid var(--line-2); border-radius: 16px; box-shadow: 0 24px 64px -12px rgba(0, 0, 0, .22), 0 2px 8px rgba(0, 0, 0, .06);
   animation: pop .25s var(--ease);
 }
 @keyframes pop { from { transform: translateY(9px) scale(.98); opacity: 0; } }
