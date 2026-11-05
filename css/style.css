@@ -3330,8 +3330,13 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 /* Home banner (site.js banner): a wide card of streaked light, a headline and two links; slides take turns */
 .pb-sec { padding-top: clamp(16px, 2vw, 28px); padding-bottom: 0; }
 .pb-hero { position: relative; z-index: 1; padding: 0; }
-.pb-hero .pb { border-radius: 22.5px; }
-.pb-hero .pb-tabs { margin: 6px 0 -2px; }
+/* concentric with the hero panel: its 25px corner minus the 9px gap; the same 9px gap on every side */
+.pb-hero .pb { border-radius: calc(var(--radius-lg) - 9px); }
+.pb-hero .pb-tabs { position: absolute; left: 0; right: 0; bottom: clamp(6px, 1vw, 12px); z-index: 2; margin: 0; }
+.pb-hero .pb-bar { background: rgba(255, 255, 255, .28); }
+.pb-hero .pb-tabs button:hover .pb-bar { background: rgba(255, 255, 255, .5); }
+.pb-hero .pb-bar b { background: #fff; }
+.pb-hero .pb-tabs button:focus-visible { outline-color: #fff; }
 .pb { position: relative; height: clamp(190px, 15.5vw, 250px); border-radius: clamp(18px, 1.8vw, 26px); overflow: hidden; isolation: isolate; background: #060403; }
 .pb-slide { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; visibility: hidden; transition: opacity .9s var(--ease), visibility 0s .9s; }
 .pb-slide.is-on { opacity: 1; visibility: visible; transition: opacity .9s var(--ease), visibility 0s; }
