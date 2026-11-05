@@ -1879,7 +1879,7 @@ html.qv-dragging #main, html.qv-dragging .footer, html.qv-dragging .qv-backdrop 
 /* =====================================================================
    SIDE MENU — dashboard-style navigation; the page sits beside it, split by a hairline
    ===================================================================== */
-:root { --side-w: 228px; --side-bg: #f5f5f5; --bar-h: 0px; }
+:root { --side-w: 248px; --side-bg: #f5f5f5; --bar-h: 0px; }
 :root[data-rail] { --side-w: 60px; }
 body { padding-inline-start: var(--side-w); background: var(--side-bg); transition: padding .4s var(--ease); }
 .shell {
@@ -1945,7 +1945,7 @@ body { padding-inline-start: var(--side-w); background: var(--side-bg); transiti
    (.is-peek); icons stay exactly where they are, only the labels fade in. */
 @media (min-width: 1024px) {
   :root[data-rail] .side { overflow: hidden; transition: width .42s var(--ease), box-shadow .35s var(--ease), background-color .3s; }
-  :root[data-rail] .side.is-peek { width: 228px; box-shadow: 18px 0 44px -22px rgba(0, 0, 0, .28), 1px 0 0 var(--border); }
+  :root[data-rail] .side.is-peek { width: 248px; box-shadow: 18px 0 44px -22px rgba(0, 0, 0, .28), 1px 0 0 var(--border); }
   :root[data-rail] .side-top { padding-left: 6px; }
   :root[data-rail] .side-nav { overflow-x: hidden; } /* keeps the base 4px inner padding so the active ring isn't clipped */
   :root[data-rail] .side-link { padding: 0 11px; height: 36px; }
