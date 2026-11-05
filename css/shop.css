@@ -694,3 +694,7 @@ textarea, select { outline: none !important; }
 .ua.is-preview .ua-hero { filter: grayscale(1); opacity: .42; pointer-events: none; user-select: none; }
 .ua.is-preview .sp-tabs [aria-disabled="true"] { filter: grayscale(1); opacity: .38; cursor: not-allowed; }
 .ua.is-preview .sp-tabs [aria-disabled="true"]:hover { background: none; color: inherit; }
+
+.wl-empty { grid-column: 1 / -1; display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 56px 20px; text-align: center; border-radius: var(--sp-r-lg); box-shadow: 0 0 0 1px var(--border); }
+.wl-empty b { font-size: calc(16px * var(--ts)); }
+.wl-empty span { color: var(--mute); margin-bottom: 10px; }

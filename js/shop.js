@@ -191,36 +191,47 @@
       links.forEach(x => x.classList.toggle("is-on", x === a));
     }));
 
-    // Wishlist: built from the real catalogue so it matches the live site
+    // Wishlist: only the designs this visitor bookmarked (the same "ds-saved" list the bookmark buttons use
+    // across the site), newest first. Removing one here unsaves it everywhere, so it stays gone after a refresh.
     const wl = $("[data-wishlist]");
     if (wl && window.DS) {
-      const items = DS.items.slice().sort((a, b) => (b.date || "").localeCompare(a.date || ""));
+      const KEY = "ds-saved";
+      const getSaved = () => { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; } };
+      const setSaved = ids => { try { localStorage.setItem(KEY, JSON.stringify(ids)); } catch (e) {} };
       const sm = src => src.replace(/^previews\//, "previews/sm/").replace(/\.(jpe?g|png)$/i, ".webp");
       const esc = s => String(s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
       const SAVED = '<svg class="mi" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m480-240-168 72q-40 17-76-6.5T200-241v-519q0-33 23.5-56.5T280-840h400q33 0 56.5 23.5T760-760v519q0 43-36 66.5t-76 6.5l-168-72Z"/></svg>';
-      wl.innerHTML = items.map(it => {
-        const sold = it.id === "mato-logo"; // example of how a sold logo looks
+      const card = it => {
         const paid = !!it.price;
-        const chip = sold ? '<span class="sp-chip is-dark">SOLD</span>' : paid ? '<span class="sp-chip is-dark">1 OF 1</span>' : "";
-        const status = sold ? '<span class="sp-status is-off">Sold to another buyer</span>' : paid ? '<span class="sp-status is-warn">Available · 1 left</span>' : '<span class="sp-status">Free download</span>';
-        const price = paid ? `${it.priceFrom ? "From " : ""}${esc(it.price)}<small>${it.date ? "Saved " + new Date(it.date).toLocaleDateString("en-ZA", { day: "numeric", month: "short" }) : ""}</small>` : "Free";
-        const buy = sold ? "" : `<a class="sp-btn is-sm is-primary is-block wl-buy" href="${paid ? "checkout.html" : "item.html?id=" + encodeURIComponent(it.id)}">${paid ? "Buy now" : "Download"}</a>`;
-        return `<article class="wl-card${sold ? " is-sold" : ""}">
+        const chip = paid ? '<span class="sp-chip is-dark">1 OF 1</span>' : "";
+        const status = paid ? '<span class="sp-status is-warn">Available · 1 left</span>' : '<span class="sp-status">Free download</span>';
+        const price = paid ? `${it.priceFrom ? "From " : ""}${esc(it.price)}` : "Free";
+        const buy = `<a class="sp-btn is-sm is-primary is-block wl-buy" href="${paid ? "checkout.html" : "item.html?id=" + encodeURIComponent(it.id)}">${paid ? "Buy now" : "Download"}</a>`;
+        return `<article class="wl-card" data-id="${esc(it.id)}">
           <div class="wl-img"><img src="${sm(it.preview)}" onerror="this.onerror=null;this.src='${esc(it.preview)}'" alt="" loading="lazy">${chip}${buy}</div>
           <button class="wl-save" type="button" aria-label="Remove from wishlist" data-unsave>${SAVED}</button>
           <div class="wl-body"><div><b>${esc(it.title.split(" — ")[0])}</b><small>${status}</small></div><span class="wl-price">${price}</span></div>
         </article>`;
-      }).join("");
-      const count = $("[data-wl-n]");
-      const recount = () => { if (count) count.textContent = $$(".wl-card", wl).length; };
-      recount();
+      };
+      const counts = $$("[data-wl-n]");
+      const draw = () => {
+        const ids = getSaved();
+        const list = ids.slice().reverse().map(id => DS.items.find(it => it.id === id)).filter(Boolean);
+        counts.forEach(n => { n.textContent = list.length; });
+        wl.innerHTML = list.length ? list.map(card).join("")
+          : `<div class="wl-empty"><b>Nothing saved yet.</b><span>Tap the bookmark on any design to keep it here.</span><a class="sp-btn is-sm is-primary" href="browse.html">Browse files</a></div>`;
+      };
+      draw();
+      // saved or removed in another tab: stay in step
+      addEventListener("storage", e => { if (e.key === KEY) draw(); });
       wl.addEventListener("click", e => {
         const h = e.target.closest("[data-unsave]");
         if (!h) return;
-        const card = h.closest(".wl-card");
-        card.style.transition = "opacity .25s, transform .25s";
-        card.style.opacity = "0"; card.style.transform = "scale(.97)";
-        setTimeout(() => { card.remove(); recount(); }, 250);
+        const c = h.closest(".wl-card"), id = c.dataset.id;
+        setSaved(getSaved().filter(x => x !== id));
+        c.style.transition = "opacity .25s, transform .25s";
+        c.style.opacity = "0"; c.style.transform = "scale(.97)";
+        setTimeout(draw, 250);
         toast("Removed from your wishlist");
       });
     }
