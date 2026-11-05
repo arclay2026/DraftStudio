@@ -1957,7 +1957,8 @@
     document.addEventListener("click", e => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const a = e.target.closest && e.target.closest("a[href]");
-      if (!a || a.target === "_blank" || a.closest(".search-box")) return;
+      // the quick view's own "Open full page" button must leave for the real page, not reopen the quick view
+      if (!a || a.target === "_blank" || a.closest(".search-box") || a.hasAttribute("data-qv-full")) return;
       const id = idOf(a);
       if (!id || !items.some(x => x.id === id)) return;
       if (!cur && pref("open") === "page") return;  // Settings > Open files in > Full page
