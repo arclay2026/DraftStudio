@@ -196,7 +196,7 @@ window.DSChat = function (kit) {
       <a class="ch-pal" href="palettes.html"><span class="ch-sw">${p.colors.map(c => `<i style="background:${c}"></i>`).join("")}</span><small><b data-no-i18n>${esc(p.name)}</b> · ${esc(p.mood)}</small></a>`).join("")}</div>`;
     if (b.type === "apps") { const f = FORMATS.find(x => x.ext === b.ext); return f ? `<p class="ch-apps"><span>Opens in</span>${f.apps.map(a => `<b>${esc(APPS[a].name)}</b>${APPS[a].free ? ` <em>Free</em>` : ""}`).join(", ")}</p>` : ""; }
     if (b.type === "links") return `<div class="ch-links">${b.keys.filter(k => LINKS[k]).map(k => `<a href="${LINKS[k][0]}">${icon(LINKS[k][2])}<span>${LINKS[k][1]}</span></a>`).join("")}</div>`;
-    if (b.type === "contact") return `<div class="ch-links"><a href="${waLink("Hi Drafty Labs, ")}" target="_blank" rel="noopener">${icon("chat")}<span>WhatsApp</span></a><a href="${mailLink("Hello Drafty Labs")}">${icon("mail")}<span>Email</span></a></div>`;
+    if (b.type === "contact") return `<div class="ch-links"><a href="${waLink("Hi Drafty Labs, ")}" target="_blank" rel="noopener"><span class="wa-ic" aria-hidden="true"></span><span>WhatsApp</span></a><a href="${mailLink("Hello Drafty Labs")}">${icon("mail")}<span>Email</span></a></div>`;
     return "";
   };
   const para = s => `<p>${esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/\n/g, "<br>")}</p>`;

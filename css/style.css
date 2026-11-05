@@ -3391,7 +3391,12 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .tnav-me:hover .av-fg { fill: color-mix(in srgb, var(--fg) 48%, var(--surface)); }
 @supports (corner-shape: squircle) { .tnav-btn, .tnav-search, .tnav-ring, .tnav-icon { corner-shape: squircle; border-radius: 12px; } }
 @supports (corner-shape: squircle) { .tnav-search { border-radius: 16px; } .tnav-keys kbd { border-radius: 8px; corner-shape: squircle; } }
-.tnav-wa svg { width: 16px; height: 16px; color: #25d366; margin-inline-start: -2px; }
+.tnav-wa img { width: 16px; height: 16px; margin-inline-start: -2px; }
+/* the WhatsApp logo (assets/brand/whatsapp.svg) as a shape that takes the button's own colour */
+.wa-ic { display: inline-block; flex: none; width: 1.2em; height: 1.2em; vertical-align: -.22em; background-color: currentColor;
+  -webkit-mask: url("../assets/brand/whatsapp.svg") center / contain no-repeat; mask: url("../assets/brand/whatsapp.svg") center / contain no-repeat; }
+.btn .wa-ic { width: 18px; height: 18px; }
+.ch-links .wa-ic { background-color: #25d366; }
 /* narrower screens: keep WhatsApp, drop Learn (it's in the side menu too) */
 @media (max-width: 1180px) { .tnav-r a.tnav-btn[href="learn.html"] { display: none; } }
 
