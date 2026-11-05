@@ -645,6 +645,27 @@
     addEventListener("scroll", onScroll, { passive: true }); onScroll();
   }
 
+
+  /* ---------- Skeleton loading for pictures ----------
+     Any picture that hasn't arrived yet shimmers in its own spot, then fades in. Tiny icons are left alone. */
+  function skeletons() {
+    const watch = img => {
+      if (img.dataset.sk || img.complete && img.naturalWidth) return;
+      img.dataset.sk = "1";
+      const r = img.getBoundingClientRect();
+      if (r.width && r.width < 36 && r.height < 36) return;
+      img.classList.add("sk-wait");
+      const done = () => { img.classList.remove("sk-wait"); if (img.naturalWidth) img.classList.add("sk-in"); };
+      img.addEventListener("load", done, { once: true });
+      img.addEventListener("error", done, { once: true });
+    };
+    $$("img").forEach(watch);
+    new MutationObserver(list => list.forEach(m => m.addedNodes.forEach(n => {
+      if (n.nodeType !== 1) return;
+      if (n.tagName === "IMG") watch(n); else n.querySelectorAll && n.querySelectorAll("img").forEach(watch);
+    }))).observe(document.body, { childList: true, subtree: true });
+  }
+
   /* ---------- Shared behaviour ---------- */
   function chrome() {
     // The page sits on a raised panel beside the side menu
@@ -2740,6 +2761,7 @@
   i18n();
   header(page === "browse" ? (new URLSearchParams(location.search).get("cat") || "browse") : page);
   footer();
+  skeletons();
   chrome();
   topNav();
   settings();

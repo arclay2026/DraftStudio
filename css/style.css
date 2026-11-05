@@ -3435,3 +3435,43 @@ textarea, select { outline: none !important; }
 .dr-marble { transform-box: view-box; transform-origin: 50px 50px; animation: dr-marble 22s linear infinite; }
 @keyframes dr-marble { 0% { rotate: 0deg; scale: 1; } 50% { rotate: 180deg; scale: 1.06; } 100% { rotate: 360deg; scale: 1; } }
 @media (prefers-reduced-motion: reduce) { .dr-marble { animation: none; } }
+
+/* =====================================================================
+   SKELETON LOADING: shimmering placeholders while content and pictures load.
+   Lists show placeholder cards until the page script fills them in; every
+   picture shimmers in its own spot until it arrives, then fades in.
+   ===================================================================== */
+:root { --sk-a: color-mix(in srgb, var(--fg) 5.5%, transparent); --sk-b: color-mix(in srgb, var(--fg) 11%, transparent); }
+.sk, img.sk-wait {
+  background-color: var(--sk-a);
+  background-image: linear-gradient(100deg, transparent 20%, var(--sk-b) 50%, transparent 80%);
+  background-size: 220% 100%; background-repeat: no-repeat;
+  animation: sk-shine 1.5s ease-in-out infinite;
+}
+@keyframes sk-shine { from { background-position: 130% 0; } to { background-position: -30% 0; } }
+.sk { display: block; border-radius: 14px; }
+img.sk-in { animation: sk-in .45s var(--ease) both; }
+@keyframes sk-in { from { opacity: 0; } }
+.sk-card { display: flex; flex-direction: column; gap: 9px; break-inside: avoid; margin-bottom: clamp(11px, 1.4vw, 17px); }
+.sk-wrap { display: contents; }
+.sk-img { width: 100%; aspect-ratio: 4 / 3; border-radius: 18px; }
+.sk-line { height: 12px; width: 72%; border-radius: 999px; }
+.sk-line.is-short { width: 42%; }
+.sk-drop { border-radius: 22.5px; }
+.sk-drop.is-big { grid-column: span 2; grid-row: span 2; }
+.sk-row { display: grid; grid-template-columns: 26px 160px 1fr; align-items: center; gap: 18px; padding: 20px 4px; border-bottom: 1px solid var(--border); }
+.sk-dot { width: 26px; height: 12px; border-radius: 999px; }
+.sk-bar { height: 44px; border-radius: 12px; }
+.sk-tile { aspect-ratio: 4 / 3; border-radius: 18px; }
+.sk-plan { height: 420px; border-radius: 22px; }
+.sk-item { padding-top: 22px; }
+.sk-line.is-crumbs { width: 200px; margin-bottom: 22px; }
+.sk-item-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 44px); }
+.sk-media { aspect-ratio: 4 / 3; border-radius: 22px; }
+.sk-item-info { display: flex; flex-direction: column; gap: 12px; padding-top: 6px; }
+.sk-title { height: 40px; width: 80%; border-radius: 12px; margin-bottom: 8px; }
+.sk-box { height: 150px; border-radius: 18px; margin-top: 14px; }
+.sk-btn { height: 48px; border-radius: 14px; }
+@media (max-width: 900px) { .sk-item-grid { grid-template-columns: 1fr; } .sk-plan { height: 300px; } .sk-row { grid-template-columns: 26px 1fr; } .sk-bar { grid-column: 1 / -1; } }
+@media (max-width: 640px) { .sk-drop.is-big { grid-column: auto; grid-row: auto; } }
+@media (prefers-reduced-motion: reduce) { .sk, img.sk-wait { animation: none; background-image: none; } img.sk-in { animation: none; } }
