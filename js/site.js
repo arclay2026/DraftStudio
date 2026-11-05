@@ -628,7 +628,7 @@
       <nav class="tnav-r" aria-label="Quick links">
         <a class="tnav-btn" href="${waLink("Hi Drafty Labs, some feedback on the website: ")}" target="_blank" rel="noopener">Feedback</a>
         <a class="tnav-btn" href="learn.html">Learn</a>
-        <button class="tnav-btn" type="button" data-tnav-ask><img src="assets/drafty.svg?v=d3" alt="" width="18" height="18">Ask</button>
+        <button class="tnav-btn" type="button" data-tnav-ask><img src="assets/drafty.svg?v=d4" alt="" width="18" height="18">Ask</button>
         <a class="tnav-icon tnav-ring" href="browse.html" aria-label="Browse all files" data-tip="Browse all files">${sideIcon("browse-all")}</a>
         <a class="tnav-me" href="account.html" aria-label="Your account"><img class="logo-l" src="assets/logo-mark.svg?v=dl3" alt="" width="26" height="26"><img class="logo-d" src="assets/logo-mark-dark.svg?v=dl3" alt="" width="26" height="26"></a>
       </nav>`;

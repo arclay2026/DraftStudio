@@ -12,15 +12,14 @@
 window.DSChat = function (kit) {
   // Drafty's avatar: the official mark, white on the dark tile (black in dark mode, where the tile is light)
   // Drafty's face (assets/drafty.svg): the chat button and every message from Drafty
-  const AV_MARK = '<img class="ch-drafty" src="assets/drafty.svg?v=d3" alt="">';
+  const AV_MARK = '<img class="ch-drafty" src="assets/drafty.svg?v=d4" alt="">';
   // the chat button is Drafty himself, drawn inline so his eyes can follow the pointer
+  // Drafty: a glossy marbled ball. Bands of five colours are swirled into veins by a fixed swirl field and turn
+  // slowly underneath it, so the veins keep flowing. Lit like a real sphere: soft light top left, shaded edge, rim light.
   const DRAFTY_BALL = `<svg class="dr-ball" viewBox="0 0 100 100" aria-hidden="true">
-    <defs><radialGradient id="drb-g" cx=".32" cy=".26" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#eceef2"/><stop offset=".85" stop-color="#bcc1ca"/><stop offset="1" stop-color="#8f95a0"/></radialGradient></defs>
-    <g class="dr-body"><circle cx="50" cy="50" r="49" fill="url(#drb-g)"/>
-    <ellipse cx="30" cy="22" rx="14" ry="6.5" fill="#fff" opacity=".7" transform="rotate(-36 30 22)"/>
-    <g class="dr-face"><g>
-      <rect class="dr-eye" x="35" y="33" width="10" height="24" rx="5" fill="#111114"/><rect class="dr-eye" x="55" y="33" width="10" height="24" rx="5" fill="#111114"/>
-      <circle cx="38.2" cy="37.4" r="1.7" fill="#fff" opacity=".9"/><circle cx="58.2" cy="37.4" r="1.7" fill="#fff" opacity=".9"/></g></g></g></svg>`;
+    <defs><radialGradient id="drb-shade" cx=".4" cy=".34" r=".68"><stop offset=".45" stop-color="#140828" stop-opacity="0"/><stop offset="1" stop-color="#140828" stop-opacity=".58"/></radialGradient><radialGradient id="drb-light" cx=".3" cy=".24" r=".55"><stop offset="0" stop-color="#fff" stop-opacity=".42"/><stop offset=".6" stop-color="#fff" stop-opacity=".08"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><radialGradient id="drb-rim" cx=".5" cy=".42" r=".6"><stop offset=".8" stop-color="#fff" stop-opacity="0"/><stop offset=".95" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><linearGradient id="drb-rimfade" x1="0" y1="0" x2="0" y2="1"><stop offset=".45" stop-color="#000"/><stop offset="1" stop-color="#fff"/></linearGradient><mask id="drb-rm"><rect width="100" height="100" fill="url(#drb-rimfade)"/></mask><clipPath id="drb-clip"><circle cx="50" cy="50" r="49"/></clipPath><filter id="drb-vein" x="-30%" y="-30%" width="160%" height="160%"><feTurbulence type="fractalNoise" baseFrequency=".028" numOctaves="3" seed="11" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="58" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation=".7"/></filter></defs>
+    <g class="dr-body"><g clip-path="url(#drb-clip)"><circle cx="50" cy="50" r="49" fill="#7a5cff"/><g filter="url(#drb-vein)"><g class="dr-marble"><rect x="-40" y="-40" width="10.5" height="180" fill="#ff8a1a"/><rect x="-30" y="-40" width="10.5" height="180" fill="#ffd53d"/><rect x="-20" y="-40" width="10.5" height="180" fill="#1fc8e8"/><rect x="-10" y="-40" width="10.5" height="180" fill="#7a5cff"/><rect x="0" y="-40" width="10.5" height="180" fill="#ff3d8b"/><rect x="10" y="-40" width="10.5" height="180" fill="#ff8a1a"/><rect x="20" y="-40" width="10.5" height="180" fill="#ffd53d"/><rect x="30" y="-40" width="10.5" height="180" fill="#1fc8e8"/><rect x="40" y="-40" width="10.5" height="180" fill="#7a5cff"/><rect x="50" y="-40" width="10.5" height="180" fill="#ff3d8b"/><rect x="60" y="-40" width="10.5" height="180" fill="#ff8a1a"/><rect x="70" y="-40" width="10.5" height="180" fill="#ffd53d"/><rect x="80" y="-40" width="10.5" height="180" fill="#1fc8e8"/><rect x="90" y="-40" width="10.5" height="180" fill="#7a5cff"/><rect x="100" y="-40" width="10.5" height="180" fill="#ff3d8b"/><rect x="110" y="-40" width="10.5" height="180" fill="#ff8a1a"/><rect x="120" y="-40" width="10.5" height="180" fill="#ffd53d"/><rect x="130" y="-40" width="10.5" height="180" fill="#1fc8e8"/><rect x="140" y="-40" width="10.5" height="180" fill="#7a5cff"/></g></g></g><circle cx="50" cy="50" r="49" fill="url(#drb-shade)"/><circle cx="50" cy="50" r="49" fill="url(#drb-light)"/><circle cx="50" cy="50" r="49" fill="url(#drb-rim)" mask="url(#drb-rm)"/>
+    <g class="dr-face"><g><rect class="dr-eye" x="35" y="33" width="10" height="24" rx="5" fill="#111114"/><rect class="dr-eye" x="55" y="33" width="10" height="24" rx="5" fill="#111114"/><circle cx="38.2" cy="37.4" r="1.7" fill="#fff" opacity=".9"/><circle cx="58.2" cy="37.4" r="1.7" fill="#fff" opacity=".9"/></g></g></g></svg>`;
   const { $, $$, esc, icon, imgSrc, items, DS, itemUrl, formatsOf, fmtBadge, waLink, mailLink, FORMATS, APPS, LANG } = kit;
   const KEY = "ds-chat";
   const NAME = "Drafty";
@@ -379,7 +378,7 @@ window.DSChat = function (kit) {
       return { x: u.left - 8, y: u.top - 8, w: u.right - u.left + 16, h: u.bottom - u.top + 16 };
     };
     const steps = STEPS.filter((s, k) => !k || rectOf(s));
-    const ball = DRAFTY_BALL.replace(/drb-g/g, "drt-g").replace('class="dr-ball"', 'class="dr-ball tr-ball"');
+    const ball = DRAFTY_BALL.replace(/drb-/g, "drt-").replace('class="dr-ball"', 'class="dr-ball tr-ball"');
     const t = document.createElement("div");
     t.className = "tr"; t.setAttribute("role", "dialog"); t.setAttribute("aria-label", "A tour of Drafty Labs");
     t.innerHTML = `<div class="tr-spot"></div><div class="tr-host"><div class="tr-drafty">${ball}</div>

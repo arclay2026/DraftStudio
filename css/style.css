@@ -3429,3 +3429,8 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
    (Buttons and links keep their keyboard focus outline.) */
 input:not([type="range"]):not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="color"]),
 textarea, select { outline: none !important; }
+
+/* Drafty's marble: the colour bands turn slowly under a fixed swirl, so the veins flow and fold like marbled glass */
+.dr-marble { transform-box: view-box; transform-origin: 50px 50px; animation: dr-marble 22s linear infinite; }
+@keyframes dr-marble { 0% { rotate: 0deg; scale: 1; } 50% { rotate: 180deg; scale: 1.06; } 100% { rotate: 360deg; scale: 1; } }
+@media (prefers-reduced-motion: reduce) { .dr-marble { animation: none; } }
