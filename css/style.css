@@ -3413,25 +3413,29 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .pb-tabs { pointer-events: none; }
 .pb-nav { position: relative; display: inline-flex; align-items: center; pointer-events: auto; padding: 0 2px; }
 .pb-lines { position: relative; z-index: 1; display: flex; gap: 4px; }
-.pb-nav::before { content: ""; position: absolute; z-index: 0; top: 5px; bottom: 5px; left: 8px; right: 8px; border-radius: 999px; opacity: 0;
-  background: rgba(0, 0, 0, .3);
-  transition: top .5s var(--spring, var(--ease)), bottom .5s var(--spring, var(--ease)), left .5s var(--spring, var(--ease)), right .5s var(--spring, var(--ease)), opacity .25s var(--ease); }
+/* A spring: opens fast, overshoots a touch, settles. Browsers without linear() get a simple overshoot curve. */
+.pb-nav { --pb-pop: cubic-bezier(.34, 1.56, .64, 1); --pb-pop: linear(0, .009, .035 2.1%, .141 4.4%, .723 12.9%, .938 16.7%, 1.017 19.4%, 1.067, 1.099 24.3%, 1.108 26%, 1.1 28.1%, 1.069 31.4%, .974 39.5%, .957 41.4%, .95 43.6%, .954 46.2%, .994 54%, 1.006 59%, 1.007 64%, 1.001 77%, 1); }
+/* The pill is drawn once at full size and revealed with a clip, so opening it never re-lays out the page.
+   At rest the clip hugs the lines; on hover it opens out (the extra room lets the spring overshoot). */
+.pb-nav::before { content: ""; position: absolute; z-index: 0; top: -8px; bottom: -8px; left: -50px; right: -50px; border-radius: 999px; opacity: 0;
+  background: rgba(0, 0, 0, .3); clip-path: inset(13px 58px round 999px); will-change: clip-path;
+  transition: clip-path .26s cubic-bezier(.4, 0, .2, 1), opacity .18s ease .06s; }
 .pb-arrow { position: absolute; z-index: 1; top: 50%; display: grid; place-items: center; width: 26px; height: 26px; margin-top: -13px; border-radius: 50%; color: #fff;
-  opacity: 0; pointer-events: none; transition: opacity .25s var(--ease), transform .45s var(--spring, var(--ease)), background .15s; }
+  opacity: 0; pointer-events: none; will-change: transform; transition: opacity .14s ease, transform .24s cubic-bezier(.4, 0, .2, 1), background .15s; }
 .pb-arrow svg { width: 15px; height: 15px; }
-.pb-prev { left: -30px; transform: translateX(14px) scale(.7); }
-.pb-next { right: -30px; transform: translateX(-14px) scale(.7); }
+.pb-prev { left: -30px; transform: translateX(16px) scale(.5); }
+.pb-next { right: -30px; transform: translateX(-16px) scale(.5); }
 .pb-next svg { transform: scaleX(-1); }
 .pb-arrow:hover { background: rgba(255, 255, 255, .16); }
 .pb-arrow:focus-visible { outline: 2px solid #fff; outline-offset: 1px; }
 @media (hover: hover) {
-  .pb-nav:hover::before, .pb-nav:focus-within::before { top: -5px; bottom: -5px; left: -40px; right: -40px; opacity: 1; }
-  .pb-nav:hover .pb-arrow, .pb-nav:focus-within .pb-arrow { opacity: 1; pointer-events: auto; transform: none; }
+  .pb-nav:hover::before, .pb-nav:focus-within::before { clip-path: inset(3px 10px round 999px); opacity: 1; transition: clip-path .55s var(--pb-pop), opacity .12s ease; }
+  .pb-nav:hover .pb-arrow, .pb-nav:focus-within .pb-arrow { opacity: 1; pointer-events: auto; transform: none; transition: opacity .16s ease .04s, transform .55s var(--pb-pop) .03s, background .15s; }
 }
 /* outside a dark banner, a light tint with dark arrows */
 .pb-sec:not(.pb-hero) .pb-nav::before { background: color-mix(in srgb, var(--fg) 7%, transparent); }
 .pb-sec:not(.pb-hero) .pb-arrow { color: var(--fg); }
-@media (prefers-reduced-motion: reduce) { .pb-nav::before, .pb-arrow { transition: opacity .2s; } }
+@media (prefers-reduced-motion: reduce) { .pb-nav::before, .pb-arrow, .pb-nav:hover::before, .pb-nav:hover .pb-arrow { transition: opacity .15s !important; } }
 /* leave room under the buttons for the glass pill */
 .pb-hero .pb-copy { margin-top: -16px; }
 @media (max-width: 640px) { .pb-hero .pb-copy { margin-top: -12px; } }
