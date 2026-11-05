@@ -1766,9 +1766,9 @@
     tag(secOf("[data-qt]"), "home-qr");
     tag(secOf("[data-pt]"), "home-palettes");
     const SLIDES = [
-      { t: "Drafty Canvas is now live, <br>free in your browser", go: "canvas.html", more: "#home-canvas", c: ["#ffb347", "#ff6a00", "#b33a00", "#080402"] },
-      { t: "QR Code Studio is here: <br>codes that look designed", go: "qr.html", more: "#home-qr", c: ["#ff8ad8", "#d42ac0", "#5b1fd1", "#07030a"] },
-      { t: "36 colour palettes, ready <br>to copy in one click", go: "palettes.html", more: "#home-palettes", c: ["#8fd3ff", "#2f7bff", "#3b2fd0", "#02040a"] }].filter(s => $(s.more));
+      { name: "Canvas", t: "Drafty Canvas is now live, <br>free in your browser", go: "canvas.html", more: "#home-canvas", c: ["#ffb347", "#ff6a00", "#b33a00", "#080402"] },
+      { name: "QR Code Studio", t: "QR Code Studio is here: <br>codes that look designed", go: "qr.html", more: "#home-qr", c: ["#ff8ad8", "#d42ac0", "#5b1fd1", "#07030a"] },
+      { name: "Palettes", t: "36 colour palettes, ready <br>to copy in one click", go: "palettes.html", more: "#home-palettes", c: ["#8fd3ff", "#2f7bff", "#3b2fd0", "#02040a"] }].filter(s => $(s.more));
     if (!SLIDES.length) return;
     const sec = document.createElement("section");
     sec.className = "section pb-sec";
@@ -1779,10 +1779,10 @@
             <div class="pb-btns"><a class="pb-try" href="${s.go}"${i ? ' tabindex="-1"' : ""}>Try it</a><a class="pb-more" href="${s.more}"${i ? ' tabindex="-1"' : ""}>Learn more</a></div></div>
         </div>`).join("")}
       </div>
-      ${SLIDES.length > 1 ? `<div class="pb-dots" role="tablist" aria-label="Choose a slide">${SLIDES.map((_, i) => `<button type="button" role="tab" aria-label="Slide ${i + 1}" aria-selected="${!i}"></button>`).join("")}</div>` : ""}</div>`;
+      ${SLIDES.length > 1 ? `<div class="pb-tabs" role="tablist" aria-label="Choose a slide">${SLIDES.map((s, i) => `<button type="button" role="tab" aria-label="${esc(s.name)}" aria-selected="${!i}" style="--pc:${s.c[1]}"><i class="pb-bar"><b></b></i></button>`).join("")}</div>` : ""}</div>`;
     hero.after(sec);
-    const slides = $$(".pb-slide", sec), dots = $$(".pb-dots button", sec), box = $(".pb", sec);
-    let at = 0, timer = 0;
+    const slides = $$(".pb-slide", sec), dots = $$(".pb-tabs button", sec), box = $(".pb", sec);
+    let at = 0;
     const show = i => {
       at = (i + slides.length) % slides.length;
       slides.forEach((el, k) => {
@@ -1790,20 +1790,25 @@
         el.setAttribute("aria-hidden", k !== at);
         $$("a", el).forEach(a => a.tabIndex = k === at ? 0 : -1);
       });
-      dots.forEach((d, k) => d.setAttribute("aria-selected", k === at));
+      // restart the active tab's progress line; when it fills, the next slide comes in
+      dots.forEach((d, k) => { d.setAttribute("aria-selected", k === at); const b = $("b", d); b.style.animation = "none"; void b.offsetWidth; b.style.animation = ""; });
     };
     const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const play = () => { clearInterval(timer); if (!still && slides.length > 1) timer = setInterval(() => !document.hidden && show(at + 1), 6500); };
-    dots.forEach((d, k) => d.addEventListener("click", () => { show(k); play(); }));
-    box.addEventListener("pointerenter", () => clearInterval(timer));
-    box.addEventListener("pointerleave", play);
-    sec.addEventListener("focusin", () => clearInterval(timer));
+    // hovering, focusing or touching pauses the line (and so the slides) right where it is
+    const hold = on => sec.classList.toggle("is-held", on);
+    dots.forEach((d, k) => {
+      d.addEventListener("click", () => show(k));
+      $("b", d).addEventListener("animationend", () => { if (k === at && !still) show(at + 1); });
+    });
+    box.addEventListener("pointerenter", () => hold(true));
+    box.addEventListener("pointerleave", () => hold(false));
+    sec.addEventListener("focusin", () => hold(true));
+    sec.addEventListener("focusout", e => { if (!sec.contains(e.relatedTarget)) hold(false); });
     // swipe on touch screens
     let x0 = null;
-    box.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; clearInterval(timer); }, { passive: true });
-    box.addEventListener("touchend", e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) show(at + (dx < 0 ? 1 : -1)); x0 = null; play(); });
+    box.addEventListener("touchstart", e => { x0 = e.touches[0].clientX; hold(true); }, { passive: true });
+    box.addEventListener("touchend", e => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; if (Math.abs(dx) > 40) show(at + (dx < 0 ? 1 : -1)); x0 = null; hold(false); });
     $$(".pb-more", sec).forEach(a => a.addEventListener("click", e => { const t = $(a.getAttribute("href")); if (t) { e.preventDefault(); t.scrollIntoView({ behavior: still ? "auto" : "smooth", block: "start" }); } }));
-    play();
   }
 
   /* ---------- Quick view ---------- */

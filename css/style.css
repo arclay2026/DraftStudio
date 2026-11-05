@@ -3349,10 +3349,16 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .pb-more { color: #fff; }
 .pb-more:hover { background: rgba(255, 255, 255, .12); }
 .pb-btns a:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.pb-dots { display: flex; justify-content: center; gap: 4px; margin-top: 12px; }
-.pb-dots button { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; }
-.pb-dots button::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: color-mix(in srgb, var(--fg) 22%, transparent); transition: background .3s, transform .3s; }
-.pb-dots button[aria-selected="true"]::before { background: var(--fg); transform: scale(1.1); }
-.pb-dots button:hover::before { background: color-mix(in srgb, var(--fg) 50%, transparent); }
+/* under the banner: each slide's name with a hairline that fills while it's showing, in that slide's colour */
+.pb-tabs { display: flex; justify-content: center; gap: 4px; margin-top: 10px; }
+.pb-tabs button { display: grid; place-items: center; padding: 8px 3px; }
+.pb-bar { position: relative; display: block; width: 18px; height: 3px; border-radius: 3px; overflow: hidden; background: color-mix(in srgb, var(--fg) 16%, transparent); transition: width .45s var(--ease), background .2s; }
+.pb-tabs button:hover .pb-bar { background: color-mix(in srgb, var(--fg) 30%, transparent); }
+.pb-tabs button[aria-selected="true"] .pb-bar { width: 44px; }
+.pb-bar b { position: absolute; inset: 0; border-radius: inherit; background: var(--pc, var(--fg)); transform: scaleX(0); transform-origin: 0 50%; }
+.pb-tabs button[aria-selected="true"] .pb-bar b { animation: pb-fill 6.5s linear forwards; }
+.pb-sec.is-held .pb-tabs b { animation-play-state: paused !important; }
+@keyframes pb-fill { to { transform: none; } }
+.pb-tabs button:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; border-radius: 6px; }
 @media (max-width: 640px) { .pb { height: 220px; } .pb-copy h2 br { display: none; } .pb-copy h2 { font-size: 23px; max-width: 15em; } }
-@media (prefers-reduced-motion: reduce) { .pb-g1, .pb-g2, .pb-g3 { animation: none; } .pb-art, .pb-slide, .pb-slide.is-on { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .pb-g1, .pb-g2, .pb-g3 { animation: none; } .pb-art, .pb-slide, .pb-slide.is-on { transition: none; } .pb-tabs button[aria-selected="true"] .pb-bar b { animation: none; transform: none; } }
