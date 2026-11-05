@@ -1368,6 +1368,13 @@ html.qv-lock { overflow: hidden; }
 .qv-btn.is-dark { background: var(--fg); border-color: var(--fg); color: var(--on-fg); }
 .qv-body { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 5.5px clamp(18px, 2vw, 32.5px) 36px; }
 .item.is-qv { padding-top: 5.5px; }
+/* "More logos / mockups / ..." under the file in the quick view */
+.qv-more { margin-top: clamp(28px, 4vw, 48px); padding-top: clamp(20px, 2.4vw, 30px); border-top: 1px solid var(--border); }
+.qv-more-h { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.qv-more-h h3 { font-size: clamp(19px, 1.8vw, 24px); font-weight: 600; letter-spacing: -.02em; }
+.qv-more .grid { columns: 4; }
+@media (max-width: 1100px) { .qv-more .grid { columns: 3; } }
+@media (max-width: 700px) { .qv-more .grid { columns: 2; } }
 .item.is-qv .item-media { top: 0; }
 .item.is-qv .item-media { --max-h: min(calc(100vh - 144px), 684px); }
 .item.is-qv .item-info h1 { font-size: clamp(26px, 3vw, 43px); margin-top: 0; }

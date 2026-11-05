@@ -1925,8 +1925,17 @@
       const it = items.find(i => i.id === id); if (!it) return;
       cur = id;
       if (!list.includes(id)) list = pageIds();
-      body.innerHTML = `<div class="item is-qv">${itemBody(it)}</div>`;
+      // underneath: more files of the same kind (logos with logos, mockups with mockups), newest first
+      const kind = catOf(it.category), more = items.filter(x => x !== it && x.category === it.category)
+        .sort((a, b) => (b.date || "").localeCompare(a.date || "")).slice(0, 8);
+      body.innerHTML = `<div class="item is-qv">${itemBody(it)}</div>` + (more.length ? `
+        <section class="qv-more">
+          <div class="qv-more-h"><h3>More ${esc((kind ? kind.name : it.category).toLowerCase())}</h3>
+          <a class="link-arrow" href="browse.html?cat=${kind ? kind.slug : ""}">See all ${icon("arrow-right")}</a></div>
+          <div class="grid">${more.map(card).join("")}</div>
+        </section>` : "");
       bindItem(body, it);
+      reveal(body);
       const n = list.indexOf(id);
       $("[data-qv-pos]", qv).innerHTML = n > -1 && list.length > 1 ? `<b>${String(n + 1).padStart(2, "0")}</b> / ${String(list.length).padStart(2, "0")}` : `<b>${it.num}</b>`;
       $$("[data-qv-step]", qv).forEach(b => { b.disabled = list.length < 2; });
