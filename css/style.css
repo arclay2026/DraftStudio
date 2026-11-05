@@ -3353,6 +3353,8 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .pb-btns { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: clamp(16px, 1.7vw, 24px); }
 .pb-btns a { display: inline-flex; align-items: center; height: 40px; padding: 0 16px; border-radius: 11px; font-size: calc(14.5px * var(--ts)); font-weight: 500; text-decoration: none; transition: background .2s, transform .25s var(--spring, var(--ease)); }
 .pb-try { background: #fff; color: #0b0b0c; }
+/* squircle buttons: a continuous curve instead of a plain round corner (plain rounded corners where unsupported) */
+@supports (corner-shape: squircle) { .pb-btns a { border-radius: 16px; corner-shape: squircle; } @media (max-width: 640px) { .pb-btns a { border-radius: 14px; } } }
 .pb-try:hover { transform: translateY(-1px); background: #f1f1f1; }
 .pb-more { color: #fff; }
 .pb-more:hover { background: rgba(255, 255, 255, .12); }
