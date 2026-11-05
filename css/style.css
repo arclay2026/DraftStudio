@@ -3383,9 +3383,8 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .tnav-btn:hover { background: var(--bg-2); border-color: color-mix(in srgb, var(--fg) 14%, var(--border)); }
 .tnav-btn img { width: 16px; height: 16px; margin-inline-start: -3px; }
 .tnav-ring { border: 1px solid var(--border); background: var(--surface); width: 30px; height: 30px; color: var(--fg); }
-.tnav-me { display: grid; place-items: center; width: 31px; height: 31px; margin-inline-start: 4px; border-radius: 50%; box-shadow: 0 0 0 1px var(--border); transition: box-shadow .2s; }
-.tnav-me:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--fg) 25%, transparent); }
-.tnav-me svg { width: 100%; height: 100%; border-radius: 50%; }
+.tnav-me { display: grid; place-items: center; width: 30px; height: 30px; margin-inline-start: 4px; border-radius: 50%; overflow: hidden; }
+.tnav-me svg { display: block; width: 100%; height: 100%; }
 /* an empty profile picture: a soft grey disc with a person silhouette */
 .tnav-me .av-bg { fill: color-mix(in srgb, var(--fg) 9%, var(--surface)); }
 .tnav-me .av-fg { fill: color-mix(in srgb, var(--fg) 34%, var(--surface)); }

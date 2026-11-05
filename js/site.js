@@ -630,7 +630,7 @@
         <a class="tnav-btn" href="learn.html">Learn</a>
         <button class="tnav-btn" type="button" data-tnav-ask><img src="assets/drafty.svg?v=d4" alt="" width="18" height="18">Ask</button>
         <a class="tnav-icon tnav-ring" href="browse.html" aria-label="Browse all files" data-tip="Browse all files">${sideIcon("browse-all")}</a>
-        <a class="tnav-me" href="account.html" aria-label="Your account"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" class="av-bg"/><circle cx="16" cy="12.6" r="5.4" class="av-fg"/><path d="M5.6 27.2c1.9-4.6 5.9-7.4 10.4-7.4s8.5 2.8 10.4 7.4A15.9 15.9 0 0 1 16 32a15.9 15.9 0 0 1-10.4-4.8Z" class="av-fg"/></svg></a>
+        <a class="tnav-me" href="account.html" aria-label="Your account"><svg viewBox="0 0 32 32" aria-hidden="true"><defs><clipPath id="tnav-av"><circle cx="16" cy="16" r="16"/></clipPath></defs><g clip-path="url(#tnav-av)"><rect width="32" height="32" class="av-bg"/><circle cx="16" cy="12.4" r="5.6" class="av-fg"/><ellipse cx="16" cy="30.5" rx="11" ry="9.5" class="av-fg"/></g></svg></a>
       </nav>`;
     shell.prepend(el);
     document.documentElement.classList.add("has-tnav");
