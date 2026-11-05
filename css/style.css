@@ -3369,7 +3369,7 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .tnav-icon { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; color: var(--mute); transition: background .15s, color .15s; }
 .tnav-icon:hover { background: color-mix(in srgb, var(--fg) 6%, transparent); color: var(--fg); }
 .tnav-icon svg { width: 19px; height: 19px; }
-.tnav-search { display: flex; align-items: center; gap: 9px; width: 100%; height: 36px; padding: 0 6px 0 11px; border-radius: 11px; border: 1px solid var(--border); background: var(--surface);
+.tnav-search { display: flex; align-items: center; gap: 9px; width: 100%; height: 36px; padding: 0 6px 0 12px; border-radius: 14px; border: 1px solid var(--border); background: var(--surface);
   color: var(--mute); font-size: calc(13px * var(--ts)); text-align: start; transition: border-color .2s, box-shadow .2s; }
 .tnav-search:hover { border-color: color-mix(in srgb, var(--fg) 18%, var(--border)); box-shadow: 0 2px 8px -4px rgba(0, 0, 0, .12); }
 .tnav-search > svg { flex: none; width: 17px; height: 17px; }
@@ -3387,6 +3387,7 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .tnav-me:hover { box-shadow: 0 0 0 2px color-mix(in srgb, var(--fg) 25%, transparent); }
 .tnav-me img { width: 26px; height: 26px; }
 @supports (corner-shape: squircle) { .tnav-btn, .tnav-search, .tnav-ring, .tnav-icon { corner-shape: squircle; border-radius: 13px; } }
+@supports (corner-shape: squircle) { .tnav-search { border-radius: 18px; } .tnav-keys kbd { border-radius: 8px; corner-shape: squircle; } }
 @media (max-width: 1180px) { .tnav-r .tnav-btn:first-child { display: none; } }
 .tnav-me .logo-d { display: none; }
 :root[data-theme="dark"] .tnav-me .logo-l { display: none; }
