@@ -189,10 +189,12 @@ p { margin: 0; }
 .menu-btn { display: none; }
 
 /* ---------- Hero ---------- */
-.hero { padding: 0 var(--edge); }
+/* the hero panel runs the full width of the page, edge to edge, from the very top */
+.hero { padding: 0; }
+body[data-page="home"] .shell > main { padding-top: 0; }
 .hero-panel {
-  position: relative; border-radius: var(--radius-lg); overflow: hidden;
-  padding: clamp(24px, 3vw, 42px) 9px 9px;
+  position: relative; border-radius: 0; overflow: hidden;
+  padding: clamp(34px, 4vw, 60px) var(--edge) var(--edge);
   background:
     linear-gradient(90deg, var(--grid) 1px, transparent 1px) 0 0 / 25% 100%,
     var(--bg-2);
@@ -3330,8 +3332,8 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 /* Home banner (site.js banner): a wide card of streaked light, a headline and two links; slides take turns */
 .pb-sec { padding-top: clamp(16px, 2vw, 28px); padding-bottom: 0; }
 .pb-hero { position: relative; z-index: 1; padding: 0; }
-/* concentric with the hero panel: its 25px corner minus the 9px gap; the same 9px gap on every side */
-.pb-hero .pb { border-radius: calc(var(--radius-lg) - 9px); }
+/* inside the full-width hero, lined up with the page content below */
+.pb-hero .pb { border-radius: var(--radius-lg); }
 .pb-hero .pb-tabs { position: absolute; left: 0; right: 0; bottom: clamp(6px, 1vw, 12px); z-index: 2; margin: 0; }
 .pb-hero .pb-bar { background: rgba(255, 255, 255, .28); }
 .pb-hero .pb-tabs button:hover .pb-bar { background: rgba(255, 255, 255, .5); }
