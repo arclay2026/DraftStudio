@@ -66,14 +66,14 @@ window.DSChat = function (kit) {
 
   // Everyday questions about the site. Each topic: trigger phrases, then the reply.
   const TOPICS = [
+    { k: ["who made", "who owns", "who runs", "who created", "who is behind", "who are the", "qui a cree", "quien hizo", "quem fez", "من صنع", "谁做的"],
+      a: () => ({ text: ["Drafty Labs is a one-person design studio.", "You can reach the designer directly on WhatsApp or email."], blocks: [{ type: "contact" }] }) },
     { k: ["site about", "this site", "this website", "what is draft studio", "what's draft studio", "whats draft studio", "what is drafty labs", "what's drafty labs", "whats drafty labs", "drafty labs", "what is this", "what's this", "whats this", "what do you do", "what do you offer", "what do you have", "tell me about", "about you", "about the site", "about draft studio",
           "propos", "ce site", "quoi ce", "que es", "de que trata", "este sitio", "esta web", "este site", "esse site", "o que e", "sobre o site", "عن الموقع", "ما هو", "这个网站", "是什么网站", "关于"],
       a: () => ({ text: ["Drafty Labs is a library of free design files: PSD mockups, editable logos, vectors and templates.", "There are free tools too: a palette generator and QR Code Studio for custom QR codes. No sign-up, no watermark."],
         blocks: [{ type: "links", keys: ["browse", "palettes", "qr"] }] }) },
     { weak: true, k: ["what can you do", "how can you help", "who are you", "what are you", "help me", "can you help", "que peux-tu", "que puedes", "o que voce faz", "ماذا تستطيع", "你能做什么", "你是谁"],
       a: () => ({ text: [`I'm ${NAME}, the Drafty Labs assistant. I can find files and palettes, tell you which app opens a file, and answer license questions.`, "Try asking “show me logos” or “can I use this for a client?”"], blocks: [] }) },
-    { k: ["who made", "who owns", "who runs", "who created", "who is behind", "who are the", "qui a cree", "quien hizo", "quem fez", "من صنع", "谁做的"],
-      a: () => ({ text: ["Drafty Labs is made by a small design team.", "You can reach them directly on WhatsApp or email."], blocks: [{ type: "contact" }] }) },
     { k: ["sign up", "signup", "account", "register", "login", "log in", "inscription", "cuenta", "registr", "conta", "cadastro", "حساب", "تسجيل", "注册", "账号", "登录"],
       a: () => ({ text: ["No account needed. Open any file and press Download. That's it."], blocks: [] }) },
     { k: ["watermark", "filigrane", "marca de agua", "marca d", "علامة مائية", "水印"],
@@ -93,7 +93,7 @@ window.DSChat = function (kit) {
     { weak: true, k: ["format", "file type", "which file", "difference between", "formats", "tipo de archivo", "صيغ", "格式"],
       a: () => ({ text: ["Quick guide: PSD for mockups (Photoshop or Photopea), AI for editing logos, SVG for web and Canva, PDF for print, PNG for posting right away."], blocks: [{ type: "links", keys: ["learn"] }] }) },
     { k: ["bug", "broken", "not working", "doesn't work", "doesnt work", "error", "problem", "issue", "ne marche", "no funciona", "nao funciona", "لا يعمل", "不能用", "坏了"],
-      a: () => ({ text: ["Sorry about that. Tell the team what happened and they'll fix it quickly."], blocks: [{ type: "contact" }] }) },
+      a: () => ({ text: ["Sorry about that. Send a quick message about what happened and it'll be fixed fast."], blocks: [{ type: "contact" }] }) },
     { k: ["bye", "goodbye", "see you", "later", "au revoir", "adios", "tchau", "مع السلامة", "再见"],
       a: () => ({ text: ["Bye! Come back anytime, there's always something new."], blocks: [] }) },
     { k: ["how are you", "how's it going", "hows it going", "ca va", "que tal", "tudo bem", "كيف حالك", "你好吗"],
@@ -138,10 +138,10 @@ window.DSChat = function (kit) {
       return say("Here are some palettes you can copy as CSS or download as PNG:", [{ type: "palettes", list: (pick.length ? pick : palettes).slice(0, 3).map(p => palettes.indexOf(p)) }, { type: "links", keys: ["palettes"] }]);
     }
     const empty = Object.keys(CAT_WORDS).find(c => has(q, CAT_WORDS[c]) && !items.some(it => it.category === c));
-    if (empty) return say([`No ${empty.toLowerCase()} yet. They're on the way.`, "Want something specific? Ask the team and they can design it for you."], [{ type: "links", keys: ["browse"] }, { type: "contact" }]);
+    if (empty) return say([`No ${empty.toLowerCase()} yet. They're on the way.`, "Want something specific? Ask, and it can be designed for you."], [{ type: "links", keys: ["browse"] }, { type: "contact" }]);
     const found = searchItems(q);
     if (found.length) return say(found.length === 1 ? "Found one for you:" : "Here's what I found:", [{ type: "files", ids: found.slice(0, 4).map(i => i.id) }, ...(found.length > 4 ? [{ type: "links", keys: ["browse"] }] : [])]);
-    return say(["Hmm, I'm not sure about that one.", "I'm best at finding files and palettes, explaining file formats and answering license questions. You can also ask the team directly."], [{ type: "links", keys: ["browse"] }, { type: "contact" }]);
+    return say(["Hmm, I'm not sure about that one.", "I'm best at finding files and palettes, explaining file formats and answering license questions. You can also ask directly on WhatsApp or email."], [{ type: "links", keys: ["browse"] }, { type: "contact" }]);
   }
   const greeting = () => ({ text: [`Hi, I'm ${NAME}.`, "I can find files, explain file formats and answer license questions. What are you working on?"], blocks: [] });
 
