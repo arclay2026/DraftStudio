@@ -3625,3 +3625,21 @@ html.lr-lock { overflow: hidden; }
   .lr-body { padding: 14px 20px 6px; } .lr-err { margin: 4px 20px 0; } .lr-foot { padding: 10px 20px 22px; }
   .lr-pair { grid-template-columns: 1fr; gap: 18px; }
 }
+
+/* Logo request: charcoal instead of black for selections and the main button; every control a squircle */
+.lr { --lr-char: #3a3a40; --lr-char-hover: #4a4a51; --lr-char-text: #fff; }
+:root[data-theme="dark"] .lr { --lr-char: #5a5a62; --lr-char-hover: #66666f; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .lr { --lr-char: #5a5a62; --lr-char-hover: #66666f; } }
+.lr-chip[aria-pressed="true"] { background: var(--lr-char); border-color: var(--lr-char); color: var(--lr-char-text); }
+.lr-next { background: var(--lr-char); color: var(--lr-char-text); }
+.lr-next:hover { background: var(--lr-char-hover); filter: none; }
+.lr-sw[aria-pressed="true"] { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12), 0 0 0 2px var(--surface), 0 0 0 4px var(--lr-char); }
+.lr-next, .lr-send { border-radius: 23px; }
+@supports (corner-shape: squircle) {
+  .lr-chip, .lr-x, .lr-back, .lr-next, .lr-send, .lr-type, .lr-sw, .lr-field input, .lr-field textarea { corner-shape: squircle; }
+  .lr-chip { border-radius: 999px; }
+  .lr-next, .lr-send { border-radius: 30px; }
+  .lr-back { border-radius: 18px; }
+  .lr-x { border-radius: 16px; }
+  .lr-sw { border-radius: 14px; }
+}
