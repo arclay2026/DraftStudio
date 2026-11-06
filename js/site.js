@@ -712,8 +712,10 @@
         <p class="lr-steplabel" aria-live="polite"></p>
         <div class="lr-body">
           <section class="lr-step" data-step="0">
+            <div class="lr-pair">
             <label class="lr-field"><span>Brand name <em>*</em></span><input type="text" data-f="brand" maxlength="60" placeholder="e.g. Kaven Construction" autocomplete="organization"><small class="lr-miss" role="alert"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><rect x="9" y="5" width="2" height="6.5" rx="1" fill="#fff"/><circle cx="10" cy="14.4" r="1.2" fill="#fff"/></svg><span></span></small></label>
             <label class="lr-field"><span>Slogan <small>optional</small></span><input type="text" data-f="slogan" maxlength="80" placeholder="e.g. Built to last"></label>
+            </div>
             <div class="lr-field"><span>What does the business do?</span><div class="lr-chips">${chips("industry", INDUSTRY)}</div></div>
           </section>
           <section class="lr-step" data-step="1" hidden>

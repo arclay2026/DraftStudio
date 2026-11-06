@@ -3511,7 +3511,7 @@ html.is-scrolling *, html.is-scrolling *::before, html.is-scrolling *::after { a
 html.lr-lock { overflow: hidden; }
 .lr { position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; padding: 16px; }
 .lr-scrim { position: absolute; inset: 0; background: color-mix(in srgb, var(--bg) 42%, transparent); -webkit-backdrop-filter: blur(5px) saturate(1.15); backdrop-filter: blur(5px) saturate(1.15); opacity: 0; transition: opacity .25s ease; }
-.lr-card { --lr-on: var(--surface); position: relative; display: flex; flex-direction: column; width: min(580px, 100%); max-height: min(760px, calc(100vh - 32px)); max-height: min(760px, calc(100dvh - 32px));
+.lr-card { --lr-on: var(--surface); position: relative; display: flex; flex-direction: column; width: min(880px, 100%); max-height: min(760px, calc(100vh - 32px)); max-height: min(760px, calc(100dvh - 32px));
   background: var(--surface); border: 1px solid var(--border); border-radius: 26px; box-shadow: 0 30px 80px -24px rgba(0, 0, 0, .3), 0 2px 8px rgba(0, 0, 0, .05);
   opacity: 0; transform: translateY(14px) scale(.98); transition: opacity .25s ease, transform .45s var(--spring, var(--ease)); }
 .lr.is-open .lr-scrim { opacity: 1; }
@@ -3604,3 +3604,24 @@ html.lr-lock { overflow: hidden; }
 .lr-two { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: start; }
 .lr-hint { margin: -8px 0 0; font-size: calc(12px * var(--ts)); color: var(--mute); }
 @media (max-width: 560px) { .lr-two { grid-template-columns: 1fr; gap: 18px; } }
+
+/* the wider form: side-by-side fields, roomier padding */
+.lr-head { padding: 26px 30px 0; }
+.lr-steps { padding: 20px 30px 0; }
+.lr-steplabel { margin: 9px 30px 0; }
+.lr-body { padding: 16px 30px 6px; }
+.lr-err { margin: 4px 30px 0; }
+.lr-foot { padding: 10px 30px 26px; }
+.lr-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
+.lr-type { padding: 16px 8px 14px; }
+.lr-ex-box { height: 54px; }
+.lr-ex.is-word { width: min(110px, 88%); }
+.lr-ex.is-full { width: min(120px, 92%); }
+.lr-ex.is-letter { width: 42px; height: 42px; }
+.lr-ex.is-emblem { width: 46px; height: 46px; }
+.lr-ex.is-mascot { width: 46px; height: 46px; }
+@media (max-width: 560px) {
+  .lr-head { padding: 22px 20px 0; } .lr-steps { padding: 18px 20px 0; } .lr-steplabel { margin: 9px 20px 0; }
+  .lr-body { padding: 14px 20px 6px; } .lr-err { margin: 4px 20px 0; } .lr-foot { padding: 10px 20px 22px; }
+  .lr-pair { grid-template-columns: 1fr; gap: 18px; }
+}
