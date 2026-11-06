@@ -680,6 +680,150 @@
     }, { passive: true, capture: true });
   }
 
+  /* ---------- Logo request: a three-step form that sends a neat brief to WhatsApp ----------
+     Opened by any [data-logo-request] button. Answers are kept while the page is open. */
+  const LOGO_WA = "27656955104";   // the number logo requests go to
+  function logoRequest() {
+    const TYPES = [
+      ["Wordmark", "The name in a custom font", '<text x="32" y="40" text-anchor="middle" font-size="22" font-weight="700" font-family="Inter, sans-serif" fill="currentColor" letter-spacing="-1">Aa</text>'],
+      ["Lettermark", "Initials or one letter", '<rect x="16" y="12" width="32" height="32" rx="9" fill="currentColor"/><text x="32" y="35.5" text-anchor="middle" font-size="18" font-weight="800" font-family="Inter, sans-serif" fill="var(--lr-on)">K</text>'],
+      ["Icon + name", "A symbol beside the name", '<circle cx="16" cy="28" r="8" fill="currentColor"/><rect x="28" y="23" width="26" height="4" rx="2" fill="currentColor"/><rect x="28" y="30" width="18" height="4" rx="2" fill="currentColor" opacity=".5"/>'],
+      ["Emblem", "Name inside a badge", '<circle cx="32" cy="28" r="16" fill="none" stroke="currentColor" stroke-width="3"/><rect x="22" y="25" width="20" height="6" rx="3" fill="currentColor"/>'],
+      ["Mascot", "A friendly character", '<circle cx="32" cy="28" r="15" fill="currentColor"/><rect x="26" y="21" width="4" height="9" rx="2" fill="var(--lr-on)"/><rect x="34" y="21" width="4" height="9" rx="2" fill="var(--lr-on)"/>']];
+    const INDUSTRY = ["Construction", "Food & drink", "Beauty", "Fashion", "Tech", "Church & NGO", "Retail", "Other"];
+    const FEEL = ["Modern", "Bold", "Elegant", "Playful", "Minimal", "Classic", "Luxury", "Friendly"];
+    const COLOURS = [["Black", "#111111"], ["White", "#ffffff"], ["Blue", "#1f7aff"], ["Red", "#e5383b"], ["Orange", "#ff8a1a"], ["Gold", "#d4a017"], ["Green", "#2bb673"], ["Purple", "#7a5cff"], ["Pink", "#ff4f9a"]];
+    const USES = ["Social media", "Signage", "Clothing", "Packaging", "Website", "Business cards"];
+    const WHEN = ["As soon as possible", "Within a week", "Within 2 weeks", "No rush"];
+    const st = { brand: "", slogan: "", industry: "", type: "", feel: [], colours: [], anyColour: false, uses: [], when: "", notes: "", name: "" };
+    let step = 0, root = null, lastFocus = null;
+
+    const chips = (key, list, multi, max) => list.map(v => `<button type="button" class="lr-chip" data-k="${key}" data-v="${esc(v)}"${multi ? ` data-multi${max ? ` data-max="${max}"` : ""}` : ""} aria-pressed="false">${esc(v)}</button>`).join("");
+    const html = () => `
+      <div class="lr-scrim" data-lr-close></div>
+      <div class="lr-card" role="dialog" aria-modal="true" aria-labelledby="lr-title">
+        <header class="lr-head">
+          <img class="lr-drafty" src="assets/drafty.svg?v=d4" alt="" width="40" height="40">
+          <div><span class="lr-eyebrow">Logo request</span><h2 id="lr-title">Let's design your logo.</h2></div>
+          <button class="lr-x" type="button" data-lr-close aria-label="Close">${icon("close")}</button>
+        </header>
+        <div class="lr-steps" aria-hidden="true"><i></i><i></i><i></i></div>
+        <p class="lr-steplabel" aria-live="polite"></p>
+        <div class="lr-body">
+          <section class="lr-step" data-step="0">
+            <label class="lr-field"><span>Brand name <em>*</em></span><input type="text" data-f="brand" maxlength="60" placeholder="e.g. Kaven Construction" autocomplete="organization"></label>
+            <label class="lr-field"><span>Slogan <small>optional</small></span><input type="text" data-f="slogan" maxlength="80" placeholder="e.g. Built to last"></label>
+            <div class="lr-field"><span>What does the business do?</span><div class="lr-chips">${chips("industry", INDUSTRY)}</div></div>
+          </section>
+          <section class="lr-step" data-step="1" hidden>
+            <div class="lr-field"><span>What kind of logo? <em>*</em></span>
+              <div class="lr-types">${TYPES.map(([n, d, svg]) => `<button type="button" class="lr-type" data-k="type" data-v="${n}" aria-pressed="false"><svg viewBox="0 0 64 56" aria-hidden="true">${svg}</svg><b>${n}</b><small>${d}</small></button>`).join("")}</div></div>
+            <div class="lr-field"><span>How should it feel? <small>up to 3</small></span><div class="lr-chips">${chips("feel", FEEL, true, 3)}</div></div>
+            <div class="lr-field"><span>Colours <small>pick any</small></span>
+              <div class="lr-swatches">${COLOURS.map(([n, c]) => `<button type="button" class="lr-sw" data-k="colours" data-v="${n}" data-multi aria-pressed="false" aria-label="${n}" title="${n}" style="--c:${c}"></button>`).join("")}
+                <button type="button" class="lr-chip" data-k="anyColour" data-v="1" aria-pressed="false">You choose</button></div></div>
+          </section>
+          <section class="lr-step" data-step="2" hidden>
+            <div class="lr-field"><span>Where will it be used?</span><div class="lr-chips">${chips("uses", USES, true)}</div></div>
+            <div class="lr-field"><span>When do you need it?</span><div class="lr-chips">${chips("when", WHEN)}</div></div>
+            <label class="lr-field"><span>Anything else? <small>optional</small></span><textarea data-f="notes" rows="3" maxlength="600" placeholder="Ideas, logos you like, things to avoid…"></textarea></label>
+            <label class="lr-field"><span>Your name <small>optional</small></span><input type="text" data-f="name" maxlength="60" placeholder="So we know who we're talking to" autocomplete="name"></label>
+          </section>
+        </div>
+        <p class="lr-err" role="alert"></p>
+        <footer class="lr-foot">
+          <button type="button" class="lr-back" data-lr-back>Back</button>
+          <button type="button" class="lr-next" data-lr-next>Continue</button>
+          <a class="lr-send" href="#" target="_blank" rel="noopener" data-lr-send hidden><span class="wa-ic" aria-hidden="true"></span>Send on WhatsApp</a>
+        </footer>
+      </div>`;
+
+    const LABELS = ["Step 1 of 3 · Your brand", "Step 2 of 3 · The look", "Step 3 of 3 · The details"];
+    const message = () => {
+      const L = [];
+      const add = (k, v) => { if (v && (!Array.isArray(v) || v.length)) L.push(`*${k}:* ${Array.isArray(v) ? v.join(", ") : v}`); };
+      add("Brand", st.brand); add("Slogan", st.slogan); add("Business", st.industry);
+      add("Logo type", st.type); add("Feel", st.feel); add("Colours", st.anyColour ? "You choose" : st.colours);
+      add("Used on", st.uses); add("Needed", st.when); add("Notes", st.notes);
+      return `Hi Drafty Labs! I'd like a logo designed.\n\n${L.join("\n")}${st.name ? `\n\n— ${st.name}` : ""}`;
+    };
+    const err = msg => { $(".lr-err", root).textContent = msg || ""; };
+    const show = n => {
+      step = n; err("");
+      $$(".lr-step", root).forEach(s => { s.hidden = +s.dataset.step !== n; });
+      $$(".lr-steps i", root).forEach((b, i) => b.classList.toggle("is-on", i <= n));
+      $(".lr-steplabel", root).textContent = LABELS[n];
+      $("[data-lr-back]", root).style.visibility = n ? "visible" : "hidden";
+      $("[data-lr-next]", root).hidden = n === 2;
+      const send = $("[data-lr-send]", root); send.hidden = n !== 2;
+      $(".lr-body", root).scrollTop = 0;
+      const f = $(`.lr-step[data-step="${n}"] input, .lr-step[data-step="${n}"] button`, root); if (f) f.focus({ preventScroll: true });
+    };
+    const valid = () => {
+      if (step === 0 && !st.brand.trim()) { err("Add your brand name to continue."); $('[data-f="brand"]', root).focus(); return false; }
+      if (step === 1 && !st.type) { err("Pick the kind of logo you'd like."); return false; }
+      return true;
+    };
+    const close = () => {
+      if (!root) return;
+      root.classList.remove("is-open"); document.documentElement.classList.remove("lr-lock");
+      const r = root; setTimeout(() => { r.hidden = true; }, 300);
+      if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+    };
+    const build = () => {
+      root = document.createElement("div"); root.className = "lr"; root.hidden = true; root.innerHTML = html();
+      document.body.append(root);
+      root.addEventListener("input", e => { const f = e.target.dataset.f; if (f) { st[f] = e.target.value; if (f === "brand") err(""); } });
+      root.addEventListener("click", e => {
+        if (e.target.closest("[data-lr-close]")) return close();
+        if (e.target.closest("[data-lr-back]")) return show(Math.max(0, step - 1));
+        if (e.target.closest("[data-lr-next]")) { if (valid()) show(step + 1); return; }
+        const send = e.target.closest("[data-lr-send]");
+        if (send) { send.href = `https://wa.me/${LOGO_WA}?text=${encodeURIComponent(message())}`; setTimeout(close, 400); return; }
+        const b = e.target.closest("[data-k]"); if (!b) return;
+        const k = b.dataset.k, v = b.dataset.v;
+        if (k === "anyColour") {
+          st.anyColour = !st.anyColour; b.setAttribute("aria-pressed", st.anyColour);
+          if (st.anyColour) { st.colours = []; $$('[data-k="colours"]', root).forEach(x => x.setAttribute("aria-pressed", "false")); }
+          return;
+        }
+        if (b.hasAttribute("data-multi")) {
+          const list = st[k], on = list.includes(v), max = +b.dataset.max || 99;
+          if (!on && list.length >= max) { err(`Pick up to ${max}.`); return; }
+          st[k] = on ? list.filter(x => x !== v) : list.concat(v); b.setAttribute("aria-pressed", !on); err("");
+          if (k === "colours" && !on && st.anyColour) { st.anyColour = false; $('[data-k="anyColour"]', root).setAttribute("aria-pressed", "false"); }
+        } else {
+          st[k] = st[k] === v ? "" : v;
+          $$(`[data-k="${k}"]`, root).forEach(x => x.setAttribute("aria-pressed", x.dataset.v === st[k]));
+          if (k === "type") err("");
+        }
+      });
+      root.addEventListener("keydown", e => {
+        if (e.key === "Escape") close();
+        if (e.key === "Enter" && e.target.tagName === "INPUT") { e.preventDefault(); if (step < 2 && valid()) show(step + 1); }
+        if (e.key === "Tab") {  // keep focus inside the form
+          const f = $$('button:not([hidden]), a[href]:not([hidden]), input, textarea', $(".lr-card", root)).filter(x => x.offsetParent);
+          if (!f.length) return;
+          if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+          else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+        }
+      });
+    };
+    const open = () => {
+      if (!root) build();
+      lastFocus = document.activeElement;
+      root.hidden = false; document.documentElement.classList.add("lr-lock");
+      requestAnimationFrame(() => root.classList.add("is-open"));
+      show(step);
+    };
+    document.addEventListener("click", e => {
+      const b = e.target.closest("[data-logo-request]");
+      if (!b || e.metaKey || e.ctrlKey || e.shiftKey) return;
+      e.preventDefault(); open();
+    });
+    window.DSLogoRequest = open;
+  }
+
   /* ---------- Shared behaviour ---------- */
   function chrome() {
     // The page sits on a raised panel beside the side menu
@@ -1354,7 +1498,7 @@
           <h3>${empty ? `Fresh ${esc(cat ? cat.name.toLowerCase() : "files")} <br>are on the way.` : `Your ${esc(what)} <br>could be next.`}</h3>
           <p>${empty ? "Nothing on this shelf yet. Tell us what you'd like and it could be the first drop." : "Tell us what you need. Popular requests become free drops for everyone."}</p>
         </div>
-        <a class="btn btn-dark" href="${waLink(`Hi Drafty Labs, I'd like to request a ${what}: `)}" target="_blank" rel="noopener">Request a drop <span class="arr">${ARR}</span></a>
+        <a class="btn btn-dark" href="${waLink(`Hi Drafty Labs, I'd like to request a ${what}: `)}" target="_blank" rel="noopener" data-logo-request>Request a drop <span class="arr">${ARR}</span></a>
       </article>`;
   }
 
@@ -2796,6 +2940,7 @@
   footer();
   skeletons();
   scrollCalm();
+  logoRequest();
   chrome();
   topNav();
   settings();
