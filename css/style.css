@@ -656,8 +656,8 @@ svg.mi .mi-on { display: none; }
   background: rgba(255, 255, 255, .07); border: 1px solid rgba(255, 255, 255, .08); font-size: calc(12px * var(--ts));
 }
 .fx-app img { width: 22px; height: 22px; object-fit: contain; }
-@supports (corner-shape: squircle) { .fx-app { corner-shape: squircle; border-radius: 17px; } }
-.fx-app small { font-size: calc(11px * var(--ts)); font-weight: 600; color: var(--on-lime); background: var(--lime); padding: 2.5px 6.5px; border-radius: 791px; }
+@supports (corner-shape: squircle) { .fx-app { corner-shape: squircle; border-radius: 17px; } .fx-app small { corner-shape: squircle; border-radius: 9px; } }
+.fx-app small { font-size: calc(11px * var(--ts)); font-weight: 600; color: var(--on-lime); background: var(--lime); padding: 2.5px 6.5px; border-radius: 6px; }
 .fx-best { display: flex; flex-wrap: wrap; gap: 7px; }
 .fx-best span { padding: 6.5px 11px; border-radius: 791px; border: 1px solid rgba(255, 255, 255, .16); font-size: calc(11px * var(--ts)); color: rgba(255, 255, 255, .85); }
 .fx-foot { margin-top: auto; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12.5px; padding-top: 7px; }
