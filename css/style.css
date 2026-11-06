@@ -3647,7 +3647,7 @@ html.lr-lock { overflow: hidden; }
 /* Footer social icons: squircle tiles with each platform's own logo */
 .f-social { display: flex; gap: 8px; margin-top: 18px; }
 .f-so { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 15px;
-  background: color-mix(in srgb, currentColor 7%, transparent);
+  background: color-mix(in srgb, currentColor 7%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 13%, transparent);
   transition: transform .3s var(--spring, var(--ease)), background .2s; }
 .f-so:hover { transform: translateY(-2px); background: color-mix(in srgb, currentColor 12%, transparent); }
 .f-so img { display: block; width: 20px; height: 20px; object-fit: contain; }
@@ -3658,9 +3658,9 @@ html.lr-lock { overflow: hidden; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .footer .f-so .so-d { display: none; } :root:not([data-theme="light"]) .footer .f-so .so-l { display: block; } }
 @supports (corner-shape: squircle) { .f-so { corner-shape: squircle; border-radius: 20px; } }
 /* on the light footer (dark mode): a much lighter tile, so the grey doesn't look heavy */
-:root[data-theme="dark"] .footer .f-so { background: #fff; }
+:root[data-theme="dark"] .footer .f-so { background: rgba(255, 255, 255, .75); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .07); }
 :root[data-theme="dark"] .footer .f-so:hover { background: #fff; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .footer .f-so { background: #fff; }
+  :root:not([data-theme="light"]) .footer .f-so { background: rgba(255, 255, 255, .75); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .07); }
   :root:not([data-theme="light"]) .footer .f-so:hover { background: #fff; }
 }
