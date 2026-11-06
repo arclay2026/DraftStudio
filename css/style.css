@@ -3657,3 +3657,10 @@ html.lr-lock { overflow: hidden; }
 :root[data-theme="dark"] .footer .f-so .so-l { display: block; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .footer .f-so .so-d { display: none; } :root:not([data-theme="light"]) .footer .f-so .so-l { display: block; } }
 @supports (corner-shape: squircle) { .f-so { corner-shape: squircle; border-radius: 20px; } }
+/* on the light footer (dark mode): a much lighter tile, so the grey doesn't look heavy */
+:root[data-theme="dark"] .footer .f-so { background: rgba(255, 255, 255, .75); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .07), 0 1px 2px rgba(0, 0, 0, .04); }
+:root[data-theme="dark"] .footer .f-so:hover { background: #fff; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .footer .f-so { background: rgba(255, 255, 255, .75); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .07), 0 1px 2px rgba(0, 0, 0, .04); }
+  :root:not([data-theme="light"]) .footer .f-so:hover { background: #fff; }
+}
