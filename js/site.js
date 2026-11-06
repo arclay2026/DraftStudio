@@ -666,6 +666,19 @@
     }))).observe(document.body, { childList: true, subtree: true });
   }
 
+  /* ---------- Smooth scrolling ----------
+     Mark the page while it's being scrolled so decorative animations pause (see .is-scrolling in the CSS).
+     The class goes on once per scroll gesture and comes off ~160ms after the last scroll event. */
+  function scrollCalm() {
+    const html = document.documentElement;
+    let t = 0;
+    addEventListener("scroll", () => {
+      if (!html.classList.contains("is-scrolling")) html.classList.add("is-scrolling");
+      clearTimeout(t);
+      t = setTimeout(() => html.classList.remove("is-scrolling"), 160);
+    }, { passive: true });
+  }
+
   /* ---------- Shared behaviour ---------- */
   function chrome() {
     // The page sits on a raised panel beside the side menu
@@ -2772,6 +2785,7 @@
   header(page === "browse" ? (new URLSearchParams(location.search).get("cat") || "browse") : page);
   footer();
   skeletons();
+  scrollCalm();
   chrome();
   topNav();
   settings();

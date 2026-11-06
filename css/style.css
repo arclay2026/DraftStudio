@@ -3338,12 +3338,12 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 .pb { position: relative; height: clamp(190px, 15.5vw, 250px); border-radius: clamp(18px, 1.8vw, 26px); overflow: hidden; isolation: isolate; background: #060403; }
 .pb-slide { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; visibility: hidden; transition: opacity .9s var(--ease), visibility 0s .9s; }
 .pb-slide.is-on { opacity: 1; visibility: visible; transition: opacity .9s var(--ease), visibility 0s; }
-.pb-art { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; transform: scale(1.06); transition: transform 7s linear; }
+.pb-art { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; transform: scale(1.06); transition: transform 7s linear; will-change: transform; }
 .pb-slide.is-on .pb-art { transform: scale(1); }
-.pb-g1, .pb-g2, .pb-g3 { transform-box: view-box; animation: pb-drift 16s ease-in-out infinite alternate; }
-.pb-g2 { animation-duration: 19s; animation-direction: alternate-reverse; }
-.pb-g3 { animation-duration: 13s; }
-@keyframes pb-drift { from { translate: 0 0; } to { translate: -36px 8px; } }
+/* the light drifts by moving the whole (already drawn) picture, which the graphics card does for free;
+   moving the shapes inside the blur made the browser redraw the blur every frame */
+.pb-slide.is-on .pb-art { animation: pb-drift 18s ease-in-out infinite alternate; }
+@keyframes pb-drift { from { translate: 0 0; } to { translate: -2.5% .8%; } }
 .pb-copy { position: relative; padding: 0 24px; text-align: center; color: #fff; }
 .pb-copy h2 { margin: 0; font-size: clamp(22px, 2.35vw, 36px); font-weight: 500; line-height: 1.2; letter-spacing: -.02em; text-wrap: balance; text-shadow: 0 2px 24px rgba(0, 0, 0, .35); }
 .pb-btns { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: clamp(16px, 1.7vw, 24px); }
@@ -3367,7 +3367,7 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
 @keyframes pb-fill { to { transform: none; } }
 .pb-tabs button:focus-visible { outline: 2px solid var(--fg); outline-offset: 1px; border-radius: 6px; }
 @media (max-width: 640px) { .pb { height: 186px; } .pb-btns { margin-top: 13px; } .pb-btns a { height: 36px; padding: 0 14px; } .pb-copy { margin-top: -6px; } .pb-copy h2 br { display: none; } .pb-copy h2 { font-size: 23px; max-width: 15em; } }
-@media (prefers-reduced-motion: reduce) { .pb-g1, .pb-g2, .pb-g3 { animation: none; } .pb-art, .pb-slide, .pb-slide.is-on { transition: none; } .pb-tabs [role="tab"][aria-selected="true"] .pb-bar b { animation: none; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .pb-slide.is-on .pb-art { animation: none; } .pb-art, .pb-slide, .pb-slide.is-on { transition: none; } .pb-tabs [role="tab"][aria-selected="true"] .pb-bar b { animation: none; transform: none; } }
 
 /* Top bar on desktop (site.js topNav) */
 .tnav { display: none; }
@@ -3495,3 +3495,8 @@ img.sk-in { animation: sk-in .45s var(--ease) both; }
 @media (max-width: 900px) { .sk-item-grid { grid-template-columns: 1fr; } .sk-plan { height: 300px; } .sk-row { grid-template-columns: 26px 1fr; } .sk-bar { grid-column: 1 / -1; } }
 @media (max-width: 640px) { .sk-drop.is-big { grid-column: auto; grid-row: auto; } }
 @media (prefers-reduced-motion: reduce) { .sk, img.sk-wait { animation: none; background-image: none; } img.sk-in { animation: none; } }
+
+/* Smooth scrolling: while the page is moving, decorative motion (Drafty's swirl and float, the banner,
+   card shapes, shimmer) holds still, so the browser only has to move the page. It carries on a moment
+   after scrolling stops. (site.js adds .is-scrolling) */
+html.is-scrolling *, html.is-scrolling *::before, html.is-scrolling *::after { animation-play-state: paused !important; }
