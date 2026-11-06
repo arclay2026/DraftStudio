@@ -3646,7 +3646,7 @@ html.lr-lock { overflow: hidden; }
 
 /* Footer social icons: squircle tiles with each platform's own logo */
 .f-social { display: flex; gap: 8px; margin-top: 18px; }
-.f-so { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px;
+.f-so { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 15px;
   background: color-mix(in srgb, currentColor 7%, transparent); box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 13%, transparent);
   transition: transform .3s var(--spring, var(--ease)), background .2s; }
 .f-so:hover { transform: translateY(-2px); background: color-mix(in srgb, currentColor 12%, transparent); }
@@ -3656,4 +3656,4 @@ html.lr-lock { overflow: hidden; }
 :root[data-theme="dark"] .footer .f-so .so-d { display: none; }
 :root[data-theme="dark"] .footer .f-so .so-l { display: block; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .footer .f-so .so-d { display: none; } :root:not([data-theme="light"]) .footer .f-so .so-l { display: block; } }
-@supports (corner-shape: squircle) { .f-so { corner-shape: squircle; border-radius: 16px; } }
+@supports (corner-shape: squircle) { .f-so { corner-shape: squircle; border-radius: 20px; } }
