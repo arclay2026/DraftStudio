@@ -696,7 +696,7 @@
     const COLOURS = [["Black", "#111111"], ["White", "#ffffff"], ["Blue", "#1f7aff"], ["Red", "#e5383b"], ["Orange", "#ff8a1a"], ["Gold", "#d4a017"], ["Green", "#2bb673"], ["Purple", "#7a5cff"], ["Pink", "#ff4f9a"]];
     const USES = ["Social media", "Signage", "Clothing", "Packaging", "Website", "Business cards"];
     const WHEN = ["As soon as possible", "Within a week", "Within 2 weeks", "No rush"];
-    const st = { brand: "", slogan: "", industry: "", type: "", feel: [], colours: [], anyColour: false, uses: [], when: "", notes: "", name: "" };
+    const st = { brand: "", slogan: "", industry: "", type: "", feel: [], colours: [], anyColour: false, uses: [], when: "", notes: "", name: "", email: "" };
     let step = 0, root = null, lastFocus = null;
 
     const chips = (key, list, multi, max) => list.map(v => `<button type="button" class="lr-chip" data-k="${key}" data-v="${esc(v)}"${multi ? ` data-multi${max ? ` data-max="${max}"` : ""}` : ""} aria-pressed="false">${esc(v)}</button>`).join("");
@@ -728,7 +728,11 @@
             <div class="lr-field"><span>Where will it be used?</span><div class="lr-chips">${chips("uses", USES, true)}</div></div>
             <div class="lr-field"><span>When do you need it?</span><div class="lr-chips">${chips("when", WHEN)}</div></div>
             <label class="lr-field"><span>Anything else? <small>optional</small></span><textarea data-f="notes" rows="3" maxlength="600" placeholder="Ideas, logos you like, things to avoid…"></textarea></label>
-            <label class="lr-field"><span>Your name <small>optional</small></span><input type="text" data-f="name" maxlength="60" placeholder="So we know who we're talking to" autocomplete="name"></label>
+            <div class="lr-two">
+              <label class="lr-field"><span>Your name <small>optional</small></span><input type="text" data-f="name" maxlength="60" placeholder="So we know who we're talking to" autocomplete="name"></label>
+              <label class="lr-field"><span>Email <em>*</em></span><input type="email" data-f="email" maxlength="120" placeholder="you@example.com" autocomplete="email" inputmode="email"><small class="lr-miss" role="alert"><svg viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="9" fill="currentColor"/><rect x="9" y="5" width="2" height="6.5" rx="1" fill="#fff"/><circle cx="10" cy="14.4" r="1.2" fill="#fff"/></svg><span></span></small></label>
+            </div>
+            <p class="lr-hint">We'll send your finished logo files to this email.</p>
           </section>
         </div>
         <p class="lr-err" role="alert"></p>
@@ -746,7 +750,7 @@
       add("Brand", st.brand); add("Slogan", st.slogan); add("Business", st.industry);
       add("Logo type", st.type); add("Feel", st.feel); add("Colours", st.anyColour ? "You choose" : st.colours);
       add("Used on", st.uses); add("Needed", st.when); add("Notes", st.notes);
-      return `Hi Drafty Labs! I'd like a logo designed.\n\n${L.join("\n")}${st.name ? `\n\n— ${st.name}` : ""}`;
+      return `Hi Drafty Labs! I'd like a logo designed.\n\n${L.join("\n")}\n\n${st.name ? `— ${st.name}\n` : ""}*Email for the files:* ${st.email.trim()}`;
     };
     const err = msg => { $(".lr-err", root).textContent = msg || ""; };
     const show = n => {
@@ -783,13 +787,21 @@
     const build = () => {
       root = document.createElement("div"); root.className = "lr"; root.hidden = true; root.innerHTML = html();
       document.body.append(root);
-      root.addEventListener("input", e => { const f = e.target.dataset.f; if (f) { st[f] = e.target.value; if (f === "brand" && st.brand.trim()) unmiss(e.target); } });
+      root.addEventListener("input", e => { const f = e.target.dataset.f; if (f) { st[f] = e.target.value; if ((f === "brand" && st.brand.trim()) || f === "email") unmiss(e.target); } });
       root.addEventListener("click", e => {
         if (e.target.closest("[data-lr-close]")) return close();
         if (e.target.closest("[data-lr-back]")) return show(Math.max(0, step - 1));
         if (e.target.closest("[data-lr-next]")) { if (valid()) show(step + 1); return; }
         const send = e.target.closest("[data-lr-send]");
-        if (send) { send.href = `https://wa.me/${LOGO_WA}?text=${encodeURIComponent(message())}`; setTimeout(close, 400); return; }
+        if (send) {
+          const em = $('[data-f="email"]', root), v = st.email.trim();
+          if (!v || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)) {
+            e.preventDefault();
+            miss(em, v ? "That email doesn't look right. Check it for typos." : "Add your email so we can send you the finished logo.");
+            em.focus({ preventScroll: true }); return;
+          }
+          send.href = `https://wa.me/${LOGO_WA}?text=${encodeURIComponent(message())}`; setTimeout(close, 400); return;
+        }
         const b = e.target.closest("[data-k]"); if (!b) return;
         const k = b.dataset.k, v = b.dataset.v;
         if (k === "anyColour") {
