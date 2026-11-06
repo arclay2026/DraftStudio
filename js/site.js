@@ -457,7 +457,7 @@
         <div class="wrap">
           <div class="fgrid">
             <div class="f-brand">
-              <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="f-logo-w" src="assets/logo-dark.svg?v=dl3" alt="Drafty Labs" width="129" height="32"><img class="f-logo-k" src="assets/logo.svg?v=dl3" alt="Drafty Labs" width="129" height="32"></a>
+              <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="f-logo-w" src="assets/logo-mono-dark.svg?v=m1" alt="Drafty Labs" width="129" height="32"><img class="f-logo-k" src="assets/logo-mono.svg?v=m1" alt="Drafty Labs" width="129" height="32"></a>
               <p>${esc(s.tagline)}</p>
             </div>
             <nav class="f-links" aria-label="Files">
