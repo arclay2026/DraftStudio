@@ -427,6 +427,8 @@ h2 .soft { color: var(--soft); }
 .card { position: relative; display: flex; flex-direction: column; gap: 11px; break-inside: avoid; margin-bottom: clamp(17px, 2vw, 27px); }
 .card-media { position: relative; border-radius: var(--radius); overflow: hidden; background: var(--card); border: 1px solid var(--border); }
 .card-media img { width: 100%; height: auto; transition: transform .9s var(--ease); }
+/* Photo previews (mockups) sit edge to edge: no border; logos keep it so white artwork has an edge */
+.card:not(.is-logo) .card-media, .drop-card:not(.is-logo), .drop-feat:not(.is-logo) { border: 0; }
 .card:hover .card-media img { transform: scale(1.04); }
 .card-media .price-tag { position: absolute; top: 11px; left: 11px; }
 .price-tag, .free-tag {

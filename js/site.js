@@ -1495,7 +1495,7 @@
   function featuredDrop(it) {
     const a = dropAction(it);
     return `
-      <article class="drop drop-feat reveal">
+      <article class="drop drop-feat${slug(it.category) === "logos" ? " is-logo" : ""} reveal">
         <img ${imgSet(it.preview, "(max-width: 900px) 92vw, 55vw")} alt="" loading="lazy" decoding="async">
         <div class="drop-top">
           <span class="drop-new"><i></i>Latest drop</span>
@@ -1514,7 +1514,7 @@
 
   function dropCard(it) {
     return `
-      <article class="drop drop-card reveal">
+      <article class="drop drop-card${slug(it.category) === "logos" ? " is-logo" : ""} reveal">
         <img ${imgSrc(it.preview, "sm")} alt="" loading="lazy" decoding="async">
         <div class="drop-info">
           <span><b><a href="${itemUrl(it)}">${esc(it.title)}</a></b><small>${esc(it.category)} · ${ago(it.date)}</small></span>
