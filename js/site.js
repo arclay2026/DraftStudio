@@ -672,11 +672,12 @@
   function scrollCalm() {
     const html = document.documentElement;
     let t = 0;
-    addEventListener("scroll", () => {
+    // capture: also catches scrolling inside panels (quick view, chat, menus), whose scroll events don't bubble
+    document.addEventListener("scroll", () => {
       if (!html.classList.contains("is-scrolling")) html.classList.add("is-scrolling");
       clearTimeout(t);
       t = setTimeout(() => html.classList.remove("is-scrolling"), 160);
-    }, { passive: true });
+    }, { passive: true, capture: true });
   }
 
   /* ---------- Shared behaviour ---------- */
@@ -1963,11 +1964,18 @@
         document.documentElement.style.paddingRight = (innerWidth - document.documentElement.clientWidth) + "px";
         qv.hidden = false; document.documentElement.classList.add("qv-lock");
         requestAnimationFrame(() => qv.classList.add("is-open"));
+        settleSoon();
       }
       body.scrollTop = 0; panel.focus({ preventScroll: true });
     };
+    // Once the sheet has opened, hide the page behind it under a plain dim: redrawing the whole page behind
+    // the sheet on every scroll frame was what made scrolling inside the quick view stutter.
+    let settleT = 0;
+    const settleSoon = (ms = 520) => { clearTimeout(settleT); settleT = setTimeout(() => { if (cur && !drag) document.documentElement.classList.add("qv-settled"); }, ms); };
+    const unsettle = () => { clearTimeout(settleT); document.documentElement.classList.remove("qv-settled"); };
     const hide = () => {
       if (!cur) return;
+      unsettle();
       cur = null; list = [];
       qv.classList.remove("is-open"); document.documentElement.classList.remove("qv-lock"); document.documentElement.style.paddingRight = "";
       setTimeout(() => { if (!cur) { qv.hidden = true; panel.style.transform = panel.style.transition = ""; const bd = $(".qv-backdrop", qv); bd.style.opacity = bd.style.transition = ""; } }, 560);
@@ -2012,6 +2020,7 @@
       if (!drag.on) {
         if (Math.abs(dy) < 4) return;
         drag.on = true; try { bar.setPointerCapture(drag.id); } catch (err) {}
+        unsettle();
         panel.classList.add("is-dragging"); html.classList.add("qv-dragging");
         panel.style.transition = "none"; backdrop.style.transition = "none";
       }
@@ -2041,6 +2050,7 @@
         panel.style.transition = "transform var(--dur-bouncy) var(--spring-bouncy)"; backdrop.style.transition = "";
         panel.style.transform = ""; backdrop.style.opacity = ""; html.style.setProperty("--qv-pull", 0);
         setTimeout(() => { panel.style.transition = ""; }, 600);
+        settleSoon(620);
       }
     };
     addEventListener("pointerup", endDrag);
