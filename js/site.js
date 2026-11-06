@@ -423,16 +423,16 @@
     el.outerHTML = `
       <a class="skip" href="#main">Skip to content</a>
       <header class="topbar">
-        <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="logo-l" src="assets/logo.svg?v=dl3" alt="Drafty Labs" width="113" height="28"><img class="logo-d" src="assets/logo-dark.svg?v=dl3" alt="Drafty Labs" width="113" height="28"></a>
+        <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="logo-l" src="assets/logo-mono.svg?v=m1" alt="Drafty Labs" width="113" height="28"><img class="logo-d" src="assets/logo-mono-dark.svg?v=m1" alt="Drafty Labs" width="113" height="28"></a>
         <button class="icon-btn" type="button" aria-label="Search" data-open-search>${icon("search")}</button>
         <button class="icon-btn menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="side">${icon("menu")}</button>
       </header>
       <aside class="side" id="side" aria-label="Main">
         <div class="side-top">
           <a class="logo" href="index.html" aria-label="Drafty Labs home">
-            <img class="logo-full logo-l" src="assets/logo.svg?v=dl3" alt="Drafty Labs" width="113" height="28">
-            <img class="logo-full logo-d" src="assets/logo-dark.svg?v=dl3" alt="Drafty Labs" width="113" height="28">
-            <span class="logo-mark" aria-hidden="true"><img class="logo-l" src="assets/logo-mark.svg?v=dl3" alt="" width="28" height="28"><img class="logo-d" src="assets/logo-mark-dark.svg?v=dl3" alt="" width="28" height="28"></span>
+            <img class="logo-full logo-l" src="assets/logo-mono.svg?v=m1" alt="Drafty Labs" width="113" height="28">
+            <img class="logo-full logo-d" src="assets/logo-mono-dark.svg?v=m1" alt="Drafty Labs" width="113" height="28">
+            <span class="logo-mark" aria-hidden="true"><img class="logo-l" src="assets/logo-mono-mark.svg?v=m1" alt="" width="28" height="28"><img class="logo-d" src="assets/logo-mono-mark-dark.svg?v=m1" alt="" width="28" height="28"></span>
           </a>
           <button class="side-fold" type="button" aria-label="Collapse menu" data-side-fold>${sideIcon("fold")}</button>
         </div>
