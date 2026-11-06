@@ -1250,7 +1250,6 @@
           <button class="fx-row" type="button" role="tab" id="fx-tab-${f.ext}" aria-controls="fx-panel" aria-selected="${i === 0}" tabindex="${i === 0 ? 0 : -1}" data-i="${i}">
             <span class="ext">.${f.ext.toLowerCase()}</span>
             <span class="meta"><b>${f.name}</b><span>${f.short}</span></span>
-            <span class="go">${ARROW}</span>
             <span class="bar"></span>
           </button>`).join("")}
       </div>
