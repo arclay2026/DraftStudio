@@ -61,7 +61,10 @@ window.DS = {
     // Visitor stats with GoatCounter (free, no cookies). Put your GoatCounter
     // code here, e.g. "draftstudio" for draftstudio.goatcounter.com. Empty = off.
     goatcounter: "",
-    instagram: "",                    // e.g. "https://instagram.com/draftstudio"
+    // social accounts, shown as icons in the footer (empty = hidden)
+    instagram: "https://www.instagram.com/drafty.labs/",
+    tiktok: "https://www.tiktok.com/@draftylabs.design",
+    youtube: "https://www.youtube.com/channel/UC0zl38RlyuKA3azGktBfOcA",
     license:
       "Free for personal and commercial projects. Credit is appreciated but not required. " +
       "You may not resell or redistribute the files as-is."

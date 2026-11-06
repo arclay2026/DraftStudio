@@ -446,6 +446,17 @@
       <div class="side-scrim" data-side-close></div>`;
   }
 
+  // Social accounts as icon buttons (the platforms' own logos, in assets/brand/social)
+  const SOCIAL = [
+    ["instagram", "Instagram", '<img src="assets/brand/social/instagram.svg?v=s1" alt="" width="20" height="20">'],
+    ["tiktok", "TikTok", '<img class="so-d" src="assets/brand/social/tiktok-dark.svg?v=s1" alt="" width="20" height="20"><img class="so-l" src="assets/brand/social/tiktok-light.svg?v=s1" alt="" width="20" height="20">'],
+    ["youtube", "YouTube", '<img src="assets/brand/social/youtube.svg?v=s1" alt="" width="22" height="16">']];
+  const socialRow = s => {
+    const on = SOCIAL.filter(([k]) => s[k]);
+    return on.length ? `<div class="f-social">${on.map(([k, name, img]) =>
+      `<a class="f-so" href="${esc(s[k])}" target="_blank" rel="noopener" aria-label="Drafty Labs on ${name}" title="${name}">${img}</a>`).join("")}</div>` : "";
+  };
+
   function footer() {
     const el = $("[data-footer]");
     if (!el) return;
@@ -459,6 +470,7 @@
             <div class="f-brand">
               <a class="logo" href="index.html" aria-label="Drafty Labs home"><img class="f-logo-w" src="assets/logo-mono-dark.svg?v=m1" alt="Drafty Labs" width="129" height="32"><img class="f-logo-k" src="assets/logo-mono.svg?v=m1" alt="Drafty Labs" width="129" height="32"></a>
               <p>${esc(s.tagline)}</p>
+              ${socialRow(s)}
             </div>
             <nav class="f-links" aria-label="Files">
               <h2>Files</h2>
@@ -478,7 +490,6 @@
               <ul>
                 <li><a href="mailto:${esc(s.email)}">${esc(s.email)}</a></li>
                 ${wa ? `<li><a href="https://wa.me/${esc(wa)}" target="_blank" rel="noopener">${esc(waPretty)}</a></li>` : ""}
-                ${s.instagram ? `<li><a href="${esc(s.instagram)}" target="_blank" rel="noopener">Instagram</a></li>` : ""}
               </ul>
             </div>
           </div>
