@@ -37,8 +37,8 @@
   const tick = () => new Promise(r => setTimeout(r, 0));
   const sleep = ms => new Promise(r => setTimeout(r, ms));
   // Each image takes its time, so the work can be seen: unhurried when images are
-  // first added (the whole batch stays within about 8 s), quicker when a setting changes
-  const pace = (n, fresh) => fresh ? Math.round(Math.min(1600, Math.max(700, 8000 / n))) : Math.round(Math.min(600, Math.max(250, 3000 / n)));
+  // first added (the whole batch stays within about 12 s), quicker when a setting changes
+  const pace = (n, fresh) => fresh ? Math.round(Math.min(2600, Math.max(1000, 12000 / n))) : Math.round(Math.min(600, Math.max(250, 3000 / n)));
 
   /* ---------- What this browser can write ---------- */
   async function encoders() {
