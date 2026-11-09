@@ -2029,6 +2029,7 @@
   "^(\\d+) images?$": "$1 张图片",
   "^(\\d+) files weren't images$": "$1 个文件不是图片",
   "^Transparent areas filled with (#[0-9A-F]{6})$": "透明区域已填充为 $1",
-  "^Couldn't get it under (.+); this is the smallest we could make$": "无法压到 $1 以下；这已是能做到的最小"
+  "^Couldn't get it under (.+); this is the smallest we could make$": "无法压到 $1 以下；这已是能做到的最小",
+  "^Converting… (\\d+) of (\\d+)$": "转换中… 第 $1 / $2 张"
  }
 }

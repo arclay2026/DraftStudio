@@ -225,7 +225,14 @@
             <button class="ic-btn ic-dl" type="button" aria-label="Download" disabled>${ICON_DL}</button>
             <button class="ic-btn ic-x" type="button" aria-label="Remove">${ICON_X}</button>
           </div>`);
-        $(`.ic-row[data-id="${it.id}"] .ic-meta b`, list).textContent = file.name;
+        const row = $(`.ic-row[data-id="${it.id}"]`, list);
+        $(".ic-meta b", row).textContent = file.name;
+        // the original as a preview while it converts (if this browser can show it)
+        it.prev = URL.createObjectURL(file);
+        const im = new Image();
+        im.alt = ""; im.decoding = "async";
+        im.onload = () => { const t = $(".ic-thumb", row); if (t && !it.url) { t.innerHTML = ""; t.append(im); } };
+        im.src = it.prev;
       });
       if (skipped) toast(skipped === 1 ? "That file isn't an image" : `${skipped} files weren't images`);
       layout();
@@ -260,13 +267,13 @@
       const it = files.find(f => f.id === +row.dataset.id); if (!it) return;
       if (e.target.closest(".ic-x")) {
         files = files.filter(f => f !== it);
-        if (it.url) URL.revokeObjectURL(it.url);
+        [it.url, it.prev].forEach(u => u && URL.revokeObjectURL(u));
         row.remove(); layout(); summary();
       } else if (e.target.closest(".ic-dl") && it.out) save(it.out, it.outName);
     });
     $("[data-ic-clear]", root).addEventListener("click", () => {
       run++;
-      files.forEach(f => f.url && URL.revokeObjectURL(f.url));
+      files.forEach(f => [f.url, f.prev].forEach(u => u && URL.revokeObjectURL(u)));
       files = []; list.innerHTML = ""; layout(); summary();
     });
     dlAll.addEventListener("click", async () => {
@@ -301,6 +308,10 @@
       }
       sum.textContent = busy ? (n ? t + " · working…" : "") : t;
       dlAll.disabled = !done.length || busy;
+      const fin = files.filter(f => /done|warn|error/.test(f.state)).length;
+      dlAll.classList.toggle("is-busy", busy && n > 0);
+      dlAll.style.setProperty("--p", n ? (fin / n * 100).toFixed(1) + "%" : "0%");
+      dlAll.querySelector("span").textContent = busy && n ? `Converting… ${Math.min(fin + 1, n)} of ${n}` : n > 1 ? "Download all (.zip)" : "Download";
     }
 
     /* -- converting -- */

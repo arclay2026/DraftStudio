@@ -3761,3 +3761,38 @@ html.lr-lock { overflow: hidden; }
 /* numbers and file names read left to right, even on Arabic pages */
 .ic-meta small, .ic [data-ic-sum] { unicode-bidi: plaintext; }
 .ic-save { direction: ltr; }
+
+/* Converting animation: a light sweep across the row, a spinner over the blurred original,
+   a pop when it's done, and the download button filling up as the batch goes */
+.ic-row { position: relative; overflow: hidden; isolation: isolate; }
+.ic-row::after { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; opacity: 0; transform: translateX(-100%);
+  background: linear-gradient(100deg, transparent 15%, color-mix(in srgb, var(--dl) 9%, transparent) 42%, color-mix(in srgb, var(--dl) 16%, transparent) 50%, color-mix(in srgb, var(--dl) 9%, transparent) 58%, transparent 85%); }
+.ic-row[data-state="work"]::after { opacity: 1; animation: ic-sweep 1.15s cubic-bezier(.45, 0, .25, 1) infinite; }
+@keyframes ic-sweep { to { transform: translateX(100%); } }
+.ic-row[data-state="wait"] { opacity: .62; }
+.ic-row[data-state="work"] .ic-thumb, .ic-row[data-state="wait"] .ic-thumb { animation: none; }
+.ic-thumb { position: relative; }
+.ic-thumb img { animation: ic-fade .35s var(--ease); transition: filter .3s, transform .3s; }
+@keyframes ic-fade { from { opacity: 0; transform: scale(1.08); } }
+.ic-row[data-state="work"] .ic-thumb img, .ic-row[data-state="wait"] .ic-thumb img { filter: blur(2.5px) saturate(.7) brightness(.85); transform: scale(1.1); }
+.ic-row[data-state="work"] .ic-thumb::after { content: ""; position: absolute; top: 50%; left: 50%; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 50%;
+  border: 2.25px solid rgba(255, 255, 255, .4); border-top-color: #fff; animation: ic-spin .7s linear infinite; filter: drop-shadow(0 1px 2px rgba(0, 0, 0, .3)); }
+.ic-row[data-state="work"] .ic-thumb:not(:has(img))::after { border-color: color-mix(in srgb, var(--fg) 18%, transparent); border-top-color: var(--fg); filter: none; }
+.ic-row[data-state="work"] .ic-thumb > svg { opacity: 0; }
+@keyframes ic-spin { to { transform: rotate(360deg); } }
+.ic-row[data-state="done"] .ic-save, .ic-row[data-state="warn"] .ic-save { animation: ic-pop .45s var(--spring, var(--ease)); }
+.ic-row[data-state="done"] .ic-dl, .ic-row[data-state="warn"] .ic-dl { animation: ic-pop .45s var(--spring, var(--ease)) .05s backwards; }
+@keyframes ic-pop { from { transform: scale(.6); opacity: 0; } }
+.ic-export .btn-dl { position: relative; overflow: hidden; isolation: isolate; }
+.ic-export .btn-dl::before { content: ""; position: absolute; inset: 0 auto 0 0; z-index: -1; width: 0; background: rgba(255, 255, 255, .2); transition: width .35s var(--ease); }
+.ic-export .btn-dl.is-busy { opacity: 1; }
+.ic-export .btn-dl.is-busy::before { width: var(--p, 0%); }
+.ic-export .btn-dl.is-busy > span:first-child { font-variant-numeric: tabular-nums; }
+.ic-export .btn-dl .arr { position: relative; }
+.ic-export .btn-dl.is-busy .arr svg { opacity: 0; }
+.ic-export .btn-dl.is-busy .arr::after { content: ""; position: absolute; top: 50%; left: 50%; width: 13px; height: 13px; margin: -6.5px 0 0 -6.5px; border-radius: 50%;
+  border: 2px solid color-mix(in srgb, currentColor 25%, transparent); border-top-color: currentColor; animation: ic-spin .7s linear infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .ic-row[data-state="work"]::after { animation: none; transform: none; opacity: .6; }
+  .ic-row[data-state="work"] .ic-thumb::after, .ic-export .btn-dl.is-busy .arr::after { animation-duration: 2s; }
+}

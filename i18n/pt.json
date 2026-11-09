@@ -2029,6 +2029,7 @@
   "^(\\d+) images?$": "$1 imagem(ns)",
   "^(\\d+) files weren't images$": "$1 arquivos não eram imagens",
   "^Transparent areas filled with (#[0-9A-F]{6})$": "Áreas transparentes preenchidas com $1",
-  "^Couldn't get it under (.+); this is the smallest we could make$": "Não foi possível ficar abaixo de $1; este é o menor possível"
+  "^Couldn't get it under (.+); this is the smallest we could make$": "Não foi possível ficar abaixo de $1; este é o menor possível",
+  "^Converting… (\\d+) of (\\d+)$": "Convertendo… $1 de $2"
  }
 }
