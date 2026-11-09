@@ -391,6 +391,7 @@
     "palettes": "M480-80q-82 0-155-31.5t-127.5-86Q143-252 111.5-325T80-480q0-83 32.5-156t88-127Q256-817 330-848.5T488-880q80 0 151 27.5t124.5 76q53.5 48.5 85 115T880-518q0 115-70 176.5T640-280h-74q-9 0-12.5 5t-3.5 11q0 12 15 34.5t15 51.5q0 50-27.5 74T480-80Zm0-400Zm-177 23q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm120-160q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm200 0q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17Zm120 160q17-17 17-43t-17-43q-17-17-43-17t-43 17q-17 17-17 43t17 43q17 17 43 17t43-17ZM480-160q9 0 14.5-5t5.5-13q0-14-15-33t-15-57q0-42 29-67t71-25h70q66 0 113-38.5T800-518q0-121-92.5-201.5T488-800q-136 0-232 93t-96 227q0 133 93.5 226.5T480-160Z",
     "qr": "M120-560v-240q0-17 11.5-28.5T160-840h240q17 0 28.5 11.5T440-800v240q0 17-11.5 28.5T400-520H160q-17 0-28.5-11.5T120-560Zm80-40h160v-160H200v160Zm-80 440v-240q0-17 11.5-28.5T160-440h240q17 0 28.5 11.5T440-400v240q0 17-11.5 28.5T400-120H160q-17 0-28.5-11.5T120-160Zm80-40h160v-160H200v160Zm320-360v-240q0-17 11.5-28.5T560-840h240q17 0 28.5 11.5T840-800v240q0 17-11.5 28.5T800-520H560q-17 0-28.5-11.5T520-560Zm80-40h160v-160H600v160Zm160 480v-80h80v80h-80ZM520-360v-80h80v80h-80Zm80 80v-80h80v80h-80Zm-80 80v-80h80v80h-80Zm80 80v-80h80v80h-80Zm80-80v-80h80v80h-80Zm0-160v-80h80v80h-80Zm80 80v-80h80v80h-80Z",
     "barcode": "M120 -800H156V-160H120ZM192 -800H264V-250H192ZM300 -800H336V-250H300ZM372 -800H480V-250H372ZM516 -800H552V-250H516ZM624 -800H696V-250H624ZM732 -800H768V-250H732ZM804 -800H840V-160H804Z",
+    "convert": "M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z",
     "canvas": "M440-80q-33 0-56.5-23.5T360-160v-160H240q-33 0-56.5-23.5T160-400v-280q0-66 47-113t113-47h440q17 0 28.5 11.5T800-800v400q0 33-23.5 56.5T720-320H600v160q0 33-23.5 56.5T520-80h-80ZM240-560h480v-200h-40v120q0 17-11.5 28.5T640-600q-17 0-28.5-11.5T600-640v-120h-40v40q0 17-11.5 28.5T520-680q-17 0-28.5-11.5T480-720v-40H320q-33 0-56.5 23.5T240-680v120Zm0 160h480v-80H240v80Zm0 0v-80 80Z",
     "websites": "M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h640q33 0 56.5 23.5T880-720v480q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H160v400Z",
     "portfolio": "M160-160q-33 0-56.5-23.5T80-240v-480q0-33 23.5-56.5T160-800h207q16 0 30.5 6t25.5 17l57 57h320q33 0 56.5 23.5T880-640v400q0 33-23.5 56.5T800-160H160Zm0-80h640v-400H447l-80-80H160v480Zm0 0v-480 480Z",
@@ -412,7 +413,7 @@
       { title: "Studio", items: [["websites.html", "Websites", "websites", "websites", true]]
         .concat((DS.clientLogos || []).length ? [["portfolio.html", "Portfolio", "portfolio", "portfolio", true]] : [])
         .concat([["pricing.html", "Pricing", "pricing", "pricing"]]) },
-      { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palettes"], ["qr.html", "QR Code Studio", "qr", "qr", true], ["barcode.html", "Barcode Studio", "barcode", "barcode", true], ["canvas.html", "Canvas", "canvas", "canvas", true]] },
+      { title: "Tools", items: [["palettes.html", "Palettes", "palettes", "palettes"], ["qr.html", "QR Code Studio", "qr", "qr", true], ["barcode.html", "Barcode Studio", "barcode", "barcode", true], ["convert.html", "Image Converter", "convert", "convert", true], ["canvas.html", "Canvas", "canvas", "canvas", true]] },
       { title: "Help", items: [["learn.html", "Learn", "learn", "learn"], ["license.html", "License", "license", "license"]] }
     ];
     // A fifth `true` marks a page as new: it gets a NEW badge (a dot when the menu is folded)
@@ -474,7 +475,7 @@
             </div>
             <nav class="f-links" aria-label="Files">
               <h2>Files</h2>
-              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="palettes.html">Palettes</a></li><li><a href="qr.html">QR Code Studio</a></li><li><a href="barcode.html">Barcode Studio</a></li><li><a href="canvas.html">Canvas</a></li></ul>
+              <ul>${CATS.map(c => `<li><a href="browse.html?cat=${c.slug}">${c.name}</a></li>`).join("")}<li><a href="palettes.html">Palettes</a></li><li><a href="qr.html">QR Code Studio</a></li><li><a href="barcode.html">Barcode Studio</a></li><li><a href="convert.html">Image Converter</a></li><li><a href="canvas.html">Canvas</a></li></ul>
             </nav>
             <nav class="f-links" aria-label="Studio">
               <h2>Studio</h2>
@@ -510,7 +511,7 @@
     const its = items.filter(it => !q || hit([it.title, it.category, (it.tags || []).join(" "), formatsOf(it).join(" ")].join(" "))).slice(0, 6);
     const cats = CATS.filter(c => !q || hit(c.name + " " + c.formats.join(" ")));
     // the site's pages and tools too, so a search finds "QR", "canvas", "pricing"…
-    const PAGES = [["qr.html", "QR Code Studio", "qr", "Designed QR codes · qr code wifi whatsapp link"], ["barcode.html", "Barcode Studio", "barcode", "Barcodes · ean upc code 128 barcode"],
+    const PAGES = [["qr.html", "QR Code Studio", "qr", "Designed QR codes · qr code wifi whatsapp link"], ["barcode.html", "Barcode Studio", "barcode", "Barcodes · ean upc code 128 barcode"], ["convert.html", "Image Converter", "convert", "Convert and compress images · image converter compress resize jpg png webp avif heic photo"],
       ["canvas.html", "Canvas", "canvas", "Design editor · design editor draw fonts"], ["palettes.html", "Palettes", "palettes", "Colour palettes · colour color palette generator"],
       ["learn.html", "Learn", "learn", "Design Basics course · lessons course tutorial learn"], ["websites.html", "Websites", "websites", "Websites built for business · website web design"],
       ["pricing.html", "Pricing", "pricing", "Website packages · price pricing packages store"], ["license.html", "License", "license", "Free means free · license licence commercial"]];
@@ -1881,6 +1882,7 @@
      Palettes), and one in the sidebar above Settings. Closing either hides that tool's card for good. */
   const TOOLS = [
     { id: "barcode", href: "barcode.html", ic: "barcode", t: "Barcode Studio", d: "Product barcodes in six formats, each one checked before you download.", c: ["#2fe0b0", "#0e9fb8"] },
+    { id: "convert", href: "convert.html", ic: "convert", t: "Image Converter", d: "JPG, PNG or WebP, smaller and resized, without uploading.", c: ["#b8f05a", "#1fa65a"] },
     { id: "canvas", href: "canvas.html", ic: "canvas", t: "Canvas", d: "A full design editor in your browser, with 300+ fonts built in.", c: ["#7aa7ff", "#2f5dff"] },
     { id: "qr", href: "qr.html", ic: "qr", t: "QR Code Studio", d: "QR codes that look designed. Your colours, your logo.", c: ["#ffb36b", "#ff5f6d"] },
     { id: "palettes", href: "palettes.html", ic: "palettes", t: "Palettes", d: "36 ready-made colour palettes, or a fresh one in one tap.", c: ["#c59bff", "#6b5cff"] },
@@ -2671,6 +2673,12 @@
     if (window.BarcodeStudio) window.BarcodeStudio({ $, $$, esc, icon, copy, toast, lum, pref });
   }
 
+  /* ---------- Image Converter (convert.html) ---------- */
+  // The tool lives in js/image-converter.js; it gets the shared helpers from here.
+  function convert() {
+    if (window.ImageConverter) window.ImageConverter({ $, $$, esc, toast });
+  }
+
   /* ---------- Settings (gear in the header) ---------- */
   // Each preference lives in localStorage as "ds-<name>"; leaving the default
   // removes the key. The head of every page applies theme and text size before
@@ -2950,6 +2958,7 @@
       if (el.matches("[data-dl-svg], [data-dl-png]")) return track(`download/icon-${location.hash.slice(1) || "icon"}.${el.matches("[data-dl-svg]") ? "svg" : "png"}`, "Icon download");
       if (el.matches("[data-qs-dl]")) return track("download/qr-code", "QR code download");
       if (el.matches("[data-bs-dl]")) return track("download/barcode", "Barcode download");
+      if (el.matches("[data-ic-all], .ic-dl")) return track("download/image-converter", "Image converter download");
       if (el.matches("[data-pg-png], [data-pal-png]")) return track("download/palette-png", "Palette download");
       if (el.matches("a[download], .dlx-go, .dl-all") || href.includes("drive.google.com")) return track(`download/${fileOf(el) || id || "file"}`, "File download");
     }, true);
@@ -2978,7 +2987,7 @@
   chrome();
   topNav();
   settings();
-  ({ home, browse, item, palettes, qr, barcode, learn, license, canvas }[page] || (() => {}))();
+  ({ home, browse, item, palettes, qr, barcode, convert, learn, license, canvas }[page] || (() => {}))();
   enhanceSelects();
   sliders();
   tooltips();

@@ -54,7 +54,7 @@ const putSeo = (html, block) => {
 };
 
 // ---- Pages
-const PAGES = ["index.html", "browse.html", "palettes.html", "qr.html", "barcode.html", "canvas.html", "learn.html", "license.html", "pricing.html", "item.html"];
+const PAGES = ["index.html", "browse.html", "palettes.html", "qr.html", "barcode.html", "convert.html", "canvas.html", "learn.html", "license.html", "pricing.html", "item.html"];
 for (const f of PAGES) {
   const html = read(f);
   const url = SITE + (f === "index.html" ? "" : f);
@@ -63,7 +63,8 @@ for (const f of PAGES) {
     "@graph": [
       { "@type": "WebSite", "@id": SITE + "#site", url: SITE, name: "Drafty Labs", inLanguage: LANGS,
         potentialAction: { "@type": "SearchAction", target: SITE + "browse.html?q={search_term_string}", "query-input": "required name=search_term_string" } },
-      { "@type": "Organization", "@id": SITE + "#org", name: "Drafty Labs", url: SITE, logo: SITE + "assets/logo-mark.svg?v=dl3", email: DS.site.email }
+      { "@type": "Organization", "@id": SITE + "#org", name: "Drafty Labs", url: SITE, logo: SITE + "assets/logo-mark.svg?v=dl3", email: DS.site.email,
+        sameAs: ["instagram", "tiktok", "youtube"].map(k => DS.site[k]).filter(Boolean) }
     ]
   } : null;
   write(f, putSeo(html, seoBlock({ url, title: title(html), description: meta(html, "description"), image: SITE + SHARE_IMAGE, jsonld })));
