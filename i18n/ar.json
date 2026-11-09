@@ -1978,7 +1978,10 @@
   "JPG, PNG or WebP, smaller and resized, without uploading.": "JPG أو PNG أو WebP، أصغر حجمًا وبأبعاد جديدة، دون رفع.",
   "Convert and compress images": "تحويل الصور وضغطها",
   "Open Image Converter": "افتح محوّل الصور",
-  "The Image Converter turns images into JPG, PNG or WebP, compresses them to a quality or a target file size, and resizes them, many at once. It runs in your browser, so your images are never uploaded.": "يحوّل محوّل الصور صورك إلى JPG أو PNG أو WebP، ويضغطها حسب الجودة أو الحجم المطلوب، ويغيّر أبعادها، عدة صور معًا. يعمل في متصفحك، فلا تُرفع صورك أبدًا."
+  "The Image Converter turns images into JPG, PNG or WebP, compresses them to a quality or a target file size, and resizes them, many at once. It runs in your browser, so your images are never uploaded.": "يحوّل محوّل الصور صورك إلى JPG أو PNG أو WebP، ويضغطها حسب الجودة أو الحجم المطلوب، ويغيّر أبعادها، عدة صور معًا. يعمل في متصفحك، فلا تُرفع صورك أبدًا.",
+  "Reading image…": "قراءة الصورة…",
+  "Resizing…": "تغيير الأبعاد…",
+  "Optimising…": "تحسين…"
  },
  "patterns": {
   "^(\\d+) files$": "$1 ملفات",
@@ -2030,6 +2033,7 @@
   "^(\\d+) files weren't images$": "$1 ملفات ليست صورًا",
   "^Transparent areas filled with (#[0-9A-F]{6})$": "مُلئت المناطق الشفافة باللون $1",
   "^Couldn't get it under (.+); this is the smallest we could make$": "تعذّر النزول تحت $1؛ هذا أصغر ما أمكن",
-  "^Converting… (\\d+) of (\\d+)$": "جارٍ التحويل… $1 من $2"
+  "^Converting… (\\d+) of (\\d+)$": "جارٍ التحويل… $1 من $2",
+  "^Converting to (JPG|PNG|WebP|AVIF)…$": "التحويل إلى $1…"
  }
 }

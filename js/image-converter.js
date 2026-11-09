@@ -35,6 +35,10 @@
   const MAX_AREA = isIOS ? 16777216 : 100000000;
   const toBlob = (c, type, q) => new Promise(r => { try { c.toBlob(r, type, q); } catch (e) { r(null); } });
   const tick = () => new Promise(r => setTimeout(r, 0));
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  // Each image takes its time, so the work can be seen: unhurried when images are
+  // first added (the whole batch stays within about 8 s), quicker when a setting changes
+  const pace = (n, fresh) => fresh ? Math.round(Math.min(1600, Math.max(700, 8000 / n))) : Math.round(Math.min(600, Math.max(250, 3000 / n)));
 
   /* ---------- What this browser can write ---------- */
   async function encoders() {
@@ -215,7 +219,7 @@
       const room = MAX_FILES - files.length;
       if (pick.length > room) toast(`Up to ${MAX_FILES} images at a time`);
       pick.slice(0, Math.max(0, room)).forEach(file => {
-        const it = { id: ++seq, file, state: "wait" };
+        const it = { id: ++seq, file, state: "wait", fresh: true };
         files.push(it);
         list.insertAdjacentHTML("beforeend", `
           <div class="ic-row" data-id="${it.id}" data-state="wait">
@@ -224,6 +228,7 @@
             <span class="ic-save"></span>
             <button class="ic-btn ic-dl" type="button" aria-label="Download" disabled>${ICON_DL}</button>
             <button class="ic-btn ic-x" type="button" aria-label="Remove">${ICON_X}</button>
+            <i class="ic-bar" aria-hidden="true"></i>
           </div>`);
         const row = $(`.ic-row[data-id="${it.id}"]`, list);
         $(".ic-meta b", row).textContent = file.name;
@@ -325,16 +330,25 @@
       return [nw, nh, cut];
     }
 
-    async function convertOne(it, token) {
+    async function convertOne(it, token, per) {
       const row = $(`.ic-row[data-id="${it.id}"]`, list);
       if (!row) return;
       const meta = $(".ic-meta small", row), badge = $(".ic-save", row), dl = $(".ic-dl", row);
       const set = st => { it.state = st; row.dataset.state = st; };
-      set("work"); meta.textContent = "Converting…"; dl.disabled = true;
       const F = FORMATS[S.fmt];
+      const t0 = performance.now();
+      row.style.setProperty("--dur", per + "ms");
+      set("work"); dl.disabled = true;
+      // the steps it goes through, shown as it works
+      const steps = ["Reading image…"].concat(S.size !== "original" || S.mode === "target" ? ["Resizing…"] : [], [`Converting to ${F.name}…`, "Optimising…"]);
+      meta.textContent = steps[0];
+      const timers = steps.slice(1).map((s, i) => setTimeout(() => { if (it.state === "work" && token === run) meta.textContent = s; }, per * (i + 1) / steps.length));
+      const unhurried = async () => { const left = per - (performance.now() - t0); if (left > 0) await sleep(left); };
       let pic;
       try { pic = await decode(it.file); }
       catch (e) {
+        timers.forEach(clearTimeout);
+        await unhurried();
         if (token !== run) return;
         set("error"); badge.textContent = "";
         const heic = /^hei[cf]$/.test(extOf(it.file.name)) || /hei[cf]/.test(it.file.type);
@@ -389,6 +403,8 @@
         }
         if (token !== run) return;
         if (!blob) throw new Error("encode");
+        await unhurried();
+        if (token !== run) return;
         const outW = canvas.width, outH = canvas.height;
         let out = blob, kept = false;
         // Same format, same size, and our copy is bigger: keep the original
@@ -409,22 +425,25 @@
         const p = pic.svg ? null : Math.round((1 - out.size / it.file.size) * 100);
         badge.textContent = p == null ? "" : p > 0 ? `−${p}%` : p < 0 ? `+${Math.min(999, -p)}%` : "0%";
         badge.className = "ic-save" + (p > 0 ? " is-good" : p < 0 ? " is-up" : "");
+        it.fresh = false;
         set(note ? "warn" : "done"); dl.disabled = false;
       } catch (e) {
         if (token !== run) return;
         set("error"); badge.textContent = "";
         meta.textContent = "Couldn't convert this one. Try a smaller size or another format.";
-      } finally { pic && pic.done(); }
+      } finally { timers.forEach(clearTimeout); pic && pic.done(); }
     }
 
     async function convertAll() {
       const token = ++run;
       files.forEach(f => { if (f.state !== "error") { f.state = "wait"; } });
       summary();
+      const fresh = files.filter(f => f.fresh).length;
+      const per = { fresh: pace(fresh || 1, true), again: pace(files.length || 1, false) };
       for (const it of files.slice()) {
         if (token !== run) return;
         if (!files.includes(it)) continue;
-        await convertOne(it, token);
+        await convertOne(it, token, it.fresh ? per.fresh : per.again);
         summary();
         await tick();
       }

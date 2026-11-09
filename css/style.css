@@ -3796,3 +3796,10 @@ html.lr-lock { overflow: hidden; }
   .ic-row[data-state="work"]::after { animation: none; transform: none; opacity: .6; }
   .ic-row[data-state="work"] .ic-thumb::after, .ic-export .btn-dl.is-busy .arr::after { animation-duration: 2s; }
 }
+
+/* Each row's progress bar fills over the time that image takes */
+.ic-bar { position: absolute; left: 0; bottom: 0; height: 2.5px; width: 0; border-radius: 0 3px 3px 0; background: var(--dl); opacity: 0; pointer-events: none; }
+.ic-row[data-state="work"] .ic-bar { opacity: 1; animation: ic-fill var(--dur, 1.2s) cubic-bezier(.35, .1, .3, 1) forwards; }
+@keyframes ic-fill { from { width: 0; } to { width: 100%; } }
+.ic-row[data-state="done"] .ic-bar, .ic-row[data-state="warn"] .ic-bar { width: 100%; opacity: 0; transition: opacity .5s ease .15s; }
+.ic-row[data-state="work"]::after { animation-duration: 1.6s; }

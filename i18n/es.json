@@ -1978,7 +1978,10 @@
   "JPG, PNG or WebP, smaller and resized, without uploading.": "JPG, PNG o WebP, más ligeras y redimensionadas, sin subir nada.",
   "Convert and compress images": "Convertir y comprimir imágenes",
   "Open Image Converter": "Abrir el conversor de imágenes",
-  "The Image Converter turns images into JPG, PNG or WebP, compresses them to a quality or a target file size, and resizes them, many at once. It runs in your browser, so your images are never uploaded.": "El conversor de imágenes las pasa a JPG, PNG o WebP, las comprime a una calidad o un tamaño objetivo y las redimensiona, varias a la vez. Funciona en tu navegador, así que tus imágenes nunca se suben."
+  "The Image Converter turns images into JPG, PNG or WebP, compresses them to a quality or a target file size, and resizes them, many at once. It runs in your browser, so your images are never uploaded.": "El conversor de imágenes las pasa a JPG, PNG o WebP, las comprime a una calidad o un tamaño objetivo y las redimensiona, varias a la vez. Funciona en tu navegador, así que tus imágenes nunca se suben.",
+  "Reading image…": "Leyendo la imagen…",
+  "Resizing…": "Redimensionando…",
+  "Optimising…": "Optimizando…"
  },
  "patterns": {
   "^(\\d+) files$": "$1 archivos",
@@ -2030,6 +2033,7 @@
   "^(\\d+) files weren't images$": "$1 archivos no eran imágenes",
   "^Transparent areas filled with (#[0-9A-F]{6})$": "Zonas transparentes rellenadas con $1",
   "^Couldn't get it under (.+); this is the smallest we could make$": "No se pudo bajar de $1; esto es lo más pequeño posible",
-  "^Converting… (\\d+) of (\\d+)$": "Convirtiendo… $1 de $2"
+  "^Converting… (\\d+) of (\\d+)$": "Convirtiendo… $1 de $2",
+  "^Converting to (JPG|PNG|WebP|AVIF)…$": "Convirtiendo a $1…"
  }
 }
