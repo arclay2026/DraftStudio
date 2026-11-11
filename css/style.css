@@ -3847,17 +3847,20 @@ html.lr-lock { overflow: hidden; }
 .cat-go { flex: none; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 12px; background: var(--fg); color: var(--on-fg); transition: transform .35s var(--spring, var(--ease)); }
 .cat-go svg { width: 13px; height: 13px; }
 .cat:hover .cat-go { transform: translate(2px, -2px); }
-/* Logos: the newest logos as a neat straight stack */
-.cat-stack { position: relative; width: 62%; aspect-ratio: 4 / 3; }
-.cat-stack span { position: absolute; inset: 0; overflow: hidden; border-radius: 16px; background: #fff; box-shadow: 0 18px 30px -18px rgba(15, 15, 15, .45), 0 0 0 1px rgba(15, 15, 15, .05);
-  transition: transform .6s var(--spring, var(--ease)), opacity .4s; }
-.cat-stack img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.3); }
-.cat-stack span:nth-child(1) { z-index: 3; }
-.cat-stack span:nth-child(2) { z-index: 2; transform: translateY(-11%) scale(.9); opacity: .75; }
-.cat-stack span:nth-child(3) { z-index: 1; transform: translateY(-21%) scale(.8); opacity: .45; }
-.cat:hover .cat-stack span:nth-child(1) { transform: translateY(5%); }
-.cat:hover .cat-stack span:nth-child(2) { transform: translateY(-12%) scale(.9); }
-.cat:hover .cat-stack span:nth-child(3) { transform: translateY(-27%) scale(.8); }
+/* Logos: a Pinterest-style wall of pins (mixed shapes, three columns drifting in opposite directions) */
+.cat-media.is-logos { display: block; }
+.cat-pins { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 12px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%); }
+.pin-col { min-width: 0; }
+.pin-col:nth-child(2) { margin-top: -30%; }
+.pin-track { display: flex; flex-direction: column; will-change: transform; }
+.pin { display: block; flex: none; margin-bottom: 8px; overflow: hidden; border-radius: 13px; background: #fff; box-shadow: 0 0 0 1px rgba(15, 15, 15, .07), 0 6px 14px -10px rgba(15, 15, 15, .35); }
+.pin img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); transition: transform .6s var(--ease); }
+.cat:hover .pin img { transform: scale(1.24); }
+/* the tiles pop in one after another when the section arrives */
+.cats.is-in .pin { animation: pin-in .7s var(--spring, var(--ease)) backwards; animation-delay: calc(var(--i, 0) * 70ms + 120ms); }
+@keyframes pin-in { from { opacity: 0; transform: translateY(18px) scale(.82); } }
+@media (prefers-reduced-motion: reduce) { .cats.is-in .pin { animation: none; } }
 /* Vectors: the pen-tool curve, in ink on the light surface */
 .cat-bezier { width: 70%; height: auto; overflow: visible; }
 .cat-bezier .guide { stroke: var(--outline); stroke-width: 1.5; stroke-dasharray: 5 6; }
@@ -3876,5 +3879,5 @@ html.lr-lock { overflow: hidden; }
 .cat:hover .cat-tpl .tpl.t3 { transform: translateX(70%) scale(.84); }
 @media (max-width: 1100px) { .cats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .cats { grid-template-columns: 1fr; } .cat-media { aspect-ratio: 16 / 10; } }
-@supports (corner-shape: squircle) { .cat { corner-shape: squircle; border-radius: 34px; } .cat-go { corner-shape: squircle; border-radius: 16px; } .cat-stack span { corner-shape: squircle; border-radius: 24px; } }
+@supports (corner-shape: squircle) { .cat { corner-shape: squircle; border-radius: 34px; } .cat-go { corner-shape: squircle; border-radius: 16px; } .pin { corner-shape: squircle; border-radius: 20px; } }
 .cat-tpl .tpl.t1 { background: #141414; color: #fff; } .cat-tpl .tpl.t1 em { background: #fff; color: #141414; } .cat-tpl .tpl.t3 { background: #ededed; color: #141414; } .cat-tpl .tpl.t3 .dot { background: #141414; }

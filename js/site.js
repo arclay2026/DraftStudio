@@ -931,12 +931,43 @@
 
   /* ---------- Home ---------- */
   function home() {
-    // Logos shelf: the three newest logos, each on its own brand colour (its second preview when it has one)
-    const stack = $("[data-logo-stack]");
-    if (stack) {
-      const logos = items.filter(it => it.category === "Logos" && !it.sold).slice(0, 3);
-      if (logos.length) stack.innerHTML = logos.map(it => `<span><img ${imgSrc((it.gallery && it.gallery[0]) || it.preview, "sm")} alt="" loading="lazy"></span>`).join("");
-      stack.dataset.n = logos.length;
+    // Logos card: a Pinterest-style wall of the newest logos. Three columns of tiles in mixed shapes
+    // drift in opposite directions (each column holds its tiles twice, so the loop is seamless),
+    // and the whole wall speeds up smoothly while the card is hovered.
+    const wall = $("[data-logo-pins]");
+    if (wall) {
+      const logos = items.filter(it => it.category === "Logos" && !it.sold).slice(0, 6);
+      // each logo twice: on its brand colour and on white, alternating so neighbours differ
+      const look = (it, alt) => (alt ? it.preview : (it.gallery && it.gallery[0])) || it.preview;
+      const pins = logos.map((it, i) => look(it, i % 2)).concat(logos.map((it, i) => look(it, (i + 1) % 2)));
+      const SHAPES = [["1 / 1", "5 / 6", "4 / 3"], ["5 / 6", "3 / 2", "1 / 1", "4 / 3"], ["4 / 3", "1 / 1", "5 / 6", "1 / 1", "3 / 2"]];
+      if (pins.length >= 4) {
+        wall.innerHTML = SHAPES.map((sh, c) => {
+          const k = (c * 2) % pins.length, list = pins.slice(k).concat(pins.slice(0, k));
+          const tiles = list.map((src, i) => `<span class="pin" style="aspect-ratio:${sh[i % sh.length]};--i:${i + c}"><img ${imgSrc(src, "sm")} alt="" loading="lazy"></span>`).join("");
+          return `<div class="pin-col"><div class="pin-track">${tiles}${tiles}</div></div>`;
+        }).join("");
+        const tracks = $$(".pin-track", wall);
+        if (tracks[0].animate && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          const anims = tracks.map((t, c) => t.animate(
+            c % 2 ? [{ transform: "translateY(-50%)" }, { transform: "translateY(0)" }] : [{ transform: "translateY(0)" }, { transform: "translateY(-50%)" }],
+            { duration: 30000 + c * 7000, iterations: Infinity }));
+          // ease the speed up and down instead of jumping
+          let rate = 1, target = 1, raf = 0;
+          const step = () => {
+            rate += (target - rate) * .06;
+            if (Math.abs(target - rate) < .01) rate = target;
+            anims.forEach(a => { a.playbackRate = rate; });
+            raf = rate === target ? 0 : requestAnimationFrame(step);
+          };
+          const speed = r => { target = r; if (!raf) raf = requestAnimationFrame(step); };
+          const card = wall.closest(".cat") || wall;
+          card.addEventListener("mouseenter", () => { if (matchMedia("(hover: hover)").matches) speed(4.5); });
+          card.addEventListener("mouseleave", () => speed(1));
+          // rest while the card is off screen
+          if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => anims.forEach(a => (e.isIntersecting ? a.play() : a.pause())))).observe(wall);
+        }
+      }
     }
     heroFx();
     heroSearch();
