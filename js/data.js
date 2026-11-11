@@ -54,7 +54,7 @@ window.DS = {
     // The site's public address, used for share previews and Google (tools/build-seo.js)
     url: "https://arclay2026.github.io/DraftStudio/",
     email: "thedraftstudio.design@gmail.com",
-    whatsapp: "27736684875",          // country code + number, no spaces or +
+    whatsapp: "27656955104",          // country code + number, no spaces or +
     // Address of the AI chat server (see worker/README.md). Leave empty and
     // Drafty answers from the site's own data instead.
     chatEndpoint: "",

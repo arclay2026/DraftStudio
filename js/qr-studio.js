@@ -22,7 +22,7 @@
         { k: "auth", label: "Security", options: [["WPA", "WPA / WPA2"], ["WEP", "WEP"], ["nopass", "No password"]] }],
       make: d => `WIFI:T:${d.auth || "WPA"};S:${wifiEsc(d.ssid)};${d.auth === "nopass" ? "" : `P:${wifiEsc(d.pass)};`};` },
     whatsapp: { label: "WhatsApp", icon: "chat", fields: [
-        { k: "num", label: "Phone number (with country code)", ph: "27 73 668 4875" },
+        { k: "num", label: "Phone number (with country code)", ph: "27 82 123 4567" },
         { k: "msg", label: "Message", ph: "Hi! I saw your QR code…", area: true }],
       make: d => `https://wa.me/${(d.num || "").replace(/\D/g, "")}${d.msg ? "?text=" + enc(d.msg) : ""}` },
     email: { label: "Email", icon: "mail", fields: [
@@ -30,15 +30,15 @@
         { k: "subject", label: "Subject", ph: "Hello" },
         { k: "body", label: "Message", ph: "Write your message…", area: true }],
       make: d => `mailto:${d.to || ""}${d.subject || d.body ? "?" + [d.subject && "subject=" + enc(d.subject), d.body && "body=" + enc(d.body)].filter(Boolean).join("&") : ""}` },
-    phone: { label: "Call", icon: "phone", fields: [{ k: "tel", label: "Phone number", ph: "+27 73 668 4875" }],
+    phone: { label: "Call", icon: "phone", fields: [{ k: "tel", label: "Phone number", ph: "+27 82 123 4567" }],
       make: d => `tel:${(d.tel || "").replace(/[^\d+]/g, "")}` },
     sms: { label: "SMS", icon: "smartphone", fields: [
-        { k: "num", label: "Phone number", ph: "+27 73 668 4875" },
+        { k: "num", label: "Phone number", ph: "+27 82 123 4567" },
         { k: "msg", label: "Message", ph: "Your message…", area: true }],
       make: d => `SMSTO:${(d.num || "").replace(/[^\d+]/g, "")}:${d.msg || ""}` },
     vcard: { label: "Contact", icon: "user", fields: [
         { k: "first", label: "First name", ph: "Alex", half: true }, { k: "last", label: "Last name", ph: "Mokoena", half: true },
-        { k: "tel", label: "Phone", ph: "+27 73 668 4875", half: true }, { k: "email", label: "Email", ph: "alex@brand.com", half: true },
+        { k: "tel", label: "Phone", ph: "+27 82 123 4567", half: true }, { k: "email", label: "Email", ph: "alex@brand.com", half: true },
         { k: "org", label: "Company", ph: "Drafty Labs", half: true }, { k: "title", label: "Job title", ph: "Designer", half: true },
         { k: "web", label: "Website", ph: "https://brand.com" }],
       make: d => ["BEGIN:VCARD", "VERSION:3.0", `N:${d.last || ""};${d.first || ""}`, `FN:${[d.first, d.last].filter(Boolean).join(" ")}`,

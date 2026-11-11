@@ -638,7 +638,7 @@
         <span class="tnav-keys" aria-hidden="true"><kbd>${mac ? "⌘" : "Ctrl"}</kbd><kbd>K</kbd></span>
       </button>
       <nav class="tnav-r" aria-label="Quick links">
-        <a class="tnav-btn tnav-wa" href="https://wa.me/27656955104?text=${encodeURIComponent("Hi Drafty Labs, ")}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><img src="assets/brand/whatsapp.svg?v=wa1" alt="" width="16" height="16">WhatsApp</a>
+        <a class="tnav-btn tnav-wa" href="https://wa.me/${DS.site.whatsapp}?text=${encodeURIComponent("Hi Drafty Labs, ")}" target="_blank" rel="noopener" aria-label="Chat on WhatsApp"><img src="assets/brand/whatsapp.svg?v=wa1" alt="" width="16" height="16">WhatsApp</a>
         <a class="tnav-btn" href="learn.html">Learn</a>
         <button class="tnav-btn" type="button" data-tnav-ask><img src="assets/drafty.svg?v=d4" alt="" width="18" height="18">Ask</button>
         <a class="tnav-icon tnav-ring" href="browse.html" aria-label="Browse all files" data-tip="Browse all files">${sideIcon("browse-all")}</a>
@@ -694,7 +694,7 @@
 
   /* ---------- Logo request: a three-step form that sends a neat brief to WhatsApp ----------
      Opened by any [data-logo-request] button. Answers are kept while the page is open. */
-  const LOGO_WA = "27656955104";   // the number logo requests go to
+  const LOGO_WA = DS.site.whatsapp;   // logo requests go to the site's WhatsApp (js/data.js)
   function logoRequest() {
     // each kind of logo shown with Drafty Labs as the example
     const TYPES = [
