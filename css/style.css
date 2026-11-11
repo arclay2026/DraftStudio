@@ -539,6 +539,10 @@ svg.mi .mi-on { display: none; }
   transform: translateY(0); transition: transform .6s var(--ease);
 }
 .drop-feat:hover .drop-panel { transform: translateY(-3.5px); }
+/* Logo drops show the whole logo above the panel instead of filling (and cropping) the card */
+.drop-feat.is-logo { flex-direction: column; align-items: flex-start; background: #fff; }
+.drop-feat.is-logo > img { position: static; z-index: auto; flex: 1 1 auto; min-height: 0; width: 100%; height: auto; padding: 0 2%; object-fit: contain; transform: scale(1.18); }
+.drop-feat.is-logo:hover > img { transform: scale(1.22); }
 .drop-meta { display: flex; flex-wrap: wrap; gap: 5.5px 11px; font-size: calc(11px * var(--ts)); color: rgba(15, 15, 15, .66); font-weight: 500; }
 .drop-meta span + span::before { content: "·"; margin-right: 11px; }
 .drop-panel h3 { font-size: clamp(21.5px, 2vw, 32.5px); margin: 7px 0 11px; }
