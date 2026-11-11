@@ -179,3 +179,15 @@ body.pv-body { display: flex; flex-direction: column; height: 100vh; height: 100
   .lw-stage { padding: 0 13%; }
   .lw figcaption { left: 13px; bottom: 10px; font-size: calc(11.5px * var(--ts)); }
 }
+
+/* Clean card with a scatter of soft tiles behind the work (filled and outlined), fading toward the copy */
+.wsv { position: relative; overflow: hidden; isolation: isolate; --tile-fill: #e9e9eb; --tile-line: #dcdcdf;
+  background: var(--surface); box-shadow: inset 0 0 0 1px var(--border); }
+:root[data-theme="dark"] .wsv { --tile-fill: #232325; --tile-line: #2c2c2f; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .wsv { --tile-fill: #232325; --tile-line: #2c2c2f; } }
+.wsv-tiles { position: absolute; z-index: -1; top: 0; right: 0; bottom: 0; width: 64%; height: 100%; pointer-events: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 38%), linear-gradient(0deg, #000 60%, transparent 100%);
+  -webkit-mask-composite: source-in; mask-image: linear-gradient(90deg, transparent 0, #000 38%), linear-gradient(0deg, #000 60%, transparent 100%); mask-composite: intersect; }
+.wsv-tiles .f { fill: var(--tile-fill); }
+.wsv-tiles .o { fill: none; stroke: var(--tile-line); stroke-width: 1.5; }
+@media (max-width: 900px) { .wsv-tiles { width: 100%; height: 36%; top: auto; -webkit-mask-image: linear-gradient(0deg, #000 30%, transparent 100%); mask-image: linear-gradient(0deg, #000 30%, transparent 100%); } }
