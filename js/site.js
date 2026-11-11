@@ -966,10 +966,8 @@
     const drops = $("[data-latest]"), seg = $("[data-latest-filters]");
     if (drops) {
       const thumb = $(".seg-thumb", seg);
-      seg.insertAdjacentHTML("beforeend", [{ name: "All", slug: "all" }].concat(CATS).map((c, i) => {
-        const n = c.slug === "all" ? items.length : items.filter(it => slug(it.category) === c.slug).length;
-        return `<button type="button" data-cat="${c.slug}" aria-pressed="${i === 0}">${c.name}<span class="n">${n}</span></button>`;
-      }).join(""));
+      seg.insertAdjacentHTML("beforeend", [{ name: "All", slug: "all" }].concat(CATS).map((c, i) =>
+        `<button type="button" data-cat="${c.slug}" aria-pressed="${i === 0}">${c.name}</button>`).join(""));
       const moveThumb = () => {
         const b = $("[aria-pressed=true]", seg); if (!b) return;
         thumb.style.width = b.offsetWidth + "px";
