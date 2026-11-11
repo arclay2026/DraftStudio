@@ -3816,3 +3816,16 @@ html.lr-lock { overflow: hidden; }
 @keyframes ic-fill { from { width: 0; } to { width: 100%; } }
 .ic-row[data-state="done"] .ic-bar, .ic-row[data-state="warn"] .ic-bar { width: 100%; opacity: 0; transition: opacity .5s ease .15s; }
 .ic-row[data-state="work"]::after { animation-duration: 1.6s; }
+
+/* Shelves, tidier: no numbers or counts; closed tiles show one straight card and a flat title at the bottom */
+.shelf { justify-content: flex-end; }
+.shelf-vtitle { writing-mode: horizontal-tb; transform: none; font-size: clamp(20px, 1.7vw, 28px); }
+.shelf.is-open .shelf-vtitle { transform: translateY(10px); }
+.shelf:not(.is-open) .logo-stack span { width: 74%; transform: none; }
+.shelf:not(.is-open) .logo-stack span:nth-child(n+2) { opacity: 0; }
+.logo-stack span { transition: transform .9s var(--spring, var(--ease)), box-shadow .6s, opacity .5s, width .6s var(--ease); }
+.s-templates:not(.is-open) .tpl-stack { transform: scale(.8); }
+.s-templates:not(.is-open) .tpl.t1, .s-templates:not(.is-open) .tpl.t3 { opacity: 0; transform: none; }
+.tpl { transition: transform .8s var(--ease), opacity .5s; }
+@media (max-width: 900px) { .shelf:not(.is-open) .logo-stack span:nth-child(n+2), .s-templates:not(.is-open) .tpl.t1, .s-templates:not(.is-open) .tpl.t3 { opacity: 1; } }
+@media (max-width: 900px) { .shelf:not(.is-open) .logo-stack span, .shelf .logo-stack span { width: min(40%, 190px); } .s-vectors .shelf-art { display: block; inset: 34px 14% 56%; } }

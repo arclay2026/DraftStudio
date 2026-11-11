@@ -943,11 +943,7 @@
 
     $$("[data-item-count]").forEach(el => { el.textContent = items.length; });
 
-    // Shelves: file counts, and open a panel on hover / focus
-    $$("[data-cat-count]").forEach(el => {
-      const n = items.filter(i => slug(i.category) === el.dataset.catCount).length;
-      el.textContent = n ? `${n} file${n === 1 ? "" : "s"}` : "Coming soon";
-    });
+    // Shelves: open a panel on hover / focus
     const shelves = $("[data-shelves]");
     if (shelves) {
       const panels = $$(".shelf", shelves);
