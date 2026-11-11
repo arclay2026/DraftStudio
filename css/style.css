@@ -428,7 +428,7 @@ h2 .soft { color: var(--soft); }
 .card-media { position: relative; border-radius: var(--radius); overflow: hidden; background: var(--card); border: 1px solid var(--border); }
 .card-media img { width: 100%; height: auto; transition: transform .9s var(--ease); }
 /* Photo previews (mockups) sit edge to edge: no border; logos keep it so white artwork has an edge */
-.card:not(.is-logo) .card-media, .drop-card:not(.is-logo), .drop-feat:not(.is-logo) { border: 0; }
+.card:not(.is-logo) .card-media, .drop-feat:not(.is-logo) { border: 0; }
 .card:hover .card-media img { transform: scale(1.04); }
 .card-media .price-tag { position: absolute; top: 11px; left: 11px; }
 .price-tag, .free-tag {
@@ -572,6 +572,11 @@ svg.mi .mi-on { display: none; }
 .drop-info .go { flex: none; display: grid; place-items: center; width: 29px; height: 29px; border-radius: 50%; background: var(--fg); color: var(--on-fg); transition: transform .35s var(--ease), background .3s, color .3s; }
 .drop-info .go svg { width: 11.5px; height: 11.5px; }
 .drop-card:hover .go { background: var(--fg); color: var(--on-fg); }
+/* Small drops: the picture on top, a full-width hairline, then the details on white (no floating panel) */
+.drop-card, .drops .drop-card { flex-direction: column; align-items: stretch; padding: 0; background: #fff; }
+.drop-card > img { position: static; z-index: auto; flex: 1 1 auto; min-height: 0; width: 100%; height: auto; object-fit: cover; }
+.drop-card .drop-info { background: #fff; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; border-radius: 0;
+  border-top: 1px solid #ececec; padding: 11px 11px 11px 15px; }
 
 /* Request card */
 .drop-req {
