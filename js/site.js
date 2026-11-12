@@ -2073,7 +2073,9 @@
     const SLIDES = [
       { name: "Canvas", t: "Drafty Canvas is now live, <br>free in your browser", go: "canvas.html", more: "#home-canvas", c: ["#ffb347", "#ff6a00", "#b33a00", "#080402"] },
       { name: "QR Code Studio", t: "QR Code Studio is here: <br>codes that look designed", go: "qr.html", more: "#home-qr", c: ["#ff8ad8", "#d42ac0", "#5b1fd1", "#07030a"] },
-      { name: "Palettes", t: "36 colour palettes, ready <br>to copy in one click", go: "palettes.html", more: "#home-palettes", c: ["#8fd3ff", "#2f7bff", "#3b2fd0", "#02040a"] }].filter(s => $(s.more));
+      { name: "Palettes", t: "36 colour palettes, ready <br>to copy in one click", go: "palettes.html", more: "#home-palettes", c: ["#8fd3ff", "#2f7bff", "#3b2fd0", "#02040a"] }]
+      // "Learn more" scrolls to the tool's home section when there is one, otherwise opens the tool's page
+      .map(s => ({ ...s, more: $(s.more) ? s.more : s.go }));
     if (!SLIDES.length) return;
     // it lives inside the hero panel, under the headline and buttons (or after the hero if there's no panel)
     const panel = $(".hero-panel", hero);
