@@ -992,6 +992,7 @@
       const mini = MINI.map(([k, shape, inner]) => ({ shape, html: `<span class="mt mt-${k}">${inner}</span>` }));
       pinWall(tplWall, real.concat(mini), SHAPES);
     }
+    heroWall();
     heroFx();
     heroSearch();
 
@@ -1063,6 +1064,42 @@
   }
 
   /* ---------- Hero effects (home) ---------- */
+  /* ---------- Hero wall: a tilted wall of the real files drifting behind the headline ----------
+     Logos (on their brand colour and on white) and mockups, in columns of mixed shapes on a plane tilted
+     in 3D. Each column holds its tiles twice and drifts by half its height, so the loop is seamless;
+     neighbouring columns drift opposite ways. A soft veil keeps the text clear and the wall fades out
+     before the banner. It rests off screen, while scrolling, and for reduced motion. */
+  function heroWall() {
+    const panel = $("[data-hero]"), copy = panel && $(".hero-copy", panel);
+    if (!panel || !copy) return;
+    const look = it => [(it.gallery && it.gallery[0]) || it.preview, it.preview];
+    const logos = items.filter(it => it.category === "Logos" && !it.sold).slice(0, 6);
+    const mocks = items.filter(it => it.category === "Mockups").slice(0, 4).map(it => it.preview);
+    const pics = [];
+    logos.forEach((it, i) => { const [a, b] = look(it); pics.push(a); if (mocks[i]) pics.push(mocks[i]); pics.push(b); });
+    if (pics.length < 4) return;
+    const SHAPE = [1, 1.25, .8, 1, 1.3, .75, 1, 1.2, .9];
+    const COLS = 9, PER = 9;
+    const col = c => {
+      let h = "";
+      for (let i = 0; i < PER; i++) {
+        const src = pics[(i + c * 3) % pics.length];
+        h += `<span class="hw-tile" style="aspect-ratio:1 / ${SHAPE[(i + c * 2) % SHAPE.length]}"><img ${imgSrc(src, "sm")} alt="" loading="lazy" decoding="async"></span>`;
+      }
+      return `<div class="hw-col"><div class="hw-track" style="--d:${70 + c * 9}s;--o:-${c * 7}s">${h}${h}</div></div>`;
+    };
+    const wall = document.createElement("div");
+    wall.className = "hero-wall"; wall.setAttribute("aria-hidden", "true");
+    wall.innerHTML = `<div class="hw-plane">${Array.from({ length: COLS }, (_, c) => col(c)).join("")}</div><i class="hw-veil"></i>`;
+    panel.prepend(wall);
+    // the wall covers the headline area only, so it can fade out before the banner below it
+    const fit = () => { wall.style.height = copy.offsetTop + copy.offsetHeight + 40 + "px"; };
+    fit(); addEventListener("resize", fit);
+    if (document.fonts) document.fonts.ready.then(fit);
+    if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => wall.classList.toggle("is-off", !e.isIntersecting))).observe(wall);
+    requestAnimationFrame(() => wall.classList.add("is-in"));
+  }
+
   function heroFx() {
     const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
     const onScreen = (el, fn, threshold = .2) => {

@@ -3897,3 +3897,28 @@ html.lr-lock { overflow: hidden; }
 /* 900–1023 px (a narrow or zoomed-in laptop window): the desktop layout with the menu folded to its icon
    rail, which slides out on hover. The fold button is hidden there, as the rail can't stay open. */
 :root[data-rail-auto] .side-fold { display: none; }
+
+/* ---------- Hero wall (home): a tilted wall of real files drifting behind the headline ---------- */
+.hero-wall { position: absolute; left: 0; right: 0; top: 0; z-index: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 1.2s var(--ease);
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 50%, rgba(0,0,0,.55) 75%, transparent 100%); mask-image: linear-gradient(180deg, #000 0, #000 50%, rgba(0,0,0,.55) 75%, transparent 100%); }
+.hero-wall.is-in { opacity: 1; }
+.hw-plane { position: absolute; left: 50%; top: 50%; width: max(2100px, 150vw); height: 2800px; margin: -1400px 0 0 calc(max(2100px, 150vw) / -2);
+  display: flex; gap: 18px; transform: perspective(1600px) rotateX(28deg) rotateZ(-14deg); transform-origin: 50% 50%; }
+.hw-col { flex: 1; min-width: 0; }
+.hw-track { display: flex; flex-direction: column; gap: 18px; animation: hw-drift var(--d, 80s) linear infinite; animation-delay: var(--o, 0s); will-change: transform; }
+.hw-col:nth-child(even) .hw-track { animation-direction: reverse; }
+@keyframes hw-drift { from { transform: translateY(0); } to { transform: translateY(calc(-50% - 9px)); } }
+.hw-tile { display: block; flex: none; overflow: hidden; border-radius: 22px; background: #fff; box-shadow: 0 0 0 1px rgba(15, 15, 15, .06), 0 18px 34px -24px rgba(15, 15, 15, .45); }
+.hw-tile img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.15); }
+/* the veil: the panel's own colour, thick behind the words and thin at the edges, so the text stays clear */
+.hw-veil { position: absolute; inset: 0; background:
+  radial-gradient(52% 54% at 50% 46%, color-mix(in srgb, var(--bg-2) 95%, transparent) 0%, color-mix(in srgb, var(--bg-2) 84%, transparent) 42%, color-mix(in srgb, var(--bg-2) 22%, transparent) 100%); }
+.hero-wall.is-off .hw-track, html.is-scrolling .hw-track { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .hw-track { animation: none; } }
+@media (max-width: 899.98px) {
+  .hw-plane { width: 1100px; height: 1800px; margin: -900px 0 0 -550px; gap: 14px; }
+  .hw-track { gap: 14px; }
+  .hw-tile { border-radius: 18px; }
+  .hw-veil { background: radial-gradient(80% 60% at 50% 46%, color-mix(in srgb, var(--bg-2) 94%, transparent) 0%, color-mix(in srgb, var(--bg-2) 84%, transparent) 55%, color-mix(in srgb, var(--bg-2) 45%, transparent) 100%); }
+}
+@supports (corner-shape: squircle) { .hw-tile { corner-shape: squircle; border-radius: 34px; } }
