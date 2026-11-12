@@ -14,7 +14,9 @@ import numpy as np
 SR = 48000
 HERE = os.path.dirname(os.path.abspath(__file__))
 # seconds from the start of each file to its hit point
-HIT = {"whoosh": 0.45, "whoosh_soft": 0.30, "whoosh_low": 0.70, "riser": 1.60, "swell": 1.2, "slide": 0.2}
+HIT = {"whoosh": 0.45, "whoosh_soft": 0.30, "whoosh_low": 0.70, "riser": 1.60, "swell": 1.2, "slide": 0.2,
+       # the UI library (sfx_ui.py), used as "ui/<name>"
+       "ui/whoosh": 0.275, "ui/whoosh_soft": 0.19, "ui/slide": 0.135, "ui/riser": 1.60, "ui/swell": 1.29}
 
 
 def load_wav(path):
@@ -53,10 +55,13 @@ def main():
     n = int(duration * SR) + SR
     if not os.path.exists(os.path.join(HERE, "sfx", "whoosh.wav")):   # first run: synthesise the library
         subprocess.run([sys.executable, "-I", os.path.join(HERE, "sfx.py")], check=True)
+    if not os.path.exists(os.path.join(HERE, "sfx", "ui", "whoosh.wav")):
+        subprocess.run([sys.executable, "-I", os.path.join(HERE, "sfx_ui.py")], check=True)
     sfx = np.zeros((2, n)); cache = {}
     # restraint: small sounds never chatter. A small sound within 0.18 s of one already kept is dropped;
     # the big moments (air, impacts, swells) always play.
     BIG = {"whoosh", "whoosh_soft", "whoosh_low", "riser", "impact", "swell", "shimmer"}
+    BIG |= {"ui/" + b for b in BIG} | {"ui/ding", "ui/success"}
     kept, last = [], -9
     for e in sorted(json.load(open(events_path)), key=lambda e: e["t"]):
         if e["n"] in BIG: kept.append(e); continue
@@ -65,7 +70,8 @@ def main():
     for e in kept:
         name = e["n"]
         if name not in cache:   # a library name, or a path to any audio file (a lesson's own click, say)
-            cache[name] = load_any(name) if os.sep in name else load_wav(os.path.join(HERE, "sfx", name + ".wav"))
+            lib = os.path.join(HERE, "sfx", name + ".wav")
+            cache[name] = load_wav(lib) if os.path.exists(lib) else load_any(name)
         x = cache[name] * e.get("g", 1)
         p = e.get("p", 0)
         if p: x = x * np.array([[min(1, 1 - p)], [min(1, 1 + p)]])

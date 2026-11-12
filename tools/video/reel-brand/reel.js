@@ -47,10 +47,10 @@ function hook() {
   [["#w1", .12], ["#w2", .62], ["#w3", 1.12]].forEach(([w, t], i) => {
     tl.fromTo(w, { scale: 2.6, opacity: 0, filter: "blur(36px)" }, { scale: 1, opacity: 1, filter: "blur(0px)", duration: .3, ease: "expo.out" }, t);
     shake(t + .05, i === 2 ? 26 : 16); flash(t + .04, i === 2 ? .45 : .22);
-    sfx(i === 2 ? "impact" : "thud", t + .05, i === 2 ? 1 : .8);
+    sfx(i === 2 ? "ui/impact" : "ui/thud", t + .05, i === 2 ? 1 : .9); if (i === 2) sfx("ui/tap_hi", t + .06, .35);
   });
   tl.to("#w3", { scale: 1.06, duration: .3, ease: "power2.out" }, 1.25);
-  whipOut("#h-grp", 1.52, -1); sfx("whoosh", 1.62, .9, -.4);
+  whipOut("#h-grp", 1.52, -1); sfx("ui/whoosh", 1.62, .9, -.4);
 }
 
 // ---------- 2 · free files ----------
@@ -66,11 +66,11 @@ function free() {
   tl.from(["#r1", "#r2"], { scaleX: 0, duration: .8, stagger: .1, ease: "silk" }, 1.7);
   const sp = SplitText.create("#f-k", { type: "chars" });
   tl.from(sp.chars, { opacity: 0, y: 24, duration: .4, stagger: .018, ease: "power3.out" }, 2.05);
-  sfx("tick", 2.05, .5);
+  sfx("ui/tick", 2.05, .5);
   // fly through the words into the next scene
   tl.to("#f-grp", { scale: 7, opacity: 0, filter: "blur(18px)", duration: .55, ease: "power3.in" }, 2.7);
   tl.to(["#r1", "#r2"], { opacity: 0, duration: .3 }, 2.8);
-  sfx("riser", 3.0, .7);
+  sfx("ui/riser", 3.0, .7);
 }
 
 // ---------- 3 · fly-through ----------
@@ -95,14 +95,14 @@ function flythrough() {
     tl.to(c, { opacity: 1, duration: .25, ease: "none" }, a + .02);
     if (!last) { tl.to(c, { filter: "blur(22px)", duration: .3, ease: "power2.in" }, a + 1.05); tl.to(c, { opacity: 0, duration: .18, ease: "none" }, a + 1.17); }
     tl.fromTo(c, { "--sx": "-120%" }, { "--sx": "140%", duration: .9, ease: "power2.inOut" }, a + .3);
-    sfx("whoosh_soft", a + (last ? .6 : 1.2), .55, i % 2 ? .5 : -.5);
+    sfx("ui/whoosh_soft", a + (last ? .6 : 1.2), .55, i % 2 ? .5 : -.5);
   });
   // the last card lands, takes a breath, then everything punches out
   tl.to("#c4", { scale: 1.04, duration: 1.2, ease: "none" }, 5.2);
   tl.from("#fc", { y: 70, opacity: 0, filter: "blur(16px)", duration: .7, ease: "silk" }, 5.15);
   tl.to("#fly-cap", { opacity: 0, duration: .25 }, 6.2);
   tl.to("#c4", { scale: 0, rotate: 12, opacity: 0, filter: "blur(10px)", duration: .32, ease: "power3.in" }, 6.2);
-  sfx("snap", 6.5, .8); flash(6.5, .3);
+  sfx("ui/snap", 6.5, .8); flash(6.5, .3);
 }
 
 // ---------- 4 · tools ----------
@@ -120,16 +120,16 @@ function tools() {
   tl.from(sp.words, { y: 70, opacity: 0, filter: "blur(14px)", duration: .7, stagger: .07, ease: "silk" }, 6.6);
   tl.from("#t-head .kick", { opacity: 0, x: -30, duration: .5 }, 6.55);
   T.forEach(([k, , , , r], i) => {
-    const a = 7.0 + i * .14;
+    const a = 6.95 + i * .2;
     tl.fromTo(`#t-${k}`, { scale: .4, rotate: r * 3, opacity: 0, y: 120 }, { scale: 1, rotate: 0, opacity: 1, y: 0, duration: .75, ease: "pop" }, a);
     tl.from(`#t-${k} b`, { opacity: 0, y: 16, duration: .4 }, a + .35);
-    sfx(i % 2 ? "pop" : "pop_low", a + .08, .6, i % 2 ? .35 : -.35);
+    sfx(["ui/pop", "ui/tap", "ui/pop_low", "ui/tap_hi"][i], a + .08, .7, i % 2 ? .35 : -.35);
   });
   // a slow push in, then the tiles scatter on the beat
   tl.fromTo("#t-grid", { scale: 1 }, { scale: 1.06, duration: 1.8, ease: "none", transformOrigin: "50% 60%" }, 7.6);
   T.forEach(([k, , x, y], i) => tl.to(`#t-${k}`, { x: (x < 300 ? -1 : 1) * 1100, y: (y < 900 ? -1 : 1) * 300, rotate: (x < 300 ? -1 : 1) * 20, filter: "blur(24px)", duration: .32, ease: "power3.in" }, 9.2 + i * .02));
   tl.to("#t-head", { opacity: 0, y: -60, filter: "blur(12px)", duration: .3, ease: "power3.in" }, 9.2);
-  sfx("whoosh", 9.45, .9, 0);
+  sfx("ui/whoosh", 9.45, .9, 0);
 }
 
 // ---------- 5 · the wall ----------
@@ -149,7 +149,7 @@ function wall() {
   [0, 1, 2, 3].forEach(c => tl.fromTo(`#pc${c}`, { yPercent: c % 2 ? -50 : 0 }, { yPercent: c % 2 ? -20 : -30, duration: 2.6, ease: "none" }, 9.5));
   ["#m-1", "#m-2"].forEach((m, i) => { const sp = SplitText.create(m, { type: "chars" }); tl.from(sp.chars, { y: 80, opacity: 0, filter: "blur(12px)", duration: .7, stagger: .025, ease: "silk" }, 9.9 + i * .3); });
   tl.from("#m-grp .kick", { opacity: 0, letterSpacing: "1em", duration: .8 }, 9.75);
-  sfx("shimmer", 10.0, .6); sfx("swell", 11.6, .7);
+  sfx("ui/shimmer", 10.0, .6); sfx("ui/swell", 11.6, .38);
   // collapse to a point of light
   tl.to("#s5", { scale: .2, opacity: 0, filter: "blur(30px)", duration: .45, ease: "power3.in", transformOrigin: "50% 48%" }, 11.62);
 }
@@ -176,18 +176,18 @@ function logo() {
     const a = 12.1 + i * .09;
     tl.fromTo(`#pt${i}`, { x: x / ms, y: y / ms, rotate: r, scale: .2, opacity: 0, transformOrigin: "50% 50%", svgOrigin: "225.38 500" },
       { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1, duration: .8, ease: "pop" }, a);
-    sfx("snap", a + .55, .55, x > 0 ? .4 : -.4);
+    sfx("ui/snap", a + .55, .55, x > 0 ? .4 : -.4);
   });
   tl.fromTo("#mark", { scale: 1 }, { scale: 1.08, duration: .25, ease: "power2.out", yoyo: true, repeat: 1, transformOrigin: "540px 800px" }, 12.85);
-  shake(12.9, 10, .25); flash(12.9, .25); sfx("impact", 12.9, .7);
+  shake(12.9, 10, .25); flash(12.9, .25); sfx("ui/impact", 12.9, .7);
   // the name wipes in, a shine crosses it
   tl.to("#nm", { clipPath: "inset(0 0% 0 0)", duration: .9, ease: "power3.inOut" }, 13.15);
-  sfx("slide", 13.3, .5);
+  sfx("ui/slide", 13.3, .5);
   tl.to("#shine", { x: 980, duration: 1.1, ease: "power2.inOut" }, 13.9);
-  sfx("shimmer", 14.2, .5);
+  sfx("ui/shimmer", 14.2, .5);
   tl.from("#tag", { opacity: 0, y: 30, duration: .7 }, 14.0);
   tl.fromTo("#cta .pill", { scale: 0, opacity: 0 }, { scale: 1, opacity: 1, duration: .7, ease: "pop" }, 14.5);
-  sfx("ding", 14.6, .55);
+  sfx("ui/success", 14.6, .6);
   tl.to("#cta .pill", { scale: 1.05, duration: .5, ease: "sine.inOut", yoyo: true, repeat: 1 }, 15.1);
   tl.to("#glow", { scale: 1.12, duration: 2.5, ease: "sine.inOut" }, 13.4);
 }
