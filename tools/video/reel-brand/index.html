@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Drafty Labs · brand reel</title>
+<!-- A 16-second vertical brand reel (1080×1920, 60 fps). Preview in a browser (space plays/pauses);
+     render: node ../shared/render.js reel-brand out.mp4 --sfx -->
+<style>
+  :root { --ink: #08080a; --cream: #f4f3ef; --blue: #1f7aff; --mute: rgba(244, 243, 239, .55);
+    --sans: "Inter Display", "Inter", system-ui, sans-serif; --mono: "JetBrains Mono", "DejaVu Sans Mono", ui-monospace, monospace; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: #000; }
+  body { overflow: hidden; }
+  #stage { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: hidden; background: var(--ink); color: var(--cream);
+    font: 600 40px/1.1 var(--sans); letter-spacing: -.02em; transform-origin: 0 0; -webkit-font-smoothing: antialiased; }
+  #cam { position: absolute; inset: 0; will-change: transform; }
+  .layer { position: absolute; inset: 0; visibility: hidden; }
+  .abs { position: absolute; }
+  .orb { position: absolute; width: 1600px; height: 1600px; margin: -800px 0 0 -800px; border-radius: 50%;
+    background: radial-gradient(circle, var(--c) 0%, color-mix(in srgb, var(--c) 35%, transparent) 25%, transparent 62%); opacity: var(--o, .5); }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
+  #vignette { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 90% at 50% 45%, transparent 50%, rgba(0, 0, 0, .7)); }
+  #grain { position: absolute; inset: -80px; width: calc(100% + 160px); height: calc(100% + 160px); opacity: .09; mix-blend-mode: overlay; pointer-events: none; }
+  .word { position: absolute; left: 0; right: 0; text-align: center; font: 800 236px/1 var(--sans); letter-spacing: -.065em; }
+  .kick { font: 600 26px/1 var(--mono); letter-spacing: .34em; text-transform: uppercase; }
+  .big { font: 700 150px/.95 var(--sans); letter-spacing: -.055em; }
+  .card3d { position: absolute; left: 50%; top: 50%; border-radius: 44px; overflow: hidden; background: #fff;
+    box-shadow: 0 60px 120px -40px rgba(0, 0, 0, .8), 0 0 0 1px rgba(255, 255, 255, .08); will-change: transform, filter; }
+  .card3d img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .card3d::after { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, .35) 48%, transparent 62%);
+    transform: translateX(var(--sx, -120%)); mix-blend-mode: soft-light; }
+  .tile { position: absolute; width: 440px; height: 440px; border-radius: 40px; overflow: hidden; background: #111;
+    box-shadow: 0 40px 80px -36px rgba(0, 0, 0, .9), 0 0 0 1.5px rgba(255, 255, 255, .1); }
+  .tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .tile b { position: absolute; left: 22px; bottom: 22px; padding: 12px 18px; border-radius: 16px; font: 600 30px/1 var(--sans); letter-spacing: -.02em;
+    background: rgba(8, 8, 10, .72); backdrop-filter: blur(10px); }
+  .pinwall { position: absolute; left: 50%; top: 50%; width: 1700px; height: 3400px; margin: -1700px 0 0 -850px; display: flex; gap: 28px;
+    transform: perspective(1600px) rotateX(28deg) rotateZ(-14deg); }
+  .pcol { flex: 1; display: flex; flex-direction: column; gap: 28px; }
+  .pin { border-radius: 30px; overflow: hidden; flex: none; box-shadow: 0 0 0 1px rgba(255, 255, 255, .08); }
+  .pin img { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.15); }
+  .mask { overflow: hidden; display: block; padding-bottom: .2em; margin-bottom: -.2em; }
+  /* SplitText's masks (overflow: clip) get room below the line, so y, g, j and p keep their tails */
+  #scenes div[style*="overflow: clip"] { padding-bottom: .2em; margin-bottom: -.2em; }
+  .pill { display: inline-flex; align-items: center; gap: 16px; padding: 26px 40px; border-radius: 999px; background: var(--blue); color: #fff;
+    font: 700 44px/1 var(--sans); letter-spacing: -.02em; box-shadow: 0 24px 60px -18px rgba(31, 122, 255, .8); }
+  .rule { position: absolute; height: 2px; background: rgba(244, 243, 239, .12); transform-origin: 0 50%; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="cam">
+    <div id="bg"><i class="orb" id="o1"></i><i class="orb" id="o2"></i></div>
+    <div id="scenes"></div>
+  </div>
+  <div id="flash"></div>
+  <div id="vignette"></div>
+  <canvas id="grain" width="400" height="400"></canvas>
+</div>
+<script src="../shared/vendor/gsap.min.js"></script>
+<script src="../shared/vendor/SplitText.min.js"></script>
+<script src="../shared/vendor/CustomEase.min.js"></script>
+<script src="logo-parts.js"></script>
+<script src="reel.js"></script>
+</body>
+</html>
