@@ -3358,6 +3358,8 @@ a:hover > .tc-tile .tc-ic svg { transform: scale(1.12); }
    moving the shapes inside the blur made the browser redraw the blur every frame */
 .pb-slide.is-on .pb-art { animation: pb-drift 18s ease-in-out infinite alternate; }
 @keyframes pb-drift { from { translate: 0 0; } to { translate: -2.5% .8%; } }
+/* the picture overhangs every edge, so the drift (and its scale-in) never uncovers the dark background */
+.pb-art { inset: -3% -5%; width: 110%; height: 106%; max-width: none; max-height: none; }
 .pb-copy { position: relative; padding: 0 24px; text-align: center; color: #fff; }
 .pb-copy h2 { margin: 0; font-size: clamp(22px, 2.35vw, 36px); font-weight: 500; line-height: 1.2; letter-spacing: -.02em; text-wrap: balance; text-shadow: 0 2px 24px rgba(0, 0, 0, .35); }
 .pb-btns { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: clamp(16px, 1.7vw, 24px); }
