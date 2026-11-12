@@ -3922,3 +3922,29 @@ html.lr-lock { overflow: hidden; }
   .hw-veil { background: radial-gradient(80% 60% at 50% 46%, color-mix(in srgb, var(--bg-2) 94%, transparent) 0%, color-mix(in srgb, var(--bg-2) 84%, transparent) 55%, color-mix(in srgb, var(--bg-2) 45%, transparent) 100%); }
 }
 @supports (corner-shape: squircle) { .hw-tile { corner-shape: squircle; border-radius: 34px; } }
+
+/* Hero wall under one even sheet of frosted glass: the blur is applied to the wall itself (before its 3D
+   tilt), so every tile is softened by the same amount, edges included. It's drawn at half resolution and
+   scaled back up, which looks the same blurred but costs a fraction to draw. */
+.hw-scale { position: absolute; inset: 0; }
+.hw-plane { filter: blur(13px) saturate(1.45); }
+@supports (zoom: .5) {
+  .hw-scale { transform: scale(2); transform-origin: 50% 50%; }
+  .hw-plane { zoom: .5; filter: blur(6.5px) saturate(1.45); }
+}
+/* one flat tint over the whole wall (no thicker or thinner spots), plus a fine glass grain */
+.hw-veil { background: color-mix(in srgb, var(--bg-2) 44%, transparent) !important; }
+.hw-veil::after { content: ""; position: absolute; inset: 0; opacity: .14; mix-blend-mode: overlay; background-size: 160px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .5 0 0 0 0 .5 0 0 0 0 .5 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+:root[data-theme="dark"] .hw-veil { background: color-mix(in srgb, var(--bg-2) 56%, transparent) !important; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .hw-veil { background: color-mix(in srgb, var(--bg-2) 56%, transparent) !important; } }
+
+/* Phones: a balanced hero that uses the width. The headline is bigger with evenly balanced lines, the line
+   under it is balanced too, and the two buttons are the same full width. */
+@media (max-width: 899.98px) {
+  .hero-copy { padding: 0 4px; }
+  .hero h1 { font-size: clamp(38px, 11.2vw, 58px); line-height: 1.04; text-wrap: balance; margin: 22px auto 16px; }
+  .hero-sub { font-size: calc(15px * var(--ts)); max-width: 30em; text-wrap: balance; }
+  .hero-ctas { flex-direction: column; align-items: stretch; gap: 10px; max-width: 420px; margin: 26px auto 34px; }
+  .hero-ctas .btn { width: 100%; justify-content: center; }
+}

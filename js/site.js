@@ -1090,7 +1090,7 @@
     };
     const wall = document.createElement("div");
     wall.className = "hero-wall"; wall.setAttribute("aria-hidden", "true");
-    wall.innerHTML = `<div class="hw-plane">${Array.from({ length: COLS }, (_, c) => col(c)).join("")}</div><i class="hw-veil"></i>`;
+    wall.innerHTML = `<div class="hw-scale"><div class="hw-plane">${Array.from({ length: COLS }, (_, c) => col(c)).join("")}</div></div><i class="hw-veil"></i>`;
     panel.prepend(wall);
     // the wall covers the headline area only, so it can fade out before the banner below it
     const fit = () => { wall.style.height = copy.offsetTop + copy.offsetHeight + 40 + "px"; };
