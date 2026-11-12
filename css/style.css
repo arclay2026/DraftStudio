@@ -3848,7 +3848,7 @@ html.lr-lock { overflow: hidden; }
 .cat-go svg { width: 13px; height: 13px; }
 .cat:hover .cat-go { transform: translate(2px, -2px); }
 /* Logos: a Pinterest-style wall of pins (mixed shapes, three columns drifting in opposite directions) */
-.cat-media.is-logos { display: block; }
+.cat-media.is-pins { display: block; }
 .cat-pins { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 0 12px; overflow: hidden;
   -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%); mask-image: linear-gradient(180deg, transparent 0, #000 16%, #000 84%, transparent 100%); }
 .pin-col { min-width: 0; }
@@ -3869,15 +3869,25 @@ html.lr-lock { overflow: hidden; }
 @keyframes cat-draw { from { stroke-dashoffset: 520; } }
 .cat-bezier .handle { fill: var(--surface-2); stroke: var(--fg); stroke-width: 2.5; }
 .cat-bezier .anchor { fill: var(--dl); stroke: var(--surface-2); stroke-width: 3; }
-/* Templates: three layouts, straight, the front one centred */
-.cat-tpl { position: relative; width: 36%; aspect-ratio: 4 / 5; }
-.cat-tpl .tpl { position: absolute; inset: 0; height: auto; max-height: none; transform: none; transition: transform .6s var(--spring, var(--ease)); }
-.cat-tpl .tpl.t1 { z-index: 1; transform: translateX(-62%) scale(.84); }
-.cat-tpl .tpl.t3 { z-index: 1; transform: translateX(62%) scale(.84); }
-.cat-tpl .tpl.t2 { z-index: 2; }
-.cat:hover .cat-tpl .tpl.t1 { transform: translateX(-70%) scale(.84); }
-.cat:hover .cat-tpl .tpl.t3 { transform: translateX(70%) scale(.84); }
 @media (max-width: 1100px) { .cats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 560px) { .cats { grid-template-columns: 1fr; } .cat-media { aspect-ratio: 16 / 10; } }
 @supports (corner-shape: squircle) { .cat { corner-shape: squircle; border-radius: 34px; } .cat-go { corner-shape: squircle; border-radius: 16px; } .pin { corner-shape: squircle; border-radius: 20px; } }
-.cat-tpl .tpl.t1 { background: #141414; color: #fff; } .cat-tpl .tpl.t1 em { background: #fff; color: #141414; } .cat-tpl .tpl.t3 { background: #ededed; color: #141414; } .cat-tpl .tpl.t3 .dot { background: #141414; }
+
+.cat-pins { container-type: inline-size; }
+/* Templates wall: mini layouts drawn in CSS (they scale with their tile) */
+.mt { position: relative; display: flex; flex-direction: column; gap: 1.50cqw; width: 100%; height: 100%; padding: 3.00cqw; overflow: hidden; color: #141414; background: #fff; font-family: var(--font-display); }
+.mt b { display: block; font-weight: 700; font-size: 4.50cqw; line-height: .95; letter-spacing: -.04em; }
+.mt i { display: block; height: 1.08cqw; border-radius: 0.60cqw; background: currentColor; opacity: .22; }
+.mt i + i { width: 72%; }
+.mt small { font: 600 2.25cqw/1 var(--font-body); letter-spacing: .02em; opacity: .75; }
+.mt em { margin-top: auto; align-self: flex-start; font: 700 2.40cqw/1 var(--font-body); font-style: normal; padding: 1.20cqw 1.80cqw; border-radius: 99px; }
+.mt-sale { background: #141414; color: #fff; } .mt-sale em { background: var(--dl); color: #fff; }
+.mt-open { background: #ededed; } .mt-open .dot { margin-top: auto; width: 5.40cqw; height: 5.40cqw; border-radius: 50%; background: #141414; }
+.mt-card { justify-content: center; gap: 1.20cqw; } .mt-card .mk { width: 4.20cqw; height: 4.20cqw; border-radius: 1.20cqw; background: var(--dl); margin-bottom: 0.90cqw; }
+.mt-card b { font-size: 3.00cqw; } .mt-card i { height: 0.90cqw; width: 55%; } .mt-card i + i { width: 40%; }
+.mt-post { padding: 2.40cqw; gap: 1.80cqw; } .mt-post .ph { flex: 1; border-radius: 1.80cqw; background: linear-gradient(135deg, #2f7fc0, #7ab7e8); }
+.mt-event { background: var(--dl); color: #fff; } .mt-event b { font-size: 6.00cqw; margin-top: 1.80cqw; } .mt-event em { background: #fff; color: #141414; }
+.mt-menu { background: #f6efe6; color: #3b2a1a; } .mt-menu b { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-style: italic; font-size: 5.10cqw; margin-bottom: 1.20cqw; }
+.mt-menu i { opacity: .35; height: 0.78cqw; } .mt-menu i:nth-of-type(odd) { width: 88%; } .mt-menu i:nth-of-type(even) { width: 64%; }
+.mt-story { background: linear-gradient(160deg, #ff8a3d, #ff4d6d); color: #fff; justify-content: flex-end; } .mt-story b { font-size: 6.30cqw; }
+.mt-invoice small { margin-bottom: 1.20cqw; } .mt-invoice i { height: 0.78cqw; opacity: .16; } .mt-invoice .tot { margin-top: auto; height: 3.60cqw; border-radius: 0.90cqw; background: #141414; }

@@ -931,43 +931,58 @@
 
   /* ---------- Home ---------- */
   function home() {
-    // Logos card: a Pinterest-style wall of the newest logos. Three columns of tiles in mixed shapes
-    // drift in opposite directions (each column holds its tiles twice, so the loop is seamless),
-    // and the whole wall speeds up smoothly while the card is hovered.
-    const wall = $("[data-logo-pins]");
-    if (wall) {
+    // Pinterest-style walls (Logos and Templates cards): three columns of tiles in mixed shapes drift in
+    // opposite directions (each column holds its tiles twice, so the loop is seamless), and the wall
+    // eases up to speed while its card is hovered. It rests off screen and stays still for reduced motion.
+    const SHAPES = [["1 / 1", "5 / 6", "4 / 3"], ["5 / 6", "3 / 2", "1 / 1", "4 / 3"], ["4 / 3", "1 / 1", "5 / 6", "1 / 1", "3 / 2"]];
+    const pinWall = (wall, pins, shapes) => {
+      wall.innerHTML = [0, 1, 2].map(c => {
+        const k = (c * 3) % pins.length, list = pins.slice(k).concat(pins.slice(0, k));
+        const tiles = list.map((t, i) => `<span class="pin" style="aspect-ratio:${t.shape || shapes[c][i % shapes[c].length]};--i:${i + c}">${t.html}</span>`).join("");
+        return `<div class="pin-col"><div class="pin-track">${tiles}${tiles}</div></div>`;
+      }).join("");
+      const tracks = $$(".pin-track", wall);
+      if (!tracks[0].animate || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const anims = tracks.map((t, c) => t.animate(
+        c % 2 ? [{ transform: "translateY(-50%)" }, { transform: "translateY(0)" }] : [{ transform: "translateY(0)" }, { transform: "translateY(-50%)" }],
+        { duration: 30000 + c * 7000, iterations: Infinity }));
+      let rate = 1, target = 1, raf = 0;   // ease the speed up and down instead of jumping
+      const step = () => {
+        rate += (target - rate) * .06;
+        if (Math.abs(target - rate) < .01) rate = target;
+        anims.forEach(a => { a.playbackRate = rate; });
+        raf = rate === target ? 0 : requestAnimationFrame(step);
+      };
+      const speed = r => { target = r; if (!raf) raf = requestAnimationFrame(step); };
+      const card = wall.closest(".cat") || wall;
+      card.addEventListener("mouseenter", () => { if (matchMedia("(hover: hover)").matches) speed(4.5); });
+      card.addEventListener("mouseleave", () => speed(1));
+      if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => anims.forEach(a => (e.isIntersecting ? a.play() : a.pause())))).observe(wall);
+    };
+    // Logos: the newest logos, each on its brand colour and on white (alternating so neighbours differ)
+    const logoWall = $("[data-logo-pins]");
+    if (logoWall) {
       const logos = items.filter(it => it.category === "Logos" && !it.sold).slice(0, 6);
-      // each logo twice: on its brand colour and on white, alternating so neighbours differ
       const look = (it, alt) => (alt ? it.preview : (it.gallery && it.gallery[0])) || it.preview;
-      const pins = logos.map((it, i) => look(it, i % 2)).concat(logos.map((it, i) => look(it, (i + 1) % 2)));
-      const SHAPES = [["1 / 1", "5 / 6", "4 / 3"], ["5 / 6", "3 / 2", "1 / 1", "4 / 3"], ["4 / 3", "1 / 1", "5 / 6", "1 / 1", "3 / 2"]];
-      if (pins.length >= 4) {
-        wall.innerHTML = SHAPES.map((sh, c) => {
-          const k = (c * 2) % pins.length, list = pins.slice(k).concat(pins.slice(0, k));
-          const tiles = list.map((src, i) => `<span class="pin" style="aspect-ratio:${sh[i % sh.length]};--i:${i + c}"><img ${imgSrc(src, "sm")} alt="" loading="lazy"></span>`).join("");
-          return `<div class="pin-col"><div class="pin-track">${tiles}${tiles}</div></div>`;
-        }).join("");
-        const tracks = $$(".pin-track", wall);
-        if (tracks[0].animate && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
-          const anims = tracks.map((t, c) => t.animate(
-            c % 2 ? [{ transform: "translateY(-50%)" }, { transform: "translateY(0)" }] : [{ transform: "translateY(0)" }, { transform: "translateY(-50%)" }],
-            { duration: 30000 + c * 7000, iterations: Infinity }));
-          // ease the speed up and down instead of jumping
-          let rate = 1, target = 1, raf = 0;
-          const step = () => {
-            rate += (target - rate) * .06;
-            if (Math.abs(target - rate) < .01) rate = target;
-            anims.forEach(a => { a.playbackRate = rate; });
-            raf = rate === target ? 0 : requestAnimationFrame(step);
-          };
-          const speed = r => { target = r; if (!raf) raf = requestAnimationFrame(step); };
-          const card = wall.closest(".cat") || wall;
-          card.addEventListener("mouseenter", () => { if (matchMedia("(hover: hover)").matches) speed(4.5); });
-          card.addEventListener("mouseleave", () => speed(1));
-          // rest while the card is off screen
-          if ("IntersectionObserver" in window) new IntersectionObserver(es => es.forEach(e => anims.forEach(a => (e.isIntersecting ? a.play() : a.pause())))).observe(wall);
-        }
-      }
+      const pins = logos.map((it, i) => look(it, i % 2)).concat(logos.map((it, i) => look(it, (i + 1) % 2)))
+        .map(src => ({ html: `<img ${imgSrc(src, "sm")} alt="" loading="lazy">` }));
+      if (pins.length >= 4) pinWall(logoWall, pins, SHAPES);
+    }
+    // Templates: real template previews first, then a set of mini layouts drawn in CSS
+    const tplWall = $("[data-tpl-pins]");
+    if (tplWall) {
+      const MINI = [
+        ["sale", "4 / 5", `<b>Summer<br>sale</b><i></i><i></i><em>50% off</em>`],
+        ["open", "3 / 4", `<b>Grand<br>opening</b><i></i><span class="dot"></span>`],
+        ["card", "3 / 2", `<span class="mk"></span><b>Alex Mokoena</b><i></i><i></i>`],
+        ["post", "1 / 1", `<span class="ph"></span><i></i><i></i>`],
+        ["event", "5 / 7", `<small>Fri 28</small><b>Live<br>music</b><em>Tickets</em>`],
+        ["menu", "3 / 4", `<b>Menu</b><i></i><i></i><i></i><i></i>`],
+        ["story", "9 / 14", `<b>Now<br>open</b><small>Visit us</small>`],
+        ["invoice", "4 / 5", `<small>Invoice</small><i></i><i></i><i></i><span class="tot"></span>`]];
+      const real = items.filter(it => it.category === "Templates").slice(0, 4).map(it => ({ html: `<img ${imgSrc(it.preview, "sm")} alt="" loading="lazy">` }));
+      const mini = MINI.map(([k, shape, inner]) => ({ shape, html: `<span class="mt mt-${k}">${inner}</span>` }));
+      pinWall(tplWall, real.concat(mini), SHAPES);
     }
     heroFx();
     heroSearch();
