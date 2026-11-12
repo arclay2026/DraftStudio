@@ -1981,7 +1981,9 @@
   "The Image Converter turns images into JPG, PNG or WebP, compresses them to a quality or a target file size, and resizes them, many at once. It runs in your browser, so your images are never uploaded.": "Le convertisseur d'images transforme vos images en JPG, PNG ou WebP, les compresse selon une qualité ou un poids cible, et les redimensionne, plusieurs à la fois. Il fonctionne dans votre navigateur : vos images ne sont jamais envoyées.",
   "Reading image…": "Lecture de l'image…",
   "Resizing…": "Redimensionnement…",
-  "Optimising…": "Optimisation…"
+  "Optimising…": "Optimisation…",
+  "Client: “can you make it bigger?”": "Client : « vous pouvez le faire plus grand ? »",
+  "nope.": "non."
  },
  "patterns": {
   "^(\\d+) files$": "$1 fichiers",
