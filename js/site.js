@@ -1107,10 +1107,8 @@
       new IntersectionObserver(es => es.forEach(e => fn(e.isIntersecting)), { threshold }).observe(el);
     };
 
-    // Rotating word, with a sense of humour. Each word's letters drop in on a spring and tumble out, and the
-    // download pill "clicks" right before every new word. After every round of five words, one designer
-    // in-joke plays: the client wants the logo bigger, a final_FINAL_v3 file gets struck out, or the word
-    // turns up in Comic Sans and gets turned away. Reduced motion keeps the first word still.
+    // Rotating word: each word's letters drop in on a spring and tumble out, and the download pill "clicks"
+    // right before every new word. Reduced motion keeps the first word still.
     const rot = $("[data-rotator]");
     if (rot) {
       const pill = $(".h-pill");
@@ -1140,59 +1138,13 @@
         cur = next; fit();
         setTimeout(() => prev.classList.remove("is-out"), 800);
       };
-      // a temporary word for a gag
-      const extra = (text, cls) => { const w = document.createElement("span"); w.className = cls; letters(w, text); rot.append(w); return w; };
-      const bubble = (text, cls = "") => { const b = document.createElement("em"); b.className = "rot-note " + cls; b.textContent = text; rot.append(b); requestAnimationFrame(() => b.classList.add("is-on")); return b; };
-      const drop = (el, ms = 900) => { el.classList.remove("is-on"); setTimeout(() => el.remove(), ms); };
-      const GAGS = [
-        // the client wants it bigger
-        async () => {
-          const logo = base.find(w => /logo/i.test(w.textContent)) || base[1];
-          await show(logo); await wait(900);
-          const b = bubble("Client: “can you make it bigger?”");
-          await wait(700); logo.classList.add("is-big");
-          await wait(1500); logo.classList.remove("is-big");
-          await wait(300); drop(b);
-        },
-        // the file name every designer has
-        async () => {
-          const f = extra("final_FINAL_v3", "rot-mono");
-          await show(f); await wait(1300);
-          f.classList.add("is-struck"); await wait(1000);
-          const file = extra("file", "");
-          await show(file); await wait(1700);
-          setTimeout(() => { f.remove(); }, 900);
-          const back = cur; await show(base[0]); setTimeout(() => back.remove(), 900);
-        },
-        // wrong font, politely refused
-        async () => {
-          const c = extra("logo", "rot-comic");
-          await show(c); await wait(900);
-          c.classList.add("is-nervous");
-          const b = bubble("nope.", "is-small"); await wait(1200);
-          drop(b);
-          const logo = base.find(w => /logo/i.test(w.textContent)) || base[1];
-          await show(logo); setTimeout(() => c.remove(), 900);
-        }];
       if (!calm) (async () => {
-        // the Comic Sans gag brings its own comic font (only fetched once the page has settled)
-        setTimeout(() => {
-          const l = document.createElement("link"); l.rel = "stylesheet";
-          l.href = "https://fonts.googleapis.com/css2?family=Comic+Neue:wght@700&display=swap&text=logo";
-          document.head.append(l);
-        }, 6000);
-        let i = base.indexOf(cur), g = 0;
+        let i = base.indexOf(cur);
         for (;;) {
-          for (let k = 0; k < base.length; k++) {
-            await wait(2300);
-            if (document.hidden) { k--; continue; }
-            i = (i + 1) % base.length;
-            await show(base[i]);
-          }
-          await wait(2000);
-          await GAGS[g % GAGS.length]();
-          g++;
-          if (base.includes(cur)) i = base.indexOf(cur);
+          await wait(2300);
+          if (document.hidden) continue;
+          i = (i + 1) % base.length;
+          await show(base[i]);
         }
       })();
     }
