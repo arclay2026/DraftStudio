@@ -885,11 +885,19 @@
       try { on ? localStorage.setItem("ds-rail", "1") : localStorage.removeItem("ds-rail"); } catch (e) {}
     };
     fold && fold.addEventListener("click", () => { side.classList.remove("is-peek"); setRail(!root.hasAttribute("data-rail")); });
+    // 900–1023 px: always the rail (without touching the saved choice); back to the saved choice when wider
+    const mid = matchMedia("(min-width: 900px) and (max-width: 1023.98px)");
+    const autoRail = () => {
+      let saved = false; try { saved = !!localStorage.getItem("ds-rail"); } catch (e) {}
+      if (mid.matches) { root.dataset.rail = ""; root.dataset.railAuto = ""; }
+      else { delete root.dataset.railAuto; if (!saved) delete root.dataset.rail; }
+    };
+    autoRail(); mid.addEventListener("change", autoRail);
     // Folded: hovering (or tabbing into) the rail slides the full menu out over the page
     let peekT = 0;
     const peek = (on, wait) => {
       clearTimeout(peekT);
-      peekT = setTimeout(() => side.classList.toggle("is-peek", on && root.hasAttribute("data-rail") && matchMedia("(min-width: 1024px)").matches), wait);
+      peekT = setTimeout(() => side.classList.toggle("is-peek", on && root.hasAttribute("data-rail") && matchMedia("(min-width: 900px)").matches), wait);
     };
     if (side) {
       side.addEventListener("pointerenter", e => { if (e.pointerType === "mouse") peek(true, 90); });
@@ -909,7 +917,7 @@
     mb && mb.addEventListener("click", () => setDrawer(!side.classList.contains("is-open")));
     $("[data-side-close]").addEventListener("click", () => setDrawer(false));
     document.addEventListener("keydown", e => { if (e.key === "Escape" && side.classList.contains("is-open")) setDrawer(false); });
-    matchMedia("(min-width: 1024px)").addEventListener("change", e => e.matches && window.DSCloseDrawer());
+    matchMedia("(min-width: 900px)").addEventListener("change", e => e.matches && window.DSCloseDrawer());
     $$("[data-open-search]").forEach(b => b.addEventListener("click", () => window.DSCloseDrawer()));
 
     $$("[data-top]").forEach(a => a.addEventListener("click", e => { e.preventDefault(); scrollTo({ top: 0 }); }));
@@ -2911,7 +2919,7 @@
 
     $$("[data-open-settings]").forEach(b => b.addEventListener("click", e => {
       e.stopPropagation();
-      if (innerWidth < 1024 && window.DSCloseDrawer) window.DSCloseDrawer();
+      if (innerWidth < 900 && window.DSCloseDrawer) window.DSCloseDrawer();
       open(el.hidden, b);
     }));
     el.addEventListener("click", e => {
