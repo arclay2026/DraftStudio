@@ -78,15 +78,22 @@ def thud(name="thud", peak=.42):
     write(name, room(x, .7, .08, .2), peak)
 
 # ---------- air ----------
-def swish(name="whoosh", d=.55, f0=500, f1=3200, peak_at=.5, peak=.42, p0=-.6, p1=.6):
-    """a clean airy swish: smooth band of air sweeping up then settling, panning across"""
+def swish(name="whoosh", d=.6, f0=160, f1=900, peak_at=.5, peak=.5, p0=-.6, p1=.6, sub=1.0):
+    """a deep cinematic whoosh: a low rush of air that opens and closes (a low-pass sweep, no narrow
+    resonance, so it never 'pews'), a sub pass-by glide under it, and only a breath of air on top"""
     n = int(d * SR); k = np.linspace(0, 1, n)
-    fc = np.where(k < peak_at, f0 * (f1 / f0) ** (k / peak_at), f1 * (f0 * 1.6 / f1) ** ((k - peak_at) / (1 - peak_at)))
-    x = svf(pink(d), fc, q=1.1)
-    e = np.where(k < peak_at, (k / peak_at) ** 2.2, np.exp(-5 * (k - peak_at) / (1 - peak_at)))
-    x = hp1(lp1(x * e, 9000), 250)
+    fc = np.where(k < peak_at, f0 * (f1 / f0) ** (k / peak_at), f1 * (f0 * 1.4 / f1) ** ((k - peak_at) / (1 - peak_at)))
+    e = np.where(k < peak_at, (k / peak_at) ** 2.4, np.exp(-4.2 * (k - peak_at) / (1 - peak_at)))
+    rush = svf(pink(d), fc, q=.55, mode="lp")
+    rush = rush / (np.abs(rush).max() + 1e-9)
+    body = osc(sweep(110, 48, d)) * np.exp(-((k - peak_at) / .22) ** 2)         # the pass-by, felt in the chest
+    body = np.tanh(2.2 * body) / np.tanh(2.2)                                    # its harmonics, so phone speakers carry it
+    mid = svf(pink(d), fc * .9, q=.5, mode="bp"); mid = mid / (np.abs(mid).max() + 1e-9)   # the audible rush
+    air = hp1(pink(d), 2500) * np.exp(-((k - peak_at) / .12) ** 2) * .03          # a faint edge, not a whistle
+    x = rush * e * .8 + mid * e * .55 + .3 * sub * body + air
+    x = lp1(lp1(x, 3800), 3800)
     st = pan(x, np.linspace(p0, p1, n))
-    write(name, np.array([room(st[0], .8, .14, .3)[0], room(st[1], .8, .14, .3)[1]]), peak)
+    write(name, np.array([room(st[0], 1.0, .16, .35)[0], room(st[1], 1.0, .16, .35)[1]]), peak)
 
 def riser(name="riser", d=1.6, peak=.36):
     """a smooth tonal rise into the cue: air and a soft glide, cut clean on the beat"""
@@ -99,7 +106,7 @@ def riser(name="riser", d=1.6, peak=.36):
 
 def slide(name="slide", peak=.24):
     """a soft slide, like a card moving across glass"""
-    swish(name, .3, 900, 2600, .45, peak, -.2, .2)
+    swish(name, .34, 220, 1100, .45, peak, -.2, .2, sub=.4)
 
 # ---------- chimes ----------
 def ding(name="ding", peak=.34):
@@ -143,6 +150,6 @@ if __name__ == "__main__":
     tap(); tap("tap_hi", 3136, .26); tick()
     pop(); pop("pop_low", 360, 860, .09, .38)
     snap(); thud()
-    swish(); swish("whoosh_soft", .38, 700, 2800, .5, .3, .5, -.5); riser(); slide()
+    swish(); swish("whoosh_soft", .42, 170, 950, .5, .36, .5, -.5, sub=.75); riser(); slide()
     ding(); shimmer(); success()
     impact(); swell()
